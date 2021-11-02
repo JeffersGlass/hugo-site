@@ -1,0 +1,28 @@
+{{ define "main" }}
+	<main>
+		{{ partial "header.html" }}
+		<div class="pt-16"></div>
+		<article class="px-6 bg-gray-50">
+			<h1 class="text-4xl pb-2">Project: {{ .Title }}</h1>
+			<p class='italic text-sm pb-4'>Created <time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "02.01.2006 15:04" }}</time></p>
+			<div>
+				{{ .Content }}
+			</div>
+			{{ with .Params.tags }}
+			<div>
+				<ul id="tags">
+					{{ range . }}
+					<li><a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a></li>
+					{{ end }}
+				</ul>
+			</div>
+			{{ end }}
+			{{ with .Site.DisqusShortname }}
+			<div>
+				{{ template "_internal/disqus.html" . }}
+			</div>
+			{{ end }}
+		</article>
+	</main>
+{{ partial "footer.html" . }}
+{{ end }}

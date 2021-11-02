@@ -1,0 +1,19 @@
+{{ define "main" }}
+{{ partial "header.html" }}
+<div class="pt-16"></div>
+	<main>
+		{{ if or .Title .Content }}
+		<div>
+			{{ with .Title }}<h1 class="text-4xl pb-2">{{ . }}</h1>{{ end }}
+			{{ with .Content }}<div class="">{{ . }}</div>{{ end }}
+		</div>
+		{{ end }}
+		<div class="px-8 flex flex-row flex-wrap">
+			{{ range .Paginator.Pages }}
+				{{ .Render "summary" }}
+			{{ end }}
+			<!-- {{ partial "pagination.html" . }} -->
+		</div>
+	</main>
+{{ partial "footer.html" . }}
+{{ end }}

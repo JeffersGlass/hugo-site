@@ -1,0 +1,26 @@
+<article class="w-96 flex-grow-1">
+	<div class="bg-gray-100 m-2 p-2 rounded-lg drop-shadow-xl">
+        {{ if isset .Params "slug_image" }}
+        <img src="{{ index .Params "slug_image" }}" alt="" class="float-right h-36 w-36 object-cover ml-2 border-2 border-gray-400 rounded-lg">
+        {{ else }}
+        {{ $img := resources.Get "/images/gooddogs.jpg" }}
+        <img src="{{ $img.RelPermalink }}" class="float-right h-36 w-36 ml-2 border-2 border-gray-400 rounded-lg">
+         {{ end }}
+        <h1><a href="{{ .Permalink }}" class="text-2xl">{{ .Title }}</a></h1>
+        <p>Last updated <time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "02.01.2006 15:04" }}</time></p>
+        {{ range .Params.tags }}
+        <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+        {{ end }}
+
+        <div class="col-span-2">
+                {{ if .Slug}}
+                    {{ .Slug }}
+                {{ else }}
+                    {{ .Summary }}
+                    {{ if .Truncated }}
+                        <a href="{{ .Permalink }}">Read more...</a>
+                    {{ end }}
+                {{ end }}
+        </div>
+    </div>
+</article>
