@@ -2,6 +2,7 @@
 title: "Office"
 date: 2021-11-02T11:40:27-05:00
 draft: true
+slug_image: "/images/workshop.jpg"
 ---
 My office used to be so neat
 
