@@ -52,14 +52,24 @@
         <div class="my-8 space-y-2" id="Odds">
             <h1 class="text-3xl relative-anchor">One-Offs</h1>
             <p class="italic">Experiments, adventures, and morsels that don't have or don't need much documentation. </p>
-            <div class="flex flex-grow space-x-4">
-                {{ range first 5 (where .Site.Pages "Section" "small" ) }}
+            <div class="flex flex-wrap flex-grow p-2 p-4 space-x-4 space-y-2">
+                {{ range (where .Site.Pages "Section" "small" ) }}
                         {{ .Render "summary"}}
                 {{ end }}
             </div>
         </div>
         
     </div>
+    <script>
+        $(document).ready(function() {
+            const allArticles = $('article[data-role="small-card"]');
+            allArticles.each(element => console.log(element));
+            const someArticles = allArticles.filter(":contains('Meter')");
+            someArticles.hide();
+            console.log(allArticles);
+            console.info(someArticles);
+        })
+    </script>
 	</main>
     {{ partial "footer.html" }}
 {{ end }}
