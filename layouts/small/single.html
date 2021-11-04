@@ -3,16 +3,24 @@
 		{{ partial "header.html" }}
 		<div class="pt-16"></div>
 		<article class="px-6 bg-gray-50">
+            <p class="pb-2"><a href="/#Odds" class=""><< Back to One-Offs</a></p>
             <h1 class="text-4xl">One-Off: {{ .Title }}</h1>
-            <p class="pb-4"><a href="/#Odds" class=""><< Back to One-Offs</a></p>
-            <p>{{ .Content }}</p>
-                {{ with .Page.Resources.ByType "image" }}
-                <div class="flex flex-wrap pt-4">
-                    {{ range . }}
-                        <img src="{{ .RelPermalink }}" class="flex my-4 mr-8 max-h-60">
+            <p>Tags:
+                {{ range .Params.tags }}
+                    <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+                {{ end }}                
+            </p>
+            <p class="pt-4">{{ .Content }}</p>
+                {{ if gt (len (.Page.Resources.ByType "image")) 0 }}    
+                    <h2 class="pt-6 text-xl">Images</h2>
+                    {{ with .Page.Resources.ByType "image" }}
+                    <div class="flex flex-wrap pt-4">
+                        {{ range . }}
+                            <a href="{{ .RelPermalink }}" data-lightbox="image-set"><img src="{{ .RelPermalink }}" class="flex mb-4 mr-8 max-h-60"></a>
+                        {{ end }}
+                    </div>
                     {{ end }}
-                </div>
-                {{ end }}
+                {{ end}}
 		</article>
 	</main>
 {{ partial "footer.html" . }}
