@@ -50,24 +50,22 @@
         </div>
         <!-- ODDS AND ENDS-->
         <div class="my-8 space-y-2" id="Odds">
-<<<<<<< Updated upstream
-            <h1 class="text-3xl relative-anchor">One-Offs</h1>
-            <p class="italic">Experiments, adventures, and morsels that don't have or don't need much documentation. </p>
-            <div class="flex flex-wrap flex-grow p-2 p-4 space-x-4 space-y-2">
-                {{ range (where .Site.Pages "Section" "small" ) }}
-                        {{ .Render "summary"}}
-=======
             <h1 class="text-3xl relative-anchor">One Offs</h1>
             <p class="italic">Small moments, morsels, adventures. </p>
             <div>
-                <button class="small-filter-button" id="all">All</button>
-                <button class="small-filter-button" id="electronics">Electronics</button>
-                <button class="small-filter-button" id="workshop">Workshop</button>
+                <button class="p-2 px-4 transform bg-green-200 border-2 border-gray-200 rounded-xl hover:scale-105" id="all">All</button>
+                {{range $name, $taxonomy := .Site.Taxonomies.tags}}
+                    {{ with $.Site.GetPage (printf "/tags/%s" $name) }}
+                            <button class="p-2 px-4 transform bg-gray-100 border-2 border-gray-200 rounded-xl hover:scale-105" id={{ $name }}>{{ $name }}</button>
+                    {{end}}
+                {{end}}
+                
             </div>
             <div class="flex flex-wrap space-x-4">
-                {{ range first 5 (where .Site.Pages "Section" "small" ) }}
-                    {{ .Render "summary"}}
->>>>>>> Stashed changes
+                {{ range (where .Site.Pages "Section" "small" ) }}
+                    {{ if .IsPage }}
+                        {{ .Render "summary"}}
+                    {{ end }}
                 {{ end }}
             </div>
         </div>
@@ -75,13 +73,40 @@
     </div>
     <script>
         $(document).ready(function() {
-            const allArticles = $('article[data-role="small-card"]');
+            let allArticles = $('article[data-role="small-card"]');
             allArticles.each(element => console.log(element));
-            const someArticles = allArticles.filter(":contains('Meter')");
-            someArticles.hide();
-            console.log(allArticles);
-            console.info(someArticles);
-        })
+            //const someArticles = allArticles.filter(":contains('wedding')");
+
+            $("button").click(function(){
+                const id = $(this).attr('id');
+                const myButton = $("button#" + id);
+                console.log("Found button clicked with id " + id);
+
+                allButtonsGray();
+                myButton.removeClass("bg-gray-100");
+                myButton.addClass("bg-green-200");
+
+                let allArticles = $('article[data-role="small-card"]');
+                allArticles.show();
+                
+                if (id != 'all') {
+                    const others = $('article[data-role="small-card"]').filter(function(){
+                        let data = $(this).attr('data-tags');
+                        return (typeof(data) !== 'undefined' && !$(this).attr('data-tags').includes(id))
+                    });
+                    others.hide();
+                }
+            });
+
+        });
+
+        function allButtonsGray() {
+            const articles = $('button');
+            articles.show();
+            articles.addClass("bg-gray-100");
+            articles.removeClass("bg-green-200");
+            console.log("Turning all articles gray");
+        }
     </script>
 	</main>
     {{ partial "footer.html" }}
