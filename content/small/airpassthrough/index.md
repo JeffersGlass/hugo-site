@@ -1,7 +1,7 @@
 ---
 title: "Airflow Passthrough"
 date: 2021-11-04T13:17:14-05:00
-draft: true
+draft: false
 tags:
 - 3d-printing
 slug_image: 'passthrough-closed.JPG'
