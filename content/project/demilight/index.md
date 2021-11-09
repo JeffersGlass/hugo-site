@@ -3,7 +3,7 @@ title: "Demilight"
 date: 2021-11-02T11:39:55-05:00
 draft: true
 slug: "Demilight is a very small 3D printed moving light"
-slug_image: "/images/PCB-hand.png"
+slug_image: 'PCB-hand.png'
 ---
 Demilight is a tiny tiny light.
 
