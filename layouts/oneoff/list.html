@@ -2,18 +2,61 @@
 {{ partial "header.html" }}
 <div class="pt-16"></div>
 	<main class="px-12">
-		{{ if or .Title .Content }}
-		<div class="">
-			{{ with .Title }}<h1 class="pb-2 pl-3 text-4xl">{{ . }}</h1>{{ end }}
-			{{ with .Content }}<div class="">{{ . }}</div>{{ end }}
+		<div class="pb-2 pl-3">
+			<span class="text-4xl">One-Offs</span>
+			<p class="pb-4 italic">Small projects, adventures, or findings. Less than deserves a full blog/project post, more than deserves to get lost to Twitter.</p>
+			<div class="">
+				<button class="p-2 px-4 transform bg-green-200 border-2 border-gray-200 rounded-xl hover:scale-105" id="all">All</button>
+				{{range $name, $taxonomy := .Site.Taxonomies.tags}}
+					{{ with $.Site.GetPage (printf "/tags/%s" $name) }}
+							<button class="p-2 px-4 transform bg-gray-100 border-2 border-gray-200 rounded-xl hover:scale-105" id={{ $name }}>{{ $name }}</button>
+					{{end}}
+				{{end}}		
+			</div>
 		</div>
-		{{ end }}
-		<div class="flex flex-row flex-wrap justify-around px-2">
+		<div class="flex flex-row flex-wrap px-2 justify-left">
 			{{ range .Paginator.Pages }}
 				{{ .Render "summary" }}
 			{{ end }}
 			<!-- {{ partial "pagination.html" . }} -->
 		</div>
+		<script>
+			$(document).ready(function() {
+				let allArticles = $('article[data-role="small-card"]');
+				allArticles.each(element => console.log(element));
+				//const someArticles = allArticles.filter(":contains('wedding')");
+	
+				$("button").click(function(){
+					const id = $(this).attr('id');
+					const myButton = $("button#" + id);
+					console.log("Found button clicked with id " + id);
+	
+					allButtonsGray();
+					myButton.removeClass("bg-gray-100");
+					myButton.addClass("bg-green-200");
+	
+					let allArticles = $('article[data-role="small-card"]');
+					allArticles.show();
+					
+					if (id != 'all') {
+						const others = $('article[data-role="small-card"]').filter(function(){
+							let data = $(this).attr('data-tags');
+							return (typeof(data) !== 'undefined' && !$(this).attr('data-tags').includes(id))
+						});
+						others.hide();
+					}
+				});
+	
+			});
+	
+			function allButtonsGray() {
+				const articles = $('button');
+				articles.show();
+				articles.addClass("bg-gray-100");
+				articles.removeClass("bg-green-200");
+				console.log("Turning all articles gray");
+			}
+		</script>
 	</main>
 {{ partial "footer.html" . }}
 {{ end }}
