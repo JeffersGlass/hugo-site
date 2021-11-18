@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Reverse Engineering and Replacing an Industrial 7-Segment Display - Part 1, Research</title>
+	
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    <div class="flex flex-none">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Posts
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="https://jeff.glass/blog/" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+            <svg xmlns="http://www.w3.org/2000/svg" class="float-right w-6 h-6 ml-1 mb-[-1]0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+        </div>
+    </div>
+    <div class="flex justify-end flex-1 w-auto align-middle">
+        <div class="flex-none menu-item-green">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+
+		<div class="pt-16"></div>
+		<article class="w-3/4 px-16 m-auto bg-gray-50">
+			<h1 class="pb-2 text-4xl">Reverse Engineering and Replacing an Industrial 7-Segment Display - Part 1, Research</h1>
+			
+			<div>
+				<span>Tags:</span>
+				
+				<a href="../../tags/arduino">arduino</a>
+				
+				<a href="../../tags/datasheet">datasheet</a>
+				
+				<a href="../../tags/industrial-design">industrial-design</a>
+				
+				<a href="../../tags/leds">leds</a>
+				
+			</div>
+			
+			<div>
+				<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">Building one-off hardware is one part inventing, one part dissecting, one part scrounging. When we try to hit that magic mixture of good, fast, <em>and</em> cheap, so often we must rely on prebuilt modules - if we're trying to build a widget that gets us from zero to 100, it may only be financially/temporarily/technologically reasonable if someone already makes a module that gets us from 0 to 80. Utilizing economies of scale of already-developed parts can bring a one-off project from the realm of fantasy into feasibility.  Often, the solution is to develop a chain of off-the-shelf components that can fulfill the end goal.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">But all components have a service life, and a manufacturing lifetime. And when your part goes out of production and then your spares-bin runs dry, sometimes keeping your machine running requires some deeper problem solving. When you work in the public-facing technology sphere (theatre, museum work, retail displays, etc), a lot of the solutions are literally one-of-a-kind, even if they're constructed from commercial parts.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">I recently had the need to replace a very specific module in some equipment. While it didn't end up being the most high-tech/high speed/highfalutin bit of technology, it presents a good opportunity to talk through how one can approach an unknown part, come to understand its workings, and develop a replacement. So in this N-part series, we'll look at the process of researching, developing, and implementing a custom one-off solution to a failed part in a unique piece of gear.</p></p>
+<p class="post-paragraph"><hr/></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;"><a href="https://jeff.glass/wp-content/uploads/2020/03/IMG_9557-scaled-e1583250423936.jpg"><img alt="" class="aligncenter wp-image-799 size-large post-img" height="669" src="https://jeff.glass/wp-content/uploads/2020/03/IMG_9557-scaled-e1583250423936-1024x952.jpg" width="720"/></a></p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">The <a href="https://www.alliedelec.com/m/d/535531da0cc330e5c959e59360401632.pdf">Lascar EM32-4-LED</a> is a four-digit seven-segment panel mount LED display meant for general-purpose data display. Its small digit size (.39" tall), machined aluminum housing, small footprint (32.5mm diameter punchout) and NEMA 4X/IP67 made it a compact choice for anyone needing to display a single value with 4 digits of precision. It also had the ability to drive four external LEDs, for additional status or process indicators.</p></p>
+<p class="post-paragraph"><img alt="Lascar Electronics EM32-4 LED" class="aligncenter post-img" height="400" src="https://assets.alliedelec.com/f_auto,c_scale,w_400/70101381.jpg" width="400"/></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">A piece of equipment I've been working on recently had just such a LASCAR display installed a few years back to serve as a timer. I''m going to have to be a little vague about the specifics of the equipment itself, but since this post is focused on technical process and not the piece itself, I think I can safely share enough details for the following to make sense:</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">The piece is an interactive object that triggers some actions and servos, demonstrates a physical phenomenon, and then takes about 25 seconds to cool back down before can be used again. The user is presented with a <a href="https://www.bulgin.com/us/products/stainless-steel-vandal-resistant-illuminated-ip66-push-button-switch-mpi001-mpi002-series-22mm-diameter-group.html">green illuminated button</a> to activate the system - when the system is in active or cooling down, the illuminated button turns red. But because it's not entirely clear from the action of the device alone when it will be cool enough for use, a countdown timer (two digits) is displayed on the EM32 display, counting the number of seconds until we're good to run again.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">Sadly, this particular EM32 display died shortly after LASCAR decided the product hit its End of Life. What's more, I'm currently without the ability to modify the programming of the PLC that's driving the whole shebang. In order to maintain the functionality of the piece, it became necessary to build a device that would ingest the existing signals being sent by the PLC, interpret them, and drive a newly crafted 7-segment display of some kind.</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/03/IMG_9967-scaled-e1583254082764.jpg"><img alt="" class="aligncenter size-large wp-image-800 post-img" height="600" src="https://jeff.glass/wp-content/uploads/2020/03/IMG_9967-scaled-e1583254082764-1024x853.jpg" width="720"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;"><a href="https://www.alliedelec.com/m/d/535531da0cc330e5c959e59360401632.pdf">The 'datasheet' for the EM32-4</a> is a paltry 2 pages long. Presumably there was additional documentation provided to those who were using the device, but since it's now EOL, that documentation seems to be unobtanium. But the existing pair of pages does contain some useful information.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">We'll start at the very beginning (a very good place to start): the <strong>opening</strong> <strong>prose</strong> <strong>paragraph</strong>:</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/Intro.png"><img alt="" class="aligncenter wp-image-762 size-large post-img" height="199" src="https://jeff.glass/wp-content/uploads/2020/02/Intro-1024x283.png" width="720"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">This is where we find a high-level overview of the part, it's intended purpose, and (<em>sometimes</em>) explanations of the differences between any variants of the part. Say, for example, a given part is made in a standard and a mil-spec version, or a normal and a slew-rate limited version, a manufacturer will often encompass them in a single datasheet. It's important to identify specifically what part you have, so you can characterize it accurately. </p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">In our case, the EM32-4 is unique enough that there are no major variants. The paragraph mostly tells us what we already know - it's a 4-digit, 3 decimal point display in a metal bezel. But it does call out the "optional external LEDs." While it's unclear at this point exactly what this means, it's useful to make note of these surprises early on, as they'll often explain a what-the-heck-is-that moment late in the datasheet.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">Moving on then to the next useful block in just about any datasheet; the electrical specifications. This is where you'll find input-voltage ranges for power and signals, output voltages and timing, and other device-specific characteristics (transistor beta and voltage spreads, op-amp gain and slew rate, power ratings, etc). If I was doing a <a href="http://www.nick.com.au/doubledare/videos/double-dare-104-physical-challenge-balloon/">Double Dare Physical Challenge</a> and had to utilize a part with only one table of its datasheet available, I'd take the electrical specs chart 9 out of 10 times.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;"><a href="https://jeff.glass/wp-content/uploads/2020/02/elecspec.png"><img alt="" class="aligncenter wp-image-763 size-large post-img" height="177" src="https://jeff.glass/wp-content/uploads/2020/02/elecspec-1024x252.png" width="720"/></a></p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">In our case, there's only 6 lines, but 6 important lines they are. We learn that this is a 5V part, but can run at up to 9V so we can't assume we'll have 5V power available. Nominal power  usage is ~20mA, so the power available on existing supply lines may be limited. The operating and storage temperature ranges are typical. V<sub>LED</sub> is a a bit confusing - does this refer to the display itself, in which case we have no real purpose for this voltage? Or perhaps it refers to the voltage available for the external LEDs. </p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">The final line is promising - that the typical clock input frequency is 500KHz. This is the first we've seen any information about how this device receives communication from a controller. But now we know it's some kind of clocked input (perhaps sometime like SPI?), and that its possible frequency is not unreasonable from something we might interpret with off-the-shelf hardware. Not that 500KHz is a stroll in the park, but it's not in the many-megahertz range, say.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">The last really useful part of the datasheet is the Functional Block Diagram. This block shows a symbolic representation of what's happening inside the device, as an aid to the user in visualizing what's happening on the interior and how we need to interface with it. You really only see this with integrated circuits or other modules (the functional bock diagram of a transistor would be... just a transistor).</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">To highlight the purpose of the block diagram, let's do a quick comparison between two drawings on another part: the venerable <a href="https://www.youtube.com/watch?v=fLaexx-NMj8">555 Timer IC.</a> Its datasheet sports both a schematic diagram and a functional diagram; here are the two side-by-side:</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/555schem.png"><img alt="" class="aligncenter wp-image-767 size-large post-img" height="336" src="https://jeff.glass/wp-content/uploads/2020/02/555schem-1024x478.png" width="720"/></a><a href="https://jeff.glass/wp-content/uploads/2020/02/555func.png"><img alt="" class="aligncenter wp-image-766 size-full post-img" height="745" src="https://jeff.glass/wp-content/uploads/2020/02/555func.png" width="778"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">This demonstrates pretty clearly the distinct purposes of the schematic diagram versus the functional one. The functional diagram is there to give users a high-level understanding of how the device functions, where inputs and outputs attach, and what the essential parts of the device are. The schematic diagram is there for those who need to really drill into exactly how the chip is built, because of some precise technical reason. When I'm driving a car, I need to know whether the transmission is manual or automatic, two-wheel vs four wheel, and so on - a functional understanding is enough. A mechanic needs a schematic showing the various linkages and gears of my transmission to diagnose and repair issues; holding that level of information in my head all the time would get in the way of the business of driving around.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">With that diversion hopefully making clear the purpose of the functional block diagram, let's check out the one for the EM32-4.</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/block-diagram.png"><img alt="" class="aligncenter wp-image-761 size-full post-img" height="699" src="https://jeff.glass/wp-content/uploads/2020/02/block-diagram.png" width="850"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">There's some really good info here! Let's start with the external connections:</p></p>
+<ul class="post-ul">
+<li style="text-align: justify;">We could have guessed V+ and 0V are supply voltage and ground, but this confirms it.</li>
+<li style="text-align: justify;">The 35-bit <a href="https://en.wikipedia.org/wiki/Shift_register">shift register</a> is intriguing, and illuminates the purpose of the D (Data) and Ck (Clock) terminals. There's also an Ē (enable) pin for the data line which is active low (indicated by the bar over the pin name, for "not"). </li>
+<li style="text-align: justify;">Since we don't have direct control over the latches or buffer layer of the shift register, it seems that data will be shown as soon as its clocked in.</li>
+<li>There's a weird hanging <a href="https://en.wikipedia.org/wiki/Inverter_(logic_gate)">inverter</a> on the left side of the diagram attached to the output buffers, as if there was some kind of external buffer control possible at some point. How odd.</li>
+<li style="text-align: justify;">It seems that the  V<sub>L</sub> pin is on the downstream side from the voltage regulator, so it probably puts out the 3 volts listed under electrical specifications above.
+<li>This probably means that L1 thru L4 are <a href="https://en.wikipedia.org/wiki/Open_collector#:~:text=">open-collector outputs</a>, so we have a sense of how we might use the part to drive the external LEDs.</li>
+<li style="text-align: justify;">Finally, there's a Reset pin for soft-resetting the data displayed - this would be useful if the end product was configured so the displayed retained power when the controller turned off - the controller could simply reset the display (or many displays in parallel) to ensure that no data was present for a fresh start.</li>
+</ul>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">One of the starting placing for replacing this display was the possibility that there might be some driver circuitry driving a<a href="https://www.adafruit.com/product/865"> generic 7-segment display</a>. If the display itself was still good, perhaps we can simply replace the driver and have a visually identical display. Those hopes were dashed, however, when I opened up the EM32-4 LED to find...</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/IMG_9565-scaled.jpg"><img alt="" class="aligncenter size-large wp-image-776 post-img" height="540" src="https://jeff.glass/wp-content/uploads/2020/02/IMG_9565-1024x768.jpg" width="720"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">An <a href="http://www.farnell.com/datasheets/83212.pdf">OEM 4-LED</a> - the power behind the throne - it's the same product, right down to the block diagram, but in a DIP-style package. The EM32-4, it turns out, is the OEM-4 with a nice aluminum case and terminal blocks. And the back of the OEM-4 is epoxy-blobbed together, so even if we were to break into the thing, there's a good chance everything is wirebonded all the way to nowhere and back. Reusing the display on this thing is a non-starter.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">All is not in vain, however - the OEM-4's datasheet is a whopping <em>four</em> pages to the EM32's paltry two. The first two pages are essentially identical (which makes sense, since one <em>is</em> the other in a very real way), but the two additional pages in the OEM-4's datasheet have four additional juicy diagrams. Starting with a timing diagram:</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/timing.png"><img alt="" class="aligncenter size-large wp-image-780 post-img" height="648" src="https://jeff.glass/wp-content/uploads/2020/02/timing.png" width="720"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">We can now see in much more detail that, yes indeed, the display is based around an internal shift register architecture, with bits being clocked in and held in the device. We can see that there's a start bit ("1") and the 35 data bits we saw in the EM32's datasheet, so we'll need to clock 36 physical bits into the device, whereupon it will automatically load the data (presumably into the data latches and output buffer). Then in 30 ns it will automatically reset and be ready The clock timing, which is listed as 500 Khz nominal, can in theory be pushed to 2 MHz if the 500 ns cycle time (250 ns + 250 ns) can be believed. (<em>Not that we're hoping it's that high</em>). We can also get some detail about the external reset signals and the data input timing.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">Remember, all this sleuthing is with a goal -  not of driving an EM32, but of creating a display controller which <em>takes the place of </em>an EM32 in a specific installation. Any details we can deduce from the datasheets will help us narrow down where we begin with our investigation of the controller itself.</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/applications.png"><img alt="" class="aligncenter size-full wp-image-777 post-img" height="511" src="https://jeff.glass/wp-content/uploads/2020/02/applications.png" width="960"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">The "applications" diagram gives us a few pointers - not all are useful to our goal, but are interesting nonetheless. As we guessed before, the LED1 through LED4 pins are open collector drivers - but unlike our guess, we actually need to provide the +3 volts for that control from an external regulator, not from the V<sub>LED</sub> pin. And the typical current should be 2.5mA per LED, so there's aren't high-current drivers in any sense. We can also see that the OEM-4 module has an option for external brightness control via a 50kΩ potentiometer, but we don't have the ability to access those pins on the EM32 unit.</p></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">There's also a sneaky note at the bottom of the diagram that there is a 'special version' OEM-4 LED with a built-in 3V regulator and brightness control. I wonder which version we have?</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/ps035.png"><img alt="" class="aligncenter size-large wp-image-778 post-img" height="573" src="https://jeff.glass/wp-content/uploads/2020/02/ps035.png" width="720"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">At first blush the circuit diagram appears to tell us what we already know - there's a <a href="https://www.digchip.com/datasheets/parts/datasheet/922/PS035-pdf.php">shift-register LED driver</a> inside this thing that's taking clocked data in and driving LEDs on the downstream side. But there are actually two key things to note here - while I had assumed the V<sub>LED</sub> pin was only for the external LED's, it's actually the anode connection for all the segments of the display! This means that connecting it isn't optional for driving external LEDs, it's mandatory if we want the OEM-4 to work. Looking back at the block diagram from the EM32, we can understand the purpose of the built-in regulator shown there.</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/regulator.png"><img alt="" class="wp-image-784 size-full post-img" height="282" src="https://jeff.glass/wp-content/uploads/2020/02/regulator.png" width="814"/></a></p>
+<p class="post-img-caption">The EM32's built-in 3V regulator on the EM32.</p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">The second key thing we learn from the circuit diagram is <em>which bits control which segments.</em> But it's made even more clear in the final diagram from the OEM-4 datasheet: the serial data input sequence:</p></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/02/serial-data.png"><img alt="" class="aligncenter size-large wp-image-779 post-img" height="326" src="https://jeff.glass/wp-content/uploads/2020/02/serial-data.png" width="720"/></a></p>
+<p class="post-paragraph"><p class="post-paragraph" style="text-align: justify;">Now we don't have to try to deducing the bit-order from what we think the data stream is displaying, we can build that data into our programming from the beginning. Thank goodness, since I'd never actually seen this display in action before I undertook the task to replace it!</p></p>
+<p class="post-paragraph"><hr class="wp-block-separator"/></p>
+<p class="post-paragraph">This is about as deep as the research rabbit-hole goes, it seems. We've found the datasheet for the EM32 module itself, the OEM-4 module inside it, and the PS035 inside that.</p>
+<p class="post-paragraph">In the next post, we'll start probing the signals coming from the controller, building a version of the display in software, and testing some theories about how the display operates.</p>
+
+			</div>
+
+			
+		</article>
+	</main>
+<footer>
+    <div class = "text-center text-gray-500 pb-6 pt-4" id="Footer">
+        <p class="">All contents © Jeff Glass 2021. All rights reserved.</p>
+        <p>Built for the <a class="underline" href="https://cloudresumechallenge.dev/" target="_blank">Cloud Resume Challenge</a>. See <a href="#" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>
