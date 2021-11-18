@@ -1,7 +1,7 @@
 ---
 title: "KVM Stand"
 date: 2021-11-09T10:16:14-06:00
-draft: true
+draft: false
 tags: 
 - 3d-printing
 - computers
