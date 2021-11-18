@@ -1,7 +1,7 @@
 ---
 title: "Advent of Code 2020: Day 1"
 date: 2020-12-01T16:58:57-05:00
-draft: true
+draft: false
 tags:
 - codeadvent
 - codeadvent2020
@@ -11,15 +11,15 @@ tags:
 <p class="post-paragraph"><a href="https://github.com/JeffersGlass/codeadvent2020/tree/main/Day1"><em><span style="text-decoration: underline;"><strong>Full code is available on GitHub.</strong></span></em></a></p>
 <p class="post-paragraph">Much like last year, this year's Day 1 challenge starts by essentially making sure we can read in a text file and do basic math on it. The first problem asks us to find which two integers in a text file that sum to 2020 and retrieve their product; the second asks the same question, but for a set of 3 integers.</p>
 <p class="post-paragraph">Just for gits and shiggles, I implemented the solution to part one in two different ways. The first, in a function I title "naiveFind", just loads all of the numbers from the file into a list, then loops over every pair of numbers until it finds a pair that sums to 2020 (the success() function is detailed below). This is a fine way to approach this problem, but not terribly efficient for long lists:</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/d481ae8dbac18127dafa9746d5e142fe</p>
+<p class="post-paragraph"><script src="https://gist.github.com/JeffersGlass/d481ae8dbac18127dafa9746d5e142fe.js"></script></p>
 <p class="post-paragraph">The speedier way to solve this problem is to use a hashmap, which we get for free in the form of Python dictionary lookups (<em>in most implementations of Python</em>.) Rather than looping over all pairs of numbers, we can just proceed through the the list once, storing each member in a dictionary, and as we load each new number, we check to see if it's "2020's complement" is already in our dictionary's keys. This is faster than a raw comparison because looking via hashing is cheaper than doing a 'by-hand' comparison of all of the numbers ourselves.</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/a33279fd7dabe5869cb7923b86e5f938</p>
+<p class="post-paragraph"><script src="https://gist.github.com/JeffersGlass/a33279fd7dabe5869cb7923b86e5f938.js"></script></p>
 <p class="post-paragraph">For the second part of the problem, I only implemented a "naive" solution, running in O(n³) time:</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/31e836eecc0434f4838598d0858b1d8b</p>
+<p class="post-paragraph"><script src="https://gist.github.com/JeffersGlass/31e836eecc0434f4838598d0858b1d8b.js"></script></p>
 <p class="post-paragraph">With the need to now communicate a set of three numbers (and their product) that form a solution, I rewrote my success() function to accommodate any number of inputs as arguments. (The original, two-input function is commented-out at the bottom.)</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/f5d52dc0a2d5b5b8af53c9edb27e5337</p>
+<p class="post-paragraph"><script src="https://gist.github.com/JeffersGlass/f5d52dc0a2d5b5b8af53c9edb27e5337.js"></script></p>
 <p class="post-paragraph">To see how efficient these various functions were, I wrote a quick decorator function that allows me to see the (rough) execution time of each solution:</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/bb312d167985d9db8c7ea0c0ca01d2f4</p>
+<p class="post-paragraph"><script src="https://gist.github.com/JeffersGlass/bb312d167985d9db8c7ea0c0ca01d2f4.js"></script></p>
 <p class="post-paragraph">Running all three of our search functions in turn:</p>
 <p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/12/function-timing.jpg"><img alt="" class="aligncenter wp-image-3340 size-full post-img" height="106" src="https://jeff.glass/wp-content/uploads/2020/12/function-timing.jpg" width="514"/></a></p>
 <p class="post-paragraph">We can see that:</p>
