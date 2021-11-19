@@ -1,0 +1,2 @@
+uploadsFolder = './uploads'
+
