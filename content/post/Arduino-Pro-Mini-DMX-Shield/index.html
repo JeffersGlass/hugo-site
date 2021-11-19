@@ -8,74 +8,76 @@ tags:
 - mini-mover-shield
 - programming
 ---
-<h3>Introduction</h3>
+<h4 class="post-h4">Introduction</h4>
 <p class="post-paragraph">In my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on. But it's also fun to build inexpensive, maker-size versions of of this equipment, and it can be done on a shoestring budget.</p>
 <p class="post-paragraph">About a year ago, I built a couple versions of tiny moving lights - one directly from <a href="https://www.thingiverse.com/thing:1912706">a design from Thingiverse</a>, the other of my own making. The end result was super cute!</p>
 <figure class="wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"><div class="wp-block-embed__wrapper">
-<p class="post-paragraph">https://youtu.be/BTafFpI3Vgc</p>
+<p class="post-paragraph">{{< youtube BTafFpI3Vgc >}}</youtube></p>
 <p class="post-paragraph"></p></div></figure>
 <p class="post-paragraph">The thing with this tiny light compared to real moving lights was... I cheated a bit. The light itself only contains the servos and LED chip itself, while the controller, LED driver and ballast were all external. The full setup took up almost 3 times the volume of the individual light:</p>
 <figure class="wp-block-image"><img alt="" class="wp-image-391 post-img" src="https://jeff.glass/wp-content/uploads/2019/05/IMG_7264spun-1024x768.jpg"/></figure>
 <p class="post-paragraph">Not only did I cheat on size, I cheated on control a bit too. The unit has a number of 'test' modes that run simple movement and color patterns, but there was no means of controlling the light externally. While there are It was basically a fancy keychain toy. And there are <a href="https://www.amazon.com/CQRobot-network-Management-Extended-Functions/dp/B01DUHZAT0">DMX Shields</a> in the Arduino Uno form factor, they themselves would have outsized the lights by another 200%. It was all getting too bulky to be reasonable.</p>
 <p class="post-paragraph">But after many months away from this project, I've been devoting some time to scaling down both the dimming and DMX control sides of the circuitry. The result is a shield for an <a href="https://store.arduino.cc/usa/arduino-pro-mini">Arduino Pro Mini</a>.</p>
-<h3>DMX</h3>
+<h4 class="post-h4">DMX</h4>
 <p class="post-paragraph">As described in my previous <a href="https://jeff.glass/2019/02/23/lighting-control-protocols-and-standards/">write-up of contemporary lighting control protocols</a>, the core standard for modern stage and event lighting is DMX, or properly, ANSI E1.11 DMX 512-A Digital Multiplex. In short, DMX is a serial protocol and physical spec that caries up to 512 one-byte values over each individual cable, usually with 5-pin DMX connectors. One set of 512 values is termed a "universe," and to carry additional values, additional cables carrying different universes of information may be added.</p>
 <figure class="wp-block-image"><img alt="" class="wp-image-387 post-img" src="https://jeff.glass/wp-content/uploads/2019/05/dmx512-1024x252.png"/></figure>
 <p class="post-paragraph">More formally, DMX is a 250 kbps serial protocol transmitted over a 2-wire bus following <a href="https://en.wikipedia.org/wiki/RS-485">RS-485</a> standards. The ESTA standard standards also dictate standardized connectors (XLR5 for temporary installations, RJ45 for permanent infrastructure), network topologies, impedances, terminations, and so on. <a href="https://tsp.esta.org/tsp/documents/published_docs.php">The standard is pretty readable</a>, if you enjoy that sort of thing.</p>
 <p class="post-paragraph">DMX was developed in the late 80's/early 90's as a replacement for systems in which lighting equipment was controlled via analog control voltages, meaning each parameter (each individual dimmer, say) required one wire. A rack of 96 dimmers would have 100+ pin wiring harness attached to it, each with an analog voltage specifying level. With the introduction and adoption of DMX, all that was replaced with a single 3-conductor cable. All modern stage lighting controllers speak DMX, although most rely on transporting universes of DMX over Ethernet and using 'DMX Nodes' to turn that digital data back into 'hard' DMX close to the fixtures being controlled.</p>
-<h3>Circuit Components</h3>
+<h4 class="post-h4">Circuit Components</h4>
 <p class="post-paragraph">There is really only on piece of hardware required to add to an Arduino-compatible design to allow it to send/receive DMX: an RS485 transceiver chip. There are many of these on the market, the common ones being the <a href="https://www.maximintegrated.com/en/products/interface/transceivers/MAX485.html">MAX485 </a>and the <a href="http://www.ti.com/product/SN75176B">SN75176</a>. </p>
 <p class="post-paragraph"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-373 post-img" height="263" src="https://jeff.glass/wp-content/uploads/2019/05/max485-pins.png" width="336"/></figure></div></p>
 <p class="post-paragraph">These take a single-ended input and turn it into a balanced output or, conversely, receive a differential RS485-compatible input and convert it to a single ended signal to a microcontroller. There are two control pins which determine whether the chip is a receiver or a driver. The control circuitry is essentially the same at both the transmitting and receiving end:</p>
 <figure class="wp-block-image"><img alt="" class="wp-image-374 post-img" src="https://jeff.glass/wp-content/uploads/2019/05/MAX485-1024x463.png"/></figure>
 <p class="post-paragraph">A more sophisticated/robust approach would also incorporate an optoisolator to prevent the processor from being damaged by faults on the signal side. There are some good guides on the interwebs on <a href="https://electronics.stackexchange.com/questions/100487/dmx-on-arduino-with-rs485">setting up optoisolation with DMX for an Arduino</a> (Mathertel.de has a good <a href="http://www.mathertel.de/Arduino/DMXShield.aspx">write up of their isolated DMX shield</a>), but for the sake of quick progress I'm making this a future goal.</p>
-<h3>Circuit Layout and PCB Manufacture</h3>
+<h4 class="post-h4">Circuit Layout and PCB Manufacture</h4>
 <p class="post-paragraph">The circuit is ultimately very simple - a couple headers, some resistors, a MAX485 IC, and some pads to connect the DMX connectors to. And a switch - the DMX library I'm using abuses the Arduino's built-in Serial library for some of its functionality, which means it has to use pins D0 and D1. Which means you can't reprogram the Arduino with DMX coming in. The DPDT switch just removes the connection between the DMX connectors and pins D0 and D1 of the Arduino to allow for programming. </p>
 <p class="post-paragraph">Mostly for my own reference, the connections between a standard XLR3 or XLR5 connector and the Max485 pin are:</p>
-<p class="post-paragraph"><style type="text/css"></p>
-<p>.tg  {border-collapse:collapse;border-spacing:0;}</p>
-<p>.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}</p>
-<p>.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}</p>
-<p>.tg .tg-0lax{text-align:left;vertical-align:top}</p>
-<p></style></p>
-<p class="post-paragraph"><table class="tg"></table></p>
-<p class="post-paragraph"> <tr></tr></p>
-<p class="post-paragraph"> <th class="tg-0lax">Net Name</th></p>
-<p class="post-paragraph"> <th class="tg-0lax">XLR Connector Pin</th></p>
-<p class="post-paragraph"> <th class="tg-0lax">Max485 Pin</th></p>
-<p class="post-paragraph"> </p>
-<p class="post-paragraph"> <tr></tr></p>
-<p class="post-paragraph"> <td class="tg-0lax">GND</td></p>
-<p class="post-paragraph"> <td class="tg-0lax">1</td></p>
-<p class="post-paragraph"> <td class="tg-0lax">5</td></p>
-<p class="post-paragraph"> </p>
-<p class="post-paragraph"> <tr></tr></p>
-<p class="post-paragraph"> <td class="tg-0lax">Data - </td></p>
-<p class="post-paragraph"> <td class="tg-0lax">2</td></p>
-<p class="post-paragraph"> <td class="tg-0lax">7</td></p>
-<p class="post-paragraph"> </p>
-<p class="post-paragraph"> <tr></tr></p>
-<p class="post-paragraph"> <td class="tg-0lax">Data +</td></p>
-<p class="post-paragraph"> <td class="tg-0lax">3</td></p>
-<p class="post-paragraph"> <td class="tg-0lax">6</td></p>
-<p class="post-paragraph"> </p>
-<p class="post-paragraph"></p>
+<table class="m-auto text-center table-fixed">
+    <thead>
+        <tr>
+            <th class="w-1/3">Net Name</th>
+            <th class="w-1/3">XLR Connector Pin</th>
+            <th class="w-1/3">Max485 Pin</th>
+        </tr>
+    </thead>
+ 
+    <tbody>
+        <tr>
+            <td class="">GND</td>
+            <td class="">1</td>
+            <td class="">5</td>
+        </tr>
+        
+        <tr>
+            <td class="">Data - </td>
+            <td class="">2</td>
+            <td class="">7</td>
+        </tr>
+        
+        <tr>
+            <td class="">Data +</td>
+            <td class="">3</td>
+            <td class="">6</td>
+        </tr>
+    </tbody>
+</table>
 <p class="post-paragraph">Here's what draft one of version 0.1 looked like when it came back from <a href="https://oshpark.com/">OSHPark</a> and following assembly</p>
 <figure class="wp-block-image"><img alt="" class="wp-image-379 post-img" src="https://jeff.glass/wp-content/uploads/2019/05/FullSizeRender-1024x768.jpg"/></figure>
 <p class="post-paragraph">All the passives are 0603 and the max485 is an SOIC, both of which are pretty easy to solder by hand. The SMD switches are adorable! They're <a href="https://www.digikey.com/product-detail/en/c-k/JS202011SCQN/401-2002-1-ND/1640098">these little guys from C&amp;K</a>.</p>
 <p class="post-paragraph">The major flaw with version 0.1 is: one you've attached headers, where do you attach anything else?? So version 0.2 added an additional row of thru-hole pads, cleaned up some labeling, and added some mounting holes for M2 screws:</p>
-<ul class="wp-block-gallery columns-2 post-ul"><li class="blocks-gallery-item"><figure><img alt="" class="wp-image-380 post-img" data-id="380" data-link="https://jeff.glass/?attachment_id=380#main" src="https://jeff.glass/wp-content/uploads/2019/05/V02-Board.png"/></figure></li><li class="blocks-gallery-item"><figure><img alt="" class="wp-image-381 post-img" data-id="381" data-link="https://jeff.glass/?attachment_id=381#main" src="https://jeff.glass/wp-content/uploads/2019/05/V02-Schematic-1024x510.png"/></figure></li></ul>
+<figure><img alt="" class="wp-image-380 post-img" data-id="380" data-link="https://jeff.glass/?attachment_id=380#main" src="https://jeff.glass/wp-content/uploads/2019/05/V02-Board.png"/></figure>
+<figure><img alt="" class="wp-image-381 post-img" data-id="381" data-link="https://jeff.glass/?attachment_id=381#main" src="https://jeff.glass/wp-content/uploads/2019/05/V02-Schematic-1024x510.png"/></figure>
 <p class="post-paragraph">And once its all assembled, it looks something like this:</p>
 <figure class="wp-block-image"><img alt="" class="wp-image-393 post-img" src="https://jeff.glass/wp-content/uploads/2019/05/IMG_7266-spun2-1024x768.png"/></figure>
-<h3>Programming</h3>
+<h4 class="post-h4">Programming</h4>
 <p class="post-paragraph">I've been making use of the <a href="https://sourceforge.net/p/dmxlibraryforar/wiki/Home/">Conceptinetics DMX library</a>, which I've found to be both functional and stable. I haven't yet experimented with the RDM capabilities of that library.</p>
 <p class="post-paragraph">The library is very easy to use, and its usage is described well on the <a href="https://sourceforge.net/p/dmxlibraryforar/wiki/DMX%20Slave/">Conceptinetics Documentation page</a>. Essentially, one defines a DMX_Slave object, which has enable(), setStartAddress(), and getChannelValue() methods. </p>
 <p class="post-paragraph">For example, once the object is set up and addressed, a loop() with the single command <strong>analogWrite(LED_PIN, getChannelValue(1));</strong> will dim an LED attached to pin 9 dim in response to incoming DMX. Easy as pi.</p>
-<h3>Usage</h3>
+<h4 class="post-h4">Usage</h4>
 <p class="post-paragraph">So, what can one do with an Arduino Pro Mini that can receive DMX? Well...</p>
 <p class="post-paragraph">You can make a DMX level monitor, a DMX controlled LED source. And really, anything else you can think of to do with an Arduino - drive servos, WS2812s, solenoids, relays...</p>
 <p class="post-paragraph">The shield can also transmit DMX, though I haven't thoroughly tested this yet. But it's possible to make a miniature DMX controller, itty bitty light board, or testing tool. Or wire up some interesting input devices and make an interesting lighting controller.</p>
-<h3>What's Next</h3>
+<h4 class="post-h4">What's Next</h4>
 <p class="post-paragraph">The shield has been a useful proving ground for the Conceptinetics DMX library (though we've used it onstage before), as well as for OSHPark's manufacturing tolerances. I wasn't sure that having holes as close to the edge of the PCB as both V0.1 and V0.2 have would be manufacturable, but they came back no problem.</p>
 <p class="post-paragraph">This all started for me with a miniature moving light project, and while that's not quite ready for a write-up, I'll just leave V0.3 of the DMX shield here. Not without errors/improvements to be made, but I'm excited to try out some new LED dimming tech:</p>
 <p class="post-paragraph"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-383 post-img" height="288" src="https://jeff.glass/wp-content/uploads/2019/05/V03-Board.png" width="304"/></figure></div></p>
