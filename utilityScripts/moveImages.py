@@ -29,6 +29,13 @@ for htmlPath in pathlist:
             imgPath = imgMatch.group(1)
             fullImgPath = uploadsFolder + '/' + str(imgPath)
             imgDestination = str(htmlPath.parent)
-            copy2(fullImgPath, imgDestination)
-            print(f"\tCopied {fullImgPath} to {imgDestination}")
+
+            #copy2(fullImgPath, imgDestination)
+            print(f"\tCopied {fullImgPath} to {imgDestination}", end = ", ")
+
+            imgName = imgPath.split('/')[-1]
+
+            img['src'] = imgName
+            print(f"new image is called {imgName}")
         else: imgPath = "EXTERNAL CONTENT, SKIPPING"
+
