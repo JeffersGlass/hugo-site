@@ -33,9 +33,17 @@ for htmlPath in pathlist:
             #copy2(fullImgPath, imgDestination)
             print(f"\tCopied {fullImgPath} to {imgDestination}", end = ", ")
 
+            #Get just the file name of the images
             imgName = imgPath.split('/')[-1]
 
+            #Change image source in HTML file
             img['src'] = imgName
             print(f"new image is called {imgName}")
         else: imgPath = "EXTERNAL CONTENT, SKIPPING"
+
+    #Write changes to file
+    with open(path_in_str, "w", encoding='utf-8') as outfile:
+        outfile.write(str(soup))
+
+        
 
