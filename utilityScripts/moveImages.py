@@ -7,8 +7,7 @@ uploadsFolder = 'uploads'
 postsFolder = '../content/post'
 
 #Get list of all html files in posts
-pathlist = Path(postsFolder).glob('**/*.html')
-
+pathlist = Path(postsFolder).glob('**/Cloud-Resume-Challenge*/*.html')
 
 for htmlPath in pathlist:
     #Get contents of file
