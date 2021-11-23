@@ -8,18 +8,18 @@ tags:
 ---
 <p class="post-paragraph">Over the past week, I got to the point with the mini moving light that I needed some way to consistently pump DMX into my prototypes to test their functionality. Thankfully, the first set of PCBs I built for this project function as both DMX receivers and transmitters, so whipping together a basic DMX controller only took about 20 minutes.</p>
 <p class="post-paragraph">So here it is: my tiny DMX controlled "light board":</p>
-<p class="post-paragraph"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-469 post-img" height="281" src="https://jeff.glass/wp-content/uploads/2019/06/IMG_7845-e1560912415251-1024x768.jpg" width="375"/></figure></div></p>
+<p class="post-paragraph"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-469 post-img" height="281" src="IMG_7845-e1560912415251-1024x768.jpg" width="375"/></figure></div></p>
 <p class="post-paragraph">Not much to look at, really. It's just the DMX Control Shield I build earlier, with its Arduino Pro Mini, and 3 potentiometers from the junk box. The ends of each pot are tied to +5V and ground, and the wipers are tied to three analog pins. </p>
 <p class="post-paragraph">Originally, I had the Arduino just reading the straight value from the analog pins, mapping those 10-bit (0 to 1023) values from the ADC to 8 bit (0 to 255) values suitable for DMX, and shoving those out as DMX addresses 1,2, and 3 as fast as possible. But I found that some inconsistency in the analog readings caused the servos and LED to twitch and flicker noticeably. So I modified the code to read the values from the pots every 20 milliseconds and average the last 10 readings when outputting. The output values calmed right down.</p>
 <p class="post-paragraph">The result is a reasonably stable controller, and plenty to test the mini moving-light with:</p>
 <figure class="wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"><div class="wp-block-embed__wrapper">
-<p class="post-paragraph">{{< youtube "iKoxd065b-U" >}}</p>
+<p class="post-paragraph">{{&lt; youtube "iKoxd065b-U" &gt;}}</p>
 <p class="post-paragraph"></p></div></figure>
 <p class="post-paragraph">I also made some specific improvements to the physical design of the light, including:</p>
 <ul class="post-ul"><li>Lengthening the body to accommodate the Carclo optic and heatsink</li><li>Adding vents to the body for heat-removal</li><li>Including some new wire-routing holes in the base and widening others for improved cable routing.</li></ul>
 <p class="post-paragraph">I also designed and printed some (really adorable) 1" triangle truss and some hanging brackets to mount this thing on. Here's the moment from my Sunday night livestream where I hung the light on its truss for the first time:</p>
 <figure class="wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"><div class="wp-block-embed__wrapper">
-<p class="post-paragraph">{{< youtube "sYT-xtOL4rU" >}}</p>
+<p class="post-paragraph">{{&lt; youtube "sYT-xtOL4rU" &gt;}}</p>
 <p class="post-paragraph"></p></div></figure>
 <p class="post-paragraph">Just today, I got in another couple orders from DigiKey, and my latest batch of PCBs from JLCPCB should arrive tomorrow. The notable improvements to the PCB and parts include:</p>
 <ul class="post-ul"><li>Separating the Pan and Tilt servo pads (doh!)</li><li>Switching to a stout-er 5V regulator<ul class="post-ul"><li>I also ordered a few <a href="https://www.digikey.com/product-detail/en/cui-inc/VX7805-1000/102-4253-ND/7350292">VX7805-1000's</a> to play with. They're a self-contained, fixed-output buck converter that's meant to be a drop-in replacement for a 7805 linear regulator. Neat part if it works, and not horribly expensive.</li></ul></li><li>Switching to an inductor spec'd for 1A forward current instead of 500mA.</li><li>Switching to a schottky diode rated for 30V instead of 20V.</li></ul>
