@@ -2,7 +2,7 @@
 title: "KVM Stand"
 date: 2021-11-09T10:16:14-06:00
 draft: false
-tags: 
+oneofftags: 
 - 3d-printing
 - computers
 slug_image: 'standsnap.JPG'
