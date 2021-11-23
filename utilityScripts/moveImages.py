@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from shutil import copy2
 
-uploadsFolder = './uploads'
+uploadsFolder = 'uploads'
 postsFolder = '../content/post'
 
 #Get list of all html files in posts
@@ -30,8 +30,8 @@ for htmlPath in pathlist:
             fullImgPath = uploadsFolder + '/' + str(imgPath)
             imgDestination = str(htmlPath.parent)
 
-            #copy2(fullImgPath, imgDestination)
-            print(f"\tCopied {fullImgPath} to {imgDestination}", end = ", ")
+            print(f"\tCopying {fullImgPath} to {imgDestination}", end = ", ")
+            copy2(fullImgPath, imgDestination)
 
             #Get just the file name of the images
             imgName = imgPath.split('/')[-1]
