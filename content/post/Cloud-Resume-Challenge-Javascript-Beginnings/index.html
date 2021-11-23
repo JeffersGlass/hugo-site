@@ -17,7 +17,7 @@ draft: true
 <p class="post-paragraph"></p>
 <p class="post-paragraph"><div> </div></p>
 <p class="post-paragraph"><div>And voila, a console log:</div></p>
-<p class="post-paragraph"><div><img alt="" class="size-full wp-image-3980 aligncenter post-img" height="162" src="https://jeff.glass/wp-content/uploads/2021/11/hellolog.png" width="234"/></div></p>
+<p class="post-paragraph"><div><img alt="" class="size-full wp-image-3980 aligncenter post-img" height="162" src="hellolog.png" width="234"/></div></p>
 <p class="post-paragraph">Let's see about finding all the cards on the page. <a href="https://stackoverflow.com/questions/55521589/how-to-filter-bootstrap-cards-based-on-search-box">This Stack Overflow answer</a> suggests doing something like this with data-roles, which seem like an easy way of grabbing DOM elements. And since I'm generating an article per one-off, I can add the data-role="small-card" param to each card by adding it to the summary.html template for the one-offs. I think. Let's try something like:</p>
 <p class="post-paragraph"><div></div></p>
 <p class="post-paragraph"><div>        $(document).ready(function() {</div></p>
@@ -26,35 +26,35 @@ draft: true
 <p class="post-paragraph"></p>
 <p class="post-paragraph"><div> </div></p>
 <p class="post-paragraph"><div>And indeed I can see we've selected 7 articles, corresponding to the 7 One-Offs generated on the page.</div></p>
-<p class="post-paragraph"><div><img alt="" class="size-full wp-image-3981 aligncenter post-img" height="292" src="https://jeff.glass/wp-content/uploads/2021/11/articlesJquery.png" width="240"/></div></p>
+<p class="post-paragraph"><div><img alt="" class="size-full wp-image-3981 aligncenter post-img" height="292" src="articlesJquery.png" width="240"/></div></p>
 <p class="post-paragraph">With the help of the <a href="https://api.jquery.com/">JQuery Documentation</a> and the <a href="https://www.w3schools.com/jquERy/default.asp">W3 Schools JQuery reference</a>, I can use a JQuery selector to grab, for example, all the articles whose content contains the word "Meter" (since I happen to have two of them) and hide them like so:</p>
-<p class="post-paragraph"><img alt="" class="aligncenter wp-image-3982 size-full post-img" height="156" src="https://jeff.glass/wp-content/uploads/2021/11/hide.png" width="559"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter wp-image-3982 size-full post-img" height="156" src="hide.png" width="559"/></p>
 <p class="post-paragraph">And, it hides those two cards! Progress! (<em>Although I note that the list page "Smalls" is also included in there...</em>)</p>
-<p class="post-paragraph"><img alt="" class="size-medium wp-image-3986 aligncenter post-img" height="217" src="https://jeff.glass/wp-content/uploads/2021/11/5cards-300x217.png" width="300"/></p>
+<p class="post-paragraph"><img alt="" class="size-medium wp-image-3986 aligncenter post-img" height="217" src="5cards-300x217.png" width="300"/></p>
 <p class="post-paragraph">So, now we need some buttons that dynamically do the same thing based on... something. So let's start by adding an "All" button that makes everything visible. I'll throw a couple of addition buttons next to it for now, just for formatting's sake</p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3987 post-img" height="229" src="https://jeff.glass/wp-content/uploads/2021/11/demobuttons.png" width="359"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3987 post-img" height="229" src="demobuttons.png" width="359"/></p>
 <p class="post-paragraph">So, let's get that All button to do a thing. I started by creating a couple of hard-coded classes that would do the filtering I wanted - one specifically for the "All" button (show everything) and one that would contain only the cards that contained the word "Meter". </p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3992 post-img" height="281" src="https://jeff.glass/wp-content/uploads/2021/11/functions.png" width="685"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3992 post-img" height="281" src="functions.png" width="685"/></p>
 <p class="post-paragraph">Then I refactored that code into a single function that looks at the ID of when the button was clicked, and filters the one-off cards based on that:</p>
-<p class="post-paragraph"><img alt="" class="aligncenter wp-image-3989 post-img" height="299" src="https://jeff.glass/wp-content/uploads/2021/11/filter-gifs.gif" width="400"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter wp-image-3989 post-img" height="299" src="filter-gifs.gif" width="400"/></p>
 <p class="post-paragraph">(<em>This is also the point when I discovered <a href="http://blog.bahraniapps.com/gifcam/">GifCam</a> - to enable Gif representations of my progress as things get more interactive.)</em></p>
 <p class="post-paragraph">So now... how to dynamically generate this list of tags?</p>
 <p class="post-paragraph">Let's start with some light theft. <a href="https://discourse.gohugo.io/t/list-all-tags-categories/17765/2">This post from the Hugo discord</a> has a solution for just generating a list of all the tags with their number of tagged items.</p>
-<p class="post-paragraph"><img alt="" class="size-full wp-image-3994 aligncenter post-img" height="189" src="https://jeff.glass/wp-content/uploads/2021/11/taglistcode.png" width="901"/><img alt="" class="size-full wp-image-3993 aligncenter post-img" height="133" src="https://jeff.glass/wp-content/uploads/2021/11/taglistresult.png" width="143"/></p>
+<p class="post-paragraph"><img alt="" class="size-full wp-image-3994 aligncenter post-img" height="189" src="taglistcode.png" width="901"/><img alt="" class="size-full wp-image-3993 aligncenter post-img" height="133" src="taglistresult.png" width="143"/></p>
 <p class="post-paragraph">So, how to turn this into buttons? Well, first I can take out the parts that use the Count variable (though maybe I'll want to add that back in later). And we'll turn that href into a button and remove the div, like so:</p>
 <p class="post-paragraph"><div></div></p>
 <p class="post-paragraph"><div></div></p>
-<p class="post-paragraph"><div><img alt="" class="aligncenter size-full wp-image-3995 post-img" height="97" src="https://jeff.glass/wp-content/uploads/2021/11/buttonautos.png" width="1145"/></div></p>
+<p class="post-paragraph"><div><img alt="" class="aligncenter size-full wp-image-3995 post-img" height="97" src="buttonautos.png" width="1145"/></div></p>
 <p class="post-paragraph"></p>
 <p class="post-paragraph"></p>
 <p class="post-paragraph">And that generates the buttons, at least.</p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3996 post-img" height="69" src="https://jeff.glass/wp-content/uploads/2021/11/tagbuttons.png" width="563"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3996 post-img" height="69" src="tagbuttons.png" width="563"/></p>
 <p class="post-paragraph">And because our earlier script applies to any button on the page, it's already filtering on the cards based on these tags! Sadly, the cards don't have that tag information yet, so all of those buttons blow away all the cards. But I'll bet we can fix that by editing the summary.html renderer for those cards. </p>
 <p class="post-paragraph">After a bit of trouble because Hugo (Go?) templating interprets single-quotes as instructions to translate characters into their Ascii (Unicode?) equivalents, and some funking around with<a href="https://stackoverflow.com/questions/4547363/jquery-filter-by-an-attribute-value"> how the Jquery interacts</a> with the (invented) data-tags attribute, and the <a href="https://stackoverflow.com/questions/1318076/jquery-hasattr-checking-to-see-if-there-is-an-attribute-on-an-element">unfortunate behavior of the .attr() function</a> to return undefined if the block doesn't have that attribute, I came up with:</p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3999 post-img" height="109" src="https://jeff.glass/wp-content/uploads/2021/11/autoButtons.png" width="957"/></p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-4000 post-img" height="387" src="https://jeff.glass/wp-content/uploads/2021/11/buttonClick.png" width="735"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-3999 post-img" height="109" src="autoButtons.png" width="957"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-4000 post-img" height="387" src="buttonClick.png" width="735"/></p>
 <p class="post-paragraph">This does mean that all the tags I use in my frontmatter have to have the same cannonical form as Hugo's tag pages, ie all lowercase, no spaces (hyphens ok). But that's fine for now, I can figure out how to style the text later.</p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-4002 post-img" height="337" src="https://jeff.glass/wp-content/uploads/2021/11/filteringauto.gif" width="1130"/></p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-4002 post-img" height="337" src="filteringauto.gif" width="1130"/></p>
 <p class="post-paragraph">Interestingly, the "Smalls" list page is included in all of the current filters, which isn't desirable. But I can fix this by just not rendering that card in the first place, by wrapping the  {{ .Render "summary" }} statement that actually renders the small cards in a <a href="https://gohugo.io/variables/page/#page-variables">{{ if .IsPage }}</a>.</p>
 <p class="post-paragraph">There's still some slightly funky things happening with the spacing of the small cards, but I'll figure that out at some point. </p>
 <p class="post-paragraph">asdsadsa</p>
