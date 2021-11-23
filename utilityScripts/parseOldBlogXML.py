@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 tree = None
 
-with open("jjggwp-posts.xml", encoding ='utf-8') as infile:
+with open("jjggwp-drafts.xml", encoding ='utf-8') as infile:
     tree = ET.parse(infile)
 
 root = tree.getroot()
@@ -24,19 +24,23 @@ for post in postList:
     title = post.find('./title').text
     fileTitle = title.replace(" ", "-").replace(":", "")
     postDate = post.find('{http://wordpress.org/export/1.2/}post_date_gmt').text.replace(" ", "T") + "-05:00"
+    if postDate[:4] == '0000': postDate = post.find('{http://wordpress.org/export/1.2/}post_modified_gmt').text.replace(" ", "T") + "-05:00"
     content = post.find('{http://purl.org/rss/1.0/modules/content/}encoded').text
     isDraft = post.find('{http://wordpress.org/export/1.2/}status').text == 'draft'
     tagElements = post.findall("category[@domain='post_tag']")
     tags = [t.attrib['nicename'] for t in tagElements]
 
     #Preprocess Content
-    if content != None:
+    if content == None:
+        print(f"Content from post {post} is None, skipping this file")
+        continue
+    else:
         content = content.replace("\n\n", "\n")
         newContent = ""
         for line in content.split("\n"):
             if "wp:" in line:
                 line = ""
-            elif line[0:3] not in ["<im", "<p>", "<ul", "<li", "<h1", "<h2", "<h3", "<h4", "<fi"]:
+            elif line.strip()[0:3] not in ["<im", "<p>", "<ul", "<li", "<h1", "<h2", "<h3", "<h4", "<fi"]:
                 line = "<p>" + line + "</p>\n"
             else: line = line + "\n"
             newContent += line
@@ -74,6 +78,7 @@ for post in postList:
     if isDraft:
         filename = "draft/" + fileTitle + "/index.html"
     else:
+        raise TypeError("Posts should all be of type draft")
         filename = "post/" + fileTitle + "/index.html"
     
     #Create the necessary folder structure if it doesn't already exist
