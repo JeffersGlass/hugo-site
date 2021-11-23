@@ -6,34 +6,35 @@ draft: true
 <p class="post-paragraph">I'm always looking for ways to expand my skillset, and in an increasingly digital, work-from-home oriented world, having a firmer grasp on web technologies seems like not a bad thing. But, as someone who considers themselves a technically competent nerd with no real credentials to speak of, where to get started?</p>
 <p class="post-paragraph"><a href="https://cloudresumechallenge.dev/">The Cloud Resume Challenge</a> seems like a useful, self-guided way to start, or at least a roadmap toward building a 'complete' resume project. So here we go!</p>
 <p class="post-paragraph"><hr/></p>
-<h1>The Challenge: 16 Steps</h1>
+<h1 class='text-2xl'>The Challenge: 16 Steps</h1>
 <p class="post-paragraph">Completion of the challenge requires ticking 14 boxes to set up a simple static website on AWS with a required subset of features, acquiring a AWS Certified Cloud Practitioner certification, and wrapping it all up with a blog post about your experiences. Starting at the beginning, as usual, here's the start of the blog posts!</p>
 <p class="post-paragraph">The AWS certificate requires a $100 investment and a genuine exam worth studying for, it seems. Something I imagine would be significantly easier to start studying for <em>after</em> completing the legwork of the rest of the challenge. So we'll set that requirement aside for most of the following.</p>
-<h2>Why AWS?</h2>
+<h2 class="text-xl">Why AWS?</h2 class="text-xl">
 <p class="post-paragraph">The Cloud Resume Challenge currently offers versions tailored to AWS, GCP, and Azure. I've chosen to go with AWS for the moment, but I'll admit, this is a fairly arbitrary choice based on my naïve impressions of the Amazon/GCP/Azure offerings. I'm sure I'll revise these opinions down the road, but my sense is:</p>
 <ul class="post-ul">
 <li>Amazon has a wider array of services offered, more industry reach, and a longer history of cloud presence. It seems to have a reputation for harder-to-parse naming and access conventions.</li>
 <li>GCP has a somewhat friendly access/account model, but less industry reach and a shorter real world knowledgebase.</li>
 <li>Microsoft Azure seems (again, from an outsider's perspective) to be targeted at existing businesses that are used to Microsoft's products and tools</li>
 <p class="post-paragraph"></p></ul>
-<p class="post-paragraph">[caption id="" align="alignnone" width="700"]<img alt="AWS, Azure and GCP: Market Shares and Growth Rate" class="post-img" height="393" src="https://www.veritis.com/wp-content/uploads/2018/05/aws-azure-gcp-cloud-market-share.jpg" width="700"/> <em>Image from Veritis.com, Oct 2020</em>[/caption]</p>
+<p class="post-paragraph"><img alt="AWS, Azure and GCP: Market Shares and Growth Rate" class="post-img" height="393" src="https://www.veritis.com/wp-content/uploads/2018/05/aws-azure-gcp-cloud-market-share.jpg" width="700"/></p>
+<p class="post-img-caption">Image from Veritis.com, Oct 2020</p>
 <p class="post-paragraph">For a self-guided project, a deep well of online resources is really appealing. It doesn't look like I'll run into any significant limitations with any of the three platforms with this basic a project. With AWS seeming to be a market leader, it feels like I may as well go that way, and hopefully, what I learn will be semi-transferrable knowledge.</p>
 <p class="post-paragraph"><hr/></p>
-<h1>Setting up a Static Website on AWS S3</h1>
-<h2>Getting Oriented</h2>
+<h1 class="text-2xl">Setting up a Static Website on AWS S3</h1>
+<h2 class="text-xl">Getting Oriented</h2 class="text-xl">
 <p class="post-paragraph">The cloud resume challenge page directs users to this page on AWS helpfully titled "<a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html">Hosting a Static Website using Amazon S3</a>." Neat!</p>
 <p class="post-paragraph">Since this is a static website (i.e. made up only of static resources like HTML and CSS, possibly with some client-side Javascript but no server-side action), it seems that a static website on S3 is essentially a bunch of files plopped into a folder on Amazon's servers that people can point their web browsers at and view. Well, I'm sure a "bucket" is more complicated than just being a <em>folder</em>... but I'll cross that bridge when I need to.</p>
 <p class="post-paragraph">Let's look through the AWS info documents listed on that page.</p>
 <p class="post-paragraph">The <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteEndpoints.html">Website Endpoints</a> page indicates that, by making the contents of a bucket publicly accessible, anyone can point their browser at a fiddly URL like<em> http://<span style="color: #ff0000;">bucket-name</span>.s3-website-<span style="color: #ff0000;">Region</span>.amazonaws.com</em> and have access to that content. It goes on to talk a little about how to point ones DNS provider of choice at these specific resources, to use a more human-friendly URL. Or, one might use Amazon's Route 53 to.... accomplish the same thing? The distinction eludes me at this point, but that feels like something I can come back to.</p>
 <p class="post-paragraph">The <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/EnableWebsiteHosting.html">Enabling Website Hosting</a> page seems to clarify a little more the steps needed to make a bucket available as website, saying: "<em>When you configure a bucket as a static website, you must enable static website hosting, <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/IndexDocumentSupport.html">configure an index document</a>, and <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html">set permissions</a>." </em>It seems any of these steps can be done in the online S3 console, using API requests, via Amazon's SDK via code, or using their command line interface. While I'm sure programmatic access to these tools is really useful if you're spinning up sites in an automated fashion, I imagine I'll mostly be using the S3 console.</p>
-<h2>A Placeholder Page</h2>
+<h2 class="text-xl">A Placeholder Page</h2 class="text-xl">
 <p class="post-paragraph">None of this seems terribly complicated - I need to put some files in a bucket, then configure some settings so Amazon knows where to point people when they access my (very fiddly) URL. So I'll start by creating a very basic placeholder page to upload and play with. Time to get my hands dirty and learn.</p>
 <p class="post-paragraph">For most of my scripting work at my day job, I use VS Code, which I happen to know has an HTML Boilerplate extension. The very generic HTML it generates is:</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/c8b4479f21195de12ec59cb2f94f17ef</p>
+<p class="post-paragraph"><script src="https://gist.github.com/JeffersGlass/c8b4479f21195de12ec59cb2f94f17ef.js"></script></p>
 <p class="post-paragraph">So, we've got our basic HTML document, with a &lt;head&gt; tag to start off, a &lt;body&gt; with basically no content yet... and that's it. Plus some commenty-things that seem to be dealing with older versions of internet explorer.</p>
 <p class="post-paragraph">There's also a lot in here I don't understand yet, especially in the &lt;head&gt; section. What is a &lt;meta&gt; tag? Why do I need a viewport? I'll add these to my list of questions to answer down the road. I'm just diving forward to get this thing online at this point.</p>
 <p class="post-paragraph">I'll add a brief &lt;p&gt; tag to the above boilerplate with the text "Hello, world!" That's it. That's the whole website for now.</p>
-<h2>Making a Bucket</h2>
+<h2 class="text-xl">Making a Bucket</h2 class="text-xl">
 <p class="post-paragraph">If this whole process is really as simple as allowing the public to see the files in one of my buckets, it feels like I'll need this file (<em>now called index.html</em>) to be in an S3 bucket. Let's figure out how to do that.</p>
 <p class="post-paragraph">Searching for "S3" in the top search bar on AWS brings up a listing for the Simple Scalable Storage page...</p>
 <figure class="wp-block-image size-full"><img alt="" class="wp-image-3768 post-img" src="image.png"/></figure>
@@ -42,50 +43,50 @@ draft: true
 <p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/bucketname.png"><img alt="" class="aligncenter size-full wp-image-3774 post-img" height="313" src="bucketname.png" width="641"/></a></p>
 <p class="post-paragraph">Aha! The next section talks about access settings. I recall from the earlier page that setting permissions to allow public access is something I'll need to do to allow the site to be publicly available. Seems I'm able to do that right now, though I do have to check a big scary box saying I understand the risks.<a href="https://jeff.glass/wp-content/uploads/2021/10/access.png"><img alt="" class="aligncenter wp-image-3775 size-full post-img" height="664" src="access.png" width="780"/></a></p>
 <p class="post-paragraph">There are some further options here. Versioning, which seems like it will store <em>every change to an object</em> unless otherwise specified, which seems like overkill for this tiny bad website. Tags, which may be interesting later. Encryption, which, again, overkill. And object locking, to prevent the accidental deletion of objects, which would probably be more useful if I were adding/removing objects programmatically. I'll leave all those features as default for now.</p>
-<h2>Uploading</h2>
+<h2 class="text-xl">Uploading</h2 class="text-xl">
 <p class="post-paragraph">Hey, I've got a bucket! With nothing it, it, but it is indeed, as promised, a bucket. And it seems I can just upload my <em>index.html </em>file using the WebUI...</p>
 <p class="post-paragraph">Ah, here's some things I'll definitely want to go deep on at some point: <strong>permissions </strong>and <strong>storage types</strong>. I know the different types of storage will cost differerent amounts and have different restrictions, but I'll leave this as the default "Standard" for now. There are a couple of pre-defined <em>access control lists</em>, but given that the "Setting Permissions for Website Access" page earlier has a specific setup recommended, I'm going to leave this predefined as Private for now and change things momentarily, I think.</p>
 <p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/succeeded.png"><img alt="" class="aligncenter size-medium wp-image-3778 post-img" height="122" src="succeeded-300x122.png" width="300"/></a></p>
 <p class="post-paragraph">Upload succeeded! Of course, trying to access that file online at the moment only yields an Access Denied error, but that was to be expected. I haven't completed all the required steps yet.</p>
-<p class="post-paragraph">https://gist.github.com/JeffersGlass/103390d195bc0e4352458043a474a5e1</p>
-<h2>Static Website Hosting</h2>
+<p class="post-paragraph"><script src ="https://gist.github.com/JeffersGlass/103390d195bc0e4352458043a474a5e1.js"></script></p>
+<h2 class="text-xl">Static Website Hosting</h2 class="text-xl">
 <p class="post-paragraph">Going back into the list of buckets, selecting my newly formed bucket, and clicking on its Properties tab, it's dead easy to enable the "Static Website Hosting" setting as recommended:</p>
 <p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/static.png"><img alt="" class="aligncenter size-medium wp-image-3780 post-img" height="260" src="static-300x260.png" width="300"/></a></p>
 <p class="post-paragraph">It seems this step also takes care of the "Configuring an Index Document" step I anticipated from above. I enter "index.html" as my index document, so AWS knows what file to serve up when users access the "root" of the bucket.</p>
-<h2>Permissions</h2>
+<h2 class="text-xl">Permissions</h2 class="text-xl">
 <p class="post-paragraph">Since I elected not to configure my permissions automatically before, I'll go back and do that now, following along with the <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html">Setting Permissions for Website Access</a> page. This is essentially copying and pasting the pre-generated permissions text into the in-browser permissions editor window and hitting save. </p>
-<h2><a href="https://jeff.glass/wp-content/uploads/2021/10/permsisions.png"><img alt="" class="aligncenter size-medium wp-image-3781 post-img" height="300" src="permsisions-300x300.png" width="300"/></a></h2>
-<h2>Success</h2>
+<h2 class="text-xl"><a href="https://jeff.glass/wp-content/uploads/2021/10/permsisions.png"><img alt="" class="aligncenter size-medium wp-image-3781 post-img" height="300" src="permsisions-300x300.png" width="300"/></a></h2 class="text-xl">
+<h2 class="text-xl">Success</h2 class="text-xl">
 <p class="post-paragraph">Now, if I go to <a href="https://jeff.glass/wp-content/uploads/2021/10/inline.png"><img alt="" class="alignnone size-full wp-image-3788 post-img" height="23" src="inline.png" width="399"/></a> I<span style="color: initial; font-size: revert;"> see...</span><a href="https://jeff.glass/wp-content/uploads/2021/10/helloworld.png"><img alt="" class="aligncenter size-medium wp-image-3782 post-img" height="56" src="helloworld-300x56.png" width="300"/></a></p>
 <p class="post-paragraph">Alright! My first website hosted on AWS! So clean, so crisp, so minimalistic. </p>
 <p class="post-paragraph"><hr/></p>
-<h1>Next Steps</h1>
+<h1 class="text-2xl">Next Steps</h1>
 <p class="post-paragraph">Very loosely speaking, this checks off one-and-a-half of the 16 points on the Cloud Resume Challenge checklist:</p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(4) Static Website</strong> - Your HTML resume should be deployed online as an Amazon S3 Static Website.</p></p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(16) Blog Post</strong> - Link a short blog post describing some of the things you learned. (Of course, this is not that blog post, but is a starting point and framework for them).</p></p>
 <p class="post-paragraph">To my eye, the remaining 14 goals fall into 5 separate topics. Here's what I think each entails, and which bullet points on the Cloud Resume Challenge they tick off:</p>
-<h2>Site Content</h2>
+<h2 class="text-xl">Site Content</h2 class="text-xl">
 <p class="post-paragraph">As catchy as "Hello World" is, a resume it is not. This chunk involves making the website into meaningful content, formatted in a nice way. Possibly with basic, general HTML, possibly with some kind of interesting framework. But content should the primary focus of this chunk. I'm not sure what form that will take, to be honest, but something better than boilerplate would of course be necessary.</p>
 <p class="post-paragraph">This covers goals:</p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(2) HTML</strong> - Your resume needs to be written in HTML<br/><strong>(3) CSS</strong> - Your resume needs to be styled with CSS</p></p>
-<h2>Basic AWS Infrastructure</h2>
+<h2 class="text-xl">Basic AWS Infrastructure</h2 class="text-xl">
 <p class="post-paragraph">A cumbersome URL sitting in a bucket is not the most user friendly interface, nor the most secure. I'll need to set up a proper DNS address for my new site, and use something like Cloudfront to serve the site over https. Since I'm already somewhat familiar with these processes outside of AWS, I hope this will be both educational and fairly straightforward.</p>
 <p class="post-paragraph">This covers goals:</p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(5) HTTPS</strong> - The S3 Website URL should use HTTPs for security<br/>(<strong>6) DNS</strong> - Point a custom DNS domain name to the site.</p></p>
-<h2>Site Features</h2>
+<h2 class="text-xl">Site Features</h2 class="text-xl">
 <p class="post-paragraph">There's a half-dozen goals in the Challenge that seem oriented toward exposing the participant to slightly more advanced website design. The result is a simple visitor counter, but it uses Javascript to query a database via an API and a Lambda written in python, that should be well tested and defined using a Serverless Application Model. I'm sure I'll find out what a SAM is along the way; I know what most of the other words are at least.</p>
 <p class="post-paragraph">This covers goals:</p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(7) Javascript</strong> - Your resume webpage should include a visitor counter that displayed how many people have accessed the site.<br/><strong>(8) Database</strong> - The visitor counter will need to retrieve and update its count in a database somewhere.<br/><strong>(9) API</strong> - You will need to create an API that accepts requests from your web app and communicates with the database.<br/><strong>(10) Python</strong> - Write a bit of Python code in the Lambda function to achieve the API functionality.<br/><strong>(11) Tests</strong> - Include some tests for your Python code<br/><strong>(12) Infrastructure as Code</strong> - Define your database, API Gateway, and Lambda function in an AWS Serverless Application Model (SAM) template and deploy them</p></p>
-<h2>Source Management/Deployment</h2>
+<h2 class="text-xl">Source Management/Deployment</h2 class="text-xl">
 <p class="post-paragraph">You're telling me that manually uploading <em>index.html</em> from my hard-drive to a bucket isn't website development best-practices? Rude.</p>
 <p class="post-paragraph">This chunk actually involves creating two separate GitHub repositories: one to manage the actual content of the site; the other for the backend features developed above. Both will apparently be able to be automatically deployed to their respective parts of the AWS infrastructure, and to only do so if the corrects tests pass. Neat!</p>
 <p class="post-paragraph">This covers goals:</p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(13) Source Control</strong> - Create a GitHub repository for your backend code.<br/><strong>(14) CI/CD Back End</strong> - Set up GitHub actions such that when you push an update to your Serverless Application Model template or Python code, your tests get run, and, if passing, the changes get packaged and pushed to AWS.<br/><strong>(15) CI/CD Front End</strong> - Create a second GitHub repository for your frontend code; configure Github actions so that when you push new code, your website gets updated.</p></p>
-<h2>Certification</h2>
+<h2 class="text-xl">Certification</h2 class="text-xl">
 <p class="post-paragraph">To have formally completed the Cloud Resume challenge, one needs to finish the required AWS certification. I suspect this will be the final thing I complete, as its sort of separate from the process of actually constructing the site.</p>
 <p class="post-paragraph">This covers goal:</p>
 <p class="post-paragraph"><p class="post-paragraph" style="padding-left: 40px;"><strong>(1) Certification</strong> - Your resume needs to have the AWS Cloud Practitioner Certification on it.</p></p>
-<h1>Onward</h1>
+<h1 class="text-2xl">Onward</h1>
 <p class="post-paragraph">So where to go next? My impulse is to start with with the GitHub repositories, to make development easier and since I'm already fairly competent with git / GitHub as a workflow. Perhaps then I'll dig into HTTPS/DNS next, since hopefully those straightforward. That leaves what feels like the larger development fronts - actual content, and all the backend voodoo to implement the guest tracker. Which may actually be nice to bounce between, to keep the juices flowing when I stall on one. And those projects get far enough along their paths, it probably makes sense to start integrating the CI/CD pieces to make that process smoother. </p>
 <p class="post-paragraph">That's the thought for now, but of course, no battle plan survives contact with the enemy. But it does all sound like fun.</p>
 <p class="post-paragraph"></p>
