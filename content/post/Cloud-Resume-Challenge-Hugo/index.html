@@ -1,0 +1,152 @@
+---
+title: "Cloud Resume Challenge - Hugo"
+date: 2021-11-02T20:01:47-05:00
+draft: true
+---
+<p class="post-paragraph">Since I've been using npm for the other parts of this project, I wanted to see if there was a straightforward way to install the Hugo static site generator with npm. The <a href="https://gohugo.io/getting-started/quick-start/">official install instructions</a> don't mention it, but thankfully <a href="https://www.blogtrack.io/blog/powerful-blog-setup-with-hugo-and-npm/">this post from Blocktrack.io does</a>. It seems it's as simply as the usual <em>npm init</em>, walking through the options, then running</p>
+<p class="post-paragraph"><code class="language-bash" data-lang="bash">npm install --save-dev hugo-bin</code></p>
+<p class="post-paragraph">Running npx hugo version lets us see that hugo v0.88.1 was indeed installed. Apparently, since we haven't installed the hugo binaries directly, we'll use the "npx" command to make npm invoke the hugo binary we installed.</p>
+<p class="post-paragraph">Now, we run <strong>npx hugo new site . --force </strong>to generate the starting hugo sites.</p>
+<p class="post-paragraph">The blocktrack.io module suggests initializing git and using it to download a theme at this point, but since I'm interested in building one up from scratch, I'll just initialize git here with <strong>git init.</strong> I'll add a .gitignore file to exclude the /node_modules path, and make an initial commit to the repo.</p>
+<p class="post-paragraph">Following along with our Blocktrack friends once more, I'll add a few scripts to the package.json file that will allow us to easily build, serve, and clean up the Hugo site. Of course, building and serving the site now gives us an empty page, since we have no content yet, and also shows a warning in the terminal where we started the server: "found no layout file for "HTML" for kind "home." Makes sense.</p>
+<p class="post-paragraph">So let's create a homepage of some kind. Following along with <a href="https://www.youtube.com/watch?v=ut1xtRZ1QOA">this video from Giraffe Academy,</a> I'll create an index.html file in at /layouts/index.html.</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/hp2.png"><img alt="" class="aligncenter wp-image-3921 size-full post-img" height="269" src="https://jeff.glass/wp-content/uploads/2021/10/hp2.png" width="502"/></a></p>
+<p class="post-paragraph">Well that's better! We have a very small, very bad website on localhost again!</p>
+<p class="post-paragraph">I'll go ahead and replace that with some boilerplate via VSCode, and we'll start figuring out this hugo thing from the beginning. I'm going to create this as a whole separate site, then work out how to merge what I've learned here with my oh-so-beautiful site I was creating using Tailwind.</p>
+<p class="post-paragraph">After repopulating the index.html page with some boilerplate HTML, let's see if we can't get something like the projects pages working.</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/boilerplate.png"><img alt="" class="aligncenter size-full wp-image-3923 post-img" height="391" src="https://jeff.glass/wp-content/uploads/2021/10/boilerplate.png" width="540"/></a></p>
+<p class="post-paragraph">Let's try the loraDMX project first. If I run <strong>npx hugo new .\content\projects\loraDMX.md</strong>, I get a new file with just a little bit of what hugo calls "Frontmatter" - metadata about the content of the page. Next, I'll create a projects-page layout at /layouts/projects/single.html with very simply syntax copied from this <a href="https://cloudcannon.com/community/learn/hugo-tutorial/layouts-in-hugo/#reusable-layouts-block-and-define">cloudcannon tutorial</a>:</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><pre>&lt;main&gt;</pre></p>
+<p class="post-paragraph">    {{ block "main" .}}</p>
+<p class="post-paragraph">    {{end}}</p>
+<p class="post-paragraph">&lt;/main&gt;</p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><div>and I'll fill in my loraDMX.md page with:</div></p>
+<p class="post-paragraph"><pre><code class="language-html" data-lang="html"><span class="c">&lt;!-- Using a block in a child page --&gt;</span></code></pre></p>
+<p class="post-paragraph">	{{ define "main" }}</p>
+<p class="post-paragraph"> <span class="nt">&lt;h1&gt;</span>This will be inserted into the block<span class="nt">&lt;/h1&gt;</span></p>
+<p class="post-paragraph">	{{ end }} </p>
+<p class="post-paragraph">Now if I run npm run hugo:build... hmmm, it seems to be broken. But what quick google search recommends adding templates to _default.... hmmm, no good either.</p>
+<p class="post-paragraph">Let's go about this another way - let's download a simple hugo theme and see what we can learn by messing with it. I'll delete my content and template for now, and follow the steps on the <a href="https://themes.gohugo.io/themes/hugo-theme-codex/#codex">Codex hugo theme</a> to get it installed. I'll also recreate a very, very basic index.md file as recommending in those install steps, so that something shows up.</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/codex1.png"><img alt="" class="aligncenter size-full wp-image-3927 post-img" height="339" src="https://jeff.glass/wp-content/uploads/2021/10/codex1.png" width="395"/></a></p>
+<p class="post-paragraph">Well that's slightly better, there is indeed a webpage here now. Let's see what's going on in these theme files, and where this content is actually coming from.</p>
+<p class="post-paragraph">Under /themes/hugo-theme-codex, it looks like we have index.html and 404.html files. Adding text to the index.html layout adds it to the homepage, so it seems that's what we're looking at. There's also this hilarious comment to give us a clue where to add our content:</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/replace.png"><img alt="" class="aligncenter size-full wp-image-3928 post-img" height="204" src="https://jeff.glass/wp-content/uploads/2021/10/replace.png" width="358"/></a></p>
+<p class="post-paragraph">We can go directly to localhost:1313/404.html to view what seems to be the 404 page defined in themes/hugo-theme-codex/layouts/404.html, which is good. But it looks like both index.html and 404.html aren't full pages, but rather pieces of content, which define {{ styles }} and {{ main }} blocks to populate into a template somewhere else. Let's see if we can't find those.</p>
+<p class="post-paragraph">The (only?) file with an actual html layout lives in /layouts/_default/baseof.html. That is, it starts with &lt;!DOCTYPE html&gt;, has body and head tags, and seems to be including other page elements within itself. The other members of /layouts/_default (list.hml and single.html) seem to be layouts for single and list page contents, without being full pages in their own right. From what I can glean, from this and the hugo documentation, these are the styles for basic single and list pages, the two fundamental types of content in hugo.</p>
+<p class="post-paragraph">I'm feeling pretty good about trying again to roll my own theme here, but while I've got it installed, let's look at the remaining folders under /layouts/ in the Codex theme. The partials folder contains a bunch of small html/Go pages, while look like they're meant to be pulled into other pages. Things like nav.html, social-icons.html, burger.html, etc. Some are pure HTML, others have hugo-style (Go?) scripts to pull in further details or enumerate pages, I think. Finally, the /layouts/taxonomy folder has a single file, tag.html, while seems like it would list all the pages and present them? Unclear how this is working currently.</p>
+<p class="post-paragraph">Now, let's delete this theme and get back to writing our own. In the layouts folder, I'll create a new _defaults folder, and within that, baseof.html (with boilerplate) and single.html and list.html (both empty for now). The content I've created in these basic pages isn't visible yet, and interestingly, sometimes I'm seeing build warnings about "found no layout file for kind taxonomy" and sometimes I'm not. I notice the example site from the theme calls its homepage content "_index.md"... but changing that in my site makes no difference...</p>
+<p class="post-paragraph">Aha! Some sleuthing through the Hugo Forums indicates that not only do I need to <em>build</em> the draft pages (the index is a draft, currently), but also to <em>serve</em> them. By running, in my case, npx hugo server -D, I can now see some index.html content! Woohoo!</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/indexx.png"><img alt="" class="aligncenter size-full wp-image-3932 post-img" height="217" src="https://jeff.glass/wp-content/uploads/2021/10/indexx.png" width="407"/></a></p>
+<p class="post-paragraph"><hr/></p>
+<p class="post-paragraph">Shortly after the above, I lost patience, and decided to see if there was a faster way to get started. I wiped everything, and went back to the quickstart guide, and installed the <a href="https://github.com/Vimux/blank">"blank" theme from Vimux</a>. Building and serving this locally worked as expected.</p>
+<p class="post-paragraph">OK. So let's start from <em>where I think is the beginniing</em>, with the baseof.html layout. I can see, in the &lt;head&gt; section, the <span style="color: initial;">&lt;title&gt;{{ .Title }}&lt;/title&gt; inclusion. Changing the title value in config.toml does indeed change the value of the page title, so at long last, I'm able to make little changes. Somewhere. To something. Similarly, adding &lt;p&gt;Hello World&lt;/p&gt; to the body makes it show up in the page. And adding in some plain content to index.html makes it show up on this index page as well. Ok.</span></p>
+<p class="post-paragraph">So, now to try to add some CONTENT! Following strictly along with the quickstart, I'll run <strong>npx hugo new pots/my-first-post.md</strong>, and create some basic content in there. Re-serving the page:</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/10/firstpost.png"><img alt="" class="aligncenter size-full wp-image-3936 post-img" height="346" src="https://jeff.glass/wp-content/uploads/2021/10/firstpost.png" width="313"/></a></p>
+<p class="post-paragraph">Let's try to understand what's going on here and where each of these pieces comes from</p>
+<ul class="post-ul">
+<li>The link at the top is created in the <em>header.html </em>partial, which auto-generates the URL and text based on the config file. This header is included in the <em>baseof.html</em> template.</li>
+<li>The Hello, world text is hardcoded into the baseof.html template itself</li>
+<li>The words "This content is in index.html" is hardcoded into the index.html template, and included as the "main" block of the baseof.html template in this case</li>
+<li>The index.html also includes the $paginator method... which I don't entirely understand yet.
+<ul class="post-ul">
+<li>I'm also realizing I don't entirely understand the difference between a black include and a partial. It seems like the blocks are pieces of relevant content included from content pages, whereas partials are separate pieces of HTML etc. included from the separate partials folder?</li>
+<p class="post-paragraph"></p></ul>
+<p class="post-paragraph"></p></li>
+<li>The "LATEST POST" section is actually from the sidebar.html partial, which seems to list the last 5 latest posts using the {{ range }} function, which I'll need to learn more about</li>
+<li>Finally, the footer partial is responsible for the copyright indication and final link, also included via the baseof.html layout.</li>
+<p class="post-paragraph"></p></ul>
+<p class="post-paragraph">And now, some experiments.</p>
+<ul class="post-ul">
+<li>Making changes in the /themes/blank/static/style.css file does reflect on the page, but does require a rebuild.</li>
+<li>Let's see about overriding some of the theme files using our own. If I make a /layouts/partials/header.html file, copy and paste the header.html file's contents into it and make changes... we have changes! Similarly with the _default/baseof.html file.</li>
+<p class="post-paragraph"></p></ul>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/11/separate.png"><img alt="" class="aligncenter size-full wp-image-3939 post-img" height="270" src="https://jeff.glass/wp-content/uploads/2021/11/separate.png" width="342"/></a></p>
+<ul class="post-ul">
+<li>It looks like the "blank" template I installed is including the header, main, and footer blocks within the "baseof" file. Which I might or might-not want - the individual project pages (and blog pages, if I ever port those over) probably want a different header. So I may want to move those includes over to different templates.</li>
+<p class="post-paragraph"></p></ul>
+<p class="post-paragraph"><hr/></p>
+<p class="post-paragraph">So, the process from here looks like taking the rough layout I built with tailwind, and breaking some of its components apart into blocks to fit better within the Hugo mentality. For now, I'm doing to just manually copy my css built with Tailwind into the proper place (build/css) and then work on integrating Hugo and Tailwind later on</p>
+<p class="post-paragraph">First, I'll make it so baseof.html only really includes some basic metaconent, a reference to the CSS file, and an include to the {{ main }} block on a given page. Then I'll slim down the index.html file some as well by commenting out the pagination... and then blow it up again by copying everything from my &lt;body&gt; tag in my current version of the site over. After figuring out that the Tailwind-built CSS should go into static/css.style.css, it's mostly kinda working! Well, the images in the project cards are broken, but that's not surprising. Let's see if I can figure out where those should go.</p>
+<p class="post-paragraph">Huh! So just copying my existing /images folder into /static/images worked! So the html tag with src="./images/workshop.jpg" is referencing the image at /static/images/workshop.jpg. Good to know. I imagine there's a way to dynamically work with file names - as in, for a project file, load the image from such-and-such folder with the same name? I'll get to that later.</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/11/imageswork.png"><img alt="" class="aligncenter size-full wp-image-3942 post-img" height="399" src="https://jeff.glass/wp-content/uploads/2021/11/imageswork.png" width="524"/></a></p>
+<p class="post-paragraph">Let's see about breaking the header out into it's own partial. I think this may be the only page that uses this header, but it still seems like a good process to learn. I also see that Hugo has a "Menus" functionality... perhaps also good to look into at some point. But for now, I'll add {{ partial "header.html }} to the very top of my index.html file, just inside the {{ define "main }} tag. Then I'll copy my "Green Navbar" html code over from my Index.html file, and seeing that it works, removing it from Index.html....</p>
+<p class="post-paragraph">And hey! Everything looks the same! So the header is now broken out into its own partial file, ready for re-use if I want to - neat! I'll do the same for the footer in the footer.html partial.</p>
+<p class="post-paragraph">Let's see about how we would use Hugo to make the management of our Projects easier. The ideal setup would allow:</p>
+<ul class="post-ul">
+<li>Writing up a project page in markup or html for each project</li>
+<li>Having each project page have consistent formatting via a common template</li>
+<li>Having each project page contain the data necessary to generate a card on the index.html page</li>
+<li>Have a pretty list page containing all the projects, generated automatically from the project pages. Possibly categorized?</li>
+<p class="post-paragraph"></p></ul>
+<p class="post-paragraph">I'm not quite sure how to proceed... so let's mess around!</p>
+<p class="post-paragraph">If I make an empty loradmx.md file in a new content/projects folder, and look at the sitemap.xml, I can see two new pages have been generated: /projects/ and /projects/loradmx. They are... very barebones at the moment, but at least they appear. I hear the right way to do this is to use hugo new, so let's see what that creates:</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/11/hugonew.png"><img alt="" class="aligncenter size-full wp-image-3946 post-img" height="181" src="https://jeff.glass/wp-content/uploads/2021/11/hugonew.png" width="396"/></a></p>
+<p class="post-paragraph">Just a little bit of what Hugo calls "Frontmatter" - metadata about the content in question. I'm thinking this is where I can stash the slug text for the cards that appear on the homepage and the projects page. Rebuilding the page with this frontmatter causes it to disappear from the default hugo server build, unless draft is set to false or I run <strong>npx hugo serve -D.</strong></p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/11/barebones.png"><img alt="" class="aligncenter size-full wp-image-3944 post-img" height="205" src="https://jeff.glass/wp-content/uploads/2021/11/barebones.png" width="217"/></a></p>
+<p class="post-paragraph">Let's try figuring out how these pages are being generated by adding our footer to them. As a place to start, at least.</p>
+<p class="post-paragraph">It seems the content in /projects/loradmx is currently based on the theme/layouts/_defaults/single.html file. So, like before, I'll make a copy of it in my own layouts/_defaults folder. Similarly, I'll copy /layouts/_defaults/list.html. By making small changes to those files, I can confirm that the template files are indeed taking effect.</p>
+<p class="post-paragraph">So now what? Well, let's start by adding our header and footer templates to both pages. I'll probably want to change this around some later, but it's an alright place to start.</p>
+<p class="post-paragraph">And now is the post where I'd really like to have the ability to work with Tailwind inside this project, so as I'm making changes to styling these pages with Tailwind I can see the results live on the Hugo pages. Following the post from Praveen Juge, I'll run</p>
+<p class="post-paragraph"><code class="language-sh" data-lang="sh">npm install tailwindcss@latest postcss@latest postcss-cli@latest autoprefixer@latest --save</code></p>
+<p class="post-paragraph">To install the requisite Tailwind packages in via npm. I'll use npx tailwind init -p to create the basic tailwind.config.js and postcss.config.js files, then copy the varients over from my other working project. Finally, again as suggested by Praveen, I'll set my purge settings to</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph">content: ["./layouts/**/*.html", "./content/**/*.md", "./content/**/*.html"],</p>
+<p class="post-paragraph">So that all the relevent css is captured.</p>
+<p class="post-paragraph"><em>Sometime later after much poking around...</em></p>
+<p class="post-paragraph">So, here's how you integrate Tailwind CSS into the Hugo build process after the above. Any relevant tailwind-style CSS wants to go in your <a href="https://gohugo.io/getting-started/configuration/">/assets folder</a>, which is where Hugo looks for resources involved in <a href="https://gohugo.io/hugo-pipes/">Hugo Pipes</a>, which may be transformed upon rebuild. The above commands take care of installing the necessary dependencies. Then, in wherever you reference your CSS file (in my case, in baseof.html), use:</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><div>    {{ $css := resources.Get "css/style.css" }}</div></p>
+<p class="post-paragraph"><div>    {{ $style := $css | resources.PostCSS }}</div></p>
+<p class="post-paragraph"><div>    &lt;link rel ="stylesheet" type="text/css" href="{{ $style.RelPermalink }}"&gt;</div></p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph">To dynamically link to your generated CSS. Now you can write all the tailwind code you want and, so long as you're not working with custom classes in your css, it will all just work. There seems to be an outstanding issue working with Tailwind JIT compilation in Hugo, so I'm not going to attempt that now.</p>
+<p class="post-paragraph">Now that the projects page is rendering ok, I'll see about how to apply formatting to it. Looking at the <a href="https://gohugo.io/templates/pagination/">Paginator documentation</a> is a bit confusing, so let's dig around a bit. The list template I pulled out of the blank theme has the following:</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><div>            {{ range .Paginator.Pages }}</div></p>
+<p class="post-paragraph"><div>                {{ .Render "summary" }}</div></p>
+<p class="post-paragraph"><div>            {{ end }}</div></p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph">Which I take to mean - using the built-in Pagination function, get all the pages (assumedly only the projects pages?), then render them using the <a href="https://gohugo.io/templates/views">alternative view</a> "summary" (which is in /layouts/_default/summary.html). Making a copy of that them file in my /layouts folder, I can see that that is indeed the case. Creating a few more project files use <strong>npx hugo new project/gooddog.md </strong>(for example), all of the new project pages show up in the paginator, which is good. And now I can go through formatting the summary.html file to apply formatting to all of the listed projects!</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/11/summaries.png"><img alt="" class="aligncenter size-full wp-image-3954 post-img" height="514" src="https://jeff.glass/wp-content/uploads/2021/11/summaries.png" width="536"/></a></p>
+<p class="post-paragraph">One curious thing is that Hugo is doing its own truncation of longer bits of Lorem Ipsum and adding a "read more" link. Presumably that's what this structure does:</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><div>        {{ .Summary }}</div></p>
+<p class="post-paragraph"><div>        {{ if .Truncated }}</div></p>
+<p class="post-paragraph"><div>            &lt;a href="{{ .Permalink }}"&gt;Read more...&lt;/a&gt;</div></p>
+<p class="post-paragraph"><div>        {{ end }}</div></p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph">So let's learn more about that. It seems that the<a href="https://gohugo.io/content-management/summaries/"> page .Summary functionality</a> is one of Hugo's <a href="https://gohugo.io/variables/page/">built in page variables</a>. It seems Hugo will default to using the first 70 words of a piece of content as a summary (or another value, if specified in the configuration). Or, one can override this with a custom summary in Frontmatter. OR, one can override THAT with a &lt;!--more--&gt; tag in the content to specify where the content should be split. Let's try out that second option on the Demilight page. By adding a summary key to the frontmatter of demilight.md, we can override the generated page summary so it shows up more cleanly.</p>
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2021/11/Custom-Summary.png"><img alt="" class="aligncenter size-full wp-image-3956 post-img" height="206" src="https://jeff.glass/wp-content/uploads/2021/11/Custom-Summary.png" width="386"/></a></p>
+<p class="post-paragraph"><a href="https://discourse.gohugo.io/t/how-to-display-a-custome-page-variable/1557">A post from the Hugo forums</a> suggests that it's possible to use one's own custom keys in the frontmatter as well. So, by adding the slug key to some frontmatter in a couple of the content files, and rewriting the summary section like so:</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><div>    &lt;div&gt;</div></p>
+<p class="post-paragraph"><div>        {{ if .Slug}}</div></p>
+<p class="post-paragraph"><div>            {{ .Slug }}</div></p>
+<p class="post-paragraph"><div>        {{ else }}</div></p>
+<p class="post-paragraph"><div>            {{ .Summary }}</div></p>
+<p class="post-paragraph"><div>            {{ if .Truncated }}</div></p>
+<p class="post-paragraph"><div>                &lt;a href="{{ .Permalink }}"&gt;Read more...&lt;/a&gt;</div></p>
+<p class="post-paragraph"><div>            {{ end }}</div></p>
+<p class="post-paragraph"><div>        {{ end }}</div></p>
+<p class="post-paragraph"><div>    &lt;/div&gt;</div></p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph">It's possible to have the list page display the hand-written slug if one was provided, or the generated summary if one wasn't! Neat!</p>
+<p class="post-paragraph">(We can also point the "more projects" card on the homepage to "/project" to link it to this generated page.</p>
+<p class="post-paragraph">Now to associate an image with each of these individual project cards, we can do something like:</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph"><div> {{ $img := resources.Get "images/goodogs.jpg" }}</div></p>
+<p class="post-paragraph"><div>&lt;img src="{{ $img.RelPermalink }}" alt="" class="col-span-1"&gt;</div></p>
+<p class="post-paragraph"></p>
+<p class="post-paragraph">Which makes the LoraDmx image associated with each and every card. Which is effective, but not exactly communicative. To improve this, we can use an additional front matter parameter called "slug_image" which specifies an image file path like "images/loradmx.jpg".</p>
+<p class="post-paragraph">HOLD THE PHONE. After another much fiddling around, I realize I made a silly error in the previous sentence. Did you spot it? Using a path like "images/loradmx.jpg" means the browser will look for the resource <em>relative to our current page</em>. If we want to look in the images directory, we should specify the image as <strong>/</strong>images/loradmx.jpg (note the leading slash). Oof. 25 minutes gone on that one. I found <a href="https://www.markusantonwolf.com/blog/guide-for-different-ways-to-access-your-image-resources/">this post on how to access your image resources in Hugo</a> very helpful.</p>
+<p class="post-paragraph"><hr/></p>
+<p class="post-paragraph">Now that we have a barebones project list page, it would probably be nice to format some actual project pages, yeah? Currently they're just using the default single.html template, which isn't terribly attractive. Let's create a new layout for project pages specifically, which should go in (according to the <a href="https://gohugo.io/templates/lookup-order/">template lookup order page</a>) /layouts/project/single.html</p>
+<p class="post-paragraph">After much fiddling with Tailwind, something like a decent layout starts to emerge. I also added an additional piece of project content in HTML, just to verify that yes, indeed, that's possible.</p>
+<p class="post-paragraph"><div></div></p>
+<p class="post-paragraph">fghfghfghg</p>

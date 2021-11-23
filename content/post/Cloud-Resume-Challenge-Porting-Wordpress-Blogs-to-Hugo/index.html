@@ -1,0 +1,29 @@
+---
+title: "Cloud Resume Challenge - Porting Wordpress Blogs to Hugo"
+date: 2021-11-23T18:36:07-05:00
+draft: true
+---
+<p class="post-paragraph">As the site gains more and more content, it seems like it's only a matter of time before I port my previous blog(s) over to the Hugo framework that I'm enjoying so much. This would include at least the current Wordpress blog hosted at Jeff.Glass, as well as potentially importing old posts from my ham radio blog, kk9jef.wordpress.com.</p>
+<p class="post-paragraph">The Hugo documentation has <a href="https://gohugo.io/tools/migrations/">some information on exporting from Wordpress to Hugo</a>. The first listed option, wordpress-to-hugo-exporter, didn't work well - it returned an error code 500 timeout after about 5 minutes of trying to export. And the second option, exitwp-for-hugo wasn't working, since it relies on Python 2 and some of its dependencies (notably) html2text no longer support Python 2. So I'm pursuing an alternative, using the Wordpress-to-Jekyll exporter and converting to Hugo from there... but that too is 500-erroring. So... let's do this the hard way and parse the XML file?</p>
+<p class="post-paragraph">Using python and the elementTree library, this isn't too bad? It think the most painful part will be porting the images over, since those will have to move from the Wordpress media library to Hugo's page bundles... but the actual parsing of the XML isn't too bad. Here's the script I hacked together, which finds all the post-objects in XML, pulls out their title and content and draft status and tags, and exports them with some basic frontmatter:</p>
+<p class="post-paragraph">https://gist.github.com/JeffersGlass/8b02a6fab79d4418f101fd973e21bd5c</p>
+<p class="post-paragraph">Let me be clear, this is a pretty hacky thing. But thankfully, this is just a timesaver to do some pre-processing that I should only have to do once. So if it's a bit of a hack and it works.... it works. It also separates the posts previously marked as "draft" into their own folder, while marking all posts as "draft: true" for the purposes of Hugo, so that I can vet each post before I mark it to go live, while preserving the old, draft, never-published posts. (Which at the time of writing includes these very words.) I also realized I could make my life easier my only exporting the actually live posts instead of all the content in a single XML file.</p>
+<p class="post-paragraph">I later modified this script to add some tags by default to paragraph, image, and list elements, then styled those tags using tailwind to create some basic formatting. I used BeautifulSoup4 to grab the appropriate tags and modify/add to their classes. The full script is below:</p>
+<p class="post-paragraph">https://gist.github.com/JeffersGlass/c9e89c313081b88574ebb759d7e3e72e</p>
+<p class="post-paragraph">Once this was done, and some minor title-formatting was adjusted (removing extraneous punctuation and other things that might cause URL issues), I imported all of the post folders into my content/post folder. And voila, a blog is born.</p>
+<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-4040 post-img" height="689" src="https://jeff.glass/wp-content/uploads/2021/11/firstpos.png" width="739"/></p>
+<p class="post-paragraph">Not a very pretty blog yet, mind, but I don't think there's a way around doing much of the correction by hand.</p>
+<p class="post-paragraph">I did use some VS-code search-and-replace-with-regexes to adjust how captions were being handled. In particular, I used:</p>
+<p class="post-paragraph">search: &lt;figcaption&gt;(.*)&lt;\/figcaption&gt;&lt;\/figure&gt;</p>
+<p class="post-paragraph">replace with: &lt;/figure&gt;&lt;p class="post-img-caption"&gt;$1&lt;/p&gt;</p>
+<p class="post-paragraph">To move the image caption into a new paragraph outside of the figure, and then used CSS to center/style it.</p>
+<p class="post-paragraph">Similarly, I used some regex to move the contents of another style of captions into their own paragraph.</p>
+<p class="post-paragraph">search: \/&gt;(.*?\[\/caption\])&lt;\/p&gt;</p>
+<p class="post-paragraph">replace with: &lt;\/p&gt;&lt;p class="post-img-caption"&gt;$1&lt;/p&gt;</p>
+<p class="post-paragraph">I also learned some new useful keyboard shortcuts in VS Code. Namely, Cntl-K Cntl-F to auto-format a section of text, which helps break up spacing and tabbing on nested tables/divs.</p>
+<p class="post-paragraph"><hr/></p>
+<p class="post-paragraph">Overall, the process of converting my 42 existing blog posts to Hugo formatting took roughly 2 hours of manual processing - adjusting tags, changing image format and list layout, using shortcodes for video links, and so on. This first pass does <em>not</em> include the process of moving all the images over from Wordpress to Hugo... which I did as a separate process. The script for is as follows:</p>
+<p class="post-paragraph">https://gist.github.com/JeffersGlass/c08a5784abb0de6e67fdf61028ab4a78</p>
+<p class="post-paragraph">Again, not necessarily a script anyone else would want to use vertbatim, just something I hacked together in half an hour that got the job done.</p>
+<p class="post-paragraph">At this point, it seemed silly to continue editing my drafts of these very posts in wordpress, so I endevoured to port them over to Hugo as well.</p>
+<p class="post-paragraph"></p>
