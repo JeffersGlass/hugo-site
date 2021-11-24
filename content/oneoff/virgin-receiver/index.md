@@ -2,7 +2,7 @@
 title: "Virgin Receiver"
 date: 2021-11-08T20:18:25-06:00
 draft: false
-tags: 
+oneofftags: 
 - ham-radio
 - electronics
 slug_image: 'virginOnDesk.JPG'

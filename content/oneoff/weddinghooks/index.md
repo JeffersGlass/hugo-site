@@ -2,7 +2,7 @@
 title: "Votive Fence Hooks"
 date: 2021-11-02T20:56:06-05:00
 draft: false
-tags:
+oneofftags:
 - 3d-printing
 slug_image: 'backyard.JPG'
 ---

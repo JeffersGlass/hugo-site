@@ -3,7 +3,7 @@ title: "DIN Rail DAC Mount"
 date: 2021-11-08T12:47:53-06:00
 draft: false
 slug_image: 'largedin.JPG'
-tags:
+oneofftags:
 - electronics
 - 3d-printing
 ---
