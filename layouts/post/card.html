@@ -1,0 +1,24 @@
+<article class="flex-grow w-96">
+	<div class="p-2 m-1 bg-gray-100 border-2 border-gray-300 rounded-3xl h-96 drop-shadow-xl">
+        {{ if isset .Params "static_slug" }}
+            <a href="{{ .Permalink }}"><img id="staticslug" src="{{ .Params.static_slug }}" alt="" class="object-cover w-full border-2 border-gray-400 rounded-3xl h-36"></a>
+        {{ else if isset .Params "slug_image" }}
+            {{ $img := (.Page.Resources.GetMatch .Params.slug_image) }}
+            <a href="{{ .Permalink }}"><img src="{{ $img.RelPermalink }}" alt="" class="object-cover w-full border-2 border-gray-400 rounded-3xl h-36"></a>
+        {{ else }}
+            <a href="{{ .Permalink }}"><img src="/svg/notfound.svg" class="object-cover w-full border-2 border-gray-400 rounded-3xl h-36"></a>
+        {{ end }}
+        <h1 class="text-center"><a href="{{ .Permalink }}" class="text-2xl">{{ .Title }}</a></h1>
+        <p class="italic text-center">Posted: <time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "02.01.2006" }}</time></p>
+        <div class="h-24 col-span-2 overflow-hidden text-justify">
+                {{ if .Slug}}
+                    {{ .Slug }}
+                {{ else }}
+                    {{ .Summary }}
+                    {{ if .Truncated }}
+                        <a href="{{ .Permalink }}">Read more...</a>
+                    {{ end }}
+                {{ end }}
+        </div>
+    </div>
+</article> 
