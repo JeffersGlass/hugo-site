@@ -52,3 +52,11 @@ asciidoctor --version
 <p class="post-paragraph">And indeed, in the action's output I can see the full help info from tailwindcss. A bit verbose perhaps, but I can at least see that tailwind is being installed successfully via npm</p>
 <img src="tailwind-h.PNG" alt="A console log showing TailwiindCSS's help output on Github Actions">
 <p class="post-paragraph">On a whim, and after some internet cruising, I ran across <a href="https://discourse.gohugo.io/t/postcss-error-cannot-find-module-tailwindcss/34581/4">a post on the Hugo forums</a> where a user was similarly having issues with Hugo not recognizing that tailwind was installed. The user had identified that the NODE_PATH was being set to a Yarn installation folder, and that changing it to an NPM path solved the issue. While that was related to a local build, I wondered if perhaps the Dockerfile installing yarn was screwing up my pathing? Unfortunately, removing the yarn install didn't fix the issue. There were <a href="https://github.com/dirkolbrich/hugo-theme-tailwindcss-starter/issues/5">some references from a couple years ago</a> to similar services having issues with node modules when installed globally, but removing the <code>--global</code> flag from the npm install step didn't fix anything</p>
+<p class="post-paragraph">Some other things that didn't work:</p>
+<ul class="post-ul">
+    <li>Trying to install via <code>npm install package.json</code> with various versions of <code>--save</code>, <code>--save-dev</code>, <code>--global</code> etc</li>
+    <li>Trying to install by specifying packages, and using <code>--dev</code> and <code>--save-dev</code></li>
+</ul>
+<p class="post-paragraph">It seems I will indeed need to dive deeper into docker to understand what's going on. I'll install <a href="https://docs.docker.com/desktop/windows/install/">Docker Desktop for Windows</a> and see about loading up this Dockerfile. I'm hoping it's something small, like a path being off or a module being in one folder and not another, but we shall see...</p>
+<h3 class="post-h3">Docker</h3>
+<p class="post-paragraph">The install process was painless, just download and run an exe.</p>
