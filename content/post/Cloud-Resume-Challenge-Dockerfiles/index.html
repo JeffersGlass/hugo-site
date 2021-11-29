@@ -1,0 +1,18 @@
+---
+title: "Cloud Resume Challenge - Dockerfiles"
+date: 2021-11-29T12:36:07-05:00
+draft: true
+static_slug: /img/cloudresumeslug.png
+tags:
+- Cloud Resume Challenge
+---
+<p class="post-paragraph">I'm setting out to rectify a pretty silly part of my workflow. Namely, when I want to push new content to the site that I've built with hugo, I:</p>
+<ol class="post-ol">
+    <li>Clean my current hugo build locally (removing /public, /resources/ and /dist). Slightly unnecessary, but has cleared some issues in the past.</li>
+    <li>Rebuild all files using <code>npx hugo</code></li>
+    <li>Add all files to git using <code>git add -A</code></li>
+    <li>Commit the new files using <code>git commit -m "Commit Message Here"</code></li>
+</ol>
+<p class="post-paragraph">This pushes the new files to github, which triggers a github action to upload the files in the ./public folder to s3.</p>
+<p class="post-paragraph">There must be a better way.</p>
+<p class="post-paragraph">And I'm confident there is - I'd love to use some like <a href="https://github.com/JeffersGlass/hugo-build-action">Jake Jarvis' Hugo Build Action</a> to automatically rebuild the site whenever new code is pushed to Github or merged into the main branch. The issue is, the Docker image that Jarvis has used doesn't happen to include tailwind as part of its build. So, I think the way forward is for me to learn enough about docker and dockerfiles to add Tailwind to a fork of Jarvis' action, and use that to build my site.</p>
