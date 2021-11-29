@@ -17,14 +17,13 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout Code
         uses: actions/checkout@v2
+      - uses: jakejarvis/hugo-build-action@master  # ...or replace 'master' with a full version tag, such as: v0.64.1
+          with:
+        args: --minify
       - name: S3 Sync
         uses: JeffersGlass/s3-sync-action@master
         with: 
