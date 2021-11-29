@@ -37,4 +37,17 @@ wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${
 <p class="post-paragraph">I'll start by copy-pasting the last longhand version of the Dockerfile that Jarvis wrote. Then I'll update the Hugo version to 0.89.4 (the latest at time of writing), and add "tailwindcss" to the npm command the Dockerfile runs. Finally, I'll change the action.yml file to point to the local Dockerfile, instead of the prebuilt image. Finally, I'll commit all the changes to git and push them back upstream to Github.</p>
 <p class="post-paragraph">I'll create a new workflow for this instead of blowing away my old one (that just manually published a folder to s3), called hugoBuildAndUpload.yml. I'll also disable the previous action on Github, so it doesn't try to run when the new action uploads. Having saved that new yaml file, I'll push it to Github and see what happens...</p>
 <img src="noTailwind.PNG" alt="An error message saying Docker cannot find tailwindcss">
-<p class="post-paragraph">Drat, not quite. Hugo seems to be running, but it still can't find tailwind, even though it should be installed via NPM now... perhaps my install order is wrong?</p>
+<p class="post-paragraph">Drat, not quite. Hugo seems to be running, but it still can't find tailwind, even though it should be installed via NPM now... perhaps my install order is wrong? By adding <code>require('tailwindcss/nesting')</code> to my postcss requirements and re-pushing, I can see that Hugo/postcss are indeed attempting to build the site, but aren't able to find the required tailwind dependencies. This time the error is: <code>Error: Error building site: POSTCSS: failed to transform "css/style.css" (text/css): Error: Cannot find module 'tailwindcss/nesting'</code></p>
+<p class="post-paragraph">Let's see if tailwind isn't installing successfully, or if postcss can't find it for some reason. I'll add a line to the Dockerfile which should just run the -help command for tailwind on the command line, and error out if it breaks:
+{{< highlight docker "hl_lines=4">}}
+RUN hugo version && \
+hugo env && \
+postcss --version && \
+tailwindcss -h && \
+autoprefixer --version && \
+babel --version && \
+pygmentize -V && \
+asciidoctor --version
+{{< /highlight >}}</p>
+<p class="post-paargraph">And indeed, in the action's output I can see the full help info from tailwindcss. A bit verbose perhaps, but I can at least see that tailwind is being installed successfully via npm</p>
+<img src="tailwind-h.PNG" alt="A console log showing TailwiindCSS's help output on Github Actions">
