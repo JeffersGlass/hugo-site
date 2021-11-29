@@ -1,13 +1,13 @@
-/*module.exports = {
+module.exports = {
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
   },
-}*/
+}
 
-module.exports = {
+/* module.exports = {
   plugins: [
     require('tailwindcss'),
     require('autoprefixer'),
   ]
-}
+} */
