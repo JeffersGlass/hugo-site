@@ -16,3 +16,22 @@ tags:
 <p class="post-paragraph">This pushes the new files to github, which triggers a github action to upload the files in the ./public folder to s3.</p>
 <p class="post-paragraph">There must be a better way.</p>
 <p class="post-paragraph">And I'm confident there is - I'd love to use some like <a href="https://github.com/JeffersGlass/hugo-build-action">Jake Jarvis' Hugo Build Action</a> to automatically rebuild the site whenever new code is pushed to Github or merged into the main branch. The issue is, the Docker image that Jarvis has used doesn't happen to include tailwind as part of its build. So, I think the way forward is for me to learn enough about docker and dockerfiles to add Tailwind to a fork of Jarvis' action, and use that to build my site.</p>
+<p class="post-paragraph">The dockerfile for this action is remarkably short:{{< highlight docker >}}
+# https://github.com/jakejarvis/hugo-docker
+FROM ghcr.io/jakejarvis/hugo-extended:0.89.4
+
+ENTRYPOINT ["hugo"]{{< /highlight >}}</p>
+<p class="post-paragraph">From what I understand, this is using a pre-built docker image stored online (via Github?) to improve the speed of this action. That seems like quite a deep rabbit hole to go down, though an interesting one, but let's see if there's a faster way.</p>
+<p class="post-paragraph">One thing that occurs to me is to see if anyone else has forked this repo, to make their own changes in the way I'm interesed in. And indeed, I'm the 10th person to fork this action, and several of them are X commits <span class="italic">ahead</span> of the original (as well as being several behind), meaning they've made some tweaks and changes. Let's look at <a href="https://github.com/willbicks/hugo-build-action/commit/96b801e40324dc378775d648a2d202ea244837ce">one of these commits from willbicks</a></p>
+{{< highlight ruby "linenos=false,hl_lines=4-5">}}
+ruby \
+${HUGO_EXTENDED:+libc6-compat libstdc++} && \
+update-ca-certificates && \
++ npm install --global postcss-cli autoprefixer @babel/core @babel/cli && \
+- npm install --global postcss postcss-cli autoprefixer @babel/core @babel/cli && \
+pip3 install --upgrade Pygments==2.* && \
+gem install asciidoctor && \
+wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_EXTENDED:+extended_}${HUGO_VERSION}_Linux-64bit.tar.gz && \
+{{< /highlight >}}
+<p class="post-paragraph">Hang on, that's alredy way longer than the Dockerfile in my fork! But it also looks like something I could actually modify...ah, it looks like back in <a href="https://github.com/JeffersGlass/hugo-build-action/commit/0aeee3828f8f0d61ab36cfc57f8a30190c70a57b">commit #0aeee38</a>, Jarvis switched from using a fully-written-out dockerfile to a version which is hosted as one of these prebuilt images. Let's see if we can put that old, fully-written-out docker file into use with the most recent version of hugo.</p>
+<p class="post-paragraph">I'll start by copy-pasting the last longhand version of the Dockerfile that Jarvis wrote. Then I'll update the Hugo version to 0.89.4 (the latest at time of writing), and add "tailwindcss" to the npm command the Dockerfile runs. Finally, I'll change the action.yml file to point to the local Dockerfile, instead of the prebuilt image. Finally, I'll commit all the changes to git and push them back upstream to Github.</p>
