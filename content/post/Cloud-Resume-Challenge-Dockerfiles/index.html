@@ -49,5 +49,6 @@ babel --version && \
 pygmentize -V && \
 asciidoctor --version
 {{< /highlight >}}</p>
-<p class="post-paargraph">And indeed, in the action's output I can see the full help info from tailwindcss. A bit verbose perhaps, but I can at least see that tailwind is being installed successfully via npm</p>
+<p class="post-paragraph">And indeed, in the action's output I can see the full help info from tailwindcss. A bit verbose perhaps, but I can at least see that tailwind is being installed successfully via npm</p>
 <img src="tailwind-h.PNG" alt="A console log showing TailwiindCSS's help output on Github Actions">
+<p class="post-paragraph">On a whim, and after some internet cruising, I ran across <a href="https://discourse.gohugo.io/t/postcss-error-cannot-find-module-tailwindcss/34581/4">a post on the Hugo forums</a> where a user was similarly having issues with Hugo not recognizing that tailwind was installed. The user had identified that the NODE_PATH was being set to a Yarn installation folder, and that changing it to an NPM path solved the issue. While that was related to a local build, I wondered if perhaps the Dockerfile installing yarn was screwing up my pathing? Unfortunately, removing the yarn install didn't fix the issue. There were <a href="https://github.com/dirkolbrich/hugo-theme-tailwindcss-starter/issues/5">some references from a couple years ago</a> to similar services having issues with node modules</p>
