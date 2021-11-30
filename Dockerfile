@@ -60,6 +60,4 @@ RUN hugo version && \
     pygmentize -V && \
     asciidoctor --version
 
-COPY . /go/site
-
 ENTRYPOINT ["/bin/sh"]
