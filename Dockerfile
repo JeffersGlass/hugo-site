@@ -32,8 +32,7 @@ RUN apk update && \
     update-ca-certificates
 
 # download Hugo and miscellaneous optional dependencies
-#RUN npm install --global tailwindcss postcss postcss-cli autoprefixer @babel/core @babel/cli && \
-RUN npm install -D package.json && \
+RUN npm install --global tailwindcss postcss postcss-cli autoprefixer @babel/core @babel/cli && \
     echo $NODE_ENV && \
     pip3 install --upgrade Pygments==2.* && \
     gem install asciidoctor && \
@@ -61,4 +60,6 @@ RUN hugo version && \
     pygmentize -V && \
     asciidoctor --version
 
-ENTRYPOINT ["sh"]
+COPY . /go/site
+
+ENTRYPOINT ["/bin/sh"]
