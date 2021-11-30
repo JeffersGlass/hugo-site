@@ -13,10 +13,17 @@
                     <p class="py-2">As I built this site, I wrote a series of in-process blog posts as a kind of development log to keep track of my progress, my learnings, and my next steps.</p>
                     <p class="py-2">These should be read like a lab notebook - there are many false starts and dead ends. You'll see my thought process, my triumps and defeats. I left them largely uneditted, only going back to correct spelling and punctuation. I have added a few headings (for ease of reading) and editors notes (when I learned much later that something I'd written was wrong).</p>
                     <div class="pl-4">
-
-                        <ol class="post-ol">
-                            {{ range (where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume")).Reverse}}
+                            {{ $posts := (where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume")).Reverse }}
+                            {{if len $posts }}
+                            <ol class="post-ol">
+                                {{ range $posts}}
                                 <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                                {{ end }}
+                            </ol>
+                            {{ else }}
+                            <ul>
+                            <div class="flex items-center justify-center w-2/3 h-32 px-6 m-auto text-center text-gray-500 border-2 border-green-100 bg-green-50"><span class="italic">All posts are currently hidden or in draft status.</span></div>
+                            </ul>
                             {{ end }}
                         </ol>
                     </div>
