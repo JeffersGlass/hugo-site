@@ -6,58 +6,58 @@ static_slug: /img/cloudresumeslug.png
 tags:
 - Cloud-Resume
 ---
-<p class="post-paragraph"></p>
-<p class="post-paragraph">As I figure out my workflow for creating pages, especially the "One Offs", I want to keep things as simple and straightforward as can be for adding new content. The intention of the One Offs is a place to memorialize small, interesting things - things that shouldn't disappear into twitter, but aren't a full project writeup. To that end, I'd like to have some standard formatting for all of their individual pages that makes it simple to add a new piece of content. So let's work on the /layouts/small/single.html layout.</p>
-<p class="post-paragraph">It turns out that there is no style being applied to external links currently, which is something I imagine I might want. So I'll add a css rule for &lt;a&gt; tags... and then add an ID to the label "Jeff Glass" in the header so it doesn't also get styled, and use a:not(#header-name) to prevent it from getting snagged by this new rule.</p>
-<p class="post-paragraph">To make things a little easier at this point, I'll add the postcss-nesting module following <a href="https://tailwindcss.com/docs/using-with-preprocessors">the steps in the Tailwind docs</a>. This did require refactoring my postcss.config.js file to use a list of require() statements instead of a map, as illustrated <a href="https://tailwindcss.com/docs/using-with-preprocessors">in the Tailwind Docs</a>:</p>
-<p class="post-paragraph"><div></div></p>
-<p class="post-paragraph"><div>/* Old version</div></p>
-<p class="post-paragraph"><div>module.exports = {</div></p>
-<p class="post-paragraph"><div>  plugins: {</div></p>
-<p class="post-paragraph"><div>    tailwindcss: {},</div></p>
-<p class="post-paragraph"><div>    autoprefixer: {},</div></p>
-<p class="post-paragraph"><div>  },</div></p>
-<p class="post-paragraph"><div>}*/</div></p>
-<p class="post-paragraph"></p>
-<p class="post-paragraph"><div> </div></p>
-<p class="post-paragraph"><div>//New, working version</div></p>
-<p class="post-paragraph"> </p>
-<p class="post-paragraph"><div>module.exports = {</div></p>
-<p class="post-paragraph"><div>  plugins: [</div></p>
-<p class="post-paragraph"><div>    require('tailwindcss/nesting'),</div></p>
-<p class="post-paragraph"><div>    require('tailwindcss'),</div></p>
-<p class="post-paragraph"><div>    require('autoprefixer'),</div></p>
-<p class="post-paragraph"><div>  ]</div></p>
-<p class="post-paragraph"><div>}</div></p>
-<p class="post-paragraph"></p>
-<p class="post-paragraph">I'm also borrowing <a href="https://davidwalsh.name/external-links-css">a bit of code from David Walsh</a> to automatically style external links with the "external link" symbol... well, I would have except it seems embedded html inside markdown files is a bit cumbersome in Hugo. It seems its markdown renderer, Goldmark, only allows directly adding HTML attributes to <em>header</em> tags via markdown. Thankfully, Ana Ulin came to the rescue with their <a href="https://anaulin.org/blog/hugo-raw-html-shortcode/">Raw HTML Shortcode</a>.... Or rather, that was the plan, but the ::after selector is fiddly in some way I can't understand yet. So for now I'm just a css class called "no-style-link" to exclude links I don't want to be formatted using the :not() operator. I'm moving on.</p>
-<p class="post-paragraph">(Some resources for when I come back to this: <a href="https://stackoverflow.com/questions/45691117/how-can-i-add-a-svg-as-content-on-before-pseudo-element-of-an-element">Stack Overflow</a>, <a href="https://www.geeksforgeeks.org/how-to-use-svg-with-before-or-after-pseudo-element/">Geeks for Geeks</a>, <a href="https://css-tricks.com/gotchas-on-getting-svg-into-production/">css-tricks</a>)</p>
-<p class="post-paragraph"><hr/></p>
-<p class="post-paragraph">It seems like the preferred way to keep image content near site content is through what Hugo calls <a href="https://gohugo.io/content-management/page-bundles/">Page Bundles</a>, where a page is represented by <a href="https://cloudcannon.com/community/learn/hugo-tutorial/page-bundles-and-shortcodes/#practical-work-creating-page-bundles-and-shortcodes">a folder containing the content</a> or <a href="https://www.hackification.io/software-development/hugo/page-bundles/the-basics/">a folder containing an _index.md file if the hierarchy is nested further</a>. It looks like, if I just move my current "small" projects markdown files (Parks.md, meterclock.md) into folders with the same name and rename the files to "index.md", all of the formatting and templating work I've done so far is preserved. Well that's good at least.</p>
-<p class="post-paragraph"><img alt="" class="aligncenter size-full wp-image-4018 post-img" height="440" src="page-bundles.png" width="518"/></p>
-<p class="post-paragraph">Now, I'll chose a small project to work on. How about the Votive Fence Hooks project? I'll just drop a couple of pictures from my phone into the weddinghooks folder. And by using the following range commands, I can get all the images to appear nicely formatted on the page (<a href="https://www.regisphilibert.com/blog/2018/01/hugo-page-resources-and-how-to-use-them/">this write-up was very helpful</a>):</p>
-<p class="post-paragraph"><div></div></p>
-<p class="post-paragraph"><div>            &lt;p&gt;{{ .Content }}&lt;/p&gt;</div></p>
-<p class="post-paragraph"><div>                {{ with .Page.Resources.ByType "image" }}</div></p>
-<p class="post-paragraph"><div>                &lt;div class="flex flex-wrap pt-4"&gt;</div></p>
-<p class="post-paragraph"><div>                    {{ range . }}</div></p>
-<p class="post-paragraph"><div>                        &lt;img src="{{ .RelPermalink }}" class="flex my-4 mr-8 max-h-60"&gt;</div></p>
-<p class="post-paragraph"><div>                    {{ end }}</div></p>
-<p class="post-paragraph"><div>                &lt;/div&gt;</div></p>
-<p class="post-paragraph"><div>                {{ end }}</div></p>
-<p class="post-paragraph"></p>
-<p class="post-paragraph"><div> </div></p>
-<p class="post-paragraph">I then rebuilt and pushed my site to Github and... something I've done has broken the formatting/sorting of the small cards on the frontpage, and the auto-generating of the tags. Basically all my work from the previous post. Which is frustrating, but my generation code is still there. So something I've done recently has broken that functionality. I wonder if it was moving the content into Page Bundles?</p>
-<p class="post-paragraph">Interestingly, the code still works when I serve locally with hugo... Oh, I must not have rebuilt with the -D flag on. That's better. Gotta remember that.</p>
-<p class="post-paragraph"><hr/></p>
-<p class="post-paragraph">So now onto image display. Currently, I'm loading the whole, large image to the end user, then using CSS to scale it down, when what I'd like to do is have the image be rescaled at build-time and served at that size. It seems that, once again, Hugo Pipes are the answer, but sadly, there doesn't seem to be a way to intregrate pipes functionality with page bundling. There's a <a href="https://hugo-mini-course.netlify.app/sections/optimizing/images/">Hugo Mini-Course on image processing</a> that seems the right track for that, but again, it specifies the images must be in the /assets folder.</p>
-<p class="post-paragraph">Instead, let's look at <a href="https://christianspecht.de/2020/08/10/creating-an-image-gallery-with-hugo-and-lightbox2/">Christian Sprecht's post on integrating Lightbox with Hugo</a>. And the lightbox documentation makes it seem like a simple-enough process. <del><em>I'll start by installing lightbox via npm using npm install lightbox2 --save-dev. Then I'll add the requisite references to the lightbox.css and lightbox.js files inside of my baseof.html template, so it's present on every page.</em></del></p>
-<p class="post-paragraph">In actuality, it turns out to be easier to reference this CSS and JS from CDN's. Then, in my /layouts/small/single.html template, I'll transform the range code to the following:</p>
-<p class="post-paragraph"><div></div></p>
-<p class="post-paragraph"><pre>{{ if gt (len (.Page.Resources.ByType "image")) 0 }}    <br/>    &lt;h2 class="pt-6 text-xl"&gt;Images&lt;/h2&gt;<br/>    {{ with .Page.Resources.ByType "image" }}<br/>    &lt;div class="flex flex-wrap pt-4"&gt;<br/>        {{ range . }}<br/>            &lt;a href="{{ .RelPermalink }}" data-lightbox="image-set"&gt;&lt;img src="{{ .RelPermalink }}" class="flex mb-4 mr-8 max-h-60"&gt;&lt;/a&gt;<br/>        {{ end }}<br/>    &lt;/div&gt;<br/>    {{ end }}<br/>{{ end}}</pre></p>
-<p class="post-paragraph"></p>
-<p class="post-paragraph">This ensures that the h2 "Images" header only appears if there are actually images to display, and turns all the loaded images into Lightbox links. The links all get their data-lightbox attribute set to the same thing (in this case "image-set", but it could be anything) so that the lightbox gallery that pops up is scrollable directly between pictures.</p>
-<p class="post-paragraph"><img alt="" class="aligncenter wp-image-4021 post-img" height="597" src="lightbox.gif" width="600"/></p>
-<p class="post-paragraph">Well that wasn't too hard! Now any images that live inside a small-project folder will be automatically added to a lightbox. Neato!</p>
-<p class="post-paragraph">During some cleanup, I encounted an odd issue with how the slug images were appearing/being found on the main page. This Stack Overflow post cleared up <a href="https://stackoverflow.com/questions/34247337/object-fit-not-affecting-images/34247563">some things about how object-cover works</a>, and I found some guidance on <a href="https://www.markusantonwolf.com/blog/guide-for-different-ways-to-access-your-image-resources/">how to reference images in the same folder as content</a>. During this modification, I accidently screwed up the default summary.html template (I editted it instead of the summary.html template for the 'small' taxonomy), but I found a <a href="https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git">Stack Overflow post on using git to view past versions of files</a>, which helped me find the previous syntax and restore things. Since I figured the issue was in a single line, I didn't do anything fancy like a <a href="https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination">git bisect</a>, but that's a tool in the pocket for the future.</p>
-<p class="post-paragraph">aslkhad</p>
+<p class="post-p"></p>
+<p class="post-p">As I figure out my workflow for creating pages, especially the "One Offs", I want to keep things as simple and straightforward as can be for adding new content. The intention of the One Offs is a place to memorialize small, interesting things - things that shouldn't disappear into twitter, but aren't a full project writeup. To that end, I'd like to have some standard formatting for all of their individual pages that makes it simple to add a new piece of content. So let's work on the /layouts/small/single.html layout.</p>
+<p class="post-p">It turns out that there is no style being applied to external links currently, which is something I imagine I might want. So I'll add a css rule for &lt;a&gt; tags... and then add an ID to the label "Jeff Glass" in the header so it doesn't also get styled, and use a:not(#header-name) to prevent it from getting snagged by this new rule.</p>
+<p class="post-p">To make things a little easier at this point, I'll add the postcss-nesting module following <a href="https://tailwindcss.com/docs/using-with-preprocessors">the steps in the Tailwind docs</a>. This did require refactoring my postcss.config.js file to use a list of require() statements instead of a map, as illustrated <a href="https://tailwindcss.com/docs/using-with-preprocessors">in the Tailwind Docs</a>:</p>
+<p class="post-p"><div></div></p>
+<p class="post-p"><div>/* Old version</div></p>
+<p class="post-p"><div>module.exports = {</div></p>
+<p class="post-p"><div>  plugins: {</div></p>
+<p class="post-p"><div>    tailwindcss: {},</div></p>
+<p class="post-p"><div>    autoprefixer: {},</div></p>
+<p class="post-p"><div>  },</div></p>
+<p class="post-p"><div>}*/</div></p>
+<p class="post-p"></p>
+<p class="post-p"><div> </div></p>
+<p class="post-p"><div>//New, working version</div></p>
+<p class="post-p"> </p>
+<p class="post-p"><div>module.exports = {</div></p>
+<p class="post-p"><div>  plugins: [</div></p>
+<p class="post-p"><div>    require('tailwindcss/nesting'),</div></p>
+<p class="post-p"><div>    require('tailwindcss'),</div></p>
+<p class="post-p"><div>    require('autoprefixer'),</div></p>
+<p class="post-p"><div>  ]</div></p>
+<p class="post-p"><div>}</div></p>
+<p class="post-p"></p>
+<p class="post-p">I'm also borrowing <a href="https://davidwalsh.name/external-links-css">a bit of code from David Walsh</a> to automatically style external links with the "external link" symbol... well, I would have except it seems embedded html inside markdown files is a bit cumbersome in Hugo. It seems its markdown renderer, Goldmark, only allows directly adding HTML attributes to <em>header</em> tags via markdown. Thankfully, Ana Ulin came to the rescue with their <a href="https://anaulin.org/blog/hugo-raw-html-shortcode/">Raw HTML Shortcode</a>.... Or rather, that was the plan, but the ::after selector is fiddly in some way I can't understand yet. So for now I'm just a css class called "no-style-link" to exclude links I don't want to be formatted using the :not() operator. I'm moving on.</p>
+<p class="post-p">(Some resources for when I come back to this: <a href="https://stackoverflow.com/questions/45691117/how-can-i-add-a-svg-as-content-on-before-pseudo-element-of-an-element">Stack Overflow</a>, <a href="https://www.geeksforgeeks.org/how-to-use-svg-with-before-or-after-pseudo-element/">Geeks for Geeks</a>, <a href="https://css-tricks.com/gotchas-on-getting-svg-into-production/">css-tricks</a>)</p>
+<p class="post-p"><hr/></p>
+<p class="post-p">It seems like the preferred way to keep image content near site content is through what Hugo calls <a href="https://gohugo.io/content-management/page-bundles/">Page Bundles</a>, where a page is represented by <a href="https://cloudcannon.com/community/learn/hugo-tutorial/page-bundles-and-shortcodes/#practical-work-creating-page-bundles-and-shortcodes">a folder containing the content</a> or <a href="https://www.hackification.io/software-development/hugo/page-bundles/the-basics/">a folder containing an _index.md file if the hierarchy is nested further</a>. It looks like, if I just move my current "small" projects markdown files (Parks.md, meterclock.md) into folders with the same name and rename the files to "index.md", all of the formatting and templating work I've done so far is preserved. Well that's good at least.</p>
+<p class="post-p"><img alt="" class="aligncenter size-full wp-image-4018 post-img" height="440" src="page-bundles.png" width="518"/></p>
+<p class="post-p">Now, I'll chose a small project to work on. How about the Votive Fence Hooks project? I'll just drop a couple of pictures from my phone into the weddinghooks folder. And by using the following range commands, I can get all the images to appear nicely formatted on the page (<a href="https://www.regisphilibert.com/blog/2018/01/hugo-page-resources-and-how-to-use-them/">this write-up was very helpful</a>):</p>
+<p class="post-p"><div></div></p>
+<p class="post-p"><div>            &lt;p&gt;{{ .Content }}&lt;/p&gt;</div></p>
+<p class="post-p"><div>                {{ with .Page.Resources.ByType "image" }}</div></p>
+<p class="post-p"><div>                &lt;div class="flex flex-wrap pt-4"&gt;</div></p>
+<p class="post-p"><div>                    {{ range . }}</div></p>
+<p class="post-p"><div>                        &lt;img src="{{ .RelPermalink }}" class="flex my-4 mr-8 max-h-60"&gt;</div></p>
+<p class="post-p"><div>                    {{ end }}</div></p>
+<p class="post-p"><div>                &lt;/div&gt;</div></p>
+<p class="post-p"><div>                {{ end }}</div></p>
+<p class="post-p"></p>
+<p class="post-p"><div> </div></p>
+<p class="post-p">I then rebuilt and pushed my site to Github and... something I've done has broken the formatting/sorting of the small cards on the frontpage, and the auto-generating of the tags. Basically all my work from the previous post. Which is frustrating, but my generation code is still there. So something I've done recently has broken that functionality. I wonder if it was moving the content into Page Bundles?</p>
+<p class="post-p">Interestingly, the code still works when I serve locally with hugo... Oh, I must not have rebuilt with the -D flag on. That's better. Gotta remember that.</p>
+<p class="post-p"><hr/></p>
+<p class="post-p">So now onto image display. Currently, I'm loading the whole, large image to the end user, then using CSS to scale it down, when what I'd like to do is have the image be rescaled at build-time and served at that size. It seems that, once again, Hugo Pipes are the answer, but sadly, there doesn't seem to be a way to intregrate pipes functionality with page bundling. There's a <a href="https://hugo-mini-course.netlify.app/sections/optimizing/images/">Hugo Mini-Course on image processing</a> that seems the right track for that, but again, it specifies the images must be in the /assets folder.</p>
+<p class="post-p">Instead, let's look at <a href="https://christianspecht.de/2020/08/10/creating-an-image-gallery-with-hugo-and-lightbox2/">Christian Sprecht's post on integrating Lightbox with Hugo</a>. And the lightbox documentation makes it seem like a simple-enough process. <del><em>I'll start by installing lightbox via npm using npm install lightbox2 --save-dev. Then I'll add the requisite references to the lightbox.css and lightbox.js files inside of my baseof.html template, so it's present on every page.</em></del></p>
+<p class="post-p">In actuality, it turns out to be easier to reference this CSS and JS from CDN's. Then, in my /layouts/small/single.html template, I'll transform the range code to the following:</p>
+<p class="post-p"><div></div></p>
+<p class="post-p"><pre>{{ if gt (len (.Page.Resources.ByType "image")) 0 }}    <br/>    &lt;h2 class="pt-6 text-xl"&gt;Images&lt;/h2&gt;<br/>    {{ with .Page.Resources.ByType "image" }}<br/>    &lt;div class="flex flex-wrap pt-4"&gt;<br/>        {{ range . }}<br/>            &lt;a href="{{ .RelPermalink }}" data-lightbox="image-set"&gt;&lt;img src="{{ .RelPermalink }}" class="flex mb-4 mr-8 max-h-60"&gt;&lt;/a&gt;<br/>        {{ end }}<br/>    &lt;/div&gt;<br/>    {{ end }}<br/>{{ end}}</pre></p>
+<p class="post-p"></p>
+<p class="post-p">This ensures that the h2 "Images" header only appears if there are actually images to display, and turns all the loaded images into Lightbox links. The links all get their data-lightbox attribute set to the same thing (in this case "image-set", but it could be anything) so that the lightbox gallery that pops up is scrollable directly between pictures.</p>
+<p class="post-p"><img alt="" class="aligncenter wp-image-4021 post-img" height="597" src="lightbox.gif" width="600"/></p>
+<p class="post-p">Well that wasn't too hard! Now any images that live inside a small-project folder will be automatically added to a lightbox. Neato!</p>
+<p class="post-p">During some cleanup, I encounted an odd issue with how the slug images were appearing/being found on the main page. This Stack Overflow post cleared up <a href="https://stackoverflow.com/questions/34247337/object-fit-not-affecting-images/34247563">some things about how object-cover works</a>, and I found some guidance on <a href="https://www.markusantonwolf.com/blog/guide-for-different-ways-to-access-your-image-resources/">how to reference images in the same folder as content</a>. During this modification, I accidently screwed up the default summary.html template (I editted it instead of the summary.html template for the 'small' taxonomy), but I found a <a href="https://stackoverflow.com/questions/338436/how-can-i-view-an-old-version-of-a-file-with-git">Stack Overflow post on using git to view past versions of files</a>, which helped me find the previous syntax and restore things. Since I figured the issue was in a single line, I didn't do anything fancy like a <a href="https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination">git bisect</a>, but that's a tool in the pocket for the future.</p>
+<p class="post-p">aslkhad</p>
