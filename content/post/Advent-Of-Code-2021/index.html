@@ -9,5 +9,35 @@ tags:
 slug_image: 1200px-Python-logo-notext.png
 ---
 <p class="post-paragraph">Is it Advent of Code time again? Well, here goes nothing. Let's see </p>
-<img src="2020stars.PNG" alt="" class="w-2/3 post-img">
+<img src="2020stars.PNG" alt="" class="w-96 post-img">
 <p class="post-img-caption">Nearly-complete star-chart from 2020. Let's see if we can at least get as far as last year's 47 stars.</p>
+<h3 class="post-h3">Day 1</h3>
+<h4 class="post-h4">Part 1</h4>
+<p class="post-paragraph">I feel like it's Advent of Code tradition for me to read in the input from file (as strings) and try to do comparisons on it like ints, forgetting to cast them to intergers. Which means I was comparing textually, instead of numerically, so my answer was off by <span class="italic">two</span>. Absurd. </p>
+<p class="post-paragraph">You really could do this entirely in one line, but I think it's slightly more readable broken up as I've done. Here's the complete code:</p>
+<p class="code-title">part1.py</p>
+{{< highlight python3 "hl_lines=2">}}
+with open("input.txt", "r") as infile:
+    data = [int(t) for t in infile.read().split('\n')]
+
+numDecreases = len([pair for pair in zip(data[:-1], data[1:]) if pair[0] < pair[1]])
+
+print(f"{numDecreases=}")
+{{< /highlight >}}
+<p class="post-img-caption">The offending line, where I remembered to cast the input to ints.</p>
+<h4 class="post-h4">Part 2</h4>
+<p class="post-paragraph">Part 2 could also probably be inlined, but the list-comprehension-within-list-comprehension is, again, not the most readable thing, I think. Breaking out the three key steps (creating triples of the data, finding their sums, and finding where adjacent sums are decreasing) into 3 lines of code I think makes the solution more parsable.</p>
+<p class="code-title">part2.py</p>
+{{< highlight python3 >}}
+with open("input.txt", "r") as infile:
+    data = [int(t) for t in infile.read().split('\n')]
+
+triples = zip(data[:-2], data[1:-1], data[2:])
+windowSums = [sum(list(t)) for t in triples]
+
+numDecreases = len([t for t in zip(windowSums[:-1], windowSums[1:]) if t[0] < t[1]])
+
+print(f"{numDecreases=}")
+
+{{< /highlight >}}
+
