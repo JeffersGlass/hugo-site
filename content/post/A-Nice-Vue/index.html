@@ -202,4 +202,54 @@ export default {
 
 {{< /highlight >}}
 <img src="manualpricing.PNG" alt="" class="mt-4 w-96 post-img">
-<p class="post-p">So, let's try to make this just a little more dynamic, and remove that hard-coded data.</p>
+<p class="post-p">So, let's try to make this just a little more dynamic, and remove that hard-coded data. After some fiddling with formatting, here's what I came up with:</p>
+<p class="code-title">Pricing.vue</p>
+{{< highlight html >}}
+<template>
+    <h1 class="text-4xl">Pricing</h1>
+    <p>Below this is the dynamic stuff:</p>
+    <div class="w-full">
+      <PriceTier  class="m-auto" v-for="tier of tiers" :key="tier" :PriceName="tier.PriceName" :Price="tier.Price" :PriceDescription="tier.PriceDescription"/>
+    </div>
+  </template>
+  
+  <script>
+  import PriceTier from '@/components/PriceTier.vue'
+  
+  export default {
+    name: 'Pricing',
+    components: {
+      PriceTier
+    },
+    data () {
+      return {
+        tiers: [
+          {
+            PriceName: 'Hobbyist',
+            Price: 'Free',
+            PriceDescription: 'For Those Just Getting Started'
+          },
+          {
+            PriceName: 'Startup',
+            Price: '$9/mo',
+            PriceDescription: 'For your small business'
+          },
+          {
+            PriceName: 'Business',
+            Price: '$49',
+            PriceDescription: 'For your business'
+          },
+          {
+            PriceName: 'Enterprise',
+            Price: 'Contact Us',
+            PriceDescription: 'For your global business'
+          }
+        ]
+      }
+    }
+  }
+  </script>
+  
+  {{< /highlight >}}
+  <img src="dynamiccards.PNG" alt="The same 4 pricing cards, but dynamically generated" class="mt-4 post-img">
+  <p class="post-img-caption">Well, it looks the same, but now is dynamically generated!</p>
