@@ -6,9 +6,10 @@ tags:
 - javascript
 - vue
 ---
-
+<h2 class="post-h2">Introduction</h2>
+<p class="post-p">I'll mostly be following along with <a href="https://www.youtube.com/watch?v=FXpIoQ_rT_c">this video from FreeCodeCamp.org</a>.</p>
 <h2 class="post-h3">Installation</h2>
-<p class="post-p">I'll start by install <a href="https://github.com/vuejs/devtools#vue-devtools" class="">the Node Devtools Chrome extension</a> as recommended in the <a href="https://vuejs.org/v2/guide/installation.html">Node Installation Instructions</a>. Since I'm interested, in a new Git repo I'll run <code class="bg-gray-200 code">npm install -g @vue/cli</code>, which installs 947 packages and audits 949 packages in 30 seconds on my system.</p>
+<p class="post-p">I'll start by install <a href="https://github.com/vuejs/devtools#vue-devtools" class="">the Node Devtools Chrome extension</a> as recommended in the <a href="https://vuejs.org/v2/guide/installation.html">Node Installation Instructions</a>. Since I'm interested, I'll run <code class="bg-gray-200 code">npm install -g @vue/cli</code>, which installs 947 packages and audits 949 packages in 30 seconds on my system.</p>
 <p class="post-p">To actually create a new project to work on, I'll use the very simple <code>vue create hello-world</code> command. This does a whooole lot of things to set up a Vue environment, it seems, and I'll mostly stick with the Vue3 defaults. I'm assuming I can add in features like the router, VueX (for state management, I understand), and CSS preprocessors as I need them. What I end up with is a new 'hello-world' folder inside my proejct with a bunch of things in it:</p>
 <img src="vue-create-files.PNG" alt="The files created when running the vue create command, in a VS CODE sidebar" class="post-img">
 <p class="post-p">So. We get:</p>
@@ -20,4 +21,185 @@ tags:
     <li>A pre-populated README.md file describing basing commands for running with npm.</li>
 <p class="post-p">As this last file tells us, if we run <code class="code">npm run serve</code>, we should be able to see our new site on the provided IP address (http://localhost:8080). And we do!</p>
 <img src="firstapp.PNG" alt="A screenshot of a webpage reading 'Welcome to Your Vue.js App'" class="w-2/3 post-img">
-<p class="post-p">Well that wasn't too bad.</p>
+<p class="post-p">Well that wasn't too bad. Now let's go about making it mine.</p>
+<p class="post-p">At this point, I'll <code class="code">run git</code> init to start a new repository, <code class="code">git add -A && git commit -m "Initial Commit"</code> to commit my basic vue codebase to it, and <code class="code">gh repo create</code> to push it to a new github repository.</p>
+<p class="post-p">Now, it does look like the video I'm following along with installed the Vue Router at creation time, so let's see how to install Vue plugins. It sems it's as simple as running <code class="code">vue add router</code>... but perhaps we can also use <code class="code">vue ui</code>? Let's see what that does...</p>
+<img src="vueui.PNG" alt="A screenshot of the vue UI screen" class="post-img">
+<p class="post-p">Wow! Look at all that functionality. To keep things a little simpler for myself, I'm doing to install the router from the command line for now, but I'll have to come back to this UI later. I'll just do <code class="code">vue add router</code> and when prompted, select "History Mode", which I gather separates routes with slashes instead of #'s.</p>
+<p class="post-p">So. We have an app, with a router. I gather that everything in the <code class="code">&lt;template&gt;</code> tag is what's displayed on the page - in this case, a div for navigation and some 'router-link' compontents that Vue is using to provide links behind the scenes. And the <code class="code">&lt;router-view&gt;</code> tag gets swapped out for whatever content we should be seeing on a given page, based on the router.</p>
+<p class="post-p">Let's see if I understand the fundamentals of how Vue apps are put together. I'll try to add another component to my about page. This is where I'm starting:</p>
+<p class="code-title">About.vue</p>
+{{< highlight html >}}
+<template>
+    <div class="about">
+      <h1>This is an about page</h1>
+    </div>
+  </template>
+{{< /highlight >}}
+<p class="post-p">Now, I could just add some hardcoded text to the template area, but the whole point is to explore components. So, I'll add a <code class="code">script</code> section to this file, mimicing what's in the HelloWorld.vue file, and add a <code class="code">&lt;about-card/&gt;</code> tag to the template area. Together, it looks like this:</p>
+<p class="code-title">About.vue</p>
+{{< highlight html "linenostart=8">}}
+<template>
+    <div class="about">
+      <h1>This is an about page</h1>
+      <about-card/>
+    </div>
+  </template>
+  
+  <script>
+  // @ is an alias to /src
+  import AboutCard from '@/components/AboutCard.vue'
+  
+  export default {
+    name: 'About',
+    components: {
+      AboutCard
+    }
+  }
+  </script>
+{{< /highlight >}}
+<p class="post-p">Then, in my components folder, I'll create an AboutCard.vue file, with a simple <code class="code">&lt;template&gt;</code>, <code class="code">&lt;script&gt;</code>, and <code class="code">&lt;style&gt;</code> sections, which I gather are the fundamental parts of the component:</p>
+<p class="code-title">components/AboutCard.vue</p>
+{{< highlight html >}}
+<template>
+    <div id="card">
+        <p>This is a card??</p>
+    </div>
+</template>
+
+<script>
+export default {
+  name: 'AboutCard',
+  props: {
+  }
+}
+</script>
+
+<style scoped>
+    #card {
+        background-color: lightpink;
+        width: 24rem;
+    }
+</style>
+{{< /highlight >}}
+<img src="componenttest1.PNG" alt="The Vue about page with added card component, with a pink background." class="mt-4 post-img">
+<p class="post-p">Well, it's not the prettiest website in the world, but it does demonstrate the inclusion of components into views. Of course, if I add more <code class="code">&lt;about-card/&gt;</code> cards to the template section, I'll get more "cards" appearing on the page.</p>
+<img src="multiplecomponents.PNG" alt="" class="post-img">
+<p class="post-p">Let's see about adding an extra page to this (very bad) app. How about a "pricing" page? It should display a number of sections, each with a price tier, price listing, and short description. Price for what? Who cares really.</p>
+<p class="post-p">I'll start with a /views/Pricing.vue file, route to it, then add the prices as a new component. The barebones page will be:</p>
+<p class="code-title">views/Pricing.vue</p>
+{{< highlight html >}}
+<template>
+    <div class="pricing">
+      <h1>Pricing</h1>
+    </div>
+  </template>
+  
+  <script>
+  
+  export default {
+    name: 'Pricing',
+    components: {
+    }
+  }
+  </script>
+  
+{{< /highlight >}}
+<p class="post-p">Then, in router/index.js, I'll add a route to this new page. I briefly had an error with the pricing page showing up blank save for the navigation at the top; this turned out to be caused by me listing the component as a string instead of an object(<code class="code">'Pricing'</code> instead of <code class="code">Pricing</code>) After that was fixed though, router/index.js looks like this:</p>
+<p class="code-title">router/index.js</p>
+{{< highlight js >}}
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/Home.vue'
+import Pricing from '@/views/Pricing.vue'
+
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    path: '/pricing',
+    name: 'Pricing',
+    component: Pricing
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
+
+export default router
+
+{{< /highlight >}}
+<p class="post-p">Which allows us to see our new "pricing" page in all its glory. Now I'll create a PriceTier component, and experiment with using props to dynamically add them to the page. I'll also add the pricing page to our nav section to make it easier to get to, by adding <code class="code">&lt;router-link to="/pricing"&gt;Pricing&lt;/router-link></code> to the div in my App.vue file.</p>
+<p class="post-p">I'll also add tailwind to this project for styling purposes, using<pre><code class="code">npm install -D tailwindcss@latest postcss@latest autoprefixer@latest<br>npx tailwindcss init -p</code></pre></p>
+<p class="post-p">Ah, oops! Looks like something in my tooling stack is using PostCSS 7, which requires its own compatibility version of tailwind. <a href="https://tailwindcss.com/docs/installation#post-css-7-compatibility-build">Per the Tailwind Documentation</a>, I'll run <pre><code class="code">npm uninstall tailwindcss postcss autoprefixer<br>npm install -D tailwindcss@npm:@tailwindcss/postcss7-compat postcss@^7 autoprefixer@^9</code></pre></p>
+<p class="post-p">which seems to have fixed the issue. And now I have access to all my familiar tailwind styles right in my .vue files, though intellisense for Tailwind is strangely broken. And I don't seem to be able to use the tailwind classes inside my <code class="code">style</code> blocks, only inline. Hmmmm. I'll circle back to that.</p>
+<p class="post-p">Interestingly, as I'm testing out my pricing-tier cards, it seems that there's a difference between the paths <code class="code">../components/PriceTier.vue</code> and <code class="code">@/components/PriceTier.vue</code>, the latter being what works and the former being what intellisense suggests. I'm also noting that when a component isn't given any data for a prop that you'd included in the template section via double-mustaches, it defaults to blank/empty. Which is rather nice that it doesn't just fault.</p>
+<p class="post-p">So, after some fiddling, here is the Price view and the PriceTier component, with some hard-coded data:</p>
+<p class="code-title">Pricing.vue</p>
+{{< highlight html >}}
+<template>
+    <h1 class="text-4xl">Pricing</h1>
+    <PriceTier PriceName="Hobbyist" Price="Free" PriceDescription="For those just getting started"/>
+    <PriceTier PriceName="Startup" Price="$9/mo" PriceDescription="For your small business"/>
+    <PriceTier PriceName="Business" Price="$49/mo" PriceDescription="For your big business"/>
+    <PriceTier PriceName="Enterprise" Price="Call Us" PriceDescription="For your enormous monopoly"/>
+  </template>
+  
+  <script>
+  import PriceTier from '@/components/PriceTier.vue'
+  
+  export default {
+    name: 'Pricing',
+    components: {
+      PriceTier
+    }
+  }
+  </script>
+  
+{{< /highlight >}}
+<p class="py-3"></p>
+<p class="code-title">PriceTier.vue</p>
+{{< highlight html >}}
+<template>
+    <div id="card">
+        <h2 class="text-xl">{{ PriceName /}}</h2>
+        <p class="text-4xl">{{ Price /}}</p>
+        <p class="italic">{{ PriceDescription /}}</p>
+    </div>
+</template>
+
+<script>
+export default {
+  name: 'PriceTier',
+  props: {
+    PriceName: String,
+    Price: String,
+    PriceDescription: String
+  }
+}
+</script>
+
+<style scoped>
+    #card {
+        border-width: 2px;
+        border-color: lightsteelblue;
+        background-color: lightgray;
+        width: 24rem;
+    }
+</style>
+
+{{< /highlight >}}
+<img src="manualpricing.PNG" alt="" class="mt-4 w-96 post-img">
+<p class="post-p">So, let's try to make this just a little more dynamic, and remove that hard-coded data.</p>
