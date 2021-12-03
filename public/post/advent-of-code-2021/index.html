@@ -95,7 +95,7 @@
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
 <p class="post-p">I feel like it's Advent of Code tradition for me to read in the input from file (as strings) and try to do comparisons on it like ints, forgetting to cast them to intergers. Which means I was comparing textually, instead of numerically, so my answer was off by <span class="italic">two</span>. Absurd. </p>
 <p class="post-p">You really could do <a href="https://adventofcode.com/2021/day/1">today's challenge</a> entirely in one line, but I think it's slightly more readable broken up as I've done. Here's the complete code:</p>
-<p class="code-title">part1.py</p>
+<p class="code-title">Day1/Part1.py</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
@@ -115,9 +115,9 @@ print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</spa
 </div>
 </div>
 <p class="post-img-caption">The offending line, where I remembered to cast the input to ints.</p>
-<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<h4 class="pt-4 pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
 <p class="post-p">Part 2 could also probably be inlined, but the list-comprehension-within-list-comprehension is, again, not the most readable thing, I think. Breaking out the three key steps (creating triples of the data, finding their sums, and finding where adjacent sums are decreasing) into 3 lines of code I think makes the solution more parsable.</p>
-<p class="code-title">part2.py</p>
+<p class="code-title">Day1/Part2.py</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
@@ -142,7 +142,80 @@ numDecreases <span style="color:#f92672">=</span> len([t <span style="color:#66d
 print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>numDecreases<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day1">Day 2 - Dive!</h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-">The first part of today's challenge has us dealing with a list of things that happen sequentially (tracking the horizontal and vertical movements of our submarine), but the answer only has to do with summing them in some specific ways. This smells strongly of a 'gotcha' coming in part 2 - if we can the easy, just-sum-it-up route for part 1, we won't be able to reuse any code for part 2 when the order actually matters. But that's alright, I guess, we'll take the easy route on this one.</p>
+<p class="post-p">There's a fair amount of repetition in my list comprehensions here, but for a 7-line program I don't terribly feel like factoring it out.</p>
+<p class="code-title">Day2/Part1.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    <span style="color:#75715e"># data is a list of tuples; each tuple is of form (&#39;instruction&#39;, int) where &#39;instruction&#39; is forward, down, up</span>
+    data <span style="color:#f92672">=</span> [(line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39; &#39;</span>)[<span style="color:#ae81ff">0</span>], int(line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39; &#39;</span>)[<span style="color:#ae81ff">1</span>])) <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)]
 
+horizontal <span style="color:#f92672">=</span> sum([step[<span style="color:#ae81ff">1</span>] <span style="color:#66d9ef">for</span> step <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> step[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;forward&#39;</span>])
+depth <span style="color:#f92672">=</span> sum([step[<span style="color:#ae81ff">1</span>] <span style="color:#66d9ef">for</span> step <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> step[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;down&#39;</span>]) <span style="color:#f92672">-</span> sum([step[<span style="color:#ae81ff">1</span>] <span style="color:#66d9ef">for</span> step <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> step[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;up&#39;</span>])
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution product is </span><span style="color:#e6db74">{</span>horizontal <span style="color:#f92672">*</span> depth <span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">As expected, we're paying the (small) price for not doing the first part iteratively. That's alright, we can implement it now.</p>
+<p class="post-p">This does give me a chance to play with a new feature of Python 3.10: structural pattern matching. It's like a switch-case structure on steroids. To make sure I'm running this code in Python 3.10 specifically, I'll use pipenv to lock the version to 3.10.0 by running <code class="code">pipenv install --python 3.10</code> on the command line.</p>
+<p class="post-p">Our code is ultimately fairly simple; thankfully, I encountered no "unmatched instruction" errors, which means I parsed the input correctly.</p>
+<p class="code-title">Day2/Part2.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    <span style="color:#75715e"># data is a list of tuples; each tuple is of form (&#39;instruction&#39;, int) where &#39;instruction&#39; is forward, down, up</span>
+    data <span style="color:#f92672">=</span> [(line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39; &#39;</span>)[<span style="color:#ae81ff">0</span>], int(line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39; &#39;</span>)[<span style="color:#ae81ff">1</span>])) <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)]
+
+horizontal, depth, aim <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>
+
+<span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> data:
+    match d:
+        case (<span style="color:#e6db74">&#39;down&#39;</span>, num):
+            aim <span style="color:#f92672">+=</span> num
+        case (<span style="color:#e6db74">&#39;up&#39;</span>, num):
+            aim <span style="color:#f92672">-=</span> num
+        case (<span style="color:#e6db74">&#39;forward&#39;</span>, num):
+            horizontal <span style="color:#f92672">+=</span> num
+            depth <span style="color:#f92672">+=</span> aim <span style="color:#f92672">*</span> num
+        case _:
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Unmatched instruction </span><span style="color:#e6db74">{</span>d<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution is </span><span style="color:#e6db74">{</span>horizontal<span style="color:#f92672">*</span>depth<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
 
 			</div>
 
