@@ -269,6 +269,203 @@ horizontal, depth, aim <span style="color:#f92672">=</span> <span style="color:#
 print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution is </span><span style="color:#e6db74">{</span>horizontal<span style="color:#f92672">*</span>depth<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day2">Day 3 - Binary Diagnostic </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Ah, day 3 of Advent of Code, where we traditionally get into nested-processing, working with binary, and parsing numbers based on their digits. I don't know that this literally happens on day 3 every year, but it seems a familiar progression in the early days of an Advent of Code challenge. My first thought is - let's make sure we iterate through the entire input as few times as possible, something made easier by the fact that epsilon and gamma are, in some sense, complements of each other.</p>
+<p class="post-p">This one's not too hard - using a <code class="code">defaultdict</code> from the <code class="code">collections</code> module makes the process of adding up the number of "1"'s in all the input numbers a little cleaner.</p>
+<p class="code-title">Day3/Part1.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> defaultdict
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+numInputs <span style="color:#f92672">=</span> len(data)
+onesCount <span style="color:#f92672">=</span> defaultdict(<span style="color:#66d9ef">lambda</span>: <span style="color:#ae81ff">0</span>)
+
+<span style="color:#75715e">#Count the number of &#34;1&#34;&#39;s at each digit position in all of the input numbers</span>
+<span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> data:
+    <span style="color:#66d9ef">for</span> i, digit <span style="color:#f92672">in</span> enumerate(num):
+        onesCount[i] <span style="color:#f92672">+=</span> int(digit)
+
+<span style="color:#75715e">#Calculate gamma, epison as lists of strings (&#34;1&#34; and &#34;0&#34;)</span>
+gamma <span style="color:#f92672">=</span> [(<span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#66d9ef">if</span> onesCount[i] <span style="color:#f92672">&gt;</span> (numInputs <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;0&#34;</span>) <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(onesCount))]
+epsilon <span style="color:#f92672">=</span> [(<span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#66d9ef">if</span> gamma[i] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;0&#34;</span>) <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(onesCount))]
+
+<span style="color:#75715e">#Concatenate lists, as 0b to represent binary, cast to int</span>
+result <span style="color:#f92672">=</span> int(<span style="color:#e6db74">&#39;0b&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&#39;</span><span style="color:#f92672">.</span>join(gamma), <span style="color:#ae81ff">2</span>) <span style="color:#f92672">*</span> int(<span style="color:#e6db74">&#39;0b&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&#39;</span><span style="color:#f92672">.</span>join(epsilon), <span style="color:#ae81ff">2</span>)
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>gamma<span style="color:#e6db74">= }</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span>epsilon<span style="color:#e6db74">= }</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span>result<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Now we're moving into the realm of processing some input data with multiple passes, while restricting which data is in each pass based on our processing of previous steps. My initial solution was a little cumbersome, but I think gets the intention accross pretty well. </p>
+<p class="code-title">Day2/Part2.py (Version 1)</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    inputdata <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mostCommonDigitInPosition</span>(data, position):
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#66d9ef">if</span> sum([int(num[position]) <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> data]) <span style="color:#f92672">&gt;=</span> len(data)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;0&#34;</span>
+
+
+oxyData <span style="color:#f92672">=</span> [d <span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> inputdata]
+co2Data <span style="color:#f92672">=</span> [d <span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> inputdata]
+
+<span style="color:#75715e">#find Oxygen Rating</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(inputdata[<span style="color:#ae81ff">0</span>])):
+    <span style="color:#66d9ef">if</span> len(oxyData) <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">1</span>: <span style="color:#66d9ef">break</span>
+    MCD_o2 <span style="color:#f92672">=</span> mostCommonDigitInPosition(oxyData, i)
+    oxyData <span style="color:#f92672">=</span> [t <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> oxyData <span style="color:#66d9ef">if</span> t[i] <span style="color:#f92672">==</span> MCD_o2]
+
+<span style="color:#75715e">#find CO2 Rating</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(inputdata[<span style="color:#ae81ff">0</span>])):
+    <span style="color:#66d9ef">if</span> len(co2Data) <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">1</span>: <span style="color:#66d9ef">break</span>
+    MCD_co2 <span style="color:#f92672">=</span> mostCommonDigitInPosition(co2Data, i)
+    co2Data <span style="color:#f92672">=</span> [t <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> co2Data <span style="color:#66d9ef">if</span> t[i] <span style="color:#f92672">!=</span> MCD_co2]
+
+<span style="color:#66d9ef">if</span> len(oxyData) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>: oxygenRating <span style="color:#f92672">=</span> int(oxyData[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>)
+<span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Oxygen Data should only have one element, instead was </span><span style="color:#e6db74">{</span>oxyData<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+<span style="color:#66d9ef">if</span> len(co2Data) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>: co2Rating <span style="color:#f92672">=</span> int(co2Data[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>)
+<span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;CO2 Data should only have one element, instead was </span><span style="color:#e6db74">{</span>co2Data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Product: </span><span style="color:#e6db74">{</span>oxygenRating<span style="color:#e6db74">}</span><span style="color:#e6db74"> * </span><span style="color:#e6db74">{</span>co2Rating<span style="color:#e6db74">}</span><span style="color:#e6db74"> = </span><span style="color:#e6db74">{</span>oxygenRating <span style="color:#f92672">*</span> co2Rating<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">We can refactor this a bit, so that the logic of reducing the list of input values is done in a function called <code class="code">calculateRating</code>, which takes a list of data as well as a function. The function tells us, for a given digit position, what value at that position should be used to keep values in our data for our next round of culling.</p>
+<p class="post-p">While we could also get a little fancy and combine <code class="code">mostCommonDigitInPosition</code> and <code class="code">leastCommonDigitInPosition</code>, I think we'd actually be in danger of making things <span class="italic">too</span> concise. The difference between <code class="code">>=</code> and <code class="code">></code> in each case is critical, and I think factoring that out might be too reductive.</p>
+<p class="code-title">Day3/Part2.py (Version 2)</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    inputdata <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mostCommonDigitInPosition</span>(data, position):
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#66d9ef">if</span> sum([int(num[position]) <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> data]) <span style="color:#f92672">&gt;=</span> len(data)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;0&#34;</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">leastCommonDigitInPosition</span>(data, position):
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#66d9ef">if</span> sum([int(num[position]) <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> data]) <span style="color:#f92672">&gt;=</span> len(data)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;1&#34;</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">calculateRating</span>(data, digitFunc):
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(data[<span style="color:#ae81ff">0</span>])):
+        <span style="color:#66d9ef">if</span> len(data) <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">1</span>: <span style="color:#66d9ef">break</span>
+        digitToMatch <span style="color:#f92672">=</span> digitFunc(data, i)
+        data <span style="color:#f92672">=</span> [t <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> t[i] <span style="color:#f92672">==</span> digitToMatch]
+
+    <span style="color:#66d9ef">if</span> len(data) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>: <span style="color:#66d9ef">return</span> int(data[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>)
+    <span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Function calculateRating should termiante with one element, instead was </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+oxygenRating <span style="color:#f92672">=</span> calculateRating(inputdata, mostCommonDigitInPosition)
+co2Rating <span style="color:#f92672">=</span> calculateRating(inputdata, leastCommonDigitInPosition)
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Product: </span><span style="color:#e6db74">{</span>oxygenRating<span style="color:#e6db74">}</span><span style="color:#e6db74"> * </span><span style="color:#e6db74">{</span>co2Rating<span style="color:#e6db74">}</span><span style="color:#e6db74"> = </span><span style="color:#e6db74">{</span>oxygenRating <span style="color:#f92672">*</span> co2Rating<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+
+<!--
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Enim adipisicing nostrud in velit nisi anim aliquip nostrud duis officia do elit veniam irure.</p>
+<p class="code-title">DayXXX/Part1.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e">#some code here</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Mollit voluptate tempor cillum amet cillum incididunt nisi.</p>
+<p class="code-title">DayXXX/Part2.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e">#Some Code Here</span></code></pre></td></tr></table>
+</div>
+</div>
+-->
 
 				</div>
 				
