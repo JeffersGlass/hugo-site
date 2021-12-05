@@ -15,6 +15,7 @@ slug_image: 1200px-Python-logo-notext.png
     <div class="ml-8 font-semibold">
         <p><a href="#day1">Day 1 - Sonar Sweep</a></p>
         <p><a href="#day2">Day 2 - Dive!</a></p>
+        <p><a href="#day4">Day 4 - Giant Squid</a></p>
     </div>
 </div>
 <h2 class="table-cell w-auto pb-1 border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day1">Day 1 - Sonar Sweep</h2>
@@ -48,7 +49,7 @@ print(f"{numDecreases=}")
 {{< /highlight >}}
 <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day2">Day 2 - Dive!</h2>
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
-<p class="post-">The first part of today's challenge has us dealing with a list of things that happen sequentially (tracking the horizontal and vertical movements of our submarine), but the answer only has to do with summing them in some specific ways. This smells strongly of a 'gotcha' coming in part 2 - if we can the easy, just-sum-it-up route for part 1, we won't be able to reuse any code for part 2 when the order actually matters. But that's alright, I guess, we'll take the easy route on this one.</p>
+<p class="post-p">The first part of today's challenge has us dealing with a list of things that happen sequentially (tracking the horizontal and vertical movements of our submarine), but the answer only has to do with summing them in some specific ways. This smells strongly of a 'gotcha' coming in part 2 - if we can the easy, just-sum-it-up route for part 1, we won't be able to reuse any code for part 2 when the order actually matters. But that's alright, I guess, we'll take the easy route on this one.</p>
 <p class="post-p">There's a fair amount of repetition in my list comprehensions here, but for a 7-line program I don't terribly feel like factoring it out.</p>
 <p class="code-title">Day2/Part1.py</p>
 {{< highlight python3 >}}
@@ -86,3 +87,96 @@ for d in data:
 
 print(f"Solution is {horizontal*depth= }")
 {{< /highlight >}}
+
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day4">Day 4 - Giant Squid</h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Today my biggest obstacle was, as is often the case, myself trying to be too clever and concise. <a href="https://adventofcode.com/2021/day/4">Today's challenge</a> invovled parsing a somewhat more involved text file of inputs, and then further processing that input to make it into a useful data structure. Rather than load each bingo card as a 2D array, I used the input data to create two separate arrays, one indexed by rows, the other by columns, with boards at the same position representing the same board. Determining whether a board is winning (given a list of called numbers) is a simple as asking whether any of the lines (rows or columns) in that board have all their members in the called numbers.</p>
+<p class="post-p">Had I simply constructed each type of input using <code class="code">for</code> loops, this would have been fairly simply, but I wanted everything packaged up nice in a list comprehension... which took me a spell to troubleshoot and get right. Ah well.</p>
+<p class="code-title">Day4/part1.py</p>
+<div class="overflow-y-scroll h-124">
+    {{< highlight python3 >}}
+    with open ("input.txt", 'r') as infile:
+        inputChunks = infile.read().split('\n\n')
+    
+    #---Parse the Input to make it useful----
+    
+    allCalledNumbers = [int(num) for num in inputChunks[0].split(',')]
+    boards = [' '.join(chunk.split('\n')) for chunk in inputChunks[1:]] #get boards
+    
+    #Make board list of ints instead of long string by splitting every 3 characters
+    intBoards = [[int(b[n:n+2]) for n in range(0, len(b), 3)] for b in boards]
+    
+    #boardrows is a list of boards, each of which are a list of rows in each board,
+    #each of which is a list of ints
+    boardRows = [[b[index:index+5] for index in range(0, 25, 5)] for b in intBoards]
+    
+    #boardcols is a list of boards, each of of which is a list of columns in each board,
+    #each of which is a list of ints
+    boardCols = [[[b[row][index] for row in range(5)] for index in range(5)] for b in boardRows]
+    
+    #---Define some functions to help us solve the problem as written---
+    
+    #For a given board (by row or column), are any of its lines made up only of numbers in 'calledNums'?
+    def isBoardAWin(board, calledNums):
+        return any([all([num in calledNums for num in line]) for line in board])
+    
+    #Score is (sum of uncalled numbers on board) * (last number called)
+    def calcScore(board, calledNumbers):
+        unusedNumbers = [num for line in board for num in line if num not in calledNumbers]
+        return sum(unusedNumbers) * calledNumbers[-1]
+    
+    def doWin(board, calledNumbers):
+        print(f"Score is {calcScore(b, calledSoFar)}")
+        exit()
+    
+    #---Find solution---
+    
+    for i in range(len(allCalledNumbers)):
+        calledSoFar = allCalledNumbers[:i]
+        print(f"Searching for wins with numbers {calledSoFar}")
+        winner = False
+        for b in boardRows:
+            if isBoardAWin(b, calledSoFar):
+                print(f"Winner board by row! \n {b}")
+                doWin(b, calledSoFar)
+    
+    
+        for b in boardCols:
+            if isBoardAWin(b, calledSoFar):
+                print(f"Winner board by column! \n {b}")
+                doWin(b, calledSoFar)
+    
+        print(f"No winners after {i} numbers, calling next number")
+    {{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Thankfully, the infrastructure I built for part 1 of this puzzle was very useful for part to. Basically, instead of iterating through increasingly long lists of called numbers until the <span class="italic">first</span> winning is found, keep going until only 1 board has not won, recall that it's the winner, then keep adding called numbers until it does win.</p>
+<p class="post-p">Since all of the setup and parsing steps are the same, I'll only include the solution finding part of the code, for brevity:</p>
+<p class="code-title">Day2/Part2.py <span class="italic">(Partial)</span></p>
+{{< highlight python3 "linenostart=35">}}
+#---Find solution---
+
+hasWon = [False for b in boards]
+
+for i in range(len(allCalledNumbers)):
+    calledSoFar = allCalledNumbers[:i]
+    for x, b in enumerate(boardRows):
+        if isBoardAWin(b, calledSoFar):
+            hasWon[x] = True
+            
+    for x, b in enumerate(boardCols):
+        if isBoardAWin(b, calledSoFar):
+            hasWon[x] = True
+
+    print(f"After calling {i} numbers,", end = " ")
+    if hasWon.count(False) == 1:
+        winningIndex = hasWon.index(False)
+        print(f"found last board to win at index: {winningIndex}")
+    elif hasWon.count(False) == 0:
+        print(f"This board wins after {i} numbers called,",)
+        doWin(boardCols[winningIndex], calledSoFar)
+    else:
+        print(f"{hasWon.count(False)} boards have not won")
+{{< /highlight >}}
+
