@@ -144,6 +144,7 @@
         <p><a href="#day2">Day 2 - Dive!</a></p>
         <p><a href="#day3">Day 3 - Binary Diagnostic</a></p>
         <p><a href="#day4">Day 4 - Giant Squid</a></p>
+        <p><a href="#day5">Day 5 - Hydrothermal Venture</a></p>
     </div>
 </div>
 <h2 class="table-cell w-auto pb-1 border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day1">Day 1 - Sonar Sweep</h2>
@@ -618,6 +619,164 @@ hasWon <span style="color:#f92672">=</span> [<span style="color:#66d9ef">False</
         print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>hasWon<span style="color:#f92672">.</span>count(<span style="color:#66d9ef">False</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74"> boards have not won&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day5">Day 5 - Hydrothermal Venture </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">One of the gotchas on this day is making incorrect assumptions about the ordering of points in a given line. For eaxmple, for a line with endpoints (3,5) and (3,0), doing something like: <code class="code">for y in range(point1.y, point2.y)</code> will generate exactly one point <code class="code">(3.5)</code>, because the ending y coordinate is less than the starting one. This can be fixed by either ranging over the values in a consistent direction (always from lesser to great, say) or by pre-sorting the line coordinates so that the first coordinate is always less than the second for the given axis. I chose to do the former.</p>
+<p class="post-p">Unrelatedly, I'm personally a fan of <a href="https://regex101.com/">Regex101</a> for working out regexes. It makes the process of fleshing out a given pattern visual and intuitive, and the built-in reference guides and regex tips are invaluable.</p>
+<p class="code-title">Day5/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">import</span> re
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> namedtuple
+
+<span style="color:#66d9ef">with</span> open (<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+
+Line <span style="color:#f92672">=</span> namedtuple(<span style="color:#e6db74">&#39;Line&#39;</span>, [<span style="color:#e6db74">&#39;p1x&#39;</span>, <span style="color:#e6db74">&#39;p1y&#39;</span>, <span style="color:#e6db74">&#39;p2x&#39;</span>, <span style="color:#e6db74">&#39;p2y&#39;</span>])
+parsedData <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> data:
+    reg <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>search(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;(.+),(.+) -&gt; (.+),(.+)&#39;</span>, d)
+    parsedData<span style="color:#f92672">.</span>append(Line(p1x <span style="color:#f92672">=</span> int(reg<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)), p1y <span style="color:#f92672">=</span> int(reg<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">2</span>)), p2x <span style="color:#f92672">=</span> int(reg<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">3</span>)), p2y <span style="color:#f92672">=</span> int(reg<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">4</span>))))
+
+horizontalLines <span style="color:#f92672">=</span> [l <span style="color:#66d9ef">for</span> l <span style="color:#f92672">in</span> parsedData <span style="color:#66d9ef">if</span> l<span style="color:#f92672">.</span>p1y <span style="color:#f92672">==</span> l<span style="color:#f92672">.</span>p2y]
+verticalLines <span style="color:#f92672">=</span> [l <span style="color:#66d9ef">for</span> l <span style="color:#f92672">in</span> parsedData <span style="color:#66d9ef">if</span> l<span style="color:#f92672">.</span>p1x <span style="color:#f92672">==</span> l<span style="color:#f92672">.</span>p2x]
+
+coveredOnce, coveredMany <span style="color:#f92672">=</span> set(), set()
+
+<span style="color:#66d9ef">for</span> l <span style="color:#f92672">in</span> horizontalLines:
+    <span style="color:#66d9ef">for</span> xCoord <span style="color:#f92672">in</span> range(min(l<span style="color:#f92672">.</span>p1x, l<span style="color:#f92672">.</span>p2x), max(l<span style="color:#f92672">.</span>p1x, l<span style="color:#f92672">.</span>p2x)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+        point <span style="color:#f92672">=</span> (xCoord, l<span style="color:#f92672">.</span>p1y)
+        <span style="color:#75715e">#If the point is already covered by multiple lines, we don&#39;t need to do anything more with it, but</span>
+        <span style="color:#66d9ef">if</span> point <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> coveredMany:
+            <span style="color:#75715e">#If we haven&#39;t see it at all, we should mark that we&#39;ve now seen it once.</span>
+            <span style="color:#66d9ef">if</span> point <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> coveredOnce:
+                coveredOnce<span style="color:#f92672">.</span>add(point)
+            <span style="color:#75715e">#Otherwise, we should mark that we&#39;ve now seen it in multiple lines</span>
+            <span style="color:#66d9ef">else</span>:
+                coveredOnce<span style="color:#f92672">.</span>remove(point)
+                coveredMany<span style="color:#f92672">.</span>add(point)
+
+<span style="color:#66d9ef">for</span> l <span style="color:#f92672">in</span> verticalLines:
+    <span style="color:#66d9ef">for</span> yCoord <span style="color:#f92672">in</span> range(min(l<span style="color:#f92672">.</span>p1y, l<span style="color:#f92672">.</span>p2y), max(l<span style="color:#f92672">.</span>p1y, l<span style="color:#f92672">.</span>p2y)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+        point <span style="color:#f92672">=</span> (l<span style="color:#f92672">.</span>p1x, yCoord)
+        <span style="color:#75715e">#If the point is already covered by multiple lines, we don&#39;t need to do anything more with it, but</span>
+        <span style="color:#66d9ef">if</span> point <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> coveredMany:
+            <span style="color:#75715e">#If we haven&#39;t see it at all, we should mark that we&#39;ve now seen it once.</span>
+            <span style="color:#66d9ef">if</span> point <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> coveredOnce:
+                coveredOnce<span style="color:#f92672">.</span>add(point)
+            <span style="color:#75715e">#Otherwise, we should mark that we&#39;ve now seen it in multiple lines</span>
+            <span style="color:#66d9ef">else</span>:
+                coveredOnce<span style="color:#f92672">.</span>remove(point)
+                coveredMany<span style="color:#f92672">.</span>add(point)
+                
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution is: </span><span style="color:#e6db74">{</span>len(coveredMany)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+    </code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="italic post-img-caption">Scroll to see complete code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Having selected to iterate over the points in a line in a consistent way in the first half, I felt it might be easier to pre-process the diagonal lines in the second half. That is, I swapped the endpoints of each diagonal line as necessary to ensure the point with the lower X coordinate was first. Then, if the second y coordinate is great  than the first, each time we increase the x coordinate by 1, we will by definition incrase the y coordinate by 1. If the second y coordinate is less than the first, y decreased by 1 for each increase of the x coordinate. Other than that, the processing of each point to see if it's been covered already is the same as in part one.</p>
+<p class="post-p">For brevity, I've only included the addititional processing necessary for part 2 of today's challenge.</p>
+<p class="code-title">Day5/Part2.py <span class="italic">(Partial)</span></p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">diagonalLines <span style="color:#f92672">=</span> [l <span style="color:#66d9ef">for</span> l <span style="color:#f92672">in</span> parsedData <span style="color:#66d9ef">if</span> l <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> verticalLines <span style="color:#f92672">and</span> l <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> horizontalLines]
+
+<span style="color:#66d9ef">for</span> l <span style="color:#f92672">in</span> diagonalLines:
+    <span style="color:#75715e">#Make sure the first coordinate of each line is left of the second coordinte</span>
+    <span style="color:#66d9ef">if</span> l<span style="color:#f92672">.</span>p2x <span style="color:#f92672">&lt;</span> l<span style="color:#f92672">.</span>p1x: l <span style="color:#f92672">=</span> Line(p1x <span style="color:#f92672">=</span> l<span style="color:#f92672">.</span>p2x, p1y <span style="color:#f92672">=</span> l<span style="color:#f92672">.</span>p2y, p2x <span style="color:#f92672">=</span> l<span style="color:#f92672">.</span>p1x, p2y <span style="color:#f92672">=</span> l<span style="color:#f92672">.</span>p1y)
+    <span style="color:#75715e">#Determine if y increases or descreases with increasing X</span>
+    yDir <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">if</span> l<span style="color:#f92672">.</span>p2y <span style="color:#f92672">&gt;</span> l<span style="color:#f92672">.</span>p1y <span style="color:#66d9ef">else</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+
+    <span style="color:#66d9ef">for</span> yDelta, xCoord <span style="color:#f92672">in</span> enumerate(range(l<span style="color:#f92672">.</span>p1x, l<span style="color:#f92672">.</span>p2x<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)):
+        point <span style="color:#f92672">=</span> (xCoord, l<span style="color:#f92672">.</span>p1y <span style="color:#f92672">+</span> (yDelta<span style="color:#f92672">*</span>yDir))
+
+        <span style="color:#66d9ef">if</span> point <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> coveredMany:
+            <span style="color:#75715e">#If we haven&#39;t see it at all, we should mark that we&#39;ve now seen it once.</span>
+            <span style="color:#66d9ef">if</span> point <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> coveredOnce: 
+                coveredOnce<span style="color:#f92672">.</span>add(point)
+            <span style="color:#75715e">#Otherwise, we should mark that we&#39;ve now seen it in multiple lines</span>
+            <span style="color:#66d9ef">else</span>:
+                coveredOnce<span style="color:#f92672">.</span>remove(point)
+                coveredMany<span style="color:#f92672">.</span>add(point)
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution is: </span><span style="color:#e6db74">{</span>len(coveredMany)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+
+
 
 <!--
 <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
