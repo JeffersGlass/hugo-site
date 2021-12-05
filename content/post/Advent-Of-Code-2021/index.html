@@ -17,6 +17,7 @@ slug_image: 1200px-Python-logo-notext.png
         <p><a href="#day2">Day 2 - Dive!</a></p>
         <p><a href="#day3">Day 3 - Binary Diagnostic</a></p>
         <p><a href="#day4">Day 4 - Giant Squid</a></p>
+        <p><a href="#day5">Day 5 - Hydrothermal Venture</a></p>
     </div>
 </div>
 <h2 class="table-cell w-auto pb-1 border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day1">Day 1 - Sonar Sweep</h2>
@@ -267,6 +268,89 @@ for i in range(len(allCalledNumbers)):
     else:
         print(f"{hasWon.count(False)} boards have not won")
 {{< /highlight >}}
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day5">Day 5 - Hydrothermal Venture </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">One of the gotchas on this day is making incorrect assumptions about the ordering of points in a given line. For eaxmple, for a line with endpoints (3,5) and (3,0), doing something like: <code class="code">for y in range(point1.y, point2.y)</code> will generate exactly one point <code class="code">(3.5)</code>, because the ending y coordinate is less than the starting one. This can be fixed by either ranging over the values in a consistent direction (always from lesser to great, say) or by pre-sorting the line coordinates so that the first coordinate is always less than the second for the given axis. I chose to do the former.</p>
+<p class="post-p">Unrelatedly, I'm personally a fan of <a href="https://regex101.com/">Regex101</a> for working out regexes. It makes the process of fleshing out a given pattern visual and intuitive, and the built-in reference guides and regex tips are invaluable.</p>
+<p class="code-title">Day5/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+import re
+from collections import namedtuple
+
+with open ("input.txt", 'r') as infile:
+    data = infile.read().split("\n")
+
+Line = namedtuple('Line', ['p1x', 'p1y', 'p2x', 'p2y'])
+parsedData = []
+for d in data:
+    reg = re.search(r'(.+),(.+) -> (.+),(.+)', d)
+    parsedData.append(Line(p1x = int(reg.group(1)), p1y = int(reg.group(2)), p2x = int(reg.group(3)), p2y = int(reg.group(4))))
+
+horizontalLines = [l for l in parsedData if l.p1y == l.p2y]
+verticalLines = [l for l in parsedData if l.p1x == l.p2x]
+
+coveredOnce, coveredMany = set(), set()
+
+for l in horizontalLines:
+    for xCoord in range(min(l.p1x, l.p2x), max(l.p1x, l.p2x)+1):
+        point = (xCoord, l.p1y)
+        #If the point is already covered by multiple lines, we don't need to do anything more with it, but
+        if point not in coveredMany:
+            #If we haven't see it at all, we should mark that we've now seen it once.
+            if point not in coveredOnce:
+                coveredOnce.add(point)
+            #Otherwise, we should mark that we've now seen it in multiple lines
+            else:
+                coveredOnce.remove(point)
+                coveredMany.add(point)
+
+for l in verticalLines:
+    for yCoord in range(min(l.p1y, l.p2y), max(l.p1y, l.p2y)+1):
+        point = (l.p1x, yCoord)
+        #If the point is already covered by multiple lines, we don't need to do anything more with it, but
+        if point not in coveredMany:
+            #If we haven't see it at all, we should mark that we've now seen it once.
+            if point not in coveredOnce:
+                coveredOnce.add(point)
+            #Otherwise, we should mark that we've now seen it in multiple lines
+            else:
+                coveredOnce.remove(point)
+                coveredMany.add(point)
+                
+print(f"Solution is: {len(coveredMany)}")
+    {{< /highlight >}}
+</div>
+<p class="italic post-img-caption">Scroll to see complete code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Having selected to iterate over the points in a line in a consistent way in the first half, I felt it might be easier to pre-process the diagonal lines in the second half. That is, I swapped the endpoints of each diagonal line as necessary to ensure the point with the lower X coordinate was first. Then, if the second y coordinate is great  than the first, each time we increase the x coordinate by 1, we will by definition incrase the y coordinate by 1. If the second y coordinate is less than the first, y decreased by 1 for each increase of the x coordinate. Other than that, the processing of each point to see if it's been covered already is the same as in part one.</p>
+<p class="post-p">For brevity, I've only included the addititional processing necessary for part 2 of today's challenge.</p>
+<p class="code-title">Day5/Part2.py <span class="italic">(Partial)</span></p>
+{{< highlight python3 "linenostart=44">}}
+diagonalLines = [l for l in parsedData if l not in verticalLines and l not in horizontalLines]
+
+for l in diagonalLines:
+    #Make sure the first coordinate of each line is left of the second coordinte
+    if l.p2x < l.p1x: l = Line(p1x = l.p2x, p1y = l.p2y, p2x = l.p1x, p2y = l.p1y)
+    #Determine if y increases or descreases with increasing X
+    yDir = 1 if l.p2y > l.p1y else -1
+
+    for yDelta, xCoord in enumerate(range(l.p1x, l.p2x+1)):
+        point = (xCoord, l.p1y + (yDelta*yDir))
+
+        if point not in coveredMany:
+            #If we haven't see it at all, we should mark that we've now seen it once.
+            if point not in coveredOnce: 
+                coveredOnce.add(point)
+            #Otherwise, we should mark that we've now seen it in multiple lines
+            else:
+                coveredOnce.remove(point)
+                coveredMany.add(point)
+
+print(f"Solution is: {len(coveredMany)}")
+{{< /highlight >}}
+
+
 
 <!--
 <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
