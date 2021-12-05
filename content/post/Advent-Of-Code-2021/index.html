@@ -15,6 +15,7 @@ slug_image: 1200px-Python-logo-notext.png
     <div class="ml-8 font-semibold">
         <p><a href="#day1">Day 1 - Sonar Sweep</a></p>
         <p><a href="#day2">Day 2 - Dive!</a></p>
+        <p><a href="#day3">Day 3 - Binary Diagnostic</a></p>
         <p><a href="#day4">Day 4 - Giant Squid</a></p>
     </div>
 </div>
@@ -87,7 +88,94 @@ for d in data:
 
 print(f"Solution is {horizontal*depth= }")
 {{< /highlight >}}
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day3">Day 3 - Binary Diagnostic </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Ah, day 3 of Advent of Code, where we traditionally get into nested-processing, working with binary, and parsing numbers based on their digits. I don't know that this literally happens on day 3 every year, but it seems a familiar progression in the early days of an Advent of Code challenge. My first thought is - let's make sure we iterate through the entire input as few times as possible, something made easier by the fact that epsilon and gamma are, in some sense, complements of each other.</p>
+<p class="post-p">This one's not too hard - using a <code class="code">defaultdict</code> from the <code class="code">collections</code> module makes the process of adding up the number of "1"'s in all the input numbers a little cleaner.</p>
+<p class="code-title">Day3/Part1.py</p>
+{{< highlight python3 >}}
+from collections import defaultdict
 
+with open("input.txt", 'r') as infile:
+    data = infile.read().split('\n')
+
+numInputs = len(data)
+onesCount = defaultdict(lambda: 0)
+
+#Count the number of "1"'s at each digit position in all of the input numbers
+for num in data:
+    for i, digit in enumerate(num):
+        onesCount[i] += int(digit)
+
+#Calculate gamma, epison as lists of strings ("1" and "0")
+gamma = [("1" if onesCount[i] > (numInputs / 2) else "0") for i in range(len(onesCount))]
+epsilon = [("1" if gamma[i] == "0" else "0") for i in range(len(onesCount))]
+
+#Concatenate lists, as 0b to represent binary, cast to int
+result = int('0b' + ''.join(gamma), 2) * int('0b' + ''.join(epsilon), 2)
+print(f"{gamma= } {epsilon= } {result= }")
+{{< /highlight >}}
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Now we're moving into the realm of processing some input data with multiple passes, while restricting which data is in each pass based on our processing of previous steps. My initial solution was a little cumbersome, but I think gets the intention accross pretty well. </p>
+<p class="code-title">Day2/Part2.py (Version 1)</p>
+{{< highlight python3 >}}
+with open("input.txt", 'r') as infile:
+    inputdata = infile.read().split('\n')
+
+def mostCommonDigitInPosition(data, position):
+    return "1" if sum([int(num[position]) for num in data]) >= len(data)/2 else "0"
+
+
+oxyData = [d for d in inputdata]
+co2Data = [d for d in inputdata]
+
+#find Oxygen Rating
+for i in range(len(inputdata[0])):
+    if len(oxyData) <= 1: break
+    MCD_o2 = mostCommonDigitInPosition(oxyData, i)
+    oxyData = [t for t in oxyData if t[i] == MCD_o2]
+
+#find CO2 Rating
+for i in range(len(inputdata[0])):
+    if len(co2Data) <= 1: break
+    MCD_co2 = mostCommonDigitInPosition(co2Data, i)
+    co2Data = [t for t in co2Data if t[i] != MCD_co2]
+
+if len(oxyData) == 1: oxygenRating = int(oxyData[0], 2)
+else: raise ValueError(f"Oxygen Data should only have one element, instead was {oxyData}")
+
+if len(co2Data) == 1: co2Rating = int(co2Data[0], 2)
+else: raise ValueError(f"CO2 Data should only have one element, instead was {co2Data}")
+
+print(f"Product: {oxygenRating} * {co2Rating} = {oxygenRating * co2Rating= }")
+{{< /highlight >}}
+<p class="post-p">We can refactor this a bit, so that the logic of reducing the list of input values is done in a function called <code class="code">calculateRating</code>, which takes a list of data as well as a function. The function tells us, for a given digit position, what value at that position should be used to keep values in our data for our next round of culling.</p>
+<p class="post-p">While we could also get a little fancy and combine <code class="code">mostCommonDigitInPosition</code> and <code class="code">leastCommonDigitInPosition</code>, I think we'd actually be in danger of making things <span class="italic">too</span> concise. The difference between <code class="code">>=</code> and <code class="code">></code> in each case is critical, and I think factoring that out might be too reductive.</p>
+<p class="code-title">Day3/Part2.py (Version 2)</p>
+{{< highlight python3 >}}
+with open("input.txt", 'r') as infile:
+    inputdata = infile.read().split('\n')
+
+def mostCommonDigitInPosition(data, position):
+    return "1" if sum([int(num[position]) for num in data]) >= len(data)/2 else "0"
+
+def leastCommonDigitInPosition(data, position):
+    return "0" if sum([int(num[position]) for num in data]) >= len(data)/2 else "1"
+
+def calculateRating(data, digitFunc):
+    for i in range(len(data[0])):
+        if len(data) <= 1: break
+        digitToMatch = digitFunc(data, i)
+        data = [t for t in data if t[i] == digitToMatch]
+
+    if len(data) == 1: return int(data[0], 2)
+    else: raise ValueError(f"Function calculateRating should termiante with one element, instead was {data}")
+
+oxygenRating = calculateRating(inputdata, mostCommonDigitInPosition)
+co2Rating = calculateRating(inputdata, leastCommonDigitInPosition)
+
+print(f"Product: {oxygenRating} * {co2Rating} = {oxygenRating * co2Rating= }")
+{{< /highlight >}}
 <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day4">Day 4 - Giant Squid</h2>
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
 <p class="post-p">Today my biggest obstacle was, as is often the case, myself trying to be too clever and concise. <a href="https://adventofcode.com/2021/day/4">Today's challenge</a> invovled parsing a somewhat more involved text file of inputs, and then further processing that input to make it into a useful data structure. Rather than load each bingo card as a 2D array, I used the input data to create two separate arrays, one indexed by rows, the other by columns, with boards at the same position representing the same board. Determining whether a board is winning (given a list of called numbers) is a simple as asking whether any of the lines (rows or columns) in that board have all their members in the called numbers.</p>
@@ -180,3 +268,18 @@ for i in range(len(allCalledNumbers)):
         print(f"{hasWon.count(False)} boards have not won")
 {{< /highlight >}}
 
+<!--
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-96 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Enim adipisicing nostrud in velit nisi anim aliquip nostrud duis officia do elit veniam irure.</p>
+<p class="code-title">DayXXX/Part1.py</p>
+{{< highlight python3 >}}
+#some code here
+{{< /highlight >}}
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Mollit voluptate tempor cillum amet cillum incididunt nisi.</p>
+<p class="code-title">DayXXX/Part2.py</p>
+{{< highlight python3 >}}
+#Some Code Here
+{{< /highlight >}}
+-->
