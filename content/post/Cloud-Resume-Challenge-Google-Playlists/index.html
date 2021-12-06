@@ -10,9 +10,38 @@ tags:
 <p class="post-p">As one might guess from my approach to the <a href="tags/codeadvent">Advent of Code challenges</a>, my preferred langauge for bashing together solutions like this is Python. So I'll be following the <a href="https://developers.google.com/youtube/v3/quickstart/python">Python Quickstart Guide</a> for the YouTube Data API to see if that gets me anywhere.</p>
 <p class="post-p">Since I prefer to work inside a pipenv, I'll start by running <code class="code">pipenv install google-api-python-client --python 3.10</code> and <code class="code">pipenv install google-auth-oauthlib google-auth-httplib2</code> to get the prerequisite libraries set up.</p>
 <p class="post-p">On the Google Cloud Platform API page, I'll click the project button at the top and create a new project called "hugo-youtube-playlists". In the library panel, I'll enable the YouTube Data API v3 for this new project as well.</p>
-<p class="post-p">The next step, creating an oauth2 clientID, is a a bit more involved, as I first need to configure my consent screen.</p>
+<p class="italic post-p">Editors note - the following 3 steps turned out to be unnecessary, and are included here for posterity. Feel free to skip ahead to the next editor's note.</p>
+<p class="post-p">The next step, according to the guide, creating an oauth2 clientID, is a a bit more involved, as I first need to configure my consent screen.</p>
 <img src="configureconsent.PNG" alt="A screenshot of the GCP dialog instruciting the user to configure a consent screen before creating an OAuth client ID" class="post-img">
 <p class="post-p">And since I'm not a <span class="italic">Google Workspace User</span>, I can apparently only create "External" apps, which means I'll have to manually add users to the list of tes users who can use my app... which should be fine, since the only user will be me, I expect.</p>
 <img src="internalexternal.PNG" alt="" class="post-img">
 <p class="post-p">The settings for creating a consent screen don't seem to arduous, and most are optional besides the application name and some contact email information. The only scope I expect the app to need access to is read-only access to the YouTube Data API v3; thankfully, the filtering function on the 34-pages of possible scopes helps find that.</p>
-<img src="readonlyscope" alt="A window on GCP showing the ability to select scopes that a user app will access, with only the YouTube Data API V3 readonly option selected" class="post-img">
+<img src="readonlyscope.PNG" alt="A window on GCP showing the ability to select scopes that a user app will access, with only the YouTube Data API V3 readonly option selected" class="post-img">
+<p class="post-p">Finally, I'll add myself as a "test" user (though up to 100 are allowed, I only need 1).</p>
+<p class="italic post-p">Editor's note: actually necessary steps pick up here.</p>
+<p class="post-p"><span class="line-through">Now, I'll head over to the YouTube data API's sample for listing channel data and copy that over into a script</span>. Actually, though the YouTube API explorer allows you to run code using just an API key and returns a valid response, the sample code provided only works for OAuth authentication. Thankfully, <a href="https://stackoverflow.com/questions/57531368/where-do-you-specify-your-api-key-when-making-a-request-with-the-google-api-pyth">Stack Overflow comes to the rescue</a> as it so often does, with a simple bit of code that uses an API key to make a request.</p>
+<p class="code-title">yt-request.py</p>
+{{< highlight python3 "hl_lines=6" >}}
+import json
+
+def test():
+    from googleapiclient.discovery import build
+    
+    with open('config.json', 'r', encoding='utf-8') as infile:
+        config = json.load(infile)
+    api_key = config['yt_api_key']  # Please set your API key
+
+    api_service_name = "youtube"
+    api_version = "v3"
+    youtube = build(api_service_name, api_version, developerKey=api_key)
+    request = youtube.channels().list(
+        part="snippet,contentDetails,statistics",
+        id="UC_x5XG1OV2P6uZZ5FSM9Ttw"
+    )
+    response = request.execute()
+    print(json.dumps(response, indent=4))
+
+if __name__ == "__main__":
+    test()
+{{< /highlight >}}
+<p class="post-p">In this case, the API key I created earlier is stored in the config.json file, which I've of-course added to my .gitignore file so it doesn't pop up on Github and do all kinds of nefarious things. The YouTube ID in the above code snippet is also the default one provided.</p>
