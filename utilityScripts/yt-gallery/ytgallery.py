@@ -21,7 +21,8 @@ def getPlaylistVideos(playlistID, maxVids = 5):
     )
 
     response = request.execute()
-    print(json.dumps(response, indent=4))
+    #print(json.dumps(response, indent=4))
+    return (response)
 
 def getUploadsPLFromChannelID(channelID):
     youtube = prebuild()
