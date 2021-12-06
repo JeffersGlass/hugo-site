@@ -70,32 +70,35 @@ tags:
 <p class="post-p">In this case, the API key I created earlier is stored in the config.json file, which I've of-course added to my .gitignore file so it doesn't pop up on Github and do all kinds of nefarious things. The YouTube ID in the above code snippet is also the default one provided.</p>
 <p class="post-p">With these methods created, it's pretty straightforward to write a little script that just pulls the 5 most recently uploaded videos from my youtube channel and stashes the data in a json file.</p>
 <p class="code-title">generateAll.py</p>
-{{< highlight python3 >}}
-from ytgallery import *
-
-myChannelID = "UCjgmTMVx2B5_DOB3bCZBq7A"
-myUploads = "UUjgmTMVx2B5_DOB3bCZBq7A"
-
-def generateIndexGallery():
-    videos = getPlaylistVideos(myUploads, maxVids=5)
-    info = list()
-    for vData in videos['items']:
-        vid = {
-            'id': vData['snippet']['resourceId']['videoId'],
-            'title': vData['snippet']['title'],
-            'thumbnailURL': vData['snippet']['thumbnails']['high']['url']
-            }
-        info.append(vid)
-
-    with open("../../data/yt/indexvideos.json", "w+") as outfile:
-        json.dump(info, outfile)
-
-def main():
-    generateIndexGallery()
-
-if __name__ == "__main__":
-    main()
-{{< /highlight >}}
+<div class="overflow-y-scroll h-124">
+    {{< highlight python3 >}}
+    from ytgallery import *
+    
+    myChannelID = "UCjgmTMVx2B5_DOB3bCZBq7A"
+    myUploads = "UUjgmTMVx2B5_DOB3bCZBq7A"
+    
+    def generateIndexGallery():
+        videos = getPlaylistVideos(myUploads, maxVids=5)
+        info = list()
+        for vData in videos['items']:
+            vid = {
+                'id': vData['snippet']['resourceId']['videoId'],
+                'title': vData['snippet']['title'],
+                'thumbnailURL': vData['snippet']['thumbnails']['high']['url']
+                }
+            info.append(vid)
+    
+        with open("../../data/yt/indexvideos.json", "w+") as outfile:
+            json.dump(info, outfile)
+    
+    def main():
+        generateIndexGallery()
+    
+    if __name__ == "__main__":
+        main()
+    {{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
 <p class="post-p">So, I can create a list of recent videos. Now how to display them on the homepage? Thankfully, Hugo has built-in functionality for working with json/toml/yaml data in the form of <a href="https://gohugo.io/templates/data-templates/">Data Templates</a>. It took quite a bit of bumbling around to work out the proper syntax, but here's what I worked out:</p>
 <ul class="post-ul">
     <li>Data (as json, yaml, or toml file) goes into the /data folder (optionally into subfolders). For me, this is in a file at data/yt/indexvideos.json <span class="italic">for videos that will be embedded into index.html</span>.</li>
@@ -155,5 +158,5 @@ my-hugo-project
 <p class="post-p">All this put together creates a series of divs on the front-page corresponding to my 5 most recently uploaded YouTube videos.</p>
 <img src="autovideos.PNG" alt="A screenshot of the various youtube videos that appear automatically on the front-page" class="post-img">
 <p class="post-p">I'm currently relying on the fact that the script which generates the json file populates it with 5 videos, but I could also have limited it to 5 videos in the range command using something like <code class="code">range first 5...</code></p>
-<p class="post-p">Speaking of which, the next step in automation is to have my</p>
+<p class="post-p">Speaking of which, the next step in automation is to have my script that pulls the 5 most recent videos run every time I build the site. Ideally, it would also fail gracefully in the case that it can't retrieve the new videos, i.e. if it can't connect to YouTube's API for some reason. But it turns out that running a Python script from npm is non-trivial - there are a number of ways to do it, including the <a href="https://www.npmjs.com/package/python-shell">python-shell</a> package, but it seems like a chunky project in its own right.</p>
 <p class="post-p">This being a static site and all, this isn't exactly always my latest 5 uploaded videos. It's the 5 most recently uploaded videos <span class="italic">at the last time Hugo built the site</span>. But that's a decent enough tradeoff for me.</p>
