@@ -35,5 +35,5 @@ def getUploadsPLFromChannelID(channelID):
     return(response['items'][0]['contentDetails']['relatedPlaylists']['uploads'])
 
 if __name__ == "__main__":
-    print(getUploadsPLFromChannelID("UCjgmTMVx2B5_DOB3bCZBq7A"))
-    print(getPlaylistVideos("UUjgmTMVx2B5_DOB3bCZBq7A"))
+    print(json.dumps(getUploadsPLFromChannelID("UCjgmTMVx2B5_DOB3bCZBq7A"), indent=4))
+    print(json.dumps(getPlaylistVideos("UUjgmTMVx2B5_DOB3bCZBq7A"), indent=4))
