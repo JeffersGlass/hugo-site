@@ -10,6 +10,7 @@ tags:
 <p class="post-p">As one might guess from my approach to the <a href="tags/codeadvent">Advent of Code challenges</a>, my preferred langauge for bashing together solutions like this is Python. So I'll be following the <a href="https://developers.google.com/youtube/v3/quickstart/python">Python Quickstart Guide</a> for the YouTube Data API to see if that gets me anywhere.</p>
 <p class="post-p">Since I prefer to work inside a pipenv, I'll start by running <code class="code">pipenv install google-api-python-client --python 3.10</code> and <code class="code">pipenv install google-auth-oauthlib google-auth-httplib2</code> to get the prerequisite libraries set up.</p>
 <p class="post-p">On the Google Cloud Platform API page, I'll click the project button at the top and create a new project called "hugo-youtube-playlists". In the library panel, I'll enable the YouTube Data API v3 for this new project as well.</p>
+<div class="px-4 bg-yellow-100">
 <p class="italic post-p">Editors note - the following 3 steps turned out to be unnecessary, and are included here for posterity. Feel free to skip ahead to the next editor's note.</p>
 <p class="post-p">The next step, according to the guide, creating an oauth2 clientID, is a a bit more involved, as I first need to configure my consent screen.</p>
 <img src="configureconsent.PNG" alt="A screenshot of the GCP dialog instruciting the user to configure a consent screen before creating an OAuth client ID" class="post-img">
@@ -18,30 +19,141 @@ tags:
 <p class="post-p">The settings for creating a consent screen don't seem to arduous, and most are optional besides the application name and some contact email information. The only scope I expect the app to need access to is read-only access to the YouTube Data API v3; thankfully, the filtering function on the 34-pages of possible scopes helps find that.</p>
 <img src="readonlyscope.PNG" alt="A window on GCP showing the ability to select scopes that a user app will access, with only the YouTube Data API V3 readonly option selected" class="post-img">
 <p class="post-p">Finally, I'll add myself as a "test" user (though up to 100 are allowed, I only need 1).</p>
+</div>
 <p class="italic post-p">Editor's note: actually necessary steps pick up here.</p>
-<p class="post-p"><span class="line-through">Now, I'll head over to the YouTube data API's sample for listing channel data and copy that over into a script</span>. Actually, though the YouTube API explorer allows you to run code using just an API key and returns a valid response, the sample code provided only works for OAuth authentication. Thankfully, <a href="https://stackoverflow.com/questions/57531368/where-do-you-specify-your-api-key-when-making-a-request-with-the-google-api-pyth">Stack Overflow comes to the rescue</a> as it so often does, with a simple bit of code that uses an API key to make a request.</p>
+<p class="post-p"><span class="line-through">Now, I'll head over to the YouTube data API's sample for listing channel data and copy that over into a script</span>. Actually, though the YouTube API explorer allows you to run code using just an API key and returns a valid response, the sample code provided only works for OAuth authentication. Thankfully, <a href="https://stackoverflow.com/questions/57531368/where-do-you-specify-your-api-key-when-making-a-request-with-the-google-api-pyth">Stack Overflow comes to the rescue</a> as it so often does, with a simple bit of code that uses an API key to make a request. From there, I built a couple of useful utility functions that get, for a given Channel ID, the playlist representing All Uploads and, for a given playlist, get the most recent X videos (5 by default).</p>
 <p class="code-title">yt-request.py</p>
-{{< highlight python3 "hl_lines=6" >}}
-import json
-
-def test():
-    from googleapiclient.discovery import build
+<div class="overflow-y-scroll h-124">
+    {{< highlight python3 >}}
+    import json
     
-    with open('config.json', 'r', encoding='utf-8') as infile:
-        config = json.load(infile)
-    api_key = config['yt_api_key']  # Please set your API key
+    def prebuild():
+        from googleapiclient.discovery import build
+    
+        with open('config.json', 'r', encoding='utf-8') as infile:
+            config = json.load(infile)
+        api_key = config['yt_api_key']  # Please set your API key
+    
+        api_service_name = "youtube"
+        api_version = "v3"
+        return build(api_service_name, api_version, developerKey=api_key)
+    
+    def getPlaylistVideos(playlistID, maxVids = 5):
+        youtube = prebuild()
+    
+        request = youtube.playlistItems().list(
+            part="snippet,contentDetails",
+            maxResults=maxVids,
+            playlistId=playlistID
+        )
+    
+        response = request.execute()
+        #print(json.dumps(response, indent=4))
+        return (response)
+    
+    def getUploadsPLFromChannelID(channelID):
+        youtube = prebuild()
+    
+        request = youtube.channels().list(
+            part="snippet,contentDetails,statistics",
+            id=channelID
+        )
+        response = request.execute()
+        return(response['items'][0]['contentDetails']['relatedPlaylists']['uploads'])
+    
+    if __name__ == "__main__":
+        print(getUploadsPLFromChannelID("UCjgmTMVx2B5_DOB3bCZBq7A"))
+        print(getPlaylistVideos("UUjgmTMVx2B5_DOB3bCZBq7A"))
+    {{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<p class="post-p">In this case, the API key I created earlier is stored in the config.json file, which I've of-course added to my .gitignore file so it doesn't pop up on Github and do all kinds of nefarious things. The YouTube ID in the above code snippet is also the default one provided.</p>
+<p class="post-p">With these methods created, it's pretty straightforward to write a little script that just pulls the 5 most recently uploaded videos from my youtube channel and stashes the data in a json file.</p>
+<p class="code-title">generateAll.py</p>
+{{< highlight python3 >}}
+from ytgallery import *
 
-    api_service_name = "youtube"
-    api_version = "v3"
-    youtube = build(api_service_name, api_version, developerKey=api_key)
-    request = youtube.channels().list(
-        part="snippet,contentDetails,statistics",
-        id="UC_x5XG1OV2P6uZZ5FSM9Ttw"
-    )
-    response = request.execute()
-    print(json.dumps(response, indent=4))
+myChannelID = "UCjgmTMVx2B5_DOB3bCZBq7A"
+myUploads = "UUjgmTMVx2B5_DOB3bCZBq7A"
+
+def generateIndexGallery():
+    videos = getPlaylistVideos(myUploads, maxVids=5)
+    info = list()
+    for vData in videos['items']:
+        vid = {
+            'id': vData['snippet']['resourceId']['videoId'],
+            'title': vData['snippet']['title'],
+            'thumbnailURL': vData['snippet']['thumbnails']['high']['url']
+            }
+        info.append(vid)
+
+    with open("../../data/yt/indexvideos.json", "w+") as outfile:
+        json.dump(info, outfile)
+
+def main():
+    generateIndexGallery()
 
 if __name__ == "__main__":
-    test()
+    main()
 {{< /highlight >}}
-<p class="post-p">In this case, the API key I created earlier is stored in the config.json file, which I've of-course added to my .gitignore file so it doesn't pop up on Github and do all kinds of nefarious things. The YouTube ID in the above code snippet is also the default one provided.</p>
+<p class="post-p">So, I can create a list of recent videos. Now how to display them on the homepage? Thankfully, Hugo has built-in functionality for working with json/toml/yaml data in the form of <a href="https://gohugo.io/templates/data-templates/">Data Templates</a>. It took quite a bit of bumbling around to work out the proper syntax, but here's what I worked out:</p>
+<ul class="post-ul">
+    <li>Data (as json, yaml, or toml file) goes into the /data folder (optionally into subfolders). For me, this is in a file at data/yt/indexvideos.json <span class="italic">for videos that will be embedded into index.html</span>.</li>
+    <li>We range over the data <span class="underline">in a particular file</span> using syntax like <code class="code">range $.Site.Data.indexvideos</code>. Note the lack of file extension.</li>
+    <li>Within that range, we reference our partial, <span class="underline">and we pass it the current context using the '.' operator</span>. This allows the partial to receive the data from the current "object" the range function is operating over.</li>
+    <li>Within each partial, we can refer to individual attributes using double-mustache syntax, with using the dot operator to refernece the current context as in <code class="code">{{ .id }}</code></li>
+</ul>
+<p class="post-p">That's a bit of a word jumble, but perhaps it will be more clear visually. Here is the directory structure of files, a selected part of the template file (index.html) and the partial (yt_index.html):</p>
+<p class="code-title">Directory Structure</p>
+{{< highlight plaintext >}}
+my-hugo-project
+├── data
+│   ├── yt
+│   │   ├──indexvideos.json
+├── layouts
+│   ├── index.html
+│   ├── partials    
+│   │   ├──yt_index.html 
+'   '   '
+'   '   '
+{{< /highlight >}}
+<div class="h-4"></div>
+<p class="code-title">indexvideos.json <span class="italic">(partial)</span></p>
+{{< highlight json >}}
+[
+    {
+    "id": "r3Z6bVylrbs",
+    "title": "Using Analog Dials in your Projects",
+    "thumbnailURL": "https://i.ytimg.com/vi/r3Z6bVylrbs/hqdefault.jpg"
+    },
+    {
+    "id": "E-TAz610T0c",
+    "title": "Wireless DMX LED Pixel Control #Shorts",
+    ...
+{{< /highlight >}}
+<div class="h-4"></div>
+<p class="code-title">index.html <span class="italic">(partial)</span></p>
+{{< highlight html "hl_lines=3" >}}
+<div class="flex flex-col space-y-2 md:space-y-0 md:space-x-2 md:flex-row">
+    {{ range $.Site.Data.indexvideos }}
+        {{ partial "yt_index.html" . }}
+    {{ end }}
+</div>
+{{< /highlight >}}
+<p class="post-img-caption">The dot after the name of the partial is <span class="underline">crucial</span>; it passes the current context to the partial template so the partial has access to all the data it needs.</p>
+<div class="h-4"></div>
+<p class="code-title">yt_index.html</p>
+{{< highlight html >}}
+<div>
+    <a href="https://www.youtube.com/watch?v={{ .id }}">
+    <div class="border-2 border-gray-400">
+      <img src="{{ .thumbnailURL }}" alt="Youtube Video: {{ .title }}" class="w-auto">
+    </div>
+    <p class="m-auto text-sm italic text-center">{{ .title }}</p></a>
+</div>
+{{< /highlight >}}
+<p class="post-p">All this put together creates a series of divs on the front-page corresponding to my 5 most recently uploaded YouTube videos.</p>
+<img src="autovideos.PNG" alt="A screenshot of the various youtube videos that appear automatically on the front-page" class="post-img">
+<p class="post-p">I'm currently relying on the fact that the script which generates the json file populates it with 5 videos, but I could also have limited it to 5 videos in the range command using something like <code class="code">range first 5...</code></p>
+<p class="post-p">Speaking of which, the next step in automation is to have my</p>
+<p class="post-p">This being a static site and all, this isn't exactly always my latest 5 uploaded videos. It's the 5 most recently uploaded videos <span class="italic">at the last time Hugo built the site</span>. But that's a decent enough tradeoff for me.</p>
