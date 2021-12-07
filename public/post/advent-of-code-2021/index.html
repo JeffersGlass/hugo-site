@@ -152,6 +152,7 @@
         <p><a href="#day4">Day 4 - Giant Squid</a></p>
         <p><a href="#day5">Day 5 - Hydrothermal Venture</a></p>
         <p><a href="#day6">Day 6 - Lanternfish</a></p>
+        <p><a href="#day7">Day 7 - The Treachery of Whales</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -842,38 +843,157 @@ print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;After
 </div>
 
 
-<div class="relative-anchor">
-    <!--
-    <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
-    <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
-    <p class="post-p">Enim adipisicing nostrud in velit nisi anim aliquip nostrud duis officia do elit veniam irure.</p>
-    <p class="code-title">DayXXX/Part1.py</p>
-    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day7">Day 7 - The Treachery of Whales </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Just to humblebrag a bit (well, really, to brag; but hey, it's my website), I solved part 1 of day's challenge in the shower. My reasoing went something like the following:</p>
+<ul class="post-ul">
+    <li>We're looking to select a point <img src="xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> that minimizes the function <img src="day7/p1mineq.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, as presented in problem setup.</li>
+    <li>Taking the derivative of this sum is somewhat complicated, but there's actually a better way to reason about it.</li>
+    <li>Looked at another way, we're looking to find a point <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> such that moving that point will only cause the total crab-distance traveled to increase; a local minimum.</li>
+    <li>Picture our point where our crabs our converging at a point <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> on the number line, with <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs less than x and <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs great than <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> </li>
+    <li>As we slide our alignment point along the number line in a continuous fashion, if it moves a small distance <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> in, say the positive direction:
+        <li class="pl-8">We add <img src="day7/ndeltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> units of additional crab travel, as we move further from the crabs at positions less than our alignment point, but</li>
+        <li class="pl-8">We subtract <img src="day7/totalcrabsub.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> as we move closer to the crabs greater than our alignment point</li>
+    </li>
+    <li>And similarly, if <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is negative, we get closer to <img src="n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs and futher from <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs.</li>
+    <li>So, if <img src="day7/ngreater.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, increasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> will cause the total crab distance to descrease. And if <img src="day7/nless.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, decreasing <img src="xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> with cause thte total crab distance to increase.</li>
+    <li>But recall, what we want is to find a point where neither of those things is true; where <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is at a mimumum, so any movement of it causes the total crab distance to incerase. This is only true where neither of the above inequalities is statisfied, i.e. when <img src="day7/nequal.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">.</li>
+    <li>Moving some terms around, we find that the total crab distance travelled is at a mimimum when <img src="day7/div2.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, in other words, when the number of crabs greater than and less than the alignment point are equal. This is true when <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is the median of the crab points.</li>
+</ul>
+<p class="post-p">All that thinking in a warm shower yeilded a very short (and working) bit of code.</p>
+<p class="code-title">Day7/Part1.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#75715e">#some code here</span>
-    </code></pre></td></tr></table>
-</div>
-</div>
-    <h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
-    <p class="post-p">Mollit voluptate tempor cillum amet cillum incididunt nisi.</p>
-    <p class="code-title">DayXXX/Part2.py</p>
-    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#75715e">#Some Code Here</span>
-    </code></pre></td></tr></table>
-</div>
-</div>
-    -->
-</div>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> statistics <span style="color:#f92672">import</span> median
 
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> [int(num) <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;,&#39;</span>)]
+
+median <span style="color:#f92672">=</span> median(data)
+minFuel <span style="color:#f92672">=</span> sum([abs(d<span style="color:#f92672">-</span>median) <span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> data])
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>minFuel<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Sadly, my brain failed me when trying to come up with a similarly clever solution for part 2, so I ended up implementing the crab-fuel-expenditure function as described in the problem statement and iteratively increasing and decreasing the alignment point value until a minimum was found. I had the code start at the median value of the list, somewhat arbitrarily, but the code still finishes in under a quarter of a second and yields the correct answer.</p>
+<p class="post-p">I skipped a couple of obvious optimizations. 
+    <ul class="pb-6 post-ul">
+        <li>Incrementing the position that we're currently testing the crab-distance of by only 1 unit each time probably isn't optimal (for my inputs, I had to evaluate 140 positions before finding a minimum). Perhaps some variation on Newton's method could have been used to estimate a better delta for <code class="code">testVal</code>?</li>
+        <li>There might be a more ideal value to start the search at (the mean perhaps?).</li>
+    </ul>
+</p>
+<p class="code-title">Day7/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#f92672">from</span> statistics <span style="color:#f92672">import</span> median
+    
+    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+        data <span style="color:#f92672">=</span> [int(num) <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;,&#39;</span>)]
+    
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fuelUsed</span>(crabPositions, position):
+        <span style="color:#66d9ef">return</span> sum([(abs(d <span style="color:#f92672">-</span> position)<span style="color:#f92672">*</span>(abs(d<span style="color:#f92672">-</span>position)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> crabPositions])
+    
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">lazyDict</span>(dict):
+        <span style="color:#66d9ef">def</span> __init__ (self, factory):
+            self<span style="color:#f92672">.</span>factory <span style="color:#f92672">=</span> factory
+        <span style="color:#66d9ef">def</span> __missing__ (self, key):
+            self[key] <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>factory(key)
+            <span style="color:#66d9ef">return</span> self[key]
+    
+    fuelToReach <span style="color:#f92672">=</span> lazyDict(<span style="color:#66d9ef">lambda</span> x: fuelUsed(data, x))
+    
+    med <span style="color:#f92672">=</span> median(data)
+    fuelToReach[med] <span style="color:#f92672">=</span> fuelUsed(data, med)
+    testVal <span style="color:#f92672">=</span> med
+    
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">not</span> ((fuelToReach[testVal] <span style="color:#f92672">&lt;</span> fuelToReach[testVal<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]) <span style="color:#f92672">and</span> (fuelToReach[testVal] <span style="color:#f92672">&lt;</span> fuelToReach[testVal<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>])):
+        <span style="color:#66d9ef">if</span> fuelToReach[testVal<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">&lt;</span> fuelToReach[testVal]: testVal <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">elif</span> fuelToReach[testVal<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">&lt;</span> fuelToReach[testVal]: testVal <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Something has gone wrong</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span>fuelToReach<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)
+    
+    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Minimum required fuel is reached at position </span><span style="color:#e6db74">{</span>testVal<span style="color:#e6db74">}</span><span style="color:#e6db74"> with </span><span style="color:#e6db74">{</span>fuelToReach[testVal]<span style="color:#e6db74">}</span><span style="color:#e6db74"> fuel used&#34;</span>)
+    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Calculated </span><span style="color:#e6db74">{</span>len(fuelToReach)<span style="color:#e6db74">}</span><span style="color:#e6db74"> potential positions&#34;</span>)
+    
+    
+    
+    </code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+
+<!--
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Enim adipisicing nostrud in velit nisi anim aliquip nostrud duis officia do elit veniam irure.</p>
+<p class="code-title">DayXXX/Part1.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e">#some code here</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Mollit voluptate tempor cillum amet cillum incididunt nisi.</p>
+<p class="code-title">DayXXX/Part2.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e">#Some Code Here</span></code></pre></td></tr></table>
+</div>
+</div>
+-->
 				</div>
 				
 			</article>
