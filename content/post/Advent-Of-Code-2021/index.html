@@ -22,6 +22,7 @@ images: ['https://new.jeff.glass/post/advent-of-code-2021/python_cover.png']
         <p><a href="#day5">Day 5 - Hydrothermal Venture</a></p>
         <p><a href="#day6">Day 6 - Lanternfish</a></p>
         <p><a href="#day7">Day 7 - The Treachery of Whales</a></p>
+        <p><a href="#day8">Day 8 - Seven Segment Search</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -463,6 +464,109 @@ print(f"{minFuel= }")
     
     
     {{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day8">Day 8 - Seven Segment Search </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Whenever the first part of an AoC challenge says <code class="code">For now...</code> you know you're in for an expansion of that area of the challenge in part 2. Today's part one specifcally says to <code class="code">For now, focus on the easy digits</code>, meaning the hard digits are coming right down the pipe.</p>
+<p class="post-p">Part 1 is indeed pretty easy - it breaks down to parsing the input, throwing away half of it, then counting the members of a list that have a length of 2, 3, 4, or 7 letters. I had a feeling we'd be parsing the actual digit information in part 2, so I fleshed out a bit of a dataclass to hold the input values, assuming I'd expand this in part 2.</p>
+<p class="code-title">Day8/Part1.py</p>
+{{< highlight python3 >}}
+from dataclasses import dataclass
+
+@dataclass
+class displayRun:
+    hookups: list[str]
+    outputs: list[str]
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    runs = [displayRun(hookups = line.split('|')[0].strip().split(" "), outputs = line.split('|')[1].strip().split(" ")) for line in infile.read().split('\n')]
+
+totalUnique = sum([sum([(1 if len(segments) in [2,3,4,7] else 0) for segments in r.outputs]) for r in runs])
+print(f"{totalUnique=}")
+{{< /highlight >}}
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Ah, here we go, let's parse some digits. We'll need to figure out which actual segments (from <code class="code">'abcdefg'</code>) are represented by which letters in the input rows.</p>
+<p class="post-p">I'll start by organizing the "hookups" (sequences of letters describing the segments lit up for a given digit) ina dictionary by the number of letters in each. This will help us tease apart which segment is which by looking at which segments are in how members members of each of thes lists.</p>
+<p class="post-p">For example, as part 1 illustrates, there is only 1 hookup with 2 segments ("1") and 1 hookup with 2 segments ("7"). The segment connected to the <code class="code">a</code> illuminator is present in the "7" hookup, but not in the "1" hookup, and that's their only difference, so it's easy to find what's wired to the "a" segment.</p>
+<p class="post-p">The remainder of the deductions are slightly more complicated. For example:
+    <ul class="post-ul">
+        <li>In the 3 digits with 5 segments illuminated (2, 3, 5), there are three segments common to all three (segments, <code class="code">a</code>, <code class="code">d</code>, and <code class="code">g</code>).</li>
+        <li>We've already found what's hooked up to segment <code class="code">a</code>, as above. So the remaining two common segments correspond to illuminators <code class="code">d</code> and <code class="code">g</code>, in some order.</li>
+        <li>The segment corresponding to <code class="code">d</code> will be present in the single hookup with 4 illuminated sigments (which corresponds to the digit "4"); the segment corresponding to <code class="code">g</code> will not. So we have established which segments should be wired now to <code class="code">d</code> and <code class="code">g</code>.</li>
+    </ul>
+</p>
+<p class="post-p">Similar logic allows us to work out:
+    <ul class="post-ul">
+        <li>Segments <code class="code">e</code> and <code class="code">b</code> (both are in a single digit with 5 illuminated segments, with <code class="codce">e</code> present in 2 hookups with 6 illuminated segments and <code class="codce">b</code> present in 3).</li>
+        <li>Segments <code class="code">c</code> and <code class="code">f</code> (both are present in two digits with 5 illuminated segments, with <code class="codce">c</code> present in 2 hookups with 6 illuminated segments and <code class="codce">f</code> present in 3).</li>
+    </ul>
+</p>
+<p class="post-p">There may be a more concise way of working this out, but this method worked out for me.</p>
+<p class="post-p">Once we know the mappings from poorly-wired-segments to true segments, we can iterate over all our input rows, transform the messed-up wirings to true wirings using this mapping, map the true mappings to digits, then sum them up.</p>
+<p class="code-title">Day8/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from dataclasses import dataclass
+
+@dataclass(kw_only=True)
+class displayRun:
+    hookups: list[str]
+    outputs: list[str]
+    segmentAssigns : dict[str:str](default_factory=dict)
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    runs = [displayRun(hookups = line.split('|')[0].strip().split(" "), outputs = line.split('|')[1].strip().split(" "), segmentAssigns = dict()) for line in infile.read().split('\n')]
+
+def numFromSegmentsOn(segmentsOn):
+    sortedLetters = ''.join(sorted([letter for letter in segmentsOn]))
+    if  sortedLetters == 'abcefg'   : return 0
+    if  sortedLetters == 'cf'       : return 1
+    if  sortedLetters == 'acdeg'    : return 2
+    if  sortedLetters == 'acdfg'    : return 3
+    if  sortedLetters == 'bcdf'     : return 4
+    if  sortedLetters == 'abdfg'    : return 5
+    if  sortedLetters == 'abdefg'   : return 6
+    if  sortedLetters == 'acf'      : return 7
+    if  sortedLetters == 'abcdefg'  : return 8
+    if  sortedLetters == 'abcdfg'   : return 9
+    raise ValueError(f"Sorted letters {sortedLetters} do not match any digit pattern")
+
+
+sum = 0
+for r in runs:
+    #Determine display: control wire mapping
+    #{"actual illuminated output: wire that currently controls it"}
+    hookupsWithLen = dict()
+    for i in range(2, 7+1):
+        hookupsWithLen[i] = [h for h in r.hookups if len(h) == i]
+
+    r.segmentAssigns['a'] = [seg for seg in 'abcdefg' if (seg in hookupsWithLen[3][0] and seg not in hookupsWithLen[2][0])][0] #know wiring of segment a]
+
+    d_or_g = [seg for seg in 'abcdefg' if (len([h for h in hookupsWithLen[5] if seg in h]) == 3 and seg != r.segmentAssigns['a'])] #based on hookups with 5 segments
+    r.segmentAssigns['d'] = [seg for seg in 'abcdefg' if seg in d_or_g and seg in hookupsWithLen[4][0]][0] #based on single length-4 hookup
+    r.segmentAssigns['g'] = [seg for seg in 'abcdefg' if seg in d_or_g and seg != r.segmentAssigns['d']][0]
+
+
+    b_or_e = [seg for seg in 'abcdefg' if len([h for h in hookupsWithLen[5] if seg in h]) == 1] #based on hookups with 5 segments on
+    r.segmentAssigns['e'] = [seg for seg in 'abcdefg' if seg in b_or_e and len([h for h in hookupsWithLen[6] if seg in h]) == 2][0] #based on hookups with 5 segments and knowing 'b' already
+    r.segmentAssigns['b'] = [seg for seg in 'abcdefg' if seg in b_or_e and seg != r.segmentAssigns['e']][0]
+
+
+    c_or_f = [seg for seg in 'abcdefg' if len([h for h in hookupsWithLen[5] if seg in h]) == 2] #based on hookups with 5 segments on
+    r.segmentAssigns['c'] = [seg for seg in 'abcdefg' if seg in c_or_f and len([h for h in hookupsWithLen[6] if seg in h]) == 2][0]
+    r.segmentAssigns['f'] = [seg for seg in 'abcdefg' if seg in c_or_f and seg != r.segmentAssigns['c']][0]
+
+    #convert miswired digits to real digits, then to numbers, and sum up
+    rowSum = 0
+    for i, digit in enumerate(r.outputs):
+        rewiredDigit = ''.join([seg for seg in 'abcdefg' if r.segmentAssigns[seg] in digit])
+        rewiredNum = numFromSegmentsOn(rewiredDigit)
+        rowSum += rewiredNum * 10 ** (3-i)
+    sum += rowSum
+
+print(f"Total of all rewired numbers: {sum}")
+{{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see full code</p>
 
