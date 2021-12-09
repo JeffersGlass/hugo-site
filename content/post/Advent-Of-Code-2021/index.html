@@ -23,6 +23,7 @@ images: ['https://new.jeff.glass/post/advent-of-code-2021/python_cover.png']
         <p><a href="#day6">Day 6 - Lanternfish</a></p>
         <p><a href="#day7">Day 7 - The Treachery of Whales</a></p>
         <p><a href="#day8">Day 8 - Seven Segment Search</a></p>
+        <p><a href="#day9">Day 9 - Smoke Basin</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -569,6 +570,73 @@ print(f"Total of all rewired numbers: {sum}")
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see full code</p>
+
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day9">Day 9 - Smoke Basin </h2><h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Another classic evolution of the Advent of Code is working with adjacent items in a grid, with the biggest connundrum/gotcha being how to deal with the edges/corners. While the list comprehension I've put together here isn't necessarily the most readable at first glance, nor the most efficient (it generates 9 positions, of which 4 are usable), it gets the job done.</p>
+<p class="code-title">Day9/Part1.py</p>
+{{< highlight python3 >}}
+from collections import defaultdict
+
+data = defaultdict(lambda:100)
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    raw = infile.read().split('\n')
+    numRows = len(raw)
+    numCols = len(raw[0])
+    for r, row in enumerate(raw):
+        for c, col in enumerate(row):
+            data[(r, c)] = int(col)
+
+total = 0
+
+for r in range(numRows):
+    for c in range(numCols):
+        #print([(r + deltar, c + deltac) for deltar in [-1, 0, 1] for deltac in [-1, 0, 1] if (deltar*deltac == 0 and deltar != deltac)])
+        if all([data[(r, c)] < data[(r + deltar, c + deltac)] for deltar in [-1, 0, 1] for deltac in [-1, 0, 1] if (deltar*deltac == 0 and deltar != deltac)]):
+            total += data[(r, c)] + 1
+
+print(f"{total= }")
+{{< /highlight >}}
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">The second part of today's challenge is essentially a flood-fill algorithm starting from the points we identified in part 1, ending when we reach the edges of the input data or a '9' in the data itself. By appending new points of interest to the end of the list (and only adding them if we haven't included them in the basin points already), we don't run into the issue of constantly checking points from each other.</p>
+<p class="post-p">Again, the meat of this solution is contained in a really long list comprehension. Probably not the most readable, as its checking four separate conditions to see if it should add a new point. Two have to do with generating the neighboring points, one to check if the newly checked point is a '9', and one to check if we've already included this point in the basin we're looking at.</p>
+<p class="post-p">Once we've found the sizes of all the basins, we take the three largest sizes, multiply them together, and we have our answer.</p>
+<p class="code-title">Day9/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from collections import defaultdict
+from math import prod
+
+data = defaultdict(lambda:9)
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    raw = infile.read().split('\n')
+    numRows = len(raw)
+    numCols = len(raw[0])
+    for r, row in enumerate(raw):
+        for c, col in enumerate(row):
+            data[(r, c)] = int(col)
+
+basins = list()
+
+#Find the low point for each bsain (as in part 1)
+for r in range(numRows):
+    for c in range(numCols):
+        if all([data[(r, c)] < data[(r + deltar, c + deltac)] for deltar in [-1, 0, 1] for deltac in [-1, 0, 1] if (deltar*deltac == 0 and deltar != deltac)]):
+            basins.append([(r, c),])
+
+#Flood fill each basin until it hits a wall
+basinLengths = []
+for b in basins:
+    for pos in b:
+        b.extend([(pos[0] + deltar, pos[1] + deltac) for deltar in [-1, 0, 1] for deltac in [-1, 0, 1] if (deltar*deltac == 0 and deltar != deltac and data[(pos[0] + deltar, pos[1] + deltac)] != 9 and (pos[0] + deltar, pos[1] + deltac) not in b)])
+    basinLengths.append(len(b))
+
+print(f"Solution: {prod(sorted(basinLengths, reverse=True)[:3])}")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
+
 
 <!--
 <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
