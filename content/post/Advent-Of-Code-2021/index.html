@@ -24,6 +24,7 @@ images: ['https://new.jeff.glass/post/advent-of-code-2021/python_cover.png']
         <p><a href="#day7">Day 7 - The Treachery of Whales</a></p>
         <p><a href="#day8">Day 8 - Seven Segment Search</a></p>
         <p><a href="#day9">Day 9 - Smoke Basin</a></p>
+        <p><a href="#day10">Day 10 - Syntax Scoring</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -633,6 +634,78 @@ for b in basins:
     basinLengths.append(len(b))
 
 print(f"Solution: {prod(sorted(basinLengths, reverse=True)[:3])}")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day10">Day 10 - Syntax Scoring</h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Today's part 1 is not too hard if you understand the concept of a stack - a list from which things are only added or removed from the end. Our latest character can always be an opening bracket of some kind (starting a new chunk) or a closing bracket. For a closing bracket, if it matches the last opening bracket in our stack, pop the last opening bracket off the stack and throw both of them away. If it doesn't match, we've found our first illegal character and can stop and score.</p>
+<p class="code-title">Day10/Part1.py</p>
+<div class="overflow-y-scroll h-96">
+{{< highlight python3 >}}
+with open ("input.txt", "r", encoding='utf-8') as infile:
+    data = infile.read().split("\n")
+
+lefts  = [ '(',     '[',    '{',    '<' ]
+rights = [ ')',     ']',    '}',    '>' ]
+points = [ 3,       57,     1197,   25137]
+
+totalScore = 0
+
+for line in data:
+    stack = list()
+    for char in line:
+        if char in lefts:
+            stack.append(char)
+        elif char in rights:
+            lastLeft = stack.pop()
+            if lefts.index(lastLeft) != rights.index(char):
+                totalScore += points[rights.index(char)]
+                break
+        else: raise ValueError(f"Unkown character {char}")
+    else:
+        continue
+
+print(f"{totalScore= }")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">For part 2, we'll score our incomplete lines if and only if there are no corrupt characters in the line; that is, if we reach the end of iterating through the line without hitting a corrupt character. This is what the <code class="code">for...else</code> syntax achieves. We hand off these incomplete lines to the <code class="code">autocompleteScore</code> method for scoring, append those scores to the list, and find the middle (median) element at the end.</p>
+<p class="code-title">Day10/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from statistics import median
+
+with open ("input.txt", "r", encoding='utf-8') as infile:
+    data = infile.read().split("\n")
+
+lefts  = [ '(',     '[',    '{',    '<' ]
+rights = [ ')',     ']',    '}',    '>' ]
+points = [ 1,       2,      3,      4   ]
+
+scores = list()
+
+def autocompleteScore(stack):
+    score = 0
+    for item in stack[::-1]:
+        score = (score * 5) + points[lefts.index(item)]
+    return score
+
+for line in data:
+    stack = list()
+    for char in line:
+        if char in lefts:
+            stack.append(char)
+        elif char in rights:
+            lastLeft = stack.pop()
+            if lefts.index(lastLeft) != rights.index(char):
+                break
+        else: raise ValueError(f"Unkown character {char}")
+    else:
+        scores.append(autocompleteScore(stack))
+
+print(f"{median(scores)= }")
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
