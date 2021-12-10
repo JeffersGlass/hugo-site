@@ -155,6 +155,7 @@
         <p><a href="#day7">Day 7 - The Treachery of Whales</a></p>
         <p><a href="#day8">Day 8 - Seven Segment Search</a></p>
         <p><a href="#day9">Day 9 - Smoke Basin</a></p>
+        <p><a href="#day10">Day 10 - Syntax Scoring</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -1263,6 +1264,141 @@ basinLengths <span style="color:#f92672">=</span> []
     basinLengths<span style="color:#f92672">.</span>append(len(b))
 
 print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Solution: </span><span style="color:#e6db74">{</span>prod(sorted(basinLengths, reverse<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)[:<span style="color:#ae81ff">3</span>])<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day10">Day 10 - Syntax Scoring</h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Today's part 1 is not too hard if you understand the concept of a stack - a list from which things are only added or removed from the end. Our latest character can always be an opening bracket of some kind (starting a new chunk) or a closing bracket. For a closing bracket, if it matches the last opening bracket in our stack, pop the last opening bracket off the stack and throw both of them away. If it doesn't match, we've found our first illegal character and can stop and score.</p>
+<p class="code-title">Day10/Part1.py</p>
+<div class="overflow-y-scroll h-96">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">with</span> open (<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+
+lefts  <span style="color:#f92672">=</span> [ <span style="color:#e6db74">&#39;(&#39;</span>,     <span style="color:#e6db74">&#39;[&#39;</span>,    <span style="color:#e6db74">&#39;{&#39;</span>,    <span style="color:#e6db74">&#39;&lt;&#39;</span> ]
+rights <span style="color:#f92672">=</span> [ <span style="color:#e6db74">&#39;)&#39;</span>,     <span style="color:#e6db74">&#39;]&#39;</span>,    <span style="color:#e6db74">&#39;}&#39;</span>,    <span style="color:#e6db74">&#39;&gt;&#39;</span> ]
+points <span style="color:#f92672">=</span> [ <span style="color:#ae81ff">3</span>,       <span style="color:#ae81ff">57</span>,     <span style="color:#ae81ff">1197</span>,   <span style="color:#ae81ff">25137</span>]
+
+totalScore <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> data:
+    stack <span style="color:#f92672">=</span> list()
+    <span style="color:#66d9ef">for</span> char <span style="color:#f92672">in</span> line:
+        <span style="color:#66d9ef">if</span> char <span style="color:#f92672">in</span> lefts:
+            stack<span style="color:#f92672">.</span>append(char)
+        <span style="color:#66d9ef">elif</span> char <span style="color:#f92672">in</span> rights:
+            lastLeft <span style="color:#f92672">=</span> stack<span style="color:#f92672">.</span>pop()
+            <span style="color:#66d9ef">if</span> lefts<span style="color:#f92672">.</span>index(lastLeft) <span style="color:#f92672">!=</span> rights<span style="color:#f92672">.</span>index(char):
+                totalScore <span style="color:#f92672">+=</span> points[rights<span style="color:#f92672">.</span>index(char)]
+                <span style="color:#66d9ef">break</span>
+        <span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Unkown character </span><span style="color:#e6db74">{</span>char<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">continue</span>
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>totalScore<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">For part 2, we'll score our incomplete lines if and only if there are no corrupt characters in the line; that is, if we reach the end of iterating through the line without hitting a corrupt character. This is what the <code class="code">for...else</code> syntax achieves. We hand off these incomplete lines to the <code class="code">autocompleteScore</code> method for scoring, append those scores to the list, and find the middle (median) element at the end.</p>
+<p class="code-title">Day10/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> statistics <span style="color:#f92672">import</span> median
+
+<span style="color:#66d9ef">with</span> open (<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+
+lefts  <span style="color:#f92672">=</span> [ <span style="color:#e6db74">&#39;(&#39;</span>,     <span style="color:#e6db74">&#39;[&#39;</span>,    <span style="color:#e6db74">&#39;{&#39;</span>,    <span style="color:#e6db74">&#39;&lt;&#39;</span> ]
+rights <span style="color:#f92672">=</span> [ <span style="color:#e6db74">&#39;)&#39;</span>,     <span style="color:#e6db74">&#39;]&#39;</span>,    <span style="color:#e6db74">&#39;}&#39;</span>,    <span style="color:#e6db74">&#39;&gt;&#39;</span> ]
+points <span style="color:#f92672">=</span> [ <span style="color:#ae81ff">1</span>,       <span style="color:#ae81ff">2</span>,      <span style="color:#ae81ff">3</span>,      <span style="color:#ae81ff">4</span>   ]
+
+scores <span style="color:#f92672">=</span> list()
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">autocompleteScore</span>(stack):
+    score <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> stack[::<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]:
+        score <span style="color:#f92672">=</span> (score <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>) <span style="color:#f92672">+</span> points[lefts<span style="color:#f92672">.</span>index(item)]
+    <span style="color:#66d9ef">return</span> score
+
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> data:
+    stack <span style="color:#f92672">=</span> list()
+    <span style="color:#66d9ef">for</span> char <span style="color:#f92672">in</span> line:
+        <span style="color:#66d9ef">if</span> char <span style="color:#f92672">in</span> lefts:
+            stack<span style="color:#f92672">.</span>append(char)
+        <span style="color:#66d9ef">elif</span> char <span style="color:#f92672">in</span> rights:
+            lastLeft <span style="color:#f92672">=</span> stack<span style="color:#f92672">.</span>pop()
+            <span style="color:#66d9ef">if</span> lefts<span style="color:#f92672">.</span>index(lastLeft) <span style="color:#f92672">!=</span> rights<span style="color:#f92672">.</span>index(char):
+                <span style="color:#66d9ef">break</span>
+        <span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Unkown character </span><span style="color:#e6db74">{</span>char<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">else</span>:
+        scores<span style="color:#f92672">.</span>append(autocompleteScore(stack))
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>median(scores)<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
 </div>
