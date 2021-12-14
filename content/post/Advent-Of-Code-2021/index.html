@@ -10,10 +10,25 @@ slug_image: 1200px-Python-logo-notext.png
 description: "Solutions to the annual holiday coding challenge, all in Python and commented for your viewing pleasure."
 images: ['https://new.jeff.glass/post/advent-of-code-2021/python_cover.png']
 ---
+<div class="fixed flex items-center w-2/3 h-10 align-top center top-14 z-15">
+    <div id="toc-tab" class="px-8 py-2 m-auto text-xl text-green-200 transition-all duration-300 bg-green-800 opacity-0 flex-0 rounded-b-2xl"><a href="#TOC" class="no-style-link">Back to Table of Contents</a></div>
+</div>
+<script>
+    $(document).scroll(function() {
+        var y = $(this).scrollTop();
+        if (y > 500) {
+            $('div#toc-tab').addClass('opacity-100')
+            console.log("unhide tab")
+        } else {
+            $('div#toc-tab').removeClass('opacity-100')
+            console.log("unhide tab")
+        }
+        });
+</script>
 <p class="post-p">Is it Advent of Code time again? Well, here goes nothing. Let's see wha we can cook up.</p>
 <p class="post-p">I'm planning on completing most (all) of this year's challenges in Python, <a href="/post/advent-of-code-2020/">same as last year</a>.</p>
 <div class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200 md:w-130">
-    <p class="text-2xl">Table of Contents</p>
+    <p id="TOC" class="text-2xl relative-anchor">Table of Contents</p>
     <div class="ml-8 font-semibold">
         <p><a href="#day1">Day 1 - Sonar Sweep</a></p>
         <p><a href="#day2">Day 2 - Dive!</a></p>
@@ -25,6 +40,10 @@ images: ['https://new.jeff.glass/post/advent-of-code-2021/python_cover.png']
         <p><a href="#day8">Day 8 - Seven Segment Search</a></p>
         <p><a href="#day9">Day 9 - Smoke Basin</a></p>
         <p><a href="#day10">Day 10 - Syntax Scoring</a></p>
+        <p><a href="#day11">Day 11 - Dumbo Octopus</a></p>        
+        <p><a href="#day12">Day 12 - Passage Pathing</a></p>
+        <p><a href="#day13">Day 13 - Transparent Origami</a></p>
+        <p><a href="#day14">Day 14 - Exteded Polymerization</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -397,16 +416,16 @@ print(f"After {daysToRun} days there are {sum(fishcounts)} lanternfish")
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
 <p class="post-p">Just to humblebrag a bit (well, really, to brag; but hey, it's my website), I solved part 1 of day's challenge in the shower. My reasoing went something like the following:</p>
 <ul class="post-ul">
-    <li>We're looking to select a point <img src="xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> that minimizes the function <img src="day7/p1mineq.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, as presented in problem setup.</li>
+    <li>We're looking to select a point <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> that minimizes the function <img src="day7/p1mineq.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, as presented in problem setup.</li>
     <li>Taking the derivative of this sum is somewhat complicated, but there's actually a better way to reason about it.</li>
     <li>Looked at another way, we're looking to find a point <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> such that moving that point will only cause the total crab-distance traveled to increase; a local minimum.</li>
-    <li>Picture our point where our crabs our converging at a point <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> on the number line, with <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs less than x and <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs great than <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> </li>
+    <li>Picture our point where our crabs our converging at a point <img src="day7/x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> on the number line, with <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs less than x and <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs great than <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> </li>
     <li>As we slide our alignment point along the number line in a continuous fashion, if it moves a small distance <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> in, say the positive direction:
         <li class="pl-8">We add <img src="day7/ndeltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> units of additional crab travel, as we move further from the crabs at positions less than our alignment point, but</li>
         <li class="pl-8">We subtract <img src="day7/totalcrabsub.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> as we move closer to the crabs greater than our alignment point</li>
     </li>
-    <li>And similarly, if <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is negative, we get closer to <img src="n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs and futher from <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs.</li>
-    <li>So, if <img src="day7/ngreater.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, increasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> will cause the total crab distance to descrease. And if <img src="day7/nless.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, decreasing <img src="xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> with cause thte total crab distance to increase.</li>
+    <li>And similarly, if <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is negative, we get closer to <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs and futher from <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs.</li>
+    <li>So, if <img src="day7/ngreater.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, increasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> will cause the total crab distance to descrease. And if <img src="day7/nless.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, decreasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> with cause thte total crab distance to increase.</li>
     <li>But recall, what we want is to find a point where neither of those things is true; where <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is at a mimumum, so any movement of it causes the total crab distance to incerase. This is only true where neither of the above inequalities is statisfied, i.e. when <img src="day7/nequal.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">.</li>
     <li>Moving some terms around, we find that the total crab distance travelled is at a mimimum when <img src="day7/div2.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, in other words, when the number of crabs greater than and less than the alignment point are equal. This is true when <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is the median of the crab points.</li>
 </ul>
@@ -709,20 +728,422 @@ print(f"{median(scores)= }")
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
-
-
-<!--
-<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day11">Day 11 - Dumbo Octopus </h2>
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
-<p class="post-p">Enim adipisicing nostrud in velit nisi anim aliquip nostrud duis officia do elit veniam irure.</p>
-<p class="code-title">DayXXX/Part1.py</p>
+<p class="post-p">We're getting deeper and deeper into coding ideas now; today's part 1 introduces a challenge which requires is to iterate over a data set, performing a unique operation as many times as we're able until we're unable to any longer.</p>
+<p class="post-">Once again I'm making sure of a dataclass to hold the state of each octopus, as well as lazy dictionary which allows us to treat the grid points outside of our area of interest as infinite sinks of energy.</p>
+<p class="code-title">Day11/Part1.py</p>
+<div class="overflow-y-scroll h-124">
 {{< highlight python3 >}}
-#some code here
+from dataclasses import dataclass
+
+@dataclass 
+class OctoData:
+    intensity: int
+    flashedThisStep: bool
+
+class lazyDict(dict):
+    def __missing__ (self, key):
+        self[key] = OctoData(intensity=0, flashedThisStep = False)
+        return self[key]
+
+grid = lazyDict()
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split('\n')
+
+numRows = len(data)
+numCols = len(data[0])
+
+#Load data into dict
+for r in range(numRows):
+    for c in range (numCols):
+        grid[(r, c)] = OctoData(intensity = int(data[r][c]), flashedThisStep = False)
+
+def printGrid(printFlashes = False ):
+    for r in range(numRows):
+        for c in range(numCols):
+            val = grid[(r,c)].intensity
+            if val <= 9: print(val, end = "")
+            else: print("-", end = "")
+        print("")
+
+numSteps = 100
+numFlashes = 0
+
+for step in range(numSteps):
+    #Increment by 1
+    for r in range(numRows):
+        for c in range(numCols):
+            grid[(r,c)].intensity += 1
+
+    while True:
+        anyFlashesThisRound = False
+        
+        
+        #Flash as necesasry
+        for r in range(numRows):
+            for c in range(numCols):
+                if grid[(r,c)].intensity > 9 and grid[(r,c)].flashedThisStep == False:
+                    grid[(r,c)].flashedThisStep = True
+                    numFlashes += 1
+                    anyFlashesThisRound = True
+
+                    for deltar in [-1,0,1]:
+                        for deltac in [-1,0,1]:
+                            if not(deltar == 0 and deltac == 0): grid[(r + deltar, c + deltac)].intensity += 1
+
+        fts = [grid[(r,c)].flashedThisStep for r in range(numRows) for c in range(numCols)]
+
+        if not anyFlashesThisRound: break
+
+    for r in range(numRows):
+        for c in range(numCols):
+            if grid[(r,c)].flashedThisStep: grid[(r,c)].intensity = 0
+            grid[(r,c)].flashedThisStep = False
+
+print("--")
+print("final:")
+printGrid()
+print(f"Number of Flashes: {numFlashes}")
 {{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
 <h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
-<p class="post-p">Mollit voluptate tempor cillum amet cillum incididunt nisi.</p>
-<p class="code-title">DayXXX/Part2.py</p>
-{{< highlight python3 >}}
-#Some Code Here
+<p class="post-p">Part 2 is very similar to part 1, except instead of tracking the total number of octopus flashes, we want to know on what step all the octopuses flash at once. The code is quite similar; I've highlighted the key changes in the following code</p>
+<p class="code-title">Day11/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 "hl_lines=34 40 69 75" >}}
+from dataclasses import dataclass
+
+@dataclass
+class OctoData:
+    intensity: int
+    flashedThisStep: bool
+
+class lazyDict(dict):
+    def __missing__ (self, key):
+        self[key] = OctoData(intensity=0, flashedThisStep = False)
+        return self[key]
+
+grid = lazyDict()
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split('\n')
+
+numRows = len(data)
+numCols = len(data[0])
+
+#Load data into dict
+for r in range(numRows):
+    for c in range (numCols):
+        grid[(r, c)] = OctoData(intensity = int(data[r][c]), flashedThisStep = False)
+
+def printGrid(printFlashes = False ):
+    for r in range(numRows):
+        for c in range(numCols):
+            val = grid[(r,c)].intensity
+            if val <= 9: print(val, end = "")
+            else: print("-", end = "")
+        print("")
+
+stepNumber = 0
+
+printGrid()
+print("--")
+
+while True:
+    stepNumber += 1
+    #Increment by 1
+    for r in range(numRows):
+        for c in range(numCols):
+            grid[(r,c)].intensity += 1
+
+    while True:
+        anyFlashesThisRound = False
+
+        #Flash as necesasry
+        for r in range(numRows):
+            for c in range(numCols):
+                if grid[(r,c)].intensity > 9 and grid[(r,c)].flashedThisStep == False:
+                    grid[(r,c)].flashedThisStep = True
+                    anyFlashesThisRound = True
+
+                    for deltar in [-1,0,1]:
+                        for deltac in [-1,0,1]:
+                            if not(deltar == 0 and deltac == 0): grid[(r + deltar, c + deltac)].intensity += 1
+
+        fts = [grid[(r,c)].flashedThisStep for r in range(numRows) for c in range(numCols)]
+
+        if not anyFlashesThisRound: break
+
+    for r in range(numRows):
+        for c in range(numCols):
+            if grid[(r,c)].flashedThisStep: grid[(r,c)].intensity = 0
+            grid[(r,c)].flashedThisStep = False
+
+    if sum([grid[(r,c)].intensity for r in range(numRows) for c in range(numCols)]) == 0: break
+
+
+print("--")
+print("final:")
+printGrid()
+print(f"All flashed on step {stepNumber}")
 {{< /highlight >}}
--->
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day12">Day 12 - Passage Pathing </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">I'm not 100% proud of my solution to today's problems, though it definitely works. Mostly, the way I'm generating the possible-next routes from the currently-arrived-at-room for any given path is just a little hacky. I'm getting a list of all paths (pairs of connected caves) that include the current cave, then finding the element in that path that isn't the current cave. I have to loop through the full list of cave connections every time I want to do this, rather than generating a list of possible connections for each cave out the outset. The efficiency hit here is significant, but for the data size in the problem, it turns out to be fine. </p>
+<p class="code-title">Day12/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from dataclasses import dataclass
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = [line.split('-') for line in infile.read().split('\n')]
+
+@dataclass
+class Route():
+    pathSoFar: list
+    currentCave: str
+    smallCavesVisited: list
+
+startingPaths = [path for path in data if 'start' in path]
+routesInProgress = [Route(pathSoFar=[s], smallCavesVisited= ['start'] if not(all([item == item.lower() for item in s])) else s, currentCave = list(set(s) - {'start'})[0]) for s in startingPaths]
+completeRoutes = list()
+
+while(len(routesInProgress) > 0):
+    nextRoutes = list()
+
+    for r in routesInProgress:
+        if r.currentCave == 'end':
+            completeRoutes.append(r)
+        else:
+            #Get all path segments including hte current room
+            nextPaths = [path for path in data if r.currentCave in path]
+            for p in nextPaths:
+                #Get the room this path segment would lead to (it's the room that's not our current room)
+                nextCave = [item for item in p if item != r.currentCave][0]
+                #Can't go to a little room twice
+                if nextCave not in r.smallCavesVisited:
+                    newPath = r.pathSoFar + [p]
+                    if nextCave == nextCave.lower():
+                        #If we're now going to be in a little room, add it to the list of little rooms we've visited
+                        newSmallCaves = r.smallCavesVisited + [nextCave]
+                    else:
+                        #Otherwise, the list of little rooms visited doens't change
+                        newSmallCaves = r.smallCavesVisited
+                    nextRoutes.append(Route(pathSoFar = newPath, smallCavesVisited = newSmallCaves, currentCave = nextCave))
+                else:
+                    pass
+
+    routesInProgress = nextRoutes
+
+print(f"Total routes: {len(completeRoutes)}")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">For part 2, we'll need to track not only which small caves we've visited, but how many times we've visited them. So we'll need the Route object to have, not just a list of small caves, but a <code class="code">dict</code> with keys as small caves and values of how many times we've been there. Then, we'll change the criteria for whether we can visit a small cave next to include the possibility of visited a small cave twice if we've yet to visit any small cave twice.</p>
+<p class="code-title">Day12/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from dataclasses import dataclass
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = [line.split('-') for line in infile.read().split('\n')]
+
+@dataclass
+class Route():
+    pathSoFar: list
+    currentCave: str
+    smallCavesVisited: dict #['a', numberOfTimesVisited]. This is the key change
+
+startingPaths = [path for path in data if 'start' in path] 
+routesInProgress = list()
+
+for p in startingPaths:
+    route = p.copy()
+    s = p.copy()
+    s.remove('start')
+    current = s[0]
+    if s[0] == s[0].lower(): smalls = {'start':0, str(s[0]):1}
+    else: smalls = {'start':0}
+    routesInProgress.append(Route(pathSoFar=','.join(route), smallCavesVisited = smalls, currentCave = current))
+
+completeRoutes = list()
+
+while(len(routesInProgress) > 0):
+    nextRoutes = list()
+
+    for r in routesInProgress:
+        if r.currentCave == 'end':
+            completeRoutes.append(r)
+        else:
+            nextPaths = [path for path in data if r.currentCave in path and 'start' not in path]
+            for p in nextPaths:
+                nextCave = [item for item in p if item != r.currentCave][0]
+
+                if nextCave not in r.smallCavesVisited or (r.smallCavesVisited[nextCave] == 1 and not any([(v >= 2) for v in r.smallCavesVisited.values()])):
+                    newPath = r.pathSoFar +',' + nextCave 
+                    newSmallCaves = r.smallCavesVisited.copy()
+                    if nextCave == nextCave.lower():
+                        if nextCave in r.smallCavesVisited:
+                            newSmallCaves[nextCave] += 1
+                        else:
+                            newSmallCaves[nextCave] = 1
+                    nextRoutes.append(Route(pathSoFar = newPath, smallCavesVisited = newSmallCaves, currentCave = nextCave))
+
+    routesInProgress = nextRoutes
+
+print(f"Total routes: {len(completeRoutes)}")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day13">Day 13 - Transparent Origami </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">A surprisingly easy challenge for day 13, I thought. Basically, for a list of points, which have (x or y as appropriate) coodinates greater than a given number, then reflect that point over a given line. So we do a little data parsing, and we use Python <code class="code">sets</code> to eliminate duplicates.</p>
+<p class="code-title">Day13/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+import re
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split('\n\n')
+
+points = set([(int(line.split(",")[0]), int(line.split(",")[1])) for line in data[0].split('\n')])
+
+foldPattern = r'fold along (.)=(\d+)'
+folds = [(re.search(foldPattern, line).group(1),int(re.search(foldPattern, line).group(2))) for line in data[1].split('\n')]
+
+def executeFold(points, f):
+    if f[0] == 'x': return doXFold(points, f)
+    elif f[0] == 'y': return doYFold(points, f)
+    else: raise ValueError(f"Expected fold in x or y, got fold {f}")
+
+def doXFold(points, f):
+    return set([p if p[0] < f[1] else (f[1] - (p[0] - f[1]), p[1]) for p in points])
+
+def doYFold(points, f):
+    retSet = set()
+    for p in points:
+        if p[1] < f[1]: retSet.add(p)
+        else: retSet.add((p[0], f[1] - (p[1] - f[1])))
+    return retSet
+
+def printPoints(points):
+    maxX = max([p[0] for p in points])
+    maxY = max([p[1] for p in points])
+    for y in range(maxY+1):
+        for x in range(maxX+1):
+            if (x, y) in points: print("X", end = "")
+            else: print(".", end = "")
+        print("")
+
+if __name__ == "__main__":
+    print(f"{len(executeFold(points, folds[0]))= }")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">And, since the first part sets up the general mechanics of the problem, all we need to do for part 2 is execute all the folds, then print out the formatted output.</p>
+<p class="post-p">For brevity, here's the only change required for part 2:</p>
+<p class="code-title">Day13/Part2.py <span class="italic">(Partial)</span></p>
+{{< highlight python3 "linenostart=35">}}
+if __name__ == "__main__":
+    for f in folds:
+        points = executeFold(points, f)
+    printPoints(points)
+{{< /highlight >}}
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day14">Day 14 - Extended Polymerization </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">There were lots of jokes on  <a href="https://www.reddit.com/r/adventofcode/">/r/adventofcode</a> today about this being a return to the lanternfish we saw on <a href="#day6">day 6</a>. Indeed, it has a similar flavor, with an expotentially-increasing processing space that you can brute-force your way through in part 1, if you want, but that will hose you for part 2.</p>
+<p class="post-p">The brute-forcing is easy though! For each pair of letters in the current step, we add a new letter in between them based on the rules given in our input. This means our list of letters doubles in length every step, but at only 10 steps, we should be fine, right?</p>
+<p class="code-title">Day14/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+import re
+from collections import Counter
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split("\n\n")
+
+template = data[0]
+rules = dict()
+for line in data[1].split('\n'):
+    r = re.search(r'(..) -> (.)', line)
+    rules[r.group(1)] = r.group(2)
+
+def doStep(template):
+    additions = [" "] * len(template)
+    for i in range(len(template[:-1])):
+        letterPair = template[i:i+2]
+        if letterPair in rules: additions[i] = rules[letterPair]
+    
+    return ''.join([val for pair in zip(template, additions) for val in pair] + [template[-1]])
+
+for i in range(10):
+    template = doStep(template)
+
+counts = Counter(template)
+lCount = sorted(counts.items(), key=lambda x: x[1])
+
+minimum, maximum = lCount[0][1], lCount[-1][1]
+print(f"Result is {maximum - minimum= }")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">...oh, now it's 40 steps. Dang.</p>
+<p class="post-p">Thankfully, just like with those dang lanternfish, we don't actually have the store the whole list of letters between each round. The key observation is that each pair of letters geneates a unique pair of pairs of letters for the next step. E.g., for the example input, the pair <code class="code">NN</code> combined with the rule  <code class="code">NN -> C</code> means that if there is a one pair NN at the beginning of a step, there will be one <code class="code">NC</code> and one <code class="code">CN</code> after that step. Or at least, one of each contributed by the <code class="code">NN</code>, as there could be more <code class="code">CN</code>'s and <code class="code">NC</code>'s generated by other rules.</p>
+<p class="post-p">But, we can store the possible letter combinations in a dictionary which tracks their count, and then apply these rules at each step to get our answer. We do have to be a little clever about counting up letters at the end - if we total up the counts from each pair a given letter is in, we'll get double our answer... except for the first and last characters of our string, which will be counted exactly 1 less time. Thankfully, the first and laster letters never change under any rule, so we can note those right at the beginning of our code and account for them later.</p>
+<p class="code-title">Day14/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+import re
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split("\n\n")
+
+firstLetter = data[0][0]
+lastLetter = data[0][-1]
+
+template = dict()
+for i in range(len(data[0])-1):
+        letterPair = data[0][i:i+2]
+        template[letterPair] = (template[letterPair] + 1 if letterPair in template else 1)
+
+rules = dict()
+for line in data[1].split('\n'):
+    r = re.search(r'(..) -> (.)', line)
+    rules[r.group(1)] = (r.group(1)[0] + r.group(2), r.group(2) + r.group(1)[1])
+
+def doStep(template):
+    newTemplate = dict()
+    for pairOfLetters in template:
+        nextPairOne = rules[pairOfLetters][0]
+        newTemplate[nextPairOne] = (newTemplate[nextPairOne] + template[pairOfLetters]) if nextPairOne in newTemplate else template[pairOfLetters]
+
+        nextPairTwo = rules[pairOfLetters][1]
+        newTemplate[nextPairTwo] = (newTemplate[nextPairTwo] + template[pairOfLetters]) if nextPairTwo in newTemplate else template[pairOfLetters]
+    return newTemplate
+
+def getLetterCounts(template):
+    letterCounts = dict()
+    for pair in template:
+        letterCounts[pair[0]] = (template[pair] + letterCounts[pair[0]]) if pair[0] in letterCounts else template[pair]
+        letterCounts[pair[1]] = (template[pair] + letterCounts[pair[1]]) if pair[1] in letterCounts else template[pair]
+    letterCounts[firstLetter] += 1
+    letterCounts[lastLetter] += 1
+    return {key: val/2 for key, val in letterCounts.items()}
+
+for _ in range(40):
+    template = doStep(template)
+
+lCount = sorted(getLetterCounts(template).items(), key = lambda x: x[1])
+minimum, maximum = lCount[0][1], lCount[-1][1]
+print(f"Result is {maximum - minimum= }")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
