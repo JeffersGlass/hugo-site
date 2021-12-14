@@ -27,7 +27,7 @@
 	<main>
 		<header>
 
-<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 h-14 t-0">
     
     <div class="flex-none hidden lg:flex">
         <div class="flex-none px-2">
@@ -141,10 +141,26 @@
 				</div>
 				
 				<div>
-					<p class="post-p">Is it Advent of Code time again? Well, here goes nothing. Let's see wha we can cook up.</p>
+					<div class="fixed flex items-center w-2/3 h-10 align-top center top-14 z-15">
+    <div id="toc-tab" class="px-8 py-2 m-auto text-xl text-center text-green-200 transition-all duration-300 bg-green-800 opacity-0 flex-0 rounded-b-2xl"><a href="#TOC" class="no-style-link">Back to Table of Contents</a></div>
+</div>
+<script>
+    $(document).scroll(function() {
+        var y = $(this).scrollTop();
+        var startOfPosts = document.querySelector("div#day1").getBoundingClientRect()
+        if (y > startOfPosts.bottom + 600) {
+            $('div#toc-tab').addClass('opacity-100')
+            //console.log("unhide tab")
+        } else {
+            $('div#toc-tab').removeClass('opacity-100')
+            //console.log("unhide tab")
+        }
+        });
+</script>
+<p class="post-p">Is it Advent of Code time again? Well, here goes nothing. Let's see wha we can cook up.</p>
 <p class="post-p">I'm planning on completing most (all) of this year's challenges in Python, <a href="../../post/advent-of-code-2020/">same as last year</a>.</p>
-<div class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200 md:w-130">
-    <p class="text-2xl">Table of Contents</p>
+<div id="TOC" class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200 md:w-130">
+    <p class="text-2xl relative-anchor">Table of Contents</p>
     <div class="ml-8 font-semibold">
         <p><a href="#day1">Day 1 - Sonar Sweep</a></p>
         <p><a href="#day2">Day 2 - Dive!</a></p>
@@ -156,6 +172,10 @@
         <p><a href="#day8">Day 8 - Seven Segment Search</a></p>
         <p><a href="#day9">Day 9 - Smoke Basin</a></p>
         <p><a href="#day10">Day 10 - Syntax Scoring</a></p>
+        <p><a href="#day11">Day 11 - Dumbo Octopus</a></p>        
+        <p><a href="#day12">Day 12 - Passage Pathing</a></p>
+        <p><a href="#day13">Day 13 - Transparent Origami</a></p>
+        <p><a href="#day14">Day 14 - Exteded Polymerization</a></p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -841,16 +861,16 @@ print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;After
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
 <p class="post-p">Just to humblebrag a bit (well, really, to brag; but hey, it's my website), I solved part 1 of day's challenge in the shower. My reasoing went something like the following:</p>
 <ul class="post-ul">
-    <li>We're looking to select a point <img src="xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> that minimizes the function <img src="day7/p1mineq.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, as presented in problem setup.</li>
+    <li>We're looking to select a point <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> that minimizes the function <img src="day7/p1mineq.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, as presented in problem setup.</li>
     <li>Taking the derivative of this sum is somewhat complicated, but there's actually a better way to reason about it.</li>
     <li>Looked at another way, we're looking to find a point <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> such that moving that point will only cause the total crab-distance traveled to increase; a local minimum.</li>
-    <li>Picture our point where our crabs our converging at a point <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> on the number line, with <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs less than x and <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs great than <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> </li>
+    <li>Picture our point where our crabs our converging at a point <img src="day7/x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> on the number line, with <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs less than x and <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs great than <img src="x.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> </li>
     <li>As we slide our alignment point along the number line in a continuous fashion, if it moves a small distance <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> in, say the positive direction:
         <li class="pl-8">We add <img src="day7/ndeltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> units of additional crab travel, as we move further from the crabs at positions less than our alignment point, but</li>
         <li class="pl-8">We subtract <img src="day7/totalcrabsub.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> as we move closer to the crabs greater than our alignment point</li>
     </li>
-    <li>And similarly, if <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is negative, we get closer to <img src="n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs and futher from <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs.</li>
-    <li>So, if <img src="day7/ngreater.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, increasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> will cause the total crab distance to descrease. And if <img src="day7/nless.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, decreasing <img src="xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> with cause thte total crab distance to increase.</li>
+    <li>And similarly, if <img src="day7/deltax.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is negative, we get closer to <img src="day7/n.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs and futher from <img src="day7/totalcrabsminusn.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> crabs.</li>
+    <li>So, if <img src="day7/ngreater.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, increasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> will cause the total crab distance to descrease. And if <img src="day7/nless.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, decreasing <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> with cause thte total crab distance to increase.</li>
     <li>But recall, what we want is to find a point where neither of those things is true; where <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is at a mimumum, so any movement of it causes the total crab distance to incerase. This is only true where neither of the above inequalities is statisfied, i.e. when <img src="day7/nequal.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">.</li>
     <li>Moving some terms around, we find that the total crab distance travelled is at a mimimum when <img src="day7/div2.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300">, in other words, when the number of crabs greater than and less than the alignment point are equal. This is true when <img src="day7/xalign.gif" alt="" class="inline-block px-1 py-0.5 bg-gray-300"> is the median of the crab points.</li>
 </ul>
@@ -1403,33 +1423,806 @@ print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</spa
 </div>
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
-
-
-<!--
-<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day2">Day XXX - XXX </h2>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day11">Day 11 - Dumbo Octopus </h2>
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
-<p class="post-p">Enim adipisicing nostrud in velit nisi anim aliquip nostrud duis officia do elit veniam irure.</p>
-<p class="code-title">DayXXX/Part1.py</p>
+<p class="post-p">We're getting deeper and deeper into coding ideas now; today's part 1 introduces a challenge which requires is to iterate over a data set, performing a unique operation as many times as we're able until we're unable to any longer.</p>
+<p class="post-">Once again I'm making sure of a dataclass to hold the state of each octopus, as well as lazy dictionary which allows us to treat the grid points outside of our area of interest as infinite sinks of energy.</p>
+<p class="code-title">Day11/Part1.py</p>
+<div class="overflow-y-scroll h-124">
 <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e">#some code here</span></code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> dataclasses <span style="color:#f92672">import</span> dataclass
+
+<span style="color:#a6e22e">@dataclass</span> 
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OctoData</span>:
+    intensity: int
+    flashedThisStep: bool
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">lazyDict</span>(dict):
+    <span style="color:#66d9ef">def</span> __missing__ (self, key):
+        self[key] <span style="color:#f92672">=</span> OctoData(intensity<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+        <span style="color:#66d9ef">return</span> self[key]
+
+grid <span style="color:#f92672">=</span> lazyDict()
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+numRows <span style="color:#f92672">=</span> len(data)
+numCols <span style="color:#f92672">=</span> len(data[<span style="color:#ae81ff">0</span>])
+
+<span style="color:#75715e">#Load data into dict</span>
+<span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+    <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range (numCols):
+        grid[(r, c)] <span style="color:#f92672">=</span> OctoData(intensity <span style="color:#f92672">=</span> int(data[r][c]), flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">printGrid</span>(printFlashes <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span> ):
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+            val <span style="color:#f92672">=</span> grid[(r,c)]<span style="color:#f92672">.</span>intensity
+            <span style="color:#66d9ef">if</span> val <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">9</span>: print(val, end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>)
+            <span style="color:#66d9ef">else</span>: print(<span style="color:#e6db74">&#34;-&#34;</span>, end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>)
+        print(<span style="color:#e6db74">&#34;&#34;</span>)
+
+numSteps <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+numFlashes <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+
+<span style="color:#66d9ef">for</span> step <span style="color:#f92672">in</span> range(numSteps):
+    <span style="color:#75715e">#Increment by 1</span>
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+            grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+
+    <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+        anyFlashesThisRound <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+        
+        
+        <span style="color:#75715e">#Flash as necesasry</span>
+        <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+            <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+                <span style="color:#66d9ef">if</span> grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">9</span> <span style="color:#f92672">and</span> grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#f92672">==</span> <span style="color:#66d9ef">False</span>:
+                    grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+                    numFlashes <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+                    anyFlashesThisRound <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+
+                    <span style="color:#66d9ef">for</span> deltar <span style="color:#f92672">in</span> [<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>]:
+                        <span style="color:#66d9ef">for</span> deltac <span style="color:#f92672">in</span> [<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>]:
+                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span>(deltar <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> deltac <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>): grid[(r <span style="color:#f92672">+</span> deltar, c <span style="color:#f92672">+</span> deltac)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+
+        fts <span style="color:#f92672">=</span> [grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows) <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols)]
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> anyFlashesThisRound: <span style="color:#66d9ef">break</span>
+
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+            <span style="color:#66d9ef">if</span> grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep: grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+            grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+
+print(<span style="color:#e6db74">&#34;--&#34;</span>)
+print(<span style="color:#e6db74">&#34;final:&#34;</span>)
+printGrid()
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Number of Flashes: </span><span style="color:#e6db74">{</span>numFlashes<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
 <h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
-<p class="post-p">Mollit voluptate tempor cillum amet cillum incididunt nisi.</p>
-<p class="code-title">DayXXX/Part2.py</p>
+<p class="post-p">Part 2 is very similar to part 1, except instead of tracking the total number of octopus flashes, we want to know on what step all the octopuses flash at once. The code is quite similar; I've highlighted the key changes in the following code</p>
+<p class="code-title">Day11/Part2.py</p>
+<div class="overflow-y-scroll h-124">
 <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span></span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> dataclasses <span style="color:#f92672">import</span> dataclass
+
+<span style="color:#a6e22e">@dataclass</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OctoData</span>:
+    intensity: int
+    flashedThisStep: bool
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">lazyDict</span>(dict):
+    <span style="color:#66d9ef">def</span> __missing__ (self, key):
+        self[key] <span style="color:#f92672">=</span> OctoData(intensity<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+        <span style="color:#66d9ef">return</span> self[key]
+
+grid <span style="color:#f92672">=</span> lazyDict()
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+numRows <span style="color:#f92672">=</span> len(data)
+numCols <span style="color:#f92672">=</span> len(data[<span style="color:#ae81ff">0</span>])
+
+<span style="color:#75715e">#Load data into dict</span>
+<span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+    <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range (numCols):
+        grid[(r, c)] <span style="color:#f92672">=</span> OctoData(intensity <span style="color:#f92672">=</span> int(data[r][c]), flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">printGrid</span>(printFlashes <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span> ):
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+            val <span style="color:#f92672">=</span> grid[(r,c)]<span style="color:#f92672">.</span>intensity
+            <span style="color:#66d9ef">if</span> val <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">9</span>: print(val, end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>)
+            <span style="color:#66d9ef">else</span>: print(<span style="color:#e6db74">&#34;-&#34;</span>, end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>)
+        print(<span style="color:#e6db74">&#34;&#34;</span>)
+
+<span style="display:block;width:100%;background-color:#3c3d38">stepNumber <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span>
+printGrid()
+print(<span style="color:#e6db74">&#34;--&#34;</span>)
+
+<span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+<span style="display:block;width:100%;background-color:#3c3d38">    stepNumber <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span>    <span style="color:#75715e">#Increment by 1</span>
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+            grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+
+    <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+        anyFlashesThisRound <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+
+        <span style="color:#75715e">#Flash as necesasry</span>
+        <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+            <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+                <span style="color:#66d9ef">if</span> grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">9</span> <span style="color:#f92672">and</span> grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#f92672">==</span> <span style="color:#66d9ef">False</span>:
+                    grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+                    anyFlashesThisRound <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+
+                    <span style="color:#66d9ef">for</span> deltar <span style="color:#f92672">in</span> [<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>]:
+                        <span style="color:#66d9ef">for</span> deltac <span style="color:#f92672">in</span> [<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>]:
+                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span>(deltar <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> deltac <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>): grid[(r <span style="color:#f92672">+</span> deltar, c <span style="color:#f92672">+</span> deltac)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+
+        fts <span style="color:#f92672">=</span> [grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows) <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols)]
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> anyFlashesThisRound: <span style="color:#66d9ef">break</span>
+
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows):
+        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols):
+            <span style="color:#66d9ef">if</span> grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep: grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+            grid[(r,c)]<span style="color:#f92672">.</span>flashedThisStep <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+
+<span style="display:block;width:100%;background-color:#3c3d38">    <span style="color:#66d9ef">if</span> sum([grid[(r,c)]<span style="color:#f92672">.</span>intensity <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> range(numRows) <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> range(numCols)]) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>: <span style="color:#66d9ef">break</span>
+</span>
+
+print(<span style="color:#e6db74">&#34;--&#34;</span>)
+print(<span style="color:#e6db74">&#34;final:&#34;</span>)
+printGrid()
+<span style="display:block;width:100%;background-color:#3c3d38">print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;All flashed on step </span><span style="color:#e6db74">{</span>stepNumber<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day12">Day 12 - Passage Pathing </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">I'm not 100% proud of my solution to today's problems, though it definitely works. Mostly, the way I'm generating the possible-next routes from the currently-arrived-at-room for any given path is just a little hacky. I'm getting a list of all paths (pairs of connected caves) that include the current cave, then finding the element in that path that isn't the current cave. I have to loop through the full list of cave connections every time I want to do this, rather than generating a list of possible connections for each cave out the outset. The efficiency hit here is significant, but for the data size in the problem, it turns out to be fine. </p>
+<p class="code-title">Day12/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e">#Some Code Here</span></code></pre></td></tr></table>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> dataclasses <span style="color:#f92672">import</span> dataclass
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> [line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;-&#39;</span>) <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)]
+
+<span style="color:#a6e22e">@dataclass</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Route</span>():
+    pathSoFar: list
+    currentCave: str
+    smallCavesVisited: list
+
+startingPaths <span style="color:#f92672">=</span> [path <span style="color:#66d9ef">for</span> path <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#39;start&#39;</span> <span style="color:#f92672">in</span> path]
+routesInProgress <span style="color:#f92672">=</span> [Route(pathSoFar<span style="color:#f92672">=</span>[s], smallCavesVisited<span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;start&#39;</span>] <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span>(all([item <span style="color:#f92672">==</span> item<span style="color:#f92672">.</span>lower() <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> s])) <span style="color:#66d9ef">else</span> s, currentCave <span style="color:#f92672">=</span> list(set(s) <span style="color:#f92672">-</span> {<span style="color:#e6db74">&#39;start&#39;</span>})[<span style="color:#ae81ff">0</span>]) <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> startingPaths]
+completeRoutes <span style="color:#f92672">=</span> list()
+
+<span style="color:#66d9ef">while</span>(len(routesInProgress) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>):
+    nextRoutes <span style="color:#f92672">=</span> list()
+
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> routesInProgress:
+        <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>currentCave <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;end&#39;</span>:
+            completeRoutes<span style="color:#f92672">.</span>append(r)
+        <span style="color:#66d9ef">else</span>:
+            <span style="color:#75715e">#Get all path segments including hte current room</span>
+            nextPaths <span style="color:#f92672">=</span> [path <span style="color:#66d9ef">for</span> path <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>currentCave <span style="color:#f92672">in</span> path]
+            <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> nextPaths:
+                <span style="color:#75715e">#Get the room this path segment would lead to (it&#39;s the room that&#39;s not our current room)</span>
+                nextCave <span style="color:#f92672">=</span> [item <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> p <span style="color:#66d9ef">if</span> item <span style="color:#f92672">!=</span> r<span style="color:#f92672">.</span>currentCave][<span style="color:#ae81ff">0</span>]
+                <span style="color:#75715e">#Can&#39;t go to a little room twice</span>
+                <span style="color:#66d9ef">if</span> nextCave <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>smallCavesVisited:
+                    newPath <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>pathSoFar <span style="color:#f92672">+</span> [p]
+                    <span style="color:#66d9ef">if</span> nextCave <span style="color:#f92672">==</span> nextCave<span style="color:#f92672">.</span>lower():
+                        <span style="color:#75715e">#If we&#39;re now going to be in a little room, add it to the list of little rooms we&#39;ve visited</span>
+                        newSmallCaves <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>smallCavesVisited <span style="color:#f92672">+</span> [nextCave]
+                    <span style="color:#66d9ef">else</span>:
+                        <span style="color:#75715e">#Otherwise, the list of little rooms visited doens&#39;t change</span>
+                        newSmallCaves <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>smallCavesVisited
+                    nextRoutes<span style="color:#f92672">.</span>append(Route(pathSoFar <span style="color:#f92672">=</span> newPath, smallCavesVisited <span style="color:#f92672">=</span> newSmallCaves, currentCave <span style="color:#f92672">=</span> nextCave))
+                <span style="color:#66d9ef">else</span>:
+                    <span style="color:#66d9ef">pass</span>
+
+    routesInProgress <span style="color:#f92672">=</span> nextRoutes
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Total routes: </span><span style="color:#e6db74">{</span>len(completeRoutes)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
--->
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">For part 2, we'll need to track not only which small caves we've visited, but how many times we've visited them. So we'll need the Route object to have, not just a list of small caves, but a <code class="code">dict</code> with keys as small caves and values of how many times we've been there. Then, we'll change the criteria for whether we can visit a small cave next to include the possibility of visited a small cave twice if we've yet to visit any small cave twice.</p>
+<p class="code-title">Day12/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> dataclasses <span style="color:#f92672">import</span> dataclass
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> [line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;-&#39;</span>) <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)]
+
+<span style="color:#a6e22e">@dataclass</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Route</span>():
+    pathSoFar: list
+    currentCave: str
+    smallCavesVisited: dict <span style="color:#75715e">#[&#39;a&#39;, numberOfTimesVisited]. This is the key change</span>
+
+startingPaths <span style="color:#f92672">=</span> [path <span style="color:#66d9ef">for</span> path <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#39;start&#39;</span> <span style="color:#f92672">in</span> path] 
+routesInProgress <span style="color:#f92672">=</span> list()
+
+<span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> startingPaths:
+    route <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>copy()
+    s <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>copy()
+    s<span style="color:#f92672">.</span>remove(<span style="color:#e6db74">&#39;start&#39;</span>)
+    current <span style="color:#f92672">=</span> s[<span style="color:#ae81ff">0</span>]
+    <span style="color:#66d9ef">if</span> s[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> s[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>lower(): smalls <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;start&#39;</span>:<span style="color:#ae81ff">0</span>, str(s[<span style="color:#ae81ff">0</span>]):<span style="color:#ae81ff">1</span>}
+    <span style="color:#66d9ef">else</span>: smalls <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;start&#39;</span>:<span style="color:#ae81ff">0</span>}
+    routesInProgress<span style="color:#f92672">.</span>append(Route(pathSoFar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;,&#39;</span><span style="color:#f92672">.</span>join(route), smallCavesVisited <span style="color:#f92672">=</span> smalls, currentCave <span style="color:#f92672">=</span> current))
+
+completeRoutes <span style="color:#f92672">=</span> list()
+
+<span style="color:#66d9ef">while</span>(len(routesInProgress) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>):
+    nextRoutes <span style="color:#f92672">=</span> list()
+
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> routesInProgress:
+        <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>currentCave <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;end&#39;</span>:
+            completeRoutes<span style="color:#f92672">.</span>append(r)
+        <span style="color:#66d9ef">else</span>:
+            nextPaths <span style="color:#f92672">=</span> [path <span style="color:#66d9ef">for</span> path <span style="color:#f92672">in</span> data <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>currentCave <span style="color:#f92672">in</span> path <span style="color:#f92672">and</span> <span style="color:#e6db74">&#39;start&#39;</span> <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> path]
+            <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> nextPaths:
+                nextCave <span style="color:#f92672">=</span> [item <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> p <span style="color:#66d9ef">if</span> item <span style="color:#f92672">!=</span> r<span style="color:#f92672">.</span>currentCave][<span style="color:#ae81ff">0</span>]
+
+                <span style="color:#66d9ef">if</span> nextCave <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>smallCavesVisited <span style="color:#f92672">or</span> (r<span style="color:#f92672">.</span>smallCavesVisited[nextCave] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">and</span> <span style="color:#f92672">not</span> any([(v <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>smallCavesVisited<span style="color:#f92672">.</span>values()])):
+                    newPath <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>pathSoFar <span style="color:#f92672">+</span><span style="color:#e6db74">&#39;,&#39;</span> <span style="color:#f92672">+</span> nextCave 
+                    newSmallCaves <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>smallCavesVisited<span style="color:#f92672">.</span>copy()
+                    <span style="color:#66d9ef">if</span> nextCave <span style="color:#f92672">==</span> nextCave<span style="color:#f92672">.</span>lower():
+                        <span style="color:#66d9ef">if</span> nextCave <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>smallCavesVisited:
+                            newSmallCaves[nextCave] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+                        <span style="color:#66d9ef">else</span>:
+                            newSmallCaves[nextCave] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+                    nextRoutes<span style="color:#f92672">.</span>append(Route(pathSoFar <span style="color:#f92672">=</span> newPath, smallCavesVisited <span style="color:#f92672">=</span> newSmallCaves, currentCave <span style="color:#f92672">=</span> nextCave))
+
+    routesInProgress <span style="color:#f92672">=</span> nextRoutes
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Total routes: </span><span style="color:#e6db74">{</span>len(completeRoutes)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day13">Day 13 - Transparent Origami </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">A surprisingly easy challenge for day 13, I thought. Basically, for a list of points, which have (x or y as appropriate) coodinates greater than a given number, then reflect that point over a given line. So we do a little data parsing, and we use Python <code class="code">sets</code> to eliminate duplicates.</p>
+<p class="code-title">Day13/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">import</span> re
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#39;</span>)
+
+points <span style="color:#f92672">=</span> set([(int(line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;,&#34;</span>)[<span style="color:#ae81ff">0</span>]), int(line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;,&#34;</span>)[<span style="color:#ae81ff">1</span>])) <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> data[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)])
+
+foldPattern <span style="color:#f92672">=</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;fold along (.)=(\d+)&#39;</span>
+folds <span style="color:#f92672">=</span> [(re<span style="color:#f92672">.</span>search(foldPattern, line)<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>),int(re<span style="color:#f92672">.</span>search(foldPattern, line)<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">2</span>))) <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> data[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">executeFold</span>(points, f):
+    <span style="color:#66d9ef">if</span> f[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;x&#39;</span>: <span style="color:#66d9ef">return</span> doXFold(points, f)
+    <span style="color:#66d9ef">elif</span> f[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;y&#39;</span>: <span style="color:#66d9ef">return</span> doYFold(points, f)
+    <span style="color:#66d9ef">else</span>: <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Expected fold in x or y, got fold </span><span style="color:#e6db74">{</span>f<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doXFold</span>(points, f):
+    <span style="color:#66d9ef">return</span> set([p <span style="color:#66d9ef">if</span> p[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">&lt;</span> f[<span style="color:#ae81ff">1</span>] <span style="color:#66d9ef">else</span> (f[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> (p[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">-</span> f[<span style="color:#ae81ff">1</span>]), p[<span style="color:#ae81ff">1</span>]) <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> points])
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doYFold</span>(points, f):
+    retSet <span style="color:#f92672">=</span> set()
+    <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> points:
+        <span style="color:#66d9ef">if</span> p[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">&lt;</span> f[<span style="color:#ae81ff">1</span>]: retSet<span style="color:#f92672">.</span>add(p)
+        <span style="color:#66d9ef">else</span>: retSet<span style="color:#f92672">.</span>add((p[<span style="color:#ae81ff">0</span>], f[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> (p[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> f[<span style="color:#ae81ff">1</span>])))
+    <span style="color:#66d9ef">return</span> retSet
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">printPoints</span>(points):
+    maxX <span style="color:#f92672">=</span> max([p[<span style="color:#ae81ff">0</span>] <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> points])
+    maxY <span style="color:#f92672">=</span> max([p[<span style="color:#ae81ff">1</span>] <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> points])
+    <span style="color:#66d9ef">for</span> y <span style="color:#f92672">in</span> range(maxY<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+        <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(maxX<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+            <span style="color:#66d9ef">if</span> (x, y) <span style="color:#f92672">in</span> points: print(<span style="color:#e6db74">&#34;X&#34;</span>, end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>)
+            <span style="color:#66d9ef">else</span>: print(<span style="color:#e6db74">&#34;.&#34;</span>, end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>)
+        print(<span style="color:#e6db74">&#34;&#34;</span>)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>len(executeFold(points, folds[<span style="color:#ae81ff">0</span>]))<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">And, since the first part sets up the general mechanics of the problem, all we need to do for part 2 is execute all the folds, then print out the formatted output.</p>
+<p class="post-p">For brevity, here's the only change required for part 2:</p>
+<p class="code-title">Day13/Part2.py <span class="italic">(Partial)</span></p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    <span style="color:#66d9ef">for</span> f <span style="color:#f92672">in</span> folds:
+        points <span style="color:#f92672">=</span> executeFold(points, f)
+    printPoints(points)</code></pre></td></tr></table>
+</div>
+</div>
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day14">Day 14 - Extended Polymerization </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">There were lots of jokes on  <a href="https://www.reddit.com/r/adventofcode/">/r/adventofcode</a> today about this being a return to the lanternfish we saw on <a href="#day6">day 6</a>. Indeed, it has a similar flavor, with an expotentially-increasing processing space that you can brute-force your way through in part 1, if you want, but that will hose you for part 2.</p>
+<p class="post-p">The brute-forcing is easy though! For each pair of letters in the current step, we add a new letter in between them based on the rules given in our input. This means our list of letters doubles in length every step, but at only 10 steps, we should be fine, right?</p>
+<p class="code-title">Day14/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">import</span> re
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> Counter
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>)
+
+template <span style="color:#f92672">=</span> data[<span style="color:#ae81ff">0</span>]
+rules <span style="color:#f92672">=</span> dict()
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> data[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>):
+    r <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>search(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;(..) -&gt; (.)&#39;</span>, line)
+    rules[r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)] <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">2</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doStep</span>(template):
+    additions <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34; &#34;</span>] <span style="color:#f92672">*</span> len(template)
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(template[:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>])):
+        letterPair <span style="color:#f92672">=</span> template[i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]
+        <span style="color:#66d9ef">if</span> letterPair <span style="color:#f92672">in</span> rules: additions[i] <span style="color:#f92672">=</span> rules[letterPair]
+    
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;&#39;</span><span style="color:#f92672">.</span>join([val <span style="color:#66d9ef">for</span> pair <span style="color:#f92672">in</span> zip(template, additions) <span style="color:#66d9ef">for</span> val <span style="color:#f92672">in</span> pair] <span style="color:#f92672">+</span> [template[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]])
+
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>):
+    template <span style="color:#f92672">=</span> doStep(template)
+
+counts <span style="color:#f92672">=</span> Counter(template)
+lCount <span style="color:#f92672">=</span> sorted(counts<span style="color:#f92672">.</span>items(), key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> x: x[<span style="color:#ae81ff">1</span>])
+
+minimum, maximum <span style="color:#f92672">=</span> lCount[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">1</span>], lCount[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">1</span>]
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Result is </span><span style="color:#e6db74">{</span>maximum <span style="color:#f92672">-</span> minimum<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">...oh, now it's 40 steps. Dang.</p>
+<p class="post-p">Thankfully, just like with those dang lanternfish, we don't actually have the store the whole list of letters between each round. The key observation is that each pair of letters geneates a unique pair of pairs of letters for the next step. E.g., for the example input, the pair <code class="code">NN</code> combined with the rule  <code class="code">NN -> C</code> means that if there is a one pair NN at the beginning of a step, there will be one <code class="code">NC</code> and one <code class="code">CN</code> after that step. Or at least, one of each contributed by the <code class="code">NN</code>, as there could be more <code class="code">CN</code>'s and <code class="code">NC</code>'s generated by other rules.</p>
+<p class="post-p">But, we can store the possible letter combinations in a dictionary which tracks their count, and then apply these rules at each step to get our answer. We do have to be a little clever about counting up letters at the end - if we total up the counts from each pair a given letter is in, we'll get double our answer... except for the first and last characters of our string, which will be counted exactly 1 less time. Thankfully, the first and laster letters never change under any rule, so we can note those right at the beginning of our code and account for them later.</p>
+<p class="code-title">Day14/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">import</span> re
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> infile:
+    data <span style="color:#f92672">=</span> infile<span style="color:#f92672">.</span>read()<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>)
+
+firstLetter <span style="color:#f92672">=</span> data[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>]
+lastLetter <span style="color:#f92672">=</span> data[<span style="color:#ae81ff">0</span>][<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+
+template <span style="color:#f92672">=</span> dict()
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(data[<span style="color:#ae81ff">0</span>])<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>):
+        letterPair <span style="color:#f92672">=</span> data[<span style="color:#ae81ff">0</span>][i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]
+        template[letterPair] <span style="color:#f92672">=</span> (template[letterPair] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">if</span> letterPair <span style="color:#f92672">in</span> template <span style="color:#66d9ef">else</span> <span style="color:#ae81ff">1</span>)
+
+rules <span style="color:#f92672">=</span> dict()
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> data[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>):
+    r <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>search(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;(..) -&gt; (.)&#39;</span>, line)
+    rules[r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)] <span style="color:#f92672">=</span> (r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">2</span>), r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span> r<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">1</span>])
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doStep</span>(template):
+    newTemplate <span style="color:#f92672">=</span> dict()
+    <span style="color:#66d9ef">for</span> pairOfLetters <span style="color:#f92672">in</span> template:
+        nextPairOne <span style="color:#f92672">=</span> rules[pairOfLetters][<span style="color:#ae81ff">0</span>]
+        newTemplate[nextPairOne] <span style="color:#f92672">=</span> (newTemplate[nextPairOne] <span style="color:#f92672">+</span> template[pairOfLetters]) <span style="color:#66d9ef">if</span> nextPairOne <span style="color:#f92672">in</span> newTemplate <span style="color:#66d9ef">else</span> template[pairOfLetters]
+
+        nextPairTwo <span style="color:#f92672">=</span> rules[pairOfLetters][<span style="color:#ae81ff">1</span>]
+        newTemplate[nextPairTwo] <span style="color:#f92672">=</span> (newTemplate[nextPairTwo] <span style="color:#f92672">+</span> template[pairOfLetters]) <span style="color:#66d9ef">if</span> nextPairTwo <span style="color:#f92672">in</span> newTemplate <span style="color:#66d9ef">else</span> template[pairOfLetters]
+    <span style="color:#66d9ef">return</span> newTemplate
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getLetterCounts</span>(template):
+    letterCounts <span style="color:#f92672">=</span> dict()
+    <span style="color:#66d9ef">for</span> pair <span style="color:#f92672">in</span> template:
+        letterCounts[pair[<span style="color:#ae81ff">0</span>]] <span style="color:#f92672">=</span> (template[pair] <span style="color:#f92672">+</span> letterCounts[pair[<span style="color:#ae81ff">0</span>]]) <span style="color:#66d9ef">if</span> pair[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">in</span> letterCounts <span style="color:#66d9ef">else</span> template[pair]
+        letterCounts[pair[<span style="color:#ae81ff">1</span>]] <span style="color:#f92672">=</span> (template[pair] <span style="color:#f92672">+</span> letterCounts[pair[<span style="color:#ae81ff">1</span>]]) <span style="color:#66d9ef">if</span> pair[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">in</span> letterCounts <span style="color:#66d9ef">else</span> template[pair]
+    letterCounts[firstLetter] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    letterCounts[lastLetter] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">return</span> {key: val<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> key, val <span style="color:#f92672">in</span> letterCounts<span style="color:#f92672">.</span>items()}
+
+<span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">40</span>):
+    template <span style="color:#f92672">=</span> doStep(template)
+
+lCount <span style="color:#f92672">=</span> sorted(getLetterCounts(template)<span style="color:#f92672">.</span>items(), key <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x[<span style="color:#ae81ff">1</span>])
+minimum, maximum <span style="color:#f92672">=</span> lCount[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">1</span>], lCount[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">1</span>]
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Result is </span><span style="color:#e6db74">{</span>maximum <span style="color:#f92672">-</span> minimum<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see fulll code</p>
 				</div>
 				
 			</article>
