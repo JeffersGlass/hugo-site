@@ -13,8 +13,9 @@ def generateIndexGallery():
             'thumbnailURL': vData['snippet']['thumbnails']['high']['url']
             }
         info.append(vid)
+    info = info[::-1]
 
-    with open("../../data/yt/indexvideos.json", "w+") as outfile:
+    with open("../../data/indexvideos.json", "w+") as outfile:
         json.dump(info, outfile)
 
 
