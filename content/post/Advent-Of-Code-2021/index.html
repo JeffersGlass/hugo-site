@@ -45,6 +45,14 @@ images: ['https://new.jeff.glass/post/advent-of-code-2021/python_cover.png']
         <p><a href="#day12">Day 12 - Passage Pathing</a></p>
         <p><a href="#day13">Day 13 - Transparent Origami</a></p>
         <p><a href="#day14">Day 14 - Exteded Polymerization</a></p>
+        <p><a href="#day15">Day 15 - Chiton</a></p>
+        <p class="text-gray-500">Day 16 - Packet Decoder (In Progress)</p>
+        <p><a href="#day17">Day 17 - Trick Shot</a></p>
+        <p class="text-gray-500">Day 18 - Snailfish (In Progress)</p>
+        <p class="text-gray-500">Day 19 - Beacon Scanner (In Progress)</p>
+        <p class="text-gray-500">Day 20 - Trench Map (In Progress)</p>
+        <p class="text-gray-500">Day 21 - Dirac Dice (In Progress)</p>
+        <p class="text-gray-500">Day 22 - Reactor Reboot (In Progress)</p>
     </div>
 </div>
 <div class="relative-anchor" id="day1">
@@ -1162,56 +1170,6 @@ print(f"Result is {maximum - minimum= }")
 <h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
 <p class="post-p">Pariatur incididunt veniam tempor eiusmod sunt id labore occaecat nostrud fugiat.</p>
 <p class="post-">At this point, I thought it might be useful to try to optimize my algorithm a little bit by tweaking my heuristic distance function.
-    <table class="table-auto">
-        <thead>
-            <tr>
-                <th>H-Value Multiplier</th>
-                <th>Runtime (Part 1)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>3.05</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>3.01</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>3.02</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>3.01</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>10</td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
 </p>
 <p class="code-title">Day14/Part2.py</p>
 <div class="overflow-y-scroll h-124">
@@ -1220,6 +1178,362 @@ print(f"Result is {maximum - minimum= }")
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see fulll code</p>
+
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day15">Day 15 - Chiton </h2>
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">A pathfinding day! We'll use a modified A* pathfinding algorithm to start this one, but where the H-value of each space (the heurtistic that's usually based on cartesian distance to the endpoint) is zero.</p>
+<p class="post-p">As part of the development and debugging process, I took the opportunity to explore some terminal-based display methods, using the curses library. (Well, on windows, the windows-curses port of the same). The map-utils file and the mapDisplay class allow for single-stepping the map pathfinding while exploring the value at each space.</p>
+<p class="code-title">Day15/Part1.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from dataclasses import dataclass
+from typing import Any
+from termcolor import colored, cprint
+from maputils import mapDisplay
+from astarutils import calc_h_cost
+
+showMaps = False
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split('\n')
+
+risk = dict()
+for y, line in enumerate(data):
+    for x, val in enumerate(line):
+        risk[(x, y)] = int(val)
+
+maxY = len(data)
+maxX = len(data[0])
+
+@dataclass
+class PointData():
+    f_cost: int
+    parent: Any
+
+def getNeighbors(point):
+    nList = list()
+    for delta in [(-1,0),(0,1),(1,0),(0,-1)]:
+        testPoint = (point[0]+delta[0], point[1] + delta[1])
+        if (0 <= testPoint[0] < maxX) and (0 <= testPoint[1] < maxY): nList.append(testPoint)
+    
+    return nList
+
+def printMap(openPoints, closedPoints, activePoint):
+    for y in range(maxY):
+        for x in range(maxX):
+            val = risk[(x,y)]
+            if (x,y) == activePoint: cprint(val, 'grey', 'on_green', end="")
+            elif (x,y) in closedPoints: cprint(val, 'red', end="")
+            elif (x,y) in openPoints: cprint(val, 'green', end="")
+            else:cprint(val, 'white', end="")
+        print("")
+
+def findPath(start, end):
+    locationScores = {start: PointData(f_cost = 0, parent=None)}
+    openPoints = {start}
+    closedPoints = set()
+
+    oldSelection = [0,0]
+
+    while True:
+        if showMaps:
+            m = mapDisplay(maxX, maxY, risk, locationScores=locationScores, openPoints=openPoints, closedPoints=closedPoints, oldSelection = oldSelection)
+            if m.retCode['exitcode'] == 1: exit()
+            else: oldSelection = m.retCode['selection']
+
+        costList = sorted([p for p in openPoints], key= lambda p:locationScores[p].f_cost)
+        if len(costList) > 0: lowestCostPoint = costList[0]
+        else: break #???
+
+        #printMap(openPoints, closedPoints, lowestCostPoint)
+        #print(f"Cheapest next point is {lowestCostPoint}:{locationScores[lowestCostPoint]}")
+        if lowestCostPoint == end: break 
+
+        closedPoints.add(lowestCostPoint)
+        openPoints.remove(lowestCostPoint)
+
+        for newPoint in getNeighbors(lowestCostPoint):
+            if newPoint not in closedPoints:
+                #print(f"Exploring neighbor {newPoint} of {lowestCostPoint}")
+                if newPoint not in openPoints: #  or (risk[newPoint] + cost(lowestCostPoint, closedPoints[lowestCostPoint])) < 100000000: #TODO or new path to neighbor is cheaper
+                    newFCost = locationScores[lowestCostPoint].f_cost + calc_h_cost(newPoint, end) + risk[newPoint]
+                    locationScores[newPoint] = PointData(f_cost=newFCost, parent = lowestCostPoint)
+                    if newPoint not in openPoints:
+                        openPoints.add(newPoint)
+            else:
+                pass
+
+    scoringPoint = lowestCostPoint
+    totalRisk = 0
+    pathPoints = [scoringPoint]
+    #print("Calculating Path Score:")
+    while locationScores[scoringPoint].parent != None:
+        if showMaps:
+            m = mapDisplay(maxX, maxY, risk, locationScores=locationScores, openPoints=openPoints, closedPoints=closedPoints, pathPoints=pathPoints, oldSelection = oldSelection, pathLength=totalRisk)
+            if m.retCode['exitcode'] == 1: exit()
+            else: oldSelection = m.retCode['selection']
+
+        totalRisk += risk[scoringPoint]
+        scoringPoint = locationScores[scoringPoint].parent
+        pathPoints.append(scoringPoint)
+
+    #totalRisk -= risk[(0,0)]
+
+    print(f"{totalRisk= }")
+
+if __name__ == '__main__':
+    findPath((0,0), (maxX-1, maxY-1))
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<p class="pt-8 code-title">Day15/maputils.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+import curses
+from time import sleep
+from astarutils import calc_h_cost
+
+class mapDisplay():
+def __init__(self, maxX, maxY, risk, locationScores=[], openPoints=[], closedPoints=[], pathPoints = [], oldSelection=[0,0], end=None, pathLength = 0):
+    self.maxX = maxX
+    self.maxY = maxY
+    self.risk = risk
+    self.locationScores = locationScores
+    self.openPoints = openPoints
+    self.closedPoints = closedPoints
+    self.selection = oldSelection
+    self.pathPoints = pathPoints
+    self.pathLength = pathLength
+    self.retCode = {'exitcode':0, 'selection': self.selection }
+    if end == None:
+        self.end = (maxX-1, maxY-1)
+    else:
+        self.end = end
+
+    screen = curses.initscr()
+    screen.keypad(True)
+
+    curses.start_color()
+    #color pair 0 is white on black standard
+    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK) #1 - open points
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK) #2 - closed points
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK) #3 - end point 
+    curses.init_pair(4, curses.COLOR_MAGENTA, curses.COLOR_BLACK) #4 -  final path
+
+    curses.init_pair(10, curses.COLOR_BLACK, curses.COLOR_WHITE) #11 - open points highlighted
+    curses.init_pair(11, curses.COLOR_BLACK, curses.COLOR_GREEN) #11 - open points highlighted
+    curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_RED) #12 - closed points highlighted
+    curses.init_pair(13, curses.COLOR_BLACK, curses.COLOR_YELLOW) #13 - end point 
+    curses.init_pair(14, curses.COLOR_BLACK, curses.COLOR_MAGENTA) #14 - final path
+
+
+    self.map_pad = curses.newpad(maxY+1,maxX+1)
+
+    self.info_pad = curses.newpad(7, 40)
+    self.info_pad.addstr(0,0,"Coords:")
+    self.info_pad.addstr(1,0,"F_Cost:")
+    self.info_pad.addstr(2,0,"G_Cost:")
+    self.info_pad.addstr(3,0,"H_Cost:")
+
+    self.instruction_pad = curses.newpad(5,40)
+    self.instruction_pad.addstr(0,0,"Arrow keys to move")
+    self.instruction_pad.addstr(1,0,"Enter to advance")
+    self.instruction_pad.addstr(2,0,"Esc to hard quit")
+
+    self.open_pad = curses.newpad(200,20)
+    self.open_pad.addstr(0,0,"Open Points", curses.A_UNDERLINE)
+        
+    curses.noecho()
+    self.redraw()
+
+    while True:
+        c = screen.getch()
+        if c == 10: #Enter to continue
+            self.retCode['exitcode'] = 0
+            break
+        elif c == 27: #Escape to quit
+            self.retCode['exitcode'] = 1
+            break
+        elif c == 100: #d
+            self.redraw()
+        elif c == 50 or c == 456: #numpad down
+            self.selection[1] = min(self.selection[1] + 1, maxY)
+            self.redraw()
+        elif c == 56 or c == 450: #numpad up
+            self.selection[1] = max(self.selection[1]-1, 0)
+            self.redraw()
+        elif c == 52 or c == 452: #numpad left
+            self.selection[0] = max(self.selection[0]-1, 0)
+            self.redraw()
+        elif c == 54 or c == 454: #numpad right
+            self.selection[0] = min(self.selection[0]+1, maxX)
+            self.redraw()
+
+def redraw(self): #pad, maxX, maxY, risk, locationScores=[], openPoints=[], closedPoints=[], selection=[0,0]):
+    self.updateMapPad()
+    self.update_info_pad()
+    self.update_instruction_pad()
+    self.update_open_pad()
+
+def updateMapPad(self):
+    for x in range(self.maxX):
+        for y in range (self.maxY):
+            if [x, y] == self.selection:
+                if (x,y) == self.end: color = curses.color_pair(13)
+                elif (x,y) in self.pathPoints: color = curses.color_pair(14)
+                elif (x,y) in self.openPoints: color = curses.color_pair(11)
+                elif (x,y) in self.closedPoints: color = curses.color_pair(12)
+                else: color = curses.color_pair(10)
+            else:
+                if (x,y) == self.end: color = curses.color_pair(3)
+                elif (x,y) in self.pathPoints: color= curses.color_pair(4)
+                elif (x,y) in self.openPoints: color = curses.color_pair(1)
+                elif (x,y) in self.closedPoints: color = curses.color_pair(2)
+                else: color = curses.color_pair(0)
+            
+            self.map_pad.addch(y, x, str(self.risk[(x,y)]), color)
+
+    self.map_pad.refresh(0,0,0,0,curses.LINES-1,40)
+
+def update_info_pad(self):
+    #Coordinates
+    self.info_pad.addstr(0,10,"          ")
+    self.info_pad.addstr(0,10,str(self.selection))
+
+    #F Cost
+    self.info_pad.addstr(1,10,"          ")
+    if tuple(self.selection) in self.locationScores:
+        self.info_pad.addstr(1,10,str(self.locationScores[tuple(self.selection)].f_cost) + "      ")
+        self.info_pad.addstr(2,10,str(self.locationScores[tuple(self.selection)].g_cost) + "      ")
+    else:
+        self.info_pad.addstr(1,10,"Unknown")
+        self.info_pad.addstr(2,10,"Unknown")
+
+    #H Cost
+    self.info_pad.addstr(3,10,"         ")
+    self.info_pad.addstr(3,10,str(calc_h_cost(self.selection, self.end)))
+    if self.pathPoints != []:
+        self.info_pad.addstr(4,0,"Path Length:")
+        self.info_pad.addstr(5,0,str(self.pathLength))
+    else:
+        self.info_pad.addstr(4,0,"Searching...")
+
+    self.info_pad.refresh(0,0,0,40,5,80)
+
+def update_instruction_pad(self):
+    self.instruction_pad.refresh(0,0,10,40,12,60)
+
+def update_open_pad(self):
+    pointList = sorted(self.openPoints[:min(len(self.openPoints), 99)], key= lambda x:self.locationScores[x].f_cost)
+    for i, p in enumerate(pointList):
+        self.open_pad.addstr(i+1,0,f"{p} - {self.locationScores[p].f_cost}")
+    self.open_pad.refresh(0,0,0,70,10,100)
+
+
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">Thankfully, the algorithm from part 1 is efficient enough to be used in the larger data size in part 2. For brevity, here's just the input-generating lines of part 2; the algorithm is the same.</p>
+<p class="code-title">Day15/Part2.py <span class="italic">(partial)</span></p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read().split('\n')
+
+originalRisk = dict()
+for y, line in enumerate(data):
+    for x, val in enumerate(line):
+        originalRisk[(x, y)] = int(val)
+
+original_maxY = len(data)
+original_maxX = len(data[0])
+
+risk = dict()
+for x_copy in range(5):
+    for y_copy in range(5):
+        for i in range(original_maxX):
+            for j in range(original_maxY):
+                risk[(x_copy*original_maxX + i, y_copy*original_maxY + j)] = (originalRisk[(i,j)] + x_copy + y_copy - 1) % 9 + 1
+
+maxY = original_maxY * 5
+maxX = original_maxX * 5
+totalPoints = maxY * maxY
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+
+<h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="day17">Day 17 - Trick Shot</h2> -->
+<h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
+<p class="post-p">Part one of today's challenge can be solved by logical deduction with a minimum of coding. With the movement described, a probe moving upward will always pass though y=0 on its way back down; the fastest speed it can reach at this point is when its next step <span class="italic">just</span> clips the bottom of the target area, ie. when its downward speed is equal to the lower y coordinate of our input. Because the y speed increases downward by 1 unit per timestep, the highest point on its trajectory is the sum of all speeds up to and including this one. That is, our solution will be the sum of all numbers up to and including our lower-y bound.</p>
+<p class="post-p">I solved this one using the Python REPL as a calculator using <code class="code">sum(range(maxY))</code>, but as an actual script it might look like:</p>
+<p class="code-title">Day17/Part1.py</p>
+{{< highlight python3 >}}
+import re
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read()
+
+maxY = int(re.search(r'y=(-?\d+)', data).group(1))
+print(sum(range(abs(maxY))))
+{{< /highlight >}}
+<h4 class="pb-1 mt-4 border-b-2 border-gray-200 post-h4 w-72">Part 2</h4>
+<p class="post-p">There might be a similarly clever way to reason about part 2, but I elected to just find the solutions by iterating over the (fairly reasonable) possibilities for the starting velocity. I got a little fancy with a dataclass and NamedTuple for the current location and target area, but that's not strictly necessary.</p>
+<p class="code-title">Day17/Part2.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+import re
+from typing import NamedTuple
+from dataclasses import dataclass
+
+with open("input.txt", "r", encoding="utf-8") as infile:
+    data = infile.read()
+
+reg = re.search(r'x=(\d+)\.\.(\d+), y=(-?\d+)\.\.(-?\d+)', data)
+
+class region(NamedTuple):
+    minX: int
+    maxX: int
+    minY: int
+    maxY: int
+
+    def pointIn(self, x, y):
+        return (self.minX <= x <= self.maxX) and (self.minY <= y <= self.maxY)
+
+@dataclass
+class point():
+    x: int
+    y: int
+
+target = region(minX = int(reg.group(1)), maxX = int(reg.group(2)), minY = int(reg.group(3)), maxY = int(reg.group(4)))
+input(target)
+
+validInitialVelocities = set()
+#Highest Y initial speed is abs(maxY) as in part 1
+#Lowest Y initial speed is minY
+#Highest X initial speed is abs(maxX) (or we'll definitely overshoot)
+#Lowest X initial speed is 1
+
+for initialSpeed_X in range(1, target.maxX+1):
+    for initialSpeed_Y in range(target.minY, abs(target.minY)):
+        currentXSpeed = initialSpeed_X
+        currentYSpeed = initialSpeed_Y
+        #print(f"Examining intial speed {(initialSpeed_X, initialSpeed_Y)}")
+        loc = point(x=0, y=0)
+        while (loc.y > target.minY - 1 and loc.x < target.maxX+1):
+            if target.pointIn(loc.x, loc.y):
+                validInitialVelocities.add((initialSpeed_X, initialSpeed_Y))
+                #print(f"Found valid velocity {(initialSpeed_X, initialSpeed_Y)}")
+                break
+            loc.x += currentXSpeed
+            loc.y += currentYSpeed
+            currentXSpeed = max(currentXSpeed - 1, 0)
+            currentYSpeed -= 1
+
+print(f"{len(validInitialVelocities)= }")
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p> -->
 
 <!-- <h2 class="table-cell w-auto h-20 pb-1 align-bottom border-b-4 border-gray-200 md:w-128 post-h2 relative-anchor" id="dayxxx">Day xxx - xxx </h2>
 <h4 class="pt-4 pb-1 border-b-2 border-gray-200 post-h4 w-72">Part 1</h4>
