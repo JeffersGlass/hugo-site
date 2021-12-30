@@ -16,5 +16,196 @@ tags:
 <p class="post-p">We sometimes run into a situation where, for reasons of cost, planning, location, or timing, there is no exterior control of any kind. There's just a breaker in a panel (which may or may not be remote controlled) providing power to an installed cabinet. And as much as PC's love to be rebooted, they <span class="italic">hate</span> having their power yanked unexpectedly.</p>
 <p class="post-p">So the challenge is: <span class="font-bold">given only control over their power, can we create a system that soft-starts and soft-shuts-down a PC?</span> <span class="italic">(Yes we can, or this would be a very short post.)</span></p>
 <p class="post-p"><hr/></p>
-<p class="post-h2">Arduino Setup</p>
+<p class="post-h2">Shutdown</p>
+<p class="post-p">Getting a PC to soft shutdown on power loss is relatively straightfoward. There are (fairly fancy) <a href="https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/ups-network-management-cards/N-o7asnt">networkable UPS systems and add-on cards</a> that are meant just for this kind of thing. When mains power is killed, the UPS kicks into keep the computer(s) in question on, while sending a network message to do... whatever you want. Wait a minute then hibernate, run a backup, dump memory, etc.</p>
+<p class="post-p">Unfortunately, these solutions are somewhat cost-prohibitive, and also rather large. They seem designed for rackmount systems where they could be used to manage a bank of servers. The particular situation that I'm building this for for is very tightly space-confired, and doing it for less than a grand would be great.</p>
+<p class="post-p">Thankfully, there's a way to make this work on a cheaper and smaller UPS. Many off-the-shelf UPS's have the abilitiy to connect directly to a single PC via USB connection. APC, who makes consumer UPSes, has such a connection on even their <a href="https://amzn.to/31ciSpg">very basic units</a>. They even include <a href="https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/powerchute-personal-edition/N-1b6nbpp">some basic software (Powerchute)</a> that can tell the computer to hibernate, shutdown, wait a few minutes and shutdown, etc when the batteries kick in. Sounds perfect, no?</p>
+<p class="post-p">Not quite - we only have the ability to hook one computer directly to the UPS, but we'd like to power multiple small computers <a href="https://www.intel.com/content/www/us/en/products/details/nuc.html">(often NUCs)</a> off a single UPS. And there's no obvious way to hook into the Powerchute software directly.</p>
+<p class="post-p">The workaround is straightfoward - the Powerchute software logs an event to the Window System Log when it swtches to battery power. We can use Window's built-in task scheduling service to fire off a script of our choosing when this event occurs. Then it's just a matter of crafting some very basic network scripts to allow the UPS-connected computer to tell other computers to shut down, then shut itself down.</p>
+<p class="post-p">Here's what I came up with. It's not terrible robust, secure, or debuggable, but it's getting the job done for now. The client script runs on the computer connected to a UPS, and is triggered when the UPS switches to battery power. The server runs on as many connected computers as we want, and should be set to run at startup. The (static) IPs of the computers running the server script must be enterred in the client script.</p>
+<p class="code-title">client.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+"""
+This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
+This program ('client') is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
+The server program should be running on any computers that need to be shutdown in this context.
+This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
+"""
+
+import socket
+import os
+from time import sleep
+
+socket.setdefaulttimeout(10)
+PORT = 1933
+MSG = b'SHUTDOWN NOW'
+RSP = b"SHUTDOWN CONFIRMED"
+
+deviceIPs = [
+    "172.16.0.2"
+]
+attempts = 0
+MAX_ATTEMPTS = 5
+
+print("Client program is contacting remote computers to shut them down")
+
+while len(deviceIPs) > 0:
+    attempts += 1
+    if attempts > MAX_ATTEMPTS:
+        print(f"System could not shut down the following IPs: {deviceIPs}")
+        print("Shutting down self in 15 seconds")
+        sleep(15)
+        break
+    for ip in deviceIPs:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            print(f"Attempting to connect tp {ip}, attempt {attempts} of {MAX_ATTEMPTS} (timeout is {int(socket.getdefaulttimeout())}s)")
+            try:
+                s.connect((ip, PORT))
+            except TimeoutError as err:
+                print("Connection timed out")
+                continue
+            print(f"Connection successful, sending message: {MSG}")
+            s.sendall(MSG)
+            data = s.recv(1024)
+            print(f"Received {repr(data)}")
+            if data[:len(RSP)] == RSP:
+                print(f"Received shutdown confirmation message from host at ip {ip}")
+                deviceIPs.remove(ip)
+            else:
+                print(f"Got some other message than we expected from host at ip {ip}: {data}")
+    sleep(1)
+else:
+    print("Successfully shut down all remote IPs, shutting down self in 10 seconds")
+    sleep(10)
+os.system("shutdown /s /f /t 10")
+{{< /highlight >}}
+</div>
+<p class="pb-8 post-img-caption">Scroll to see full code</p>
+<p class="code-title">server.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+"""
+This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
+This program ('server') runs on any computer that is NOT receiving the direct singal to shut down.
+The 'client' program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
+"""
+
+import socket
+import os
+
+HOST = ''
+PORT = 1933
+MSG = b"SHUTDOWN NOW"
+RSP = b"SHUTDOWN CONFIRMED"
+
+print("Server program is listening for shutdown commands from primary client")
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    conn, addr = s.accept()
+    with conn:
+        print(f"Connected by {addr}")
+        while True:
+            data = conn.recv(1024)
+            if data[:len(MSG)] == MSG:
+                print(f"Got shutdown MSG {data}")
+                conn.sendall(RSP)
+                os.system("shutdown /s /f /t 10")
+            else: 
+                print(f"Got {data= } instead of expected {data[:len(MSG)]}")
+            if not data:
+                break
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+
+
+<p class="post-h2">Startup</p>
+
+<p class="post-h3">Adafruit Feather ESP32-S2 Setup</p>
 <p class="post-p"><a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader">Install Guide</a><a href="https://circuitpython.org/board/adafruit_feather_esp32s2/">Bootloader .BIN File</a> <a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader#step-2-place-your-board-in-bootloader-mode-3089837-8">Put board in bootloader mode</a> Use <a href="https://adafruit.github.io/Adafruit_WebSerial_ESPTool/">Adafruit ESPTool and Webserial</a> to burn BIN file </p>
+<p class="code-title">code.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
+import board
+import busio
+import digitalio
+import neopixel
+from time import sleep
+
+from adafruit_wiznet5k.adafruit_wiznet5k import WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
+import adafruit_wiznet5k.adafruit_wiznet5k_socket as socket
+import adafruit_requests as requests
+
+pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
+
+targetMACs = [
+    [0x12,0x34,0x56,0x78,0x9A,0xBC], #Computer NW
+    [0x12,0x34,0x56,0x78,0x9A,0xBD], #Computer NE
+    #... more computers as necessary
+    ]
+
+# Initialize ethernet interface with DHCP
+cs = digitalio.DigitalInOut(board.D10)
+spi_bus = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+eth = WIZNET5K(spi_bus, cs, is_dhcp=False)
+
+ip = eth.unpretty_ip("172.16.0.10")
+subnet_mask = eth.unpretty_ip("255.255.0.0")
+gateway = eth.unpretty_ip("172.16.0.10")
+dns = eth.unpretty_ip("172.16.0.10")
+eth.ifconfig = (ip, subnet_mask, gateway, dns)
+#If using DHCP, uncomment the following line
+#eth.ifconfig = (ip, subnet_mask, None, None)
+
+print("Assigned Ethernet Address: " + str(eth.pretty_ip(eth.ip_address)))
+
+#Built-in neopixel will be purple while waiting for Ethernet to connect
+pixel[0] = (255,0,255)
+
+retry = True
+while retry:
+    retry = False
+    try:
+        eth.socket_connect(0, eth.unpretty_ip('172.16.255.255'), 556, conn_mode=SNMR_UDP)
+    except AssertionError as err:
+        print(str(err) + ", retrying in 10 Seconds")
+        retry = True
+        sleep(10)
+
+    status = eth.socket_status(0)
+    if [int(b) for b in status] == [SNSR_SOCK_UDP]:
+        print("Socket 0 connected as UDP")
+    else:
+        print(f"Socket not connected, status is {status}")
+        retry = True
+        sleep(10)
+
+#Built in neopixel will be blue when standing by to send WOL packets
+pixel[0] = (0,0,255)
+sleep(5)
+
+while True:
+#Built in neopixel will be green when sending WOL packets
+    pixel[0] = (0,255,0)
+    for i, target in enumerate(targetMACs):
+        
+        fullPacket = bytearray([0xFF] * 6 + target * 16)
+        print(f"Sending WoL packet to computer {i} with mac address {eth.pretty_mac(target)}")
+        eth.socket_write(0, fullPacket, 1)
+        
+        sleep(.1)
+
+    pixel[0] = (0,0,255)
+    sleep(15)
+
+eth.socket_close(0)
+{{< /highlight >}}
+</div>
+
+<p class="post-img-caption">Scroll to see full code</p>
