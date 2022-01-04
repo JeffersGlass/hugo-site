@@ -128,12 +128,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see full code</p>
-
-
 <p class="post-h2">Startup</p>
-
-<p class="post-h3">Adafruit Feather ESP32-S2 Setup</p>
-<p class="post-p"><a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader">Install Guide</a><a href="https://circuitpython.org/board/adafruit_feather_esp32s2/">Bootloader .BIN File</a> <a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader#step-2-place-your-board-in-bootloader-mode-3089837-8">Put board in bootloader mode</a> Use <a href="https://adafruit.github.io/Adafruit_WebSerial_ESPTool/">Adafruit ESPTool and Webserial</a> to burn BIN file </p>
+<div class="max-w-lg px-10 mx-auto xl:float-right">
+    <img src="feather.jpg" alt="A complex touchscreen controller based around a Medialon control system" class="post-img">
+    <p class="max-w-xl post-img-caption">An Adafruit ESP-32 Featherwing - the purple Neopixel light indicates the unit has booted but does not see an attached ethernet cable</p>
+</div>
+<p class="post-p">Almost every BIOS has the ability to wake the system when power is restored following an unexpected power loss. Most have the ability to boot the computer when power is removed and restored, regardless of whether the computer was gently shut down or rudely had its power cut. Unfortunately, neither of these options work for us - since the computer is on a UPS, as far the the power supply is concerned,<span class="italic"> the computer never loses power.</span> So, we'll have to rely on some other mechanism to detect when power is restored to cause the computer(s) to boot.</p>
+<p class="post-p">The hammer for this particular nail is a small, ethernet-capable microcontroller that sends out Wake-on-LAN packets at regular intervals whenever its powered on. We plug this microcontroller into an outlet <span class="underline">not</span> backed by the UPS - when power is lost, the microcontroller shuts off almost immediately, allowing the computers to shut down as above. When power is restored, the microcontroller starts up and, after a brief delay, starts sending out Wake-On-LAN messages to all the MAC addresses it knows about.</p>
+<p class="post-p">I chose the <a href="https://www.adafruit.com/product/5000">Adafruit ESP-32 Feather</a> for a couple reasons. One, Python is <a href="/tags/python">my language of choice</a> for hacking things together, and I was excited to play more with <a href="https://circuitpython.readthedocs.io/en/latest/README.html">CircuitPython</a>. Second, Adafruit's commitment to documentation and process is just great, and I wanted to get this project up on its feet quickly. And third, Adafruit's Featherwing line of accessory boards (specifically the <a href="https://www.adafruit.com/product/3201">Ethernet Featherwing</a>) made it easy to get an Ethernet Stack and PHY running with minimal custom effort.</p>
+<p class="post-p">So, I bashed together the following code to wake up, establish a network connection, and send a Wake-On-LAN message to each MAC address in a given array every 15 seconds or so:</p>
 <p class="code-title">code.py</p>
 <div class="overflow-y-scroll h-124">
 {{< highlight python3 >}}
@@ -215,5 +218,18 @@ while True:
 eth.socket_close(0)
 {{< /highlight >}}
 </div>
-
 <p class="post-img-caption">Scroll to see full code</p>
+<p class="post-p">If you're making use of this code yourself, you'll need the following libraries in your CIRCUITPY/libs folder:</p>
+<ul class="post-ul">
+    <li>adafruit_wiznet5k</li>
+    <li>adafruit_requests.mpy</li>
+    <li>neopixel.mpy</li>
+</ul>
+<p class="post-p">And, if it's helpful, here is the basic process of getting the ESP32-S2 feather up and running (summarized from <a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader">Adafruit's excellent guide</a>):</p>
+<ul class="post-ul">
+    <li>Download the appropriate <a href="https://circuitpython.org/board/adafruit_feather_esp32s2/">Bootloader .BIN File</a></li>
+    <li><a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader#step-2-place-your-board-in-bootloader-mode-3089837-8">Put the board in bootloader mode</a></li>
+    <li>Use the online <a href="https://adafruit.github.io/Adafruit_WebSerial_ESPTool/">Adafruit ESPTool and Webserial</a> tool to burn BIN file to the ESP32</p></li>
+    <li>Reset the feather - it will appear as an attached USB drive called CIRCUITPY, onto which the above code can be dropped</li>
+</ul>
+<p class="post-p">  
