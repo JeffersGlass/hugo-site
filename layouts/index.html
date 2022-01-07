@@ -45,7 +45,8 @@
             <h1 class="text-3xl relative-anchor">Blog Posts</h1>
             <p class="italic">Moments in time, works in progress or completed assemblies, on a variety of topics</p>
             <div class="flex flex-wrap">
-                {{ range first 5 (where .Site.Pages "Section" "post" ) }}
+                {{ $cloudPages := where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume") }}
+                {{ range first 5 ((where .Site.Pages "Section" "post" ) | complement $cloudPages ) }}
                     {{ if .IsPage }}
                         {{ .Render "card"}}
                     {{ end }}
