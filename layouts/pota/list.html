@@ -1,5 +1,11 @@
 {{ define "main" }}
     {{ partial "header.html" }}
+    <style>
+        .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        </style>
     <main class="pt-16">
         <div id='map' style='width: 75%; height: 800px; margin: auto'></div>
         <script>
@@ -24,8 +30,9 @@
                 'source': 'points',
                 'paint': {
                     "circle-radius": {
-                        "base" : 4,
+                        "base" : 3,
                         "stops": [
+                            [3, 3],
                             [7, 4],
                             [11, 20]
                         ]
@@ -47,13 +54,42 @@
                         "False",
                         "#d97706",
                         "True",
-                        "#65a30d",
+                        "#65c30d",
                         "#1d4ed8"
                     ]
                 }
             });
         });
-        //"circle-color": "#65a30d",
+
+        map.on('click', 'parks', (e) => {
+            // Copy coordinates array.
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const props = e.features[0].properties
+            const information = props.name + "<br>" + props.reference + "<br>Activations: " + props.stats;
+            console.log(e);
+            
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+            
+            new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(information)
+                .addTo(map);
+            });
+        
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on('mouseenter', 'parks', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', 'parks', () => {
+            map.getCanvas().style.cursor = '';
+        }); 
         </script>
     </main>
     {{ partial "footer.html" }}
