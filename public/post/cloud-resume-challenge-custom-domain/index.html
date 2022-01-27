@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Custom Domain</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Custom Domain"/>
+<meta name="twitter:description" content="Since I already have a custom domain at jeff.glass (which is likely where you&#39;re reading this, if you&#39;re reading this around the time of posting), I&#39;d like to figure out how to point a subdomain of that site at my nascent Cloudfront/S3 static site."/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Custom Domain</h1>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/cloud-resume">Cloud-Resume</a>
+					
+				</div>
+				
+				<div>
+					<p class="post-p">Since I already have a custom domain at <strong>jeff.glass </strong><em>(which is likely where you're reading this, if you're reading this around the time of posting</em>), I'd like to figure out how to point a subdomain of that site at my nascent Cloudfront/S3 static site. While I should probably also learn how to register a new domain through Amazon's Route 53 service, I think the end product will be cleaner.</p>
+<p class="post-p">I currently have the domain registered through NameCheap, and pointing to the DNS servers provided via my hosting at iWebFusion. The first thing I'll try is just using a CNAME to point <strong>resume.jeff.glass</strong> to the URL provided by my Cloudfront distribution.</p>
+<p class="post-p">But alas:</p>
+<p class="post-p"><a href="https://jeff.glass/wp-content/uploads/2021/10/403.png"><img alt="" class="aligncenter size-large wp-image-3813 post-img" height="305" src="403-1024x434.png" width="720"/></a></p>
+<p class="post-p">Some sites suggest that fixing this could be as simple as modifying a setting in the Cloudfront distribution settings:</p>
+<p class="post-p"><a href="https://jeff.glass/wp-content/uploads/2021/10/alternate.png"><img alt="" class="aligncenter size-full wp-image-3814 post-img" height="169" src="alternate.png" width="564"/></a></p>
+<p class="post-p">But:</p>
+<p class="post-p"><a href="https://jeff.glass/wp-content/uploads/2021/10/trusted-cert.png"><img alt="" class="aligncenter size-full wp-image-3815 post-img" height="204" src="trusted-cert.png" width="825"/></a></p>
+<p class="post-p">The key resource here is the article <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-alternate-domain-names.html">Using Alternate Domains and HTTPS</a></p>
+<p class="post-p">But it turns out, requesting certificates from the Amazon Certificate Manager is pretty simple. Click request certificate and specify what domains it applies to (which allows for using wildcard characters!). To validate that you do indeed control the domain you're requesting the certificate for, the ACM uses what they call "DNS Validation," which involves adding a single CNAME record to your DNS Zone records. Essentially, they give you a long, random-looking "subdomain" URL to redirect to a long, random-looking amazon URL. Then, by querying whether your site actually performs the redirect as requested, they can verify that you were indeed able to modify the DNS behavior of the site and therefore are the owner of that domain.</p>
+<p class="post-p">One trick is that, to use the generated certificate with Cloudfront, the certificate must be requested in the us-east-1 region, which may not be the region your bucket is in. (Since my most recent bucket is in us-east-2, it seems like my certificates were defaulting there as well. Or perhaps its geolocating me? Unclear). In any case, the simplest thing to do is use the "request certificate" link on the Cloudfront distribution settings, which automatically launches the wizard to request a new certificate in us-east-1.</p>
+<p class="post-p"><a href="https://jeff.glass/wp-content/uploads/2021/10/request-certificate.png"><img alt="" class="aligncenter size-full wp-image-3819 post-img" height="127" src="request-certificate.png" width="301"/></a></p>
+<p class="post-p">With that certificate selected and the settings saved, my new site is available at <a href="https://resume.jeff.glass/">https://resume.jeff.glass</a>! Not that it's terribly interesting at the time of writing, but now it's got a tasteful URL.</p>
+<p class="post-p"><a href="https://jeff.glass/wp-content/uploads/2021/10/helloworld-big.png"><img alt="" class="aligncenter size-full wp-image-3822 post-img" height="98" src="helloworld-big.png" width="226"/></a></p>
+<p class="post-p"><hr/></p>
+<p class="post-p">Part of the reason I'm trying to document all the twists and turns of this process has to do with a later goal of the Cloud Resume Challenge. Namely, goal 11, which reads in full:</p>
+<p class="post-p"><blockquote></blockquote></p>
+<h2 class="italic">12. Infrastructure as Code</h2>
+<p class="italic post-p">You should not be configuring your API resources – the DynamoDB table, the API Gateway, the Lambda function – manually, by clicking around in the AWS console. Instead, define them in an <a href="https://aws.amazon.com/serverless/sam/" rel="noopener" target="_blank">AWS Serverless Application Model (SAM) template</a> and deploy them using the AWS SAM CLI. This is called “<a href="https://www.hashicorp.com/resources/what-is-infrastructure-as-code/" rel="noopener" target="_blank">infrastructure as code</a>” or IaC. It saves you time in the long run.</p>
+<p class="post-p"></p>
+<p class="post-p">This will be an entirely new area of exploration for me, and from just a little examination will involve encapsulating chunks of the existing setup work in a format that it can be recreated automatically. Which parts of the setup? Unclear. It doesn't seem like HTTPS and Cloudfront setup are part of that, but I figure it can't hurt to write down the edge cases doing this by hand. I'd like to not trip over them again when I go to automate things. </p>
+<p class="post-p"> </p>
+<p class="post-p"> </p>
+<p class="post-p"></p>
+
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>

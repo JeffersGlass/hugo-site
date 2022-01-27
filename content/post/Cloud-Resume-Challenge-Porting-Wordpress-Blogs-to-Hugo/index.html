@@ -1,7 +1,7 @@
 ---
 title: "Porting Wordpress Blogs to Hugo"
 date: 2021-11-22T18:36:07-05:00
-draft: true
+draft: false
 static_slug: /img/cloudresumeslug.png
 tags:
 - Cloud-Resume
@@ -17,12 +17,12 @@ tags:
 <p class="post-p"><img alt="" class="aligncenter size-full wp-image-4040 post-img" height="689" src="firstpos.png" width="739"/></p>
 <p class="post-p">Not a very pretty blog yet, mind, but I don't think there's a way around doing much of the correction by hand.</p>
 <p class="post-p">I did use some VS-code search-and-replace-with-regexes to adjust how captions were being handled. In particular, I used:</p>
-<p class="post-p">search: &lt;figcaption&gt;(.*)&lt;\/figcaption&gt;&lt;\/figure&gt;</p>
-<p class="post-p">replace with: &lt;/figure&gt;&lt;p class="post-img-caption"&gt;$1&lt;/p&gt;</p>
+<p class="post-p">search: <code class="code">&lt;figcaption&gt;(.*)&lt;\/figcaption&gt;&lt;\/figure&gt;</code></p>
+<p class="post-p">replace with: <code class="code">&lt;/figure&gt;&lt;p class="post-img-caption"&gt;$1&lt;/p&gt;</code></p>
 <p class="post-p">To move the image caption into a new paragraph outside of the figure, and then used CSS to center/style it.</p>
 <p class="post-p">Similarly, I used some regex to move the contents of another style of captions into their own paragraph.</p>
-<p class="post-p">search: \/&gt;(.*?\[\/caption\])&lt;\/p&gt;</p>
-<p class="post-p">replace with: &lt;\/p&gt;&lt;p class="post-img-caption"&gt;$1&lt;/p&gt;</p>
+<p class="post-p"><code class="code">search: \/&gt;(.*?\[\/caption\])&lt;\/p&gt;</code></p>
+<p class="post-p">replace with:<code class="code"> &lt;\/p&gt;&lt;p class="post-img-caption"&gt;$1&lt;/p&gt;</code></p>
 <p class="post-p">I also learned some new useful keyboard shortcuts in VS Code. Namely, Cntl-K Cntl-F to auto-format a section of text, which helps break up spacing and tabbing on nested tables/divs.</p>
 <p class="post-p"><hr/></p>
 <p class="post-p">Overall, the process of converting my 42 existing blog posts to Hugo formatting took roughly 2 hours of manual processing - adjusting tags, changing image format and list layout, using shortcodes for video links, and so on. This first pass does <em>not</em> include the process of moving all the images over from Wordpress to Hugo... which I did as a separate process. The script for is as follows:</p>

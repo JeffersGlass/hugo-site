@@ -6,17 +6,17 @@
                     <h1 class="pb-2 text-4xl">Project: {{ .Title }}</h1>
                     <div>
                     <p class="py-2">This website was started to fulfill the goals of the <a href="https://cloudresumechallenge.dev/">Cloud Resume Challenge</a>, a 16-step project that aims to familiarize its participants with the fundaments of modern cloud architecture. Along the way, the project grew in scope to include replacing the author's former Wordpress-driven website with one written entirely in Hugo, with some small Javascript enhancements here and there.</p>
-                    <h2 class="pt-6 pb-2 text-2xl">How This Site is Built</h2>
+                    <!-- <h2 class="pt-6 pb-2 text-2xl">How This Site is Built</h2>
                     <p class="py-2">The current architecture of the site is as follows. Click on any part of the image for more information.</p>
-                    <figure class="m-auto bg-gray-300 w-96 h-96">Architecture diagram here</figure>
+                    <figure class="m-auto bg-gray-300 w-96 h-96">Architecture diagram here</figure> -->
                     <h2 class="pt-6 pb-2 text-2xl">Development Log</h2>
                     <p class="py-2">As I built this site, I wrote a series of in-process blog posts as a kind of development log to keep track of my progress, my learnings, and my next steps.</p>
                     <p class="py-2">These should be read like a lab notebook - there are many false starts and dead ends. You'll see my thought process, my triumps and defeats. I left them largely uneditted, only going back to correct spelling and punctuation. I have added a few headings (for ease of reading) and editors notes (when I learned much later that something I'd written was wrong).</p>
                     <div class="pl-4">
-                            {{ $posts := (where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume")).Reverse }}
+                            {{ $posts := (where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume")).ByDate }}
                             {{if len $posts }}
                             <ol class="post-ol">
-                                {{ range $posts}}
+                                {{ range sort $posts }}
                                 <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
                                 {{ end }}
                             </ol>

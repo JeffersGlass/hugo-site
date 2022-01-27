@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Dockerfiles</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Dockerfiles"/>
+<meta name="twitter:description" content="I&#39;m setting out to rectify a pretty silly part of my workflow."/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Dockerfiles</h1>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/cloud-resume">Cloud-Resume</a>
+					
+				</div>
+				
+				<div>
+					<p class="post-p">I'm setting out to rectify a pretty silly part of my workflow. Namely, when I want to push new content to the site that I've built with hugo, I:</p>
+<ol class="post-ol">
+    <li>Clean my current hugo build locally (removing /public, /resources/ and /dist). Slightly unnecessary, but has cleared some issues in the past.</li>
+    <li>Rebuild all files using <code class="code">npx hugo</code></li>
+    <li>Add all files to git using <code class="code">git add -A</code></li>
+    <li>Commit the new files using <code class="code">git commit -m "Commit Message Here"</code></li>
+</ol>
+<p class="post-p">This pushes the new files to github, which triggers a github action to upload the files in the ./public folder to s3.</p>
+<p class="post-p">There must be a better way.</p>
+<p class="post-p">And I'm confident there is - I'd love to use some like <a href="https://github.com/JeffersGlass/hugo-build-action">Jake Jarvis' Hugo Build Action</a> to automatically rebuild the site whenever new code is pushed to Github or merged into the main branch. The issue is, the Docker image that Jarvis has used doesn't happen to include tailwind as part of its build. So, I think the way forward is for me to learn enough about docker and dockerfiles to add Tailwind to a fork of Jarvis' action, and use that to build my site.</p>
+<p class="post-p">The dockerfile for this action is remarkably short:<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># https://github.com/jakejarvis/hugo-docker</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ghcr.io/jakejarvis/hugo-extended:0.89.4</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;hugo&#34;</span>]</code></pre></td></tr></table>
+</div>
+</div></p>
+<p class="post-p">From what I understand, this is using a pre-built docker image stored online (via Github?) to improve the speed of this action. That seems like quite a deep rabbit hole to go down, though an interesting one, but let's see if there's a faster way.</p>
+<p class="post-p">One thing that occurs to me is to see if anyone else has forked this repo, to make their own changes in the way I'm interesed in. And indeed, I'm the 10th person to fork this action, and several of them are X commits <span class="italic">ahead</span> of the original (as well as being several behind), meaning they've made some tweaks and changes. Let's look at <a href="https://github.com/willbicks/hugo-build-action/commit/96b801e40324dc378775d648a2d202ea244837ce">one of these commits from willbicks</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">ruby \
+<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#e6db74">HUGO_EXTENDED</span>:<span style="color:#f92672">+</span>libc6<span style="color:#f92672">-</span>compat libstdc<span style="color:#f92672">++</span>} <span style="color:#f92672">&amp;&amp;</span> \
+update<span style="color:#f92672">-</span>ca<span style="color:#f92672">-</span>certificates <span style="color:#f92672">&amp;&amp;</span> \
+<span style="display:block;width:100%;background-color:#3c3d38"><span style="color:#f92672">+</span> npm install <span style="color:#f92672">--</span>global postcss<span style="color:#f92672">-</span>cli autoprefixer @babel<span style="color:#f92672">/</span>core @babel<span style="color:#f92672">/</span>cli <span style="color:#f92672">&amp;&amp;</span> \
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="color:#f92672">-</span> npm install <span style="color:#f92672">--</span>global postcss postcss<span style="color:#f92672">-</span>cli autoprefixer @babel<span style="color:#f92672">/</span>core @babel<span style="color:#f92672">/</span>cli <span style="color:#f92672">&amp;&amp;</span> \
+</span>pip3 install <span style="color:#f92672">--</span>upgrade <span style="color:#66d9ef">Pygments</span><span style="color:#f92672">==</span><span style="color:#ae81ff">2</span><span style="color:#f92672">.</span>* <span style="color:#f92672">&amp;&amp;</span> \
+gem install asciidoctor <span style="color:#f92672">&amp;&amp;</span> \
+wget <span style="color:#e6db74">https</span>:<span style="color:#e6db74">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>gohugoio<span style="color:#f92672">/</span>hugo<span style="color:#f92672">/</span>releases<span style="color:#f92672">/</span>download<span style="color:#f92672">/</span>v<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#66d9ef">HUGO_VERSION</span>}<span style="color:#f92672">/</span>hugo_<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#e6db74">HUGO_EXTENDED</span>:<span style="color:#f92672">+</span>extended_}<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#66d9ef">HUGO_VERSION</span>}_Linux<span style="color:#f92672">-</span><span style="color:#ae81ff">64</span>bit<span style="color:#f92672">.</span>tar<span style="color:#f92672">.</span>gz <span style="color:#f92672">&amp;&amp;</span> \</code></pre></div>
+<p class="post-p">Hang on, that's alredy way longer than the Dockerfile in my fork! But it also looks like something I could actually modify...ah, it looks like back in <a href="https://github.com/JeffersGlass/hugo-build-action/commit/0aeee3828f8f0d61ab36cfc57f8a30190c70a57b">commit #0aeee38</a>, Jarvis switched from using a fully-written-out dockerfile to a version which is hosted as one of these prebuilt images. Let's see if we can put that old, fully-written-out docker file into use with the most recent version of hugo.</p>
+<p class="post-p">I'll start by copy-pasting the last longhand version of the Dockerfile that Jarvis wrote. Then I'll update the Hugo version to 0.89.4 (the latest at time of writing), and add "tailwindcss" to the npm command the Dockerfile runs. Finally, I'll change the action.yml file to point to the local Dockerfile, instead of the prebuilt image. Finally, I'll commit all the changes to git and push them back upstream to Github.</p>
+<p class="post-p">I'll create a new workflow for this instead of blowing away my old one (that just manually published a folder to s3), called hugoBuildAndUpload.yml. I'll also disable the previous action on Github, so it doesn't try to run when the new action uploads. Having saved that new yaml file, I'll push it to Github and see what happens...</p>
+<img src="noTailwind.PNG" alt="An error message saying Docker cannot find tailwindcss" class="post-img">
+<p class="post-p">Drat, not quite. Hugo seems to be running, but it still can't find tailwind, even though it should be installed via NPM now... perhaps my install order is wrong? By adding <code class="code">require('tailwindcss/nesting')</code> to my postcss requirements and re-pushing, I can see that Hugo/postcss are indeed attempting to build the site, but aren't able to find the required tailwind dependencies. This time the error is: <code class="code">Error: Error building site: POSTCSS: failed to transform "css/style.css" (text/css): Error: Cannot find module 'tailwindcss/nesting'</code></p>
+<p class="post-p">Let's see if tailwind isn't installing successfully, or if postcss can't find it for some reason. I'll add a line to the Dockerfile which should just run the -help command for tailwind on the command line, and error out if it breaks:
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">RUN</span> hugo version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>hugo env <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>postcss --version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="color:#ae81ff"></span>tailwindcss -h <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span><span style="color:#ae81ff"></span>autoprefixer --version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>babel --version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>pygmentize -V <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>asciidoctor --version</code></pre></td></tr></table>
+</div>
+</div></p>
+<p class="post-p">And indeed, in the action's output I can see the full help info from tailwindcss. A bit verbose perhaps, but I can at least see that tailwind is being installed successfully via npm</p>
+<img src="tailwind-h.PNG" alt="A console log showing TailwiindCSS's help output on Github Actions" class="post-img">
+<p class="post-p">On a whim, and after some internet cruising, I ran across <a href="https://discourse.gohugo.io/t/postcss-error-cannot-find-module-tailwindcss/34581/4">a post on the Hugo forums</a> where a user was similarly having issues with Hugo not recognizing that tailwind was installed. The user had identified that the NODE_PATH was being set to a Yarn installation folder, and that changing it to an NPM path solved the issue. While that was related to a local build, I wondered if perhaps the Dockerfile installing yarn was screwing up my pathing? Unfortunately, removing the yarn install didn't fix the issue. There were <a href="https://github.com/dirkolbrich/hugo-theme-tailwindcss-starter/issues/5">some references from a couple years ago</a> to similar services having issues with node modules when installed globally, but removing the <code class="code">--global</code> flag from the npm install step didn't fix anything</p>
+<p class="post-p">Some other things that didn't work:</p>
+<ul class="post-ul">
+    <li>Trying to install via <code class="code">npm install package.json</code> with various versions of <code class="code">--save</code>, <code class="code">--save-dev</code>, <code class="code">--global</code> etc</li>
+    <li>Trying to install by specifying packages, and using <code class="code">--dev</code> and <code class="code">--save-dev</code></li>
+    <li>Moving the tailwindcss install to after the postcss install in the RUN npm install line of the docker file</li>
+</ul>
+<p class="post-p">It seems I will indeed need to dive deeper into docker to understand what's going on. I'll install <a href="https://docs.docker.com/desktop/windows/install/">Docker Desktop for Windows</a> and see about loading up this Dockerfile. I'm hoping it's something small, like a path being off or a module being in one folder and not another, but we shall see...</p>
+<h3 class="post-h3">Docker</h3>
+<p class="post-p">The install process was painless, just download and run an exe. It wanted me to walk through a tutorial, but there will be plenty of time to learn how to craft my own image from scratch later - right now I really want to know how to run a preexsiting dockerfile. Thankfully, <a href="https://developer.toradex.com/getting-started/module-3-creating-my-own-container/writing-your-first-dockerfile-windows">a post from Toradex</a> pointed me the right direction - just using <code class="code">docker build .</code> in the directory where a dockerfile is is sufficient to build it for use. I'll revert the npm installation text back to what it was for now.</p>
+<p class="post-p">Using <code class="code">Get-Content Dockerfile | docker build - -t hugodebug</code> we can use a local Dockerfile for <a href="https://docs.docker.com/engine/reference/commandline/build/">building a new image</a> with the kernel specified in our Dockerfile, with the name hugodebug. Where exactly this image goes I'm not sure, but Docker Desktop sure spots it and lets me open it up. I'll give it a name <span class="line-through">and access to ports 80:80 as well.</span> (<span class="italic">Turns out, opening a port was both unneccesary and caused Docker to throw up. So scratch that.</span>)</p>
+<img src="dockerstart.PNG" alt="The open-image window of Docker Desktop" class="post-img">
+<p class="post-p">It does seem that the container is happy to open in docker desktop, once I eliminated the port mapping (which was unnecessary) but it's closing right away. Which makes some sense - the "entrypoint" (which I gather is the singular command to run) is <code class="code">hugo</code>, which terminates. I'll change that to <code class="code">sh</code> to drop into a shell, which keeps the container running.</p>
+<img src="imageShell.PNG" alt="The shell of a container image running, with ls commands showing" class="post-img">
+<p class="post-p">Alright, we're in! And I can test commands against this command line to see what did and didn't install correctly. Come to think of it, in theory I could deploy this as its own image online... but one step at a time. Let's figure out how to get our website source in here.</p>
+<p class="italic post-p">Curiously, I happened to switch to a differnt development machine at this point and... the container just would not stay running, with the same Dockerfile? Or rather, it will stay running when run from the docker desktop UI but not via Powershell. Which makes me think I'm just running the wrong command. Hmmm.</p>
+<p class="post-p">I gather from <a href="https://www.youtube.com/watch?v=gAkwW2tuIqE">a video from Fireship.io</a> that perhaps the thing to do is to put the Dockerfile right in my development environment, and mount the local source directly to it using the COPY command. So let's try that! According to the <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile Reference</a>, we can use the copy directive, simply with <code class="code">copy . . </code> to copy the files in the current directory to the image home directory. But since there are some files (like our local node_modules folder, the /public build folder, github workflows etc), we'll add them to a .dockerignore file.</p>
+<p class="post-p">And that's where I hit a bit of wall, since, <a href="https://forums.docker.com/t/docker-desktop-wont-work-on-windows-10-home/103187/5">according to a post on the Docker forums</a>, Windows 10 Home is incapable of running docker desktop. A brief pause here while I switch back to the other machine...</p>
+<img src="oneeternity.jpg" alt="The 'one eternity later' image from Spongebob Squarepants" class="w-1/2 post-img">
+<p class="post-p">Oh, the other machine is also Windows 10 home. Well dang. Perhaps this is a dead end.</p>
+<p class="post-p">But wait, there's <a href="https://www.docker.com/blog/docker-desktop-for-windows-home-is-here/">an official post from Docker</a> in March of 2020 saying that Docker should for work Windows 10 home users above build 19040 (I'm on 19042). So what the heck?</p>
+<p class="post-p">Gosh this post is going to be a mess. I've just noticed that <a href="https://github.com/jakejarvis/hugo-build-action/issues/4">the one open issue on the original hugo-site-build action</a> references pretty much exactly the issue I'm having! In the words of moritzheiber:</p>
+<p class="post-blockquote"><code class="code">postcss</code>, <code class="code">postcss-cli</code> and <code class="code">autoprefixer</code> are globally installed modules. Unfortunately, if the theme has a "local" <code class="code">postcss.config.js</code> (e.g. like the docsy theme) npm fails to resolve the global module path and therefore thinks the autoprefixer module is missing.</p>
+<p class="post-p">There are further refernces to some <a href="https://discourse.gohugo.io/t/hugo-pipes-postcss-how-to-use-global-autoprefixer/15699/11">references</a> and <a href="https://github.com/regolith-linux/website/commit/8622ae384cc20f17c7de819663a829a8aaf13ade">examples</a>  listed in that issue as well</p>
+
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>

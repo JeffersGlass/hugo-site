@@ -1,0 +1,96 @@
+{{ define "main" }}
+    {{ partial "header.html" }}
+    <style>
+        .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        </style>
+    <main class="pt-16">
+        <div id='map' style='width: 75%; height: 800px; margin: auto'></div>
+        <script>
+          mapboxgl.accessToken = 'pk.eyJ1IjoiamVmZmdsYXNzIiwiYSI6ImNreXN4azlmajB5d3YyeHMybWhsOHJobWUifQ.K_NSFBDGy9cLl5cnY_w7Ig';
+          var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-95, 40],
+            zoom: 4
+          });
+
+          //const marker1 = new mapboxgl.Marker().setLngLat([-87, 42]).addTo(map)
+        map.on('load', () => {
+        // Add the vector tileset as a source.
+            map.addSource('points', {
+                type: 'geojson',
+                data: '/geojson/k-potafeatures-2022-01-24.geojson'
+            });
+            map.addLayer({
+                'id': 'parks',
+                'type': 'circle',
+                'source': 'points',
+                'paint': {
+                    "circle-radius": {
+                        "base" : 3,
+                        "stops": [
+                            [3, 3],
+                            [7, 4],
+                            [11, 20]
+                        ]
+                    },
+                    "circle-stroke-color":
+                    [
+                        'match',
+                        ['get', 'activated'],
+                        "False",
+                        "#713f12",
+                        "True",
+                        "#3f6212",
+                        "#06b6d4"
+                    ],
+                    "circle-stroke-width": 2,
+                    "circle-color": [
+                        'match',
+                        ['get', 'activated'],
+                        "False",
+                        "#d97706",
+                        "True",
+                        "#65c30d",
+                        "#1d4ed8"
+                    ]
+                }
+            });
+        });
+
+        map.on('click', 'parks', (e) => {
+            // Copy coordinates array.
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const props = e.features[0].properties
+            const information = props.name + "<br>" + props.reference + "<br>Activations: " + props.stats;
+            console.log(e);
+            
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+            
+            new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(information)
+                .addTo(map);
+            });
+        
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on('mouseenter', 'parks', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', 'parks', () => {
+            map.getCanvas().style.cursor = '';
+        }); 
+        </script>
+    </main>
+    {{ partial "footer.html" }}
+{{ end }}
