@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Arduino Pro Mini DMX Shield</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Arduino Pro Mini DMX Shield"/>
+<meta name="twitter:description" content="IntroductionIn my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on."/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Arduino Pro Mini DMX Shield</h1>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/arduino">arduino</a>
+					
+					<a href="../../tags/lighting">lighting</a>
+					
+					<a href="../../tags/mini-mover-shield">mini-mover-shield</a>
+					
+					<a href="../../tags/programming">programming</a>
+					
+				</div>
+				
+				<div>
+					<h4 class="post-h4">Introduction</h4>
+<p class="post-p">In my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on. But it's also fun to build inexpensive, maker-size versions of of this equipment, and it can be done on a shoestring budget.</p>
+<p class="post-p">About a year ago, I built a couple versions of tiny moving lights - one directly from <a href="https://www.thingiverse.com/thing:1912706">a design from Thingiverse</a>, the other of my own making. The end result was super cute!</p>
+<figure class="wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"><div class="wp-block-embed__wrapper">
+<p class="post-p">
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/BTafFpI3Vgc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+</p>
+<p class="post-p"></p></div></figure>
+<p class="post-p">The thing with this tiny light compared to real moving lights was... I cheated a bit. The light itself only contains the servos and LED chip itself, while the controller, LED driver and ballast were all external. The full setup took up almost 3 times the volume of the individual light:</p>
+<figure class="wp-block-image"><img alt="" class="wp-image-391 post-img" src="IMG_7264spun-1024x768.jpg"/></figure>
+<p class="post-p">Not only did I cheat on size, I cheated on control a bit too. The unit has a number of 'test' modes that run simple movement and color patterns, but there was no means of controlling the light externally. While there are It was basically a fancy keychain toy. And there are <a href="https://www.amazon.com/CQRobot-network-Management-Extended-Functions/dp/B01DUHZAT0">DMX Shields</a> in the Arduino Uno form factor, they themselves would have outsized the lights by another 200%. It was all getting too bulky to be reasonable.</p>
+<p class="post-p">But after many months away from this project, I've been devoting some time to scaling down both the dimming and DMX control sides of the circuitry. The result is a shield for an <a href="https://store.arduino.cc/usa/arduino-pro-mini">Arduino Pro Mini</a>.</p>
+<h4 class="post-h4">DMX</h4>
+<p class="post-p">As described in my previous <a href="https://jeff.glass/2019/02/23/lighting-control-protocols-and-standards/">write-up of contemporary lighting control protocols</a>, the core standard for modern stage and event lighting is DMX, or properly, ANSI E1.11 DMX 512-A Digital Multiplex. In short, DMX is a serial protocol and physical spec that caries up to 512 one-byte values over each individual cable, usually with 5-pin DMX connectors. One set of 512 values is termed a "universe," and to carry additional values, additional cables carrying different universes of information may be added.</p>
+<figure class="wp-block-image"><img alt="" class="wp-image-387 post-img" src="dmx512-1024x252.png"/></figure>
+<p class="post-p">More formally, DMX is a 250 kbps serial protocol transmitted over a 2-wire bus following <a href="https://en.wikipedia.org/wiki/RS-485">RS-485</a> standards. The ESTA standard standards also dictate standardized connectors (XLR5 for temporary installations, RJ45 for permanent infrastructure), network topologies, impedances, terminations, and so on. <a href="https://tsp.esta.org/tsp/documents/published_docs.php">The standard is pretty readable</a>, if you enjoy that sort of thing.</p>
+<p class="post-p">DMX was developed in the late 80's/early 90's as a replacement for systems in which lighting equipment was controlled via analog control voltages, meaning each parameter (each individual dimmer, say) required one wire. A rack of 96 dimmers would have 100+ pin wiring harness attached to it, each with an analog voltage specifying level. With the introduction and adoption of DMX, all that was replaced with a single 3-conductor cable. All modern stage lighting controllers speak DMX, although most rely on transporting universes of DMX over Ethernet and using 'DMX Nodes' to turn that digital data back into 'hard' DMX close to the fixtures being controlled.</p>
+<h4 class="post-h4">Circuit Components</h4>
+<p class="post-p">There is really only on piece of hardware required to add to an Arduino-compatible design to allow it to send/receive DMX: an RS485 transceiver chip. There are many of these on the market, the common ones being the <a href="https://www.maximintegrated.com/en/products/interface/transceivers/MAX485.html">MAX485 </a>and the <a href="http://www.ti.com/product/SN75176B">SN75176</a>. </p>
+<p class="post-p"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-373 post-img" height="263" src="max485-pins.png" width="336"/></figure></div></p>
+<p class="post-p">These take a single-ended input and turn it into a balanced output or, conversely, receive a differential RS485-compatible input and convert it to a single ended signal to a microcontroller. There are two control pins which determine whether the chip is a receiver or a driver. The control circuitry is essentially the same at both the transmitting and receiving end:</p>
+<figure class="wp-block-image"><img alt="" class="wp-image-374 post-img" src="MAX485-1024x463.png"/></figure>
+<p class="post-p">A more sophisticated/robust approach would also incorporate an optoisolator to prevent the processor from being damaged by faults on the signal side. There are some good guides on the interwebs on <a href="https://electronics.stackexchange.com/questions/100487/dmx-on-arduino-with-rs485">setting up optoisolation with DMX for an Arduino</a> (Mathertel.de has a good <a href="http://www.mathertel.de/Arduino/DMXShield.aspx">write up of their isolated DMX shield</a>), but for the sake of quick progress I'm making this a future goal.</p>
+<h4 class="post-h4">Circuit Layout and PCB Manufacture</h4>
+<p class="post-p">The circuit is ultimately very simple - a couple headers, some resistors, a MAX485 IC, and some pads to connect the DMX connectors to. And a switch - the DMX library I'm using abuses the Arduino's built-in Serial library for some of its functionality, which means it has to use pins D0 and D1. Which means you can't reprogram the Arduino with DMX coming in. The DPDT switch just removes the connection between the DMX connectors and pins D0 and D1 of the Arduino to allow for programming. </p>
+<p class="post-p">Mostly for my own reference, the connections between a standard XLR3 or XLR5 connector and the Max485 pin are:</p>
+<table class="m-auto text-center table-fixed">
+<thead>
+<tr>
+<th class="w-1/3">Net Name</th>
+<th class="w-1/3">XLR Connector Pin</th>
+<th class="w-1/3">Max485 Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="">GND</td>
+<td class="">1</td>
+<td class="">5</td>
+</tr>
+<tr>
+<td class="">Data - </td>
+<td class="">2</td>
+<td class="">7</td>
+</tr>
+<tr>
+<td class="">Data +</td>
+<td class="">3</td>
+<td class="">6</td>
+</tr>
+</tbody>
+</table>
+<p class="post-p">Here's what draft one of version 0.1 looked like when it came back from <a href="https://oshpark.com/">OSHPark</a> and following assembly</p>
+<figure class="wp-block-image"><img alt="" class="wp-image-379 post-img" src="FullSizeRender-1024x768.jpg"/></figure>
+<p class="post-p">All the passives are 0603 and the max485 is an SOIC, both of which are pretty easy to solder by hand. The SMD switches are adorable! They're <a href="https://www.digikey.com/product-detail/en/c-k/JS202011SCQN/401-2002-1-ND/1640098">these little guys from C&amp;K</a>.</p>
+<p class="post-p">The major flaw with version 0.1 is: one you've attached headers, where do you attach anything else?? So version 0.2 added an additional row of thru-hole pads, cleaned up some labeling, and added some mounting holes for M2 screws:</p>
+<figure><img alt="" class="wp-image-380 post-img" data-id="380" data-link="https://jeff.glass/?attachment_id=380#main" src="V02-Board.png"/></figure>
+<figure><img alt="" class="wp-image-381 post-img" data-id="381" data-link="https://jeff.glass/?attachment_id=381#main" src="V02-Schematic-1024x510.png"/></figure>
+<p class="post-p">And once its all assembled, it looks something like this:</p>
+<figure class="wp-block-image"><img alt="" class="wp-image-393 post-img" src="IMG_7266-spun2-1024x768.png"/></figure>
+<h4 class="post-h4">Programming</h4>
+<p class="post-p">I've been making use of the <a href="https://sourceforge.net/p/dmxlibraryforar/wiki/Home/">Conceptinetics DMX library</a>, which I've found to be both functional and stable. I haven't yet experimented with the RDM capabilities of that library.</p>
+<p class="post-p">The library is very easy to use, and its usage is described well on the <a href="https://sourceforge.net/p/dmxlibraryforar/wiki/DMX%20Slave/">Conceptinetics Documentation page</a>. Essentially, one defines a DMX_Slave object, which has enable(), setStartAddress(), and getChannelValue() methods. </p>
+<p class="post-p">For example, once the object is set up and addressed, a loop() with the single command <strong>analogWrite(LED_PIN, getChannelValue(1));</strong> will dim an LED attached to pin 9 dim in response to incoming DMX. Easy as pi.</p>
+<h4 class="post-h4">Usage</h4>
+<p class="post-p">So, what can one do with an Arduino Pro Mini that can receive DMX? Well...</p>
+<p class="post-p">You can make a DMX level monitor, a DMX controlled LED source. And really, anything else you can think of to do with an Arduino - drive servos, WS2812s, solenoids, relays...</p>
+<p class="post-p">The shield can also transmit DMX, though I haven't thoroughly tested this yet. But it's possible to make a miniature DMX controller, itty bitty light board, or testing tool. Or wire up some interesting input devices and make an interesting lighting controller.</p>
+<h4 class="post-h4">What's Next</h4>
+<p class="post-p">The shield has been a useful proving ground for the Conceptinetics DMX library (though we've used it onstage before), as well as for OSHPark's manufacturing tolerances. I wasn't sure that having holes as close to the edge of the PCB as both V0.1 and V0.2 have would be manufacturable, but they came back no problem.</p>
+<p class="post-p">This all started for me with a miniature moving light project, and while that's not quite ready for a write-up, I'll just leave V0.3 of the DMX shield here. Not without errors/improvements to be made, but I'm excited to try out some new LED dimming tech:</p>
+<p class="post-p"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-383 post-img" height="288" src="V03-Board.png" width="304"/></figure></div></p>
+<p class="post-p"><div class="wp-block-image"><figure class="aligncenter is-resized"><img alt="" class="wp-image-397 post-img" height="291" src="IMG_7277-1024x768.jpg" width="390"/></figure></div></p>
+
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>
