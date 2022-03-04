@@ -7,12 +7,22 @@
         }
         </style>
     <main class="pt-16">
-        <div id='map' style='width: 75%; height: 800px; margin: auto'></div>
+        <article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+            <h1 class="post-h2">Parks on the Air</h1>
+            <p class="post-p">What follows are various self-built resources for the <a href="https://parksontheair.com/">Parks on the Air</a> program.</p>
+            <h3 class="post-h3">Pota Parks by Activation Status</h2>
+            <p class="post-p">The following map show whether individual POTA parks have been activated or not. <span class="p-1 font-semibold text-green-400 bg-green-700 rounded-lg whitespace-nowrap">Green Dots</span> represent parks with one or more listed successful activations. <span class="p-1 font-semibold text-yellow-400 bg-yellow-700 rounded-lg whitespace-nowrap">Orange Dots</span> represent parks with zero listed activations.</p>
+            <p class="post-p">The map has <span id="total_parks"></span> parks, of which <span id="total_activated" class="font-semibold text-green-600 rounded-lg whitespace-nowrap">xxxx</span> have been activated at least once and <span id="total_not_activated" class="font-semibold text-yellow-700 whitespace-nowrap">xxxx</span> have no listed activations.</p></p>
+            <p class="italic post-p">Last updated from POTA database on January 25, 2022.</p>
+            <div class="border-2 border-green-800">
+                <div id='map' style='width: 100%; height: 600px; margin: auto'></div>
+            </div>
+        </article>
         <script>
           mapboxgl.accessToken = 'pk.eyJ1IjoiamVmZmdsYXNzIiwiYSI6ImNreXN4azlmajB5d3YyeHMybWhsOHJobWUifQ.K_NSFBDGy9cLl5cnY_w7Ig';
           var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11',
+            style: 'mapbox://styles/mapbox/outdoors-v10',
             center: [-95, 40],
             zoom: 4
           });
@@ -22,7 +32,7 @@
         // Add the vector tileset as a source.
             map.addSource('points', {
                 type: 'geojson',
-                data: '/geojson/k-potafeatures-2022-01-24.geojson'
+                data: '/geojson/k-potafeatures-2022-01-24-clean.geojson'
             });
             map.addLayer({
                 'id': 'parks',
@@ -65,7 +75,7 @@
             // Copy coordinates array.
             const coordinates = e.features[0].geometry.coordinates.slice();
             const props = e.features[0].properties
-            const information = props.name + "<br>" + props.reference + "<br>Activations: " + props.stats;
+            const information = props.name + '<br><a href="https://pota.app/#/park/' + props.reference + '">' + props.reference + "</a><br>Activations: " + props.stats;
             console.log(e);
             
             // Ensure that if the map is zoomed out such that multiple
@@ -89,7 +99,20 @@
         // Change it back to a pointer when it leaves.
         map.on('mouseleave', 'parks', () => {
             map.getCanvas().style.cursor = '';
-        }); 
+        });
+        
+        $(document).ready(function() {
+			let span_totalparks = $('#total_parks');
+            let span_activated = $('#total_activated');
+            let span_not_activated = $('#total_not_activated');
+            $.getJSON('/geojson/k-potafeatures-2022-01-24-clean.geojson', function(data){
+                span_totalparks.text(data.features.length);
+                span_activated.text(data.features.filter(feature => feature.properties.activated == "True").length);
+                span_not_activated.text(data.features.filter(feature => feature.properties.activated == "False").length);
+            });
+            
+        });
+        
         </script>
     </main>
     {{ partial "footer.html" }}
