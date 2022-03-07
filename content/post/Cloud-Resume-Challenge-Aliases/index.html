@@ -1,0 +1,26 @@
+---
+title: "Aliases"
+date: 2022-03-04T12:32:00-05:00
+draft: false
+static_slug: /img/cloudresumeslug.png
+tags:
+- Cloud-Resume
+- Hugo
+---
+<p class="post-p">As part of transitionining from my old wordpress site to this new one created with Hugo, I wanted to be sure to preserve any external links that pointed to URLs that may no longer exist in Hugo's content structure. In partilcular, the format of permalinks to my blog posts has changed from <code class="code">/year/date/post-name</code> to just <code class="code">/post/post-name</code>. Additionally, I had created 301 redirects from several short URLS like <code class="code">/demilight</code> to unique pages; I wanted those links to be preserved as well.</p>
+<p class="post-p">Thankfully, Hugo has some simple functionality to help with this in the form of <a href="https://gohugo.io/content-management/urls/#aliases">aliases</a>. By including a relative path in any page's front matter, Hugo will create a redirect link from that relative path to the current page.</p>
+<p class="post-p">For example, I would like users who visit <code class="code">https://jeff.glass/demilight</code> to be redirected to  <code class="code">https://jeff.glass/project/demilight</code>. To do this, I simply add the following in front matter of the index.html file of the demilight project:</p>
+<pre class="block w-auto px-4 mx-4 border-2 border-gray-300 bg-green-50">aliases:
+    - /demilight/
+</pre>
+<p class="post-p">Now, if you head to <a href="https://jeff.glass/demilight">https://jeff.glass/demilight</a>, you should be taken to the correct project page.</p>
+<p class="post-p">Since everything in Hugo is a page, including list pages and other programmatically generated content, this can be used in lots of ways. For example, with the old wordpress site, my blog posts were at <code class="code">jeff.glass/blog</code>, but Hugo puts them at <code class="code">jeff.glass/post</code>. To create this redirect, I create a <code class="code">_index.md</code> file at the root of the <code class="code">post</code> folder with the following frontmatter:</p>
+<pre class="block w-auto px-4 mx-4 border-2 border-gray-300 bg-green-50">
+---
+    title: "Blog Posts"
+    aliases:
+      - /blog/
+---
+</pre>
+<p class="post-p">Now, I could make these modifications programmatically (and probably should have done so <a href="/post/cloud-resume-challenge-porting-wordpress-blogs-to-hugo/">when I was porting things from Wordpress to Hugo</a>, but there are few enough of them and enough edge cases that I'm just going through and handling them by manually editting frontmatter. Like good ole <a href="https://xkcd.com/1205/">XKCD 1205</a> says, automation just isn't always worth it.</p>
+<img src="https://imgs.xkcd.com/comics/is_it_worth_the_time.png" alt="A comic from XKCD showing a chart describing how long a task takes to automate, how much time it saves, and how often you'd have to do the task to make automating it worthwhile." class="self-center p-2 mx-auto">
