@@ -1,5 +1,5 @@
 ---
-title: "Improving Website Hits with AWS Cloudfront Stats"
+title: "Improving Website Experience with AWS Cloudfront Stats"
 date: 2022-03-13T17:54:43-05:00
 draft: true
 static_slug: /img/cloudresumeslug.png
@@ -25,3 +25,4 @@ tags:
 <p class="post-p">Once the new feed object appears in the S3 bucket, we can pretty easily <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-page-redirect.html#redirect-requests-object-metadata">follow the steps outlined here</a> to create a redirect. We simply edit the objects metadata, add a key of type <code class="code">x-amx-website-redirect-location</code> with a value of the new URL we wish to point to. <span class="italic">That key is available in a dropdown, no need to type it.</span></p>
 <img src="redirectfeed.PNG" alt="The metadata field of an object in a S3 bucket, showing the redirect key and value described in the text" class="post-img">
 <p class="post-p">Now if you go to <a href="https://jeff.glass/feed">https://jeff.glass/feed</a>, you (or an RSS reader) will be redirected to <code class="code">/index.xml</code> where the actual RSS feed lives. Pretty slick!</p>
+<p class="post-p">One thing I tested at this point is whether the object will retain its metadata even if the underlying object is changed. I tweaked the text of the <code class="code">/feed</code> object some, rebuilt the site and reuploaded it, and unfortunately the answer is <span class="bold">no</span></p>
