@@ -140,17 +140,17 @@
 					<p class="post-p">Since I already have a custom domain at <strong>jeff.glass </strong><em>(which is likely where you're reading this, if you're reading this around the time of posting</em>), I'd like to figure out how to point a subdomain of that site at my nascent Cloudfront/S3 static site. While I should probably also learn how to register a new domain through Amazon's Route 53 service, I think the end product will be cleaner.</p>
 <p class="post-p">I currently have the domain registered through NameCheap, and pointing to the DNS servers provided via my hosting at iWebFusion. The first thing I'll try is just using a CNAME to point <strong>resume.jeff.glass</strong> to the URL provided by my Cloudfront distribution.</p>
 <p class="post-p">But alas:</p>
-<p class="post-p"><a <img alt="" class="aligncenter size-large wp-image-3813 post-img" height="305" src="403-1024x434.png" width="720"/></p>
+<p class="post-p"><img alt="" class="aligncenter size-large wp-image-3813 post-img" height="305" src="403-1024x434.png" width="720"/></p>
 <p class="post-p">Some sites suggest that fixing this could be as simple as modifying a setting in the Cloudfront distribution settings:</p>
-<p class="post-p"><a <img alt="" class="aligncenter size-full wp-image-3814 post-img" height="169" src="alternate.png" width="564"/></p>
+<p class="post-p"><img alt="" class="aligncenter size-full wp-image-3814 post-img" height="169" src="alternate.png" width="564"/></p>
 <p class="post-p">But:</p>
-<p class="post-p"><a <img alt="" class="aligncenter size-full wp-image-3815 post-img" height="204" src="trusted-cert.png" width="825"/></p>
+<p class="post-p"><img alt="" class="aligncenter size-full wp-image-3815 post-img" height="204" src="trusted-cert.png" width="825"/></p>
 <p class="post-p">The key resource here is the article <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-alternate-domain-names.html">Using Alternate Domains and HTTPS</a></p>
 <p class="post-p">But it turns out, requesting certificates from the Amazon Certificate Manager is pretty simple. Click request certificate and specify what domains it applies to (which allows for using wildcard characters!). To validate that you do indeed control the domain you're requesting the certificate for, the ACM uses what they call "DNS Validation," which involves adding a single CNAME record to your DNS Zone records. Essentially, they give you a long, random-looking "subdomain" URL to redirect to a long, random-looking amazon URL. Then, by querying whether your site actually performs the redirect as requested, they can verify that you were indeed able to modify the DNS behavior of the site and therefore are the owner of that domain.</p>
 <p class="post-p">One trick is that, to use the generated certificate with Cloudfront, the certificate must be requested in the us-east-1 region, which may not be the region your bucket is in. (Since my most recent bucket is in us-east-2, it seems like my certificates were defaulting there as well. Or perhaps its geolocating me? Unclear). In any case, the simplest thing to do is use the "request certificate" link on the Cloudfront distribution settings, which automatically launches the wizard to request a new certificate in us-east-1.</p>
-<p class="post-p"><a <img alt="" class="aligncenter size-full wp-image-3819 post-img" height="127" src="request-certificate.png" width="301"/></p>
+<p class="post-p"><img alt="" class="aligncenter size-full wp-image-3819 post-img" height="127" src="request-certificate.png" width="301"/></p>
 <p class="post-p">With that certificate selected and the settings saved, my new site is available at <a href="https://resume.jeff.glass/">https://resume.jeff.glass</a>! Not that it's terribly interesting at the time of writing, but now it's got a tasteful URL.</p>
-<p class="post-p"><a <img alt="" class="aligncenter size-full wp-image-3822 post-img" height="98" src="helloworld-big.png" width="226"/></p>
+<p class="post-p"><img alt="" class="aligncenter size-full wp-image-3822 post-img" height="98" src="helloworld-big.png" width="226"/></p>
 <p class="post-p"><hr/></p>
 <p class="post-p">Part of the reason I'm trying to document all the twists and turns of this process has to do with a later goal of the Cloud Resume Challenge. Namely, goal 11, which reads in full:</p>
 <p class="post-p"><blockquote></blockquote></p>
