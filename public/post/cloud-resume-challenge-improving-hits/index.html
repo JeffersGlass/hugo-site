@@ -187,6 +187,7 @@
 </div>
 </div>
 <p class="post-p">Because the Cloud Resume Challenge page is actually a list page, I inserted it manually with some HTML.</p>
+<p class="post-p">Finally, there's a small amount of configuration to be done in the S3 bucket to clarify that <code class="code">404.html</code> is indeed the error page.</p>
 <hr>
 <p class="post-p">So, that takes care of the assorted wordpress holdovers I no longer need. The only remaining items that are giving 404-responses are a number of links to images of various sizes, all to <code class="code">/wp-content/uploads/</code>. At first I was worried that this was someone hotlinking to these images from outside my domain, but a quick search of my site proved me wrong.</p>
 <p class="post-p">When I <a href="http://localhost:1313/post/cloud-resume-challenge-porting-wordpress-blogs-to-hugo/">ported this blog to Hugo using Python</a>, I missed the fact that, in many posts created on wordpress, images are embedded as thumbnails which link to larger versions of the original image. I failed to remove or update those links, so the images on my site were still linking to the (now dead) wordpress images. Thankfully, a quick regex find-and-replace (<code class="code">&lt;a href=\&quot;.+wp-content/uploads/.+&gt;(.+)&lt;/a&gt;</code> replaced with <code class="code">$1</code>) cleared up almost all of these instances. One more with irregular formatting was swatted by hand.</p>

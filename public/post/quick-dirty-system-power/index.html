@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Soft Shutdown and Consistent Boot on Power Loss</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Soft Shutdown and Consistent Boot on Power Loss"/>
+<meta name="twitter:description" content="Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not."/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Soft Shutdown and Consistent Boot on Power Loss</h1>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/electronics">electronics</a>
+					
+					<a href="../../tags/arduino">arduino</a>
+					
+					<a href="../../tags/python">python</a>
+					
+				</div>
+				
+				<div>
+					<p class="font-bold post-p">Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.</p>
+<p class="post-p"><hr/></p>
+<p class="post-p">My dayjob involves solving technical problems for a large, multi-acre education facility with over 400 computer-driven interactives. To prolong the life of these devices (many of which are built around off-the-shelf computers and monitors), we like to power them down after operating hours and start them up in the morning. These are mostly windows machines, and just like a desktop they <span class="italic">love</span> to be rebooted.</p>
+<p class="post-p">What makes this challenging is both the number and placement of these devices. While many are in dedicated control rooms with <a href="">linked KVM systems</a>, even using a mouse and keyboard to manually shut down 400 PCs would take the onsite staff far longer than designed, and could be error-prone. Worse, some computers are embedded inside consoles, cabinets, and displays, making the process of walking around and hitting power buttons (where accessible) or using a wireless keyboard (where not) even longer. The same is true of startup, except that a wireless keyboard isn't an option in that case. A central startup and shutdown solution is essential.</p>
+<div class="max-w-xl px-10 mx-auto xl:float-right">
+    <img src="medialon.jpg" alt="A complex touchscreen controller based around a Medialon control system" class="post-img">
+    <p class="max-w-xl post-img-caption">Not from my workplace, but grabbed from google images - just as an example of how involved a software-defined control system can be.</p>
+</div>
+<p class="post-p">Of course, there are many ways to make this happen. The most ideal, when the money is available, is to use a central controller, like a <a href="https://medialon.com/products/showmaster-pro/">Medialon System</a>, <a href="https://www.crestron.com/Products/Control-Hardware-Software/Hardware">Creston Controller</a>, <a href="https://derivative.ca/">TouchDesigner interface</a>, or similar. The control is put in charge of signalling the computers to wake up (via Wake-on-LAN), shut down (through  proprietary software modules), and handles cycling <a href="https://www.se.com/us/en/product-range/7340-powerlink-intelligent-panelboards/#overview">remotely-controller AC breakers</a>, turning projcets on and off via various ethernet protocols, and so on. The dream is for whoever's operating the system to press one button (or click one button on a screen) to have the whole system turn on, or off.</p>
+<p class="post-p">Life is rarely a dream.</p>
+<p class="post-p">We sometimes run into a situation where, for reasons of cost, planning, location, or timing, there is no exterior control of any kind. There's just a breaker in a panel (which may or may not be remote controlled) providing power to an installed cabinet. And as much as PC's love to be rebooted, they <span class="italic">hate</span> having their power yanked unexpectedly.</p>
+<p class="post-p">So the challenge is: <span class="font-bold">given only control over their power, can we create a system that soft-starts and soft-shuts-down a PC?</span> <span class="italic">(Yes we can, or this would be a very short post.)</span></p>
+<p class="post-p"><hr/></p>
+<p class="post-h2">Shutdown</p>
+<p class="post-p">Getting a PC to soft shutdown on power loss is relatively straightfoward. There are (fairly fancy) <a href="https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/ups-network-management-cards/N-o7asnt">networkable UPS systems and add-on cards</a> that are meant just for this kind of thing. When mains power is killed, the UPS kicks into keep the computer(s) in question on, while sending a network message to do... whatever you want. Wait a minute then hibernate, run a backup, dump memory, etc.</p>
+<p class="post-p">Unfortunately, these solutions are somewhat cost-prohibitive, and also rather large. They seem designed for rackmount systems where they could be used to manage a bank of servers. The particular situation that I'm building this for for is very tightly space-confired, and doing it for less than a grand would be great.</p>
+<div class="max-w-lg px-10 mx-auto xl:float-left">
+    <img src="apcups.jpg" alt="A complex touchscreen controller based around a Medialon control system" class="post-img">
+    <p class="max-w-xl post-img-caption">A cheap, off the shelf, 300W / ~30wH UPS. At time of writing, about $60 shipped.</p>
+</div>
+<p class="post-p">Thankfully, there's a way to make this work on a cheaper and smaller UPS. Many off-the-shelf UPS's have the abilitiy to connect directly to a single PC via USB connection. APC, who makes consumer UPSes, has such a connection on even their <a href="https://amzn.to/31ciSpg">very basic units</a>. They even include <a href="https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/powerchute-personal-edition/N-1b6nbpp">some basic software (Powerchute)</a> that can tell the computer to hibernate, shutdown, wait a few minutes and shutdown, etc when the batteries kick in. Sounds perfect, no?</p>
+<p class="post-p">Not quite - we only have the ability to hook one computer directly to the UPS, but we'd like to power multiple small computers <a href="https://www.intel.com/content/www/us/en/products/details/nuc.html">(often NUCs)</a> off a single UPS. And there's no obvious way to hook into the Powerchute software directly. Having one UPS per computer would be an option, but a needlessly expensive one. Sometimes there's not even enough room for that to be possible.</p>
+<p class="post-p">The workaround is straightfoward - the Powerchute software logs an event to the Window System Log when it swtches to battery power. We can use Window's built-in task scheduling service to fire off a script of our choosing when this event occurs. Then it's just a matter of crafting some very basic network scripts to allow the UPS-connected computer to tell other computers to shut down, then shut itself down.</p>
+<p class="post-p">Here's what I came up with. It's not terrible robust, secure, or debuggable, but it's getting the job done for now. The client script runs on the computer connected to a UPS, and is triggered when the UPS switches to battery power. The server runs on as many connected computers as we want, and should be set to run at startup. The (static) IPs of the computers running the server script must be enterred in the client script.</p>
+<p class="code-title">client.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
+</span><span style="color:#e6db74">This program (&#39;client&#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
+</span><span style="color:#e6db74">The server program should be running on any computers that need to be shutdown in this context.
+</span><span style="color:#e6db74">This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
+</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+
+<span style="color:#f92672">import</span> socket
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+
+socket<span style="color:#f92672">.</span>setdefaulttimeout(<span style="color:#ae81ff">10</span>)
+PORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">1933</span>
+MSG <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;SHUTDOWN NOW&#39;</span>
+RSP <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SHUTDOWN CONFIRMED&#34;</span>
+
+deviceIPs <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#34;172.16.0.2&#34;</span>
+]
+attempts <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+MAX_ATTEMPTS <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+
+print(<span style="color:#e6db74">&#34;Client program is contacting remote computers to shut them down&#34;</span>)
+
+<span style="color:#66d9ef">while</span> len(deviceIPs) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+    attempts <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">if</span> attempts <span style="color:#f92672">&gt;</span> MAX_ATTEMPTS:
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;System could not shut down the following IPs: </span><span style="color:#e6db74">{</span>deviceIPs<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+        print(<span style="color:#e6db74">&#34;Shutting down self in 15 seconds&#34;</span>)
+        sleep(<span style="color:#ae81ff">15</span>)
+        <span style="color:#66d9ef">break</span>
+    <span style="color:#66d9ef">for</span> ip <span style="color:#f92672">in</span> deviceIPs:
+        <span style="color:#66d9ef">with</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM) <span style="color:#66d9ef">as</span> s:
+            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Attempting to connect tp </span><span style="color:#e6db74">{</span>ip<span style="color:#e6db74">}</span><span style="color:#e6db74">, attempt </span><span style="color:#e6db74">{</span>attempts<span style="color:#e6db74">}</span><span style="color:#e6db74"> of </span><span style="color:#e6db74">{</span>MAX_ATTEMPTS<span style="color:#e6db74">}</span><span style="color:#e6db74"> (timeout is </span><span style="color:#e6db74">{</span>int(socket<span style="color:#f92672">.</span>getdefaulttimeout())<span style="color:#e6db74">}</span><span style="color:#e6db74">s)&#34;</span>)
+            <span style="color:#66d9ef">try</span>:
+                s<span style="color:#f92672">.</span>connect((ip, PORT))
+            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">TimeoutError</span> <span style="color:#66d9ef">as</span> err:
+                print(<span style="color:#e6db74">&#34;Connection timed out&#34;</span>)
+                <span style="color:#66d9ef">continue</span>
+            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Connection successful, sending message: </span><span style="color:#e6db74">{</span>MSG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+            s<span style="color:#f92672">.</span>sendall(MSG)
+            data <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">1024</span>)
+            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Received </span><span style="color:#e6db74">{</span>repr(data)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+            <span style="color:#66d9ef">if</span> data[:len(RSP)] <span style="color:#f92672">==</span> RSP:
+                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Received shutdown confirmation message from host at ip </span><span style="color:#e6db74">{</span>ip<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+                deviceIPs<span style="color:#f92672">.</span>remove(ip)
+            <span style="color:#66d9ef">else</span>:
+                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Got some other message than we expected from host at ip </span><span style="color:#e6db74">{</span>ip<span style="color:#e6db74">}</span><span style="color:#e6db74">: </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+    sleep(<span style="color:#ae81ff">1</span>)
+<span style="color:#66d9ef">else</span>:
+    print(<span style="color:#e6db74">&#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&#34;</span>)
+    sleep(<span style="color:#ae81ff">10</span>)
+os<span style="color:#f92672">.</span>system(<span style="color:#e6db74">&#34;shutdown /s /f /t 10&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="pb-8 post-img-caption">Scroll to see full code</p>
+<p class="code-title">server.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
+</span><span style="color:#e6db74">This program (&#39;server&#39;) runs on any computer that is NOT receiving the direct singal to shut down.
+</span><span style="color:#e6db74">The &#39;client&#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
+</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+
+<span style="color:#f92672">import</span> socket
+<span style="color:#f92672">import</span> os
+
+HOST <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+PORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">1933</span>
+MSG <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SHUTDOWN NOW&#34;</span>
+RSP <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SHUTDOWN CONFIRMED&#34;</span>
+
+print(<span style="color:#e6db74">&#34;Server program is listening for shutdown commands from primary client&#34;</span>)
+
+<span style="color:#66d9ef">with</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM) <span style="color:#66d9ef">as</span> s:
+    s<span style="color:#f92672">.</span>bind((HOST, PORT))
+    s<span style="color:#f92672">.</span>listen()
+    conn, addr <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>accept()
+    <span style="color:#66d9ef">with</span> conn:
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Connected by </span><span style="color:#e6db74">{</span>addr<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+        <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+            data <span style="color:#f92672">=</span> conn<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">1024</span>)
+            <span style="color:#66d9ef">if</span> data[:len(MSG)] <span style="color:#f92672">==</span> MSG:
+                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Got shutdown MSG </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+                conn<span style="color:#f92672">.</span>sendall(RSP)
+                os<span style="color:#f92672">.</span>system(<span style="color:#e6db74">&#34;shutdown /s /f /t 10&#34;</span>)
+            <span style="color:#66d9ef">else</span>: 
+                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Got </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">= }</span><span style="color:#e6db74"> instead of expected </span><span style="color:#e6db74">{</span>data[:len(MSG)]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> data:
+                <span style="color:#66d9ef">break</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<p class="post-h2">Startup</p>
+<div class="max-w-lg px-10 mx-auto xl:float-right">
+    <img src="feather.jpg" alt="A complex touchscreen controller based around a Medialon control system" class="post-img">
+    <p class="max-w-xl post-img-caption">An Adafruit ESP-32 Featherwing - the purple Neopixel light indicates the unit has booted but does not see an attached ethernet cable</p>
+</div>
+<p class="post-p">Almost every BIOS has the ability to wake the system when power is restored following an unexpected power loss. Most have the ability to boot the computer when power is removed and restored, regardless of whether the computer was gently shut down or rudely had its power cut. Unfortunately, neither of these options work for us - since the computer is on a UPS, as far the the power supply is concerned,<span class="italic"> the computer never loses power.</span> So, we'll have to rely on some other mechanism to detect when power is restored to cause the computer(s) to boot.</p>
+<p class="post-p">The hammer for this particular nail is a small, ethernet-capable microcontroller that sends out Wake-on-LAN packets at regular intervals whenever its powered on. We plug this microcontroller into an outlet <span class="underline">not</span> backed by the UPS - when power is lost, the microcontroller shuts off almost immediately, allowing the computers to shut down as above. When power is restored, the microcontroller starts up and, after a brief delay, starts sending out Wake-On-LAN messages to all the MAC addresses it knows about.</p>
+<p class="post-p">I chose the <a href="https://www.adafruit.com/product/5000">Adafruit ESP-32 Feather</a> for a couple reasons. One, Python is <a href="../../tags/python">my language of choice</a> for hacking things together, and I was excited to play more with <a href="https://circuitpython.readthedocs.io/en/latest/README.html">CircuitPython</a>. Second, Adafruit's commitment to documentation and process is just great, and I wanted to get this project up on its feet quickly. And third, Adafruit's Featherwing line of accessory boards (specifically the <a href="https://www.adafruit.com/product/3201">Ethernet Featherwing</a>) made it easy to get an Ethernet Stack and PHY running with minimal custom effort.</p>
+<p class="post-p">So, I bashed together the following code to wake up, establish a network connection, and send a Wake-On-LAN message to each MAC address in a given array every 15 seconds or so:</p>
+<p class="code-title">code.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e"># SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries</span>
+<span style="color:#75715e"># SPDX-License-Identifier: MIT</span>
+
+<span style="color:#f92672">import</span> board
+<span style="color:#f92672">import</span> busio
+<span style="color:#f92672">import</span> digitalio
+<span style="color:#f92672">import</span> neopixel
+<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+
+<span style="color:#f92672">from</span> adafruit_wiznet5k.adafruit_wiznet5k <span style="color:#f92672">import</span> WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
+<span style="color:#f92672">import</span> adafruit_wiznet5k.adafruit_wiznet5k_socket <span style="color:#66d9ef">as</span> socket
+<span style="color:#f92672">import</span> adafruit_requests <span style="color:#66d9ef">as</span> requests
+
+pixel <span style="color:#f92672">=</span> neopixel<span style="color:#f92672">.</span>NeoPixel(board<span style="color:#f92672">.</span>NEOPIXEL, <span style="color:#ae81ff">1</span>)
+
+targetMACs <span style="color:#f92672">=</span> [
+    [<span style="color:#ae81ff">0x12</span>,<span style="color:#ae81ff">0x34</span>,<span style="color:#ae81ff">0x56</span>,<span style="color:#ae81ff">0x78</span>,<span style="color:#ae81ff">0x9A</span>,<span style="color:#ae81ff">0xBC</span>], <span style="color:#75715e">#Computer NW</span>
+    [<span style="color:#ae81ff">0x12</span>,<span style="color:#ae81ff">0x34</span>,<span style="color:#ae81ff">0x56</span>,<span style="color:#ae81ff">0x78</span>,<span style="color:#ae81ff">0x9A</span>,<span style="color:#ae81ff">0xBD</span>], <span style="color:#75715e">#Computer NE</span>
+    <span style="color:#75715e">#... more computers as necessary</span>
+    ]
+
+<span style="color:#75715e"># Initialize ethernet interface with DHCP</span>
+cs <span style="color:#f92672">=</span> digitalio<span style="color:#f92672">.</span>DigitalInOut(board<span style="color:#f92672">.</span>D10)
+spi_bus <span style="color:#f92672">=</span> busio<span style="color:#f92672">.</span>SPI(board<span style="color:#f92672">.</span>SCK, MOSI<span style="color:#f92672">=</span>board<span style="color:#f92672">.</span>MOSI, MISO<span style="color:#f92672">=</span>board<span style="color:#f92672">.</span>MISO)
+eth <span style="color:#f92672">=</span> WIZNET5K(spi_bus, cs, is_dhcp<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+
+ip <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;172.16.0.10&#34;</span>)
+subnet_mask <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;255.255.0.0&#34;</span>)
+gateway <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;172.16.0.10&#34;</span>)
+dns <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;172.16.0.10&#34;</span>)
+eth<span style="color:#f92672">.</span>ifconfig <span style="color:#f92672">=</span> (ip, subnet_mask, gateway, dns)
+<span style="color:#75715e">#If using DHCP, uncomment the following line</span>
+<span style="color:#75715e">#eth.ifconfig = (ip, subnet_mask, None, None)</span>
+
+print(<span style="color:#e6db74">&#34;Assigned Ethernet Address: &#34;</span> <span style="color:#f92672">+</span> str(eth<span style="color:#f92672">.</span>pretty_ip(eth<span style="color:#f92672">.</span>ip_address)))
+
+<span style="color:#75715e">#Built-in neopixel will be purple while waiting for Ethernet to connect</span>
+pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">255</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>)
+
+retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+<span style="color:#66d9ef">while</span> retry:
+    retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+    <span style="color:#66d9ef">try</span>:
+        eth<span style="color:#f92672">.</span>socket_connect(<span style="color:#ae81ff">0</span>, eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#39;172.16.255.255&#39;</span>), <span style="color:#ae81ff">556</span>, conn_mode<span style="color:#f92672">=</span>SNMR_UDP)
+    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">AssertionError</span> <span style="color:#66d9ef">as</span> err:
+        print(str(err) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;, retrying in 10 Seconds&#34;</span>)
+        retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+        sleep(<span style="color:#ae81ff">10</span>)
+
+    status <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>socket_status(<span style="color:#ae81ff">0</span>)
+    <span style="color:#66d9ef">if</span> [int(b) <span style="color:#66d9ef">for</span> b <span style="color:#f92672">in</span> status] <span style="color:#f92672">==</span> [SNSR_SOCK_UDP]:
+        print(<span style="color:#e6db74">&#34;Socket 0 connected as UDP&#34;</span>)
+    <span style="color:#66d9ef">else</span>:
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Socket not connected, status is </span><span style="color:#e6db74">{</span>status<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+        retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+        sleep(<span style="color:#ae81ff">10</span>)
+
+<span style="color:#75715e">#Built in neopixel will be blue when standing by to send WOL packets</span>
+pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>)
+sleep(<span style="color:#ae81ff">5</span>)
+
+<span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+<span style="color:#75715e">#Built in neopixel will be green when sending WOL packets</span>
+    pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>,<span style="color:#ae81ff">0</span>)
+    <span style="color:#66d9ef">for</span> i, target <span style="color:#f92672">in</span> enumerate(targetMACs):
+        
+        fullPacket <span style="color:#f92672">=</span> bytearray([<span style="color:#ae81ff">0xFF</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">6</span> <span style="color:#f92672">+</span> target <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>)
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Sending WoL packet to computer </span><span style="color:#e6db74">{</span>i<span style="color:#e6db74">}</span><span style="color:#e6db74"> with mac address </span><span style="color:#e6db74">{</span>eth<span style="color:#f92672">.</span>pretty_mac(target)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+        eth<span style="color:#f92672">.</span>socket_write(<span style="color:#ae81ff">0</span>, fullPacket, <span style="color:#ae81ff">1</span>)
+        
+        sleep(<span style="color:#ae81ff">.1</span>)
+
+    pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>)
+    sleep(<span style="color:#ae81ff">15</span>)
+
+eth<span style="color:#f92672">.</span>socket_close(<span style="color:#ae81ff">0</span>)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+<p class="post-p">If you're making use of this code yourself, you'll need the following libraries in your CIRCUITPY/libs folder:</p>
+<ul class="post-ul">
+    <li>adafruit_wiznet5k</li>
+    <li>adafruit_requests.mpy</li>
+    <li>neopixel.mpy</li>
+</ul>
+<p class="post-p">And, if it's helpful, here is the basic process of getting the ESP32-S2 feather up and running (summarized from <a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader">Adafruit's excellent guide</a>):</p>
+<ul class="post-ul">
+    <li>Download the appropriate <a href="https://circuitpython.org/board/adafruit_feather_esp32s2/">Bootloader .BIN File</a></li>
+    <li><a href="https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader#step-2-place-your-board-in-bootloader-mode-3089837-8">Put the board in bootloader mode</a></li>
+    <li>Use the online <a href="https://adafruit.github.io/Adafruit_WebSerial_ESPTool/">Adafruit ESPTool and Webserial</a> tool to burn BIN file to the ESP32</p></li>
+    <li>Reset the feather - it will appear as an attached USB drive called CIRCUITPY, onto which the above code can be dropped</li>
+</ul>
+<p class="pb-4 post-h2">System Diagram</p>
+<img src="networkMap.png" alt="" class="post-img">
+<p class="post-h2">Step-by-Step Instructions</p>
+<p class="post-p">For those who came here looking for an actual step-by-step how-to, here's the full process of getting this system set up. (This is based on my particular steps with the Intel NUCs and APC UPS in the most recent setup - some steps, especially relating to the BIOS, may need to be adjusted for your hardware.)</p>
+<p class="pb-2 post-h3">Computer Info Gathering</p>
+<ul class="pl-8 text-justify list-disc list-outside">
+    <li>Identify the MAC addresses of the relevent NICs on all the computers you intend to use.</li>
+</ul>
+<p class="pb-2 post-h3">Feather Prep</p>
+<ul class="pl-8 text-justify list-disc list-outside">
+    <li>Solder headers onto the Adafruit ESP32 Feather and Ethernet featherwing, as necessary. Attach the two together.</li>
+    <li>Using the steps above, prepare the feather with its bootloader.</li>
+    <li>Load the code above onto the Feather.</li>
+    <ul class="pl-8 text-justify list-disc list-outside">
+        <li class="italic">Modify the list of MAC addresses in the code to include all of the MAC addresses you previously identified.</li>
+    </ul>
+</ul>
+<p class="pb-2 post-h3">Physical Install</p>
+<ul class="pl-8 text-justify list-disc list-outside">
+    <li>Install the UPS, connected to the (switchable or unpredicable) power source. It may need to charge for several hours before it's usable.</li>
+    <li>Install the network switch, plugged into the battery-backed power on the UPS. A cheap unmanaged switch will do.</li>
+    <li>Install the computer(s). Plug them into the battery-backed power on the UPS</li>
+    <li>Plug the Feather assembly you prepped earlier into the NON-battery-backed power on the UPS.</li>
+    <li>Use CAT cables to attach the computers and Feather to the network switch.</li>
+</ul>
+<p class="pb-2 post-h3">Wake on Lan Setup</p>
+<ul class="pl-8 text-justify list-disc list-outside">
+    <li>In both computer's BIOS's":</li>
+    <ul class="pl-8 text-justify list-disc list-outside">
+        <li>Make sure 'Wake on LAN from S4/S5 is set to 'Power On - Normal Boot'</li>
+        <li>Make sure 'Deep S4/S5' is Off</li>
+    </ul>
+    <li>In both computer's Device Managers:</li>
+    <ul class="pl-8 text-justify list-disc list-outside">
+        <li>Find the network interface that is plugged into the network switch, and open its settings.</li>
+        <li>In the Power Management Tab:</li>
+        <ul class="pl-8 text-justify list-disc list-outside">
+            <li>Make sure 'Allow the computer to turn off this device' is OFF</li>
+            <li>Make sure 'Allow this device to wake the computer' is ON</li>
+        </ul>
+        <li>In the Advanced Tab: Make sure 'Wake on Magic Packet' is ENABLED</li>
+    </ul>
+</ul>
+<p class="post-h3">Control Computer Setup</p>
+<p class="italic post-p">This will be the computer listening to the status of the UPS, and telling the other computers to turn off. There should be only one per setup.</p>
+<ul class="pl-8 text-justify list-disc list-outside">
+    <li>Assign the computer a static IP on the NIC you're using. The code above assumes this is <code class="code">172.16.0.1</code></li>
+    <li>Plug the USB cable from the UPS into the control computer.</li>
+    <li>If not prompted, manually download and install the <a href="https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/powerchute-personal-edition/N-1b6nbpp">Powerchute Control Software</a></li>
+    <li>Unplug the UPS from wall-power once and plug it back in, to log the necessary events in the System Log.</li>
+    <li><a href="https://www.python.org/downloads/">Install Python</a>. I used Python 3.10.0 at time of writing, but any later version should also be fine.</li>
+    <li>Copy the <code class="code">client.py</code> code from above to a convienient file location on the computer (desktop, My Documents, etc).</li>
+    <li>In Task Scheduler, add a new event:</li>
+    <ul class="pl-8 text-justify list-disc list-outside">
+        <li>Title: Shutdown on Power Loss to UPS</li>
+        <li>Triggers:</li>
+        <ul class="pl-8 text-justify list-disc list-outside">
+            <li>On an Event</li>
+            <li>Log: Application</li>
+            <li>Source: APC UPS Service</li>
+        </ul>
+        <li>Actions:</li>
+        <ul class="pl-8 text-justify list-disc list-outside">
+            <li>Start a Program</li>
+            <li>Select <code class="code">client.py</code> script from wherever you put it</li>
+        </ul>
+    </ul>
+</ul>
+<p class="post-h3">Target Computer Setup</p>
+<p class="italic post-p">These computers will run a script on boot that listens for commands from the client computer to shut down. There can be as many of these per system as you like.</p>
+<ul class="pl-8 text-justify list-disc list-outside">
+    <li>Assign the computer a static IP on the NIC you're using. The code above assumes this is <code class="code">172.16.0.2</code>; if you add additional computers, you will need to add them to them to the deviceIPs array in the <code class="code">client.py</code> script.</li>
+    <li><a href="https://www.python.org/downloads/">Install Python</a>. I used Python 3.10.0 at time of writing, but any later version should also be fine.</li>
+    <li>Copy the <code class="code">server.py</code> code from above to a convienient file location on the computer (desktop, My Documents, etc).</li>
+    <li>Create a shortcut to the <code class="code">server.py</code> script in your startup folder. In Windows 10, this is located by default at: <code class="code">C:/users/{username}/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup.</code> Any shortcuts/executables in this folder get executed automatically when Windows boots.</li>
+</ul>
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>
