@@ -1,0 +1,31 @@
+{{ define "main"}}
+    {{ partial "header.html" . }}
+     <main>
+        <!-- Content -->
+    <div class="h-auto px-12 pt-24 text-center">
+        <h1 class="pb-6 text-3xl relative-anchor">404: Page Not Found</h1>
+        <p class="pb-6">The page you requested could not be found.</p>
+        <p class="pb-6">Here are some other pages you might enjoy:</p>
+        <div class="flex flex-wrap col-span-5 justify-left ">
+            <div class= "w-full p-1 m-1 project-frame md:w-1/6">
+                <a href="cloud-resume-challenge"><span class="z-10 clickable-link-box"></span></a>
+                <div class="w-auto h-48">
+                    <img src="img\cloud-resume-challenge\cloudresumeslug_blue.png" alt="" class="object-cover w-full h-full border-gray-400 rounded-lg">
+                </div>
+                <h2 class="project-title">Cloud Resume Challenge</h2>
+                <div class="h-32">
+                    <p class="h-full px-4 overflow-hidden text-left">How this very site was built, using AWS, Hugo, Docker, and time.</p>
+                </div>
+            </div>
+            {{ $pages := slice "/project/demilight" "post/setting-up-an-electronics-lab-tools/" "post/advent-of-code-2021/" "post/quick-dirty-system-power/" }}
+            {{ range $pages }}
+                {{ with $.GetPage . }}
+                    {{ .Render "card" }}
+                {{ end }}
+            {{ end }}  
+        </div>
+    </div>
+    </main>
+    {{ partial "footer.html" }}
+{{ end }}
+
