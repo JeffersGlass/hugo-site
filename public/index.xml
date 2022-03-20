@@ -35,12 +35,29 @@
 &lt;img src=&#34;redirectfeed.PNG&#34; alt=&#34;The metadata field of an object in a S3 bucket, showing the redirect key and value described in the text&#34; class=&#34;post-img&#34;&gt;
 &lt;p class=&#34;post-p&#34;&gt;Now if you go to &lt;a href=&#34;https://jeff.glass/feed&#34;&gt;https://jeff.glass/feed&lt;/a&gt;, you (or an RSS reader) will be redirected to &lt;code class=&#34;code&#34;&gt;/index.xml&lt;/code&gt; where the actual RSS feed lives. Pretty slick!&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;One thing I tested at this point is whether the object will retain its metadata even if the underlying object is changed. I tweaked the text of the &lt;code class=&#34;code&#34;&gt;/feed&lt;/code&gt; object some, rebuilt the site and reuploaded it, and unfortunately the answer is &lt;span class=&#34;font-bold&#34;&gt;no&lt;/span&gt;. However, because the &lt;a href=&#34;https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/sync.html&#34;&gt;AWS CLI Sync Action&lt;/a&gt; which is used under the hood by &lt;a href=&#34;https://github.com/jakejarvis/s3-sync-action&#34;&gt;Jake Jarvis&#39; Github to S3 Sync Action&lt;/a&gt; only overwrites new files, so long as we don&#39;t modify the static &lt;code class=&#34;code&#34;&gt;/feed&lt;/code&gt; object, that metadata should remain indefinitely.&lt;/p&gt;
-&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;font-bold&#34;&gt;Update:&lt;/span&gt; It seems that some of what I determined about the persistance of the object metadata is not true, and that the metadata is getting wiped whenever I rebuild and re-upload the site. Which is a shame, this would have been a nice clean way to handle this case. Thankfully, we can still use the site Redirection Rules in the Static Site settings of our S3 bucket to redirect from /feed to /index.xml as follows:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;font-bold&#34;&gt;Update:&lt;/span&gt; It seems that some of what I determined about the persistance of the object metadata is not true, and that the metadata is getting wiped whenever I rebuild and re-upload the site. Which is a shame, this would have been a nice clean way to handle this case. Thankfully, we can still use the site Redirection Rules in the Static Site settings of our S3 bucket to redirect from /feed to /index.xml as follows. The three seperate rules are required to make sure we can handle requests for both &lt;code class=&#34;code&#34;&gt;/feed&lt;/code&gt; and &lt;code class=&#34;code&#34;&gt;/feed/&lt;/code&gt; requests, the latter being the location of my feed under the old Wordpress site.&lt;/p&gt;
 &lt;pre class=&#34;w-auto px-4 mx-4 mb-4 bg-gray-200&#34;&gt;
-[
+    [
+    {
+        &#34;Condition&#34;: {
+            &#34;KeyPrefixEquals&#34;: &#34;feed/&#34;
+        },
+        &#34;Redirect&#34;: {
+            &#34;HostName&#34;: &#34;index.xml&#34;,
+            &#34;HttpRedirectCode&#34;: &#34;301&#34;
+        }
+    },
     {
         &#34;Condition&#34;: {
             &#34;KeyPrefixEquals&#34;: &#34;feed&#34;
+        },
+        &#34;Redirect&#34;: {
+            &#34;ReplaceKeyPrefixWith&#34;: &#34;index.xml&#34;
+        }
+    },
+    {
+        &#34;Condition&#34;: {
+            &#34;KeyPrefixEquals&#34;: &#34;index.xml/&#34;
         },
         &#34;Redirect&#34;: {
             &#34;ReplaceKeyPrefixWith&#34;: &#34;index.xml&#34;
