@@ -28,12 +28,29 @@ tags:
 <img src="redirectfeed.PNG" alt="The metadata field of an object in a S3 bucket, showing the redirect key and value described in the text" class="post-img">
 <p class="post-p">Now if you go to <a href="https://jeff.glass/feed">https://jeff.glass/feed</a>, you (or an RSS reader) will be redirected to <code class="code">/index.xml</code> where the actual RSS feed lives. Pretty slick!</p>
 <p class="post-p">One thing I tested at this point is whether the object will retain its metadata even if the underlying object is changed. I tweaked the text of the <code class="code">/feed</code> object some, rebuilt the site and reuploaded it, and unfortunately the answer is <span class="font-bold">no</span>. However, because the <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/sync.html">AWS CLI Sync Action</a> which is used under the hood by <a href="https://github.com/jakejarvis/s3-sync-action">Jake Jarvis' Github to S3 Sync Action</a> only overwrites new files, so long as we don't modify the static <code class="code">/feed</code> object, that metadata should remain indefinitely.</p>
-<p class="post-p"><span class="font-bold">Update:</span> It seems that some of what I determined about the persistance of the object metadata is not true, and that the metadata is getting wiped whenever I rebuild and re-upload the site. Which is a shame, this would have been a nice clean way to handle this case. Thankfully, we can still use the site Redirection Rules in the Static Site settings of our S3 bucket to redirect from /feed to /index.xml as follows:</p>
+<p class="post-p"><span class="font-bold">Update:</span> It seems that some of what I determined about the persistance of the object metadata is not true, and that the metadata is getting wiped whenever I rebuild and re-upload the site. Which is a shame, this would have been a nice clean way to handle this case. Thankfully, we can still use the site Redirection Rules in the Static Site settings of our S3 bucket to redirect from /feed to /index.xml as follows. The three seperate rules are required to make sure we can handle requests for both <code class="code">/feed</code> and <code class="code">/feed/</code> requests, the latter being the location of my feed under the old Wordpress site.</p>
 <pre class="w-auto px-4 mx-4 mb-4 bg-gray-200">
-[
+    [
+    {
+        "Condition": {
+            "KeyPrefixEquals": "feed/"
+        },
+        "Redirect": {
+            "HostName": "index.xml",
+            "HttpRedirectCode": "301"
+        }
+    },
     {
         "Condition": {
             "KeyPrefixEquals": "feed"
+        },
+        "Redirect": {
+            "ReplaceKeyPrefixWith": "index.xml"
+        }
+    },
+    {
+        "Condition": {
+            "KeyPrefixEquals": "index.xml/"
         },
         "Redirect": {
             "ReplaceKeyPrefixWith": "index.xml"
