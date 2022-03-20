@@ -13,7 +13,21 @@
       <pubDate>Wed, 08 Jul 2020 16:50:44 -0500</pubDate>
       
       <guid>https://jeff.glass/post/pico-8-orbit/</guid>
-      <description>Over the past couple weeks, as a way to stretch my programming legs and play around with a new system, I&#39;ve been writing a little demo in the 8-bit retro video game environment called PICO-8.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Over the past couple weeks, as a way to stretch my programming legs and play around with a new system, I&#39;ve been writing a little demo in the 8-bit retro video game environment called &lt;a href=&#34;https://www.lexaloffle.com/pico-8.php&#34;&gt;PICO-8&lt;/a&gt;. Since I think I&#39;m drifting away from this project now, I figured I might as well post my progress here: a &#34;game&#34; demo called &lt;strong&gt;Orbit&lt;/strong&gt; that instantiates a number of objects moving in an elliptical orbit around a central planet.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;One of the neat things about PICO-8 is how easy it is to embed a playable demo! Here is the full program running in your browser:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;iframe class=&#34;m-auto&#34; height=&#34;600&#34; src=&#34;https://jeff.glass/pico8/orbit/orbit2.html&#34; width=&#34;600&#34;&gt;&lt;/iframe&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The program starts by instantiating 5 orbiting objects around a central planet. You can switch which object you&#39;re focusing on using ← and →. The two primary buttons (defaults to C and X on a desktop, or onscreen keys on mobile) allow access to the menu at the top-right. The menu has functionality for speeding up or slowing down time, adding and removing objects, and changing whether orbits are displayed and what info shows up on the HUD.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is about the third time I&#39;ve recreated essentially this same structure in different languages/environments. The first time was in Lua in the &lt;a href=&#34;https://love2d.org/&#34;&gt;LOVE2D &lt;/a&gt;framework, the second was in Python in &lt;a href=&#34;https://www.pygame.org/news&#34;&gt;PyGame&lt;/a&gt;, and now it&#39;s in pseudo-Lua in PICO-8. I&#39;m not sure why this construct - just getting thing to orbit each other, really - appeals to me so much. But clearly there&#39;s something there.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Each of the orbiting objects is &#34;on rails&#34; in a sense - rather than apply some kind of gravitational force each timestep, each object is locked into a perfect elliptical orbit defined by four orbital parameters (semi-major axis, eccentricity, argument of periapsis, and mean anomaly at epoch. Given a time T and those four parameters, the engine can calculate exactly where each object should be. Then we just let T advance at some fraction/multiple of real time.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image size-large&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1201 post-img&#34; src=&#34;orbit_000.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;The next step in turning this into some kind of actual game would be to allow the orbiting objects (&#34;ships&#34;) to apply a small amount of thrust that changes their orbit. This involved calculating the current Cartesian parameters (position and velocity) and turning those into new orbital parameters. &lt;/p&gt;
+&lt;figure class=&#34;wp-block-image size-large&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1202 post-img&#34; src=&#34;orbit_001.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;The hangup with this in PICO-8 is that all numbers are 32-bit fixed precision (0xFFFF.FFFF), with a range of -32768 to 32767.9999. While this is enough range to capture all the fundamental parameters of the orbit themselves (the largest of which is the semi-major axis, which can be up to about 200), it&#39;s not enough dynamic range to do some of the calculations for converting cartesian parameters to orbital ones. Even finding the magnitude of a 2D vector with components ~150 or greater involves an intermediate step with numbers larger than 32767, which is a problem when that&#39;s the largest number we can represent in our number system.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image size-large&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1203 post-img&#34; src=&#34;orbit_002.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;I briefly toyed with creating a system to present 64-bit numbers as a duo of 32-bit fixed-point ones, but it&#39;s not quite where my interests lie at the moment. So the project pauses here for now.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In any case, in encourage you to try out PICO-8 and play around. It&#39;s very approachable and a ton of fun, takes me right back to my days writing QBasic on my middle-school math teacher&#39;s computer.&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -22,7 +36,17 @@
       <pubDate>Sat, 21 Mar 2020 18:27:14 -0500</pubDate>
       
       <guid>https://jeff.glass/post/stream-electrics-and-electronics-bash-arduino-1/</guid>
-      <description>This Sunday evening, March 22nd 2020 at 7pm Central time, I&#39;ll be hosting a livestreaming Introduction to Arduino over on YouTube!</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;This Sunday evening, March 22nd 2020 at 7pm Central time, I&#39;ll be hosting a &lt;a href=&#34;https://youtu.be/H7LOfnseQ7o&#34;&gt;livestreaming Introduction to Arduino over on YouTube&lt;/a&gt;!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;We&#39;ll start from scratch installing the Arduino IDE software, then moving on to programming fundamentals, wiring to the Arduino and using a breadboard, and more. We should cover enough ground to be useful to absolute beginners and pro&#39;s alike.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Grab a cold one and come join me live as we make stuff and learn things. Bring your projects, bring your questions, bring your ideas for what we should learn or talk about. Let&#39;s hang and talk about something other than hand washing. See you there.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This page will be updated with links and resources following the stream.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/H7LOfnseQ7o&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -31,7 +55,83 @@
       <pubDate>Mon, 20 May 2019 17:54:43 -0500</pubDate>
       
       <guid>https://jeff.glass/post/arduino-pro-mini-dmx-shield/</guid>
-      <description>IntroductionIn my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on.</description>
+      <description>&lt;h4 class=&#34;post-h4&#34;&gt;Introduction&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;In my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on. But it&#39;s also fun to build inexpensive, maker-size versions of of this equipment, and it can be done on a shoestring budget.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;About a year ago, I built a couple versions of tiny moving lights - one directly from &lt;a href=&#34;https://www.thingiverse.com/thing:1912706&#34;&gt;a design from Thingiverse&lt;/a&gt;, the other of my own making. The end result was super cute!&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/BTafFpI3Vgc&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;The thing with this tiny light compared to real moving lights was... I cheated a bit. The light itself only contains the servos and LED chip itself, while the controller, LED driver and ballast were all external. The full setup took up almost 3 times the volume of the individual light:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-391 post-img&#34; src=&#34;IMG_7264spun-1024x768.jpg&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;Not only did I cheat on size, I cheated on control a bit too. The unit has a number of &#39;test&#39; modes that run simple movement and color patterns, but there was no means of controlling the light externally. While there are It was basically a fancy keychain toy. And there are &lt;a href=&#34;https://www.amazon.com/CQRobot-network-Management-Extended-Functions/dp/B01DUHZAT0&#34;&gt;DMX Shields&lt;/a&gt; in the Arduino Uno form factor, they themselves would have outsized the lights by another 200%. It was all getting too bulky to be reasonable.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;But after many months away from this project, I&#39;ve been devoting some time to scaling down both the dimming and DMX control sides of the circuitry. The result is a shield for an &lt;a href=&#34;https://store.arduino.cc/usa/arduino-pro-mini&#34;&gt;Arduino Pro Mini&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;DMX&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;As described in my previous &lt;a href=&#34;https://jeff.glass/2019/02/23/lighting-control-protocols-and-standards/&#34;&gt;write-up of contemporary lighting control protocols&lt;/a&gt;, the core standard for modern stage and event lighting is DMX, or properly, ANSI E1.11 DMX 512-A Digital Multiplex. In short, DMX is a serial protocol and physical spec that caries up to 512 one-byte values over each individual cable, usually with 5-pin DMX connectors. One set of 512 values is termed a &#34;universe,&#34; and to carry additional values, additional cables carrying different universes of information may be added.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-387 post-img&#34; src=&#34;dmx512-1024x252.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;More formally, DMX is a 250 kbps serial protocol transmitted over a 2-wire bus following &lt;a href=&#34;https://en.wikipedia.org/wiki/RS-485&#34;&gt;RS-485&lt;/a&gt; standards. The ESTA standard standards also dictate standardized connectors (XLR5 for temporary installations, RJ45 for permanent infrastructure), network topologies, impedances, terminations, and so on. &lt;a href=&#34;https://tsp.esta.org/tsp/documents/published_docs.php&#34;&gt;The standard is pretty readable&lt;/a&gt;, if you enjoy that sort of thing.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;DMX was developed in the late 80&#39;s/early 90&#39;s as a replacement for systems in which lighting equipment was controlled via analog control voltages, meaning each parameter (each individual dimmer, say) required one wire. A rack of 96 dimmers would have 100+ pin wiring harness attached to it, each with an analog voltage specifying level. With the introduction and adoption of DMX, all that was replaced with a single 3-conductor cable. All modern stage lighting controllers speak DMX, although most rely on transporting universes of DMX over Ethernet and using &#39;DMX Nodes&#39; to turn that digital data back into &#39;hard&#39; DMX close to the fixtures being controlled.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Circuit Components&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;There is really only on piece of hardware required to add to an Arduino-compatible design to allow it to send/receive DMX: an RS485 transceiver chip. There are many of these on the market, the common ones being the &lt;a href=&#34;https://www.maximintegrated.com/en/products/interface/transceivers/MAX485.html&#34;&gt;MAX485 &lt;/a&gt;and the &lt;a href=&#34;http://www.ti.com/product/SN75176B&#34;&gt;SN75176&lt;/a&gt;. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-373 post-img&#34; height=&#34;263&#34; src=&#34;max485-pins.png&#34; width=&#34;336&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;These take a single-ended input and turn it into a balanced output or, conversely, receive a differential RS485-compatible input and convert it to a single ended signal to a microcontroller. There are two control pins which determine whether the chip is a receiver or a driver. The control circuitry is essentially the same at both the transmitting and receiving end:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-374 post-img&#34; src=&#34;MAX485-1024x463.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;A more sophisticated/robust approach would also incorporate an optoisolator to prevent the processor from being damaged by faults on the signal side. There are some good guides on the interwebs on &lt;a href=&#34;https://electronics.stackexchange.com/questions/100487/dmx-on-arduino-with-rs485&#34;&gt;setting up optoisolation with DMX for an Arduino&lt;/a&gt; (Mathertel.de has a good &lt;a href=&#34;http://www.mathertel.de/Arduino/DMXShield.aspx&#34;&gt;write up of their isolated DMX shield&lt;/a&gt;), but for the sake of quick progress I&#39;m making this a future goal.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Circuit Layout and PCB Manufacture&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The circuit is ultimately very simple - a couple headers, some resistors, a MAX485 IC, and some pads to connect the DMX connectors to. And a switch - the DMX library I&#39;m using abuses the Arduino&#39;s built-in Serial library for some of its functionality, which means it has to use pins D0 and D1. Which means you can&#39;t reprogram the Arduino with DMX coming in. The DPDT switch just removes the connection between the DMX connectors and pins D0 and D1 of the Arduino to allow for programming. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Mostly for my own reference, the connections between a standard XLR3 or XLR5 connector and the Max485 pin are:&lt;/p&gt;
+&lt;table class=&#34;m-auto text-center table-fixed&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;w-1/3&#34;&gt;Net Name&lt;/th&gt;
+&lt;th class=&#34;w-1/3&#34;&gt;XLR Connector Pin&lt;/th&gt;
+&lt;th class=&#34;w-1/3&#34;&gt;Max485 Pin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;&#34;&gt;GND&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;1&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;&#34;&gt;Data - &lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;2&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;&#34;&gt;Data +&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;3&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;6&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p class=&#34;post-p&#34;&gt;Here&#39;s what draft one of version 0.1 looked like when it came back from &lt;a href=&#34;https://oshpark.com/&#34;&gt;OSHPark&lt;/a&gt; and following assembly&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-379 post-img&#34; src=&#34;FullSizeRender-1024x768.jpg&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;All the passives are 0603 and the max485 is an SOIC, both of which are pretty easy to solder by hand. The SMD switches are adorable! They&#39;re &lt;a href=&#34;https://www.digikey.com/product-detail/en/c-k/JS202011SCQN/401-2002-1-ND/1640098&#34;&gt;these little guys from C&amp;amp;K&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The major flaw with version 0.1 is: one you&#39;ve attached headers, where do you attach anything else?? So version 0.2 added an additional row of thru-hole pads, cleaned up some labeling, and added some mounting holes for M2 screws:&lt;/p&gt;
+&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-380 post-img&#34; data-id=&#34;380&#34; data-link=&#34;https://jeff.glass/?attachment_id=380#main&#34; src=&#34;V02-Board.png&#34;/&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-381 post-img&#34; data-id=&#34;381&#34; data-link=&#34;https://jeff.glass/?attachment_id=381#main&#34; src=&#34;V02-Schematic-1024x510.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;And once its all assembled, it looks something like this:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-393 post-img&#34; src=&#34;IMG_7266-spun2-1024x768.png&#34;/&gt;&lt;/figure&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Programming&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;I&#39;ve been making use of the &lt;a href=&#34;https://sourceforge.net/p/dmxlibraryforar/wiki/Home/&#34;&gt;Conceptinetics DMX library&lt;/a&gt;, which I&#39;ve found to be both functional and stable. I haven&#39;t yet experimented with the RDM capabilities of that library.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The library is very easy to use, and its usage is described well on the &lt;a href=&#34;https://sourceforge.net/p/dmxlibraryforar/wiki/DMX%20Slave/&#34;&gt;Conceptinetics Documentation page&lt;/a&gt;. Essentially, one defines a DMX_Slave object, which has enable(), setStartAddress(), and getChannelValue() methods. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For example, once the object is set up and addressed, a loop() with the single command &lt;strong&gt;analogWrite(LED_PIN, getChannelValue(1));&lt;/strong&gt; will dim an LED attached to pin 9 dim in response to incoming DMX. Easy as pi.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Usage&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;So, what can one do with an Arduino Pro Mini that can receive DMX? Well...&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can make a DMX level monitor, a DMX controlled LED source. And really, anything else you can think of to do with an Arduino - drive servos, WS2812s, solenoids, relays...&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The shield can also transmit DMX, though I haven&#39;t thoroughly tested this yet. But it&#39;s possible to make a miniature DMX controller, itty bitty light board, or testing tool. Or wire up some interesting input devices and make an interesting lighting controller.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;What&#39;s Next&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The shield has been a useful proving ground for the Conceptinetics DMX library (though we&#39;ve used it onstage before), as well as for OSHPark&#39;s manufacturing tolerances. I wasn&#39;t sure that having holes as close to the edge of the PCB as both V0.1 and V0.2 have would be manufacturable, but they came back no problem.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This all started for me with a miniature moving light project, and while that&#39;s not quite ready for a write-up, I&#39;ll just leave V0.3 of the DMX shield here. Not without errors/improvements to be made, but I&#39;m excited to try out some new LED dimming tech:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-383 post-img&#34; height=&#34;288&#34; src=&#34;V03-Board.png&#34; width=&#34;304&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-397 post-img&#34; height=&#34;291&#34; src=&#34;IMG_7277-1024x768.jpg&#34; width=&#34;390&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
   </channel>
