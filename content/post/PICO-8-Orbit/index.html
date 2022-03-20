@@ -8,10 +8,12 @@ tags:
 - pico-8
 - programming
 slug_image: orbit_000.png
+aliases:
+- /2020/07/08/pico-8-orbit/
 ---
 <p class="post-p">Over the past couple weeks, as a way to stretch my programming legs and play around with a new system, I've been writing a little demo in the 8-bit retro video game environment called <a href="https://www.lexaloffle.com/pico-8.php">PICO-8</a>. Since I think I'm drifting away from this project now, I figured I might as well post my progress here: a "game" demo called <strong>Orbit</strong> that instantiates a number of objects moving in an elliptical orbit around a central planet.</p>
 <p class="post-p">One of the neat things about PICO-8 is how easy it is to embed a playable demo! Here is the full program running in your browser:</p>
-<p class="post-p"><iframe class="m-auto" height="600" src="https://jeff.glass/pico8/orbit/orbit2.html" width="600"></iframe></p>
+<p class="post-p"><iframe class="m-auto" height="600" src="/orbit/orbit2.html" width="600"></iframe></p>
 <p class="post-p">The program starts by instantiating 5 orbiting objects around a central planet. You can switch which object you're focusing on using ← and →. The two primary buttons (defaults to C and X on a desktop, or onscreen keys on mobile) allow access to the menu at the top-right. The menu has functionality for speeding up or slowing down time, adding and removing objects, and changing whether orbits are displayed and what info shows up on the HUD.</p>
 <p class="post-p">This is about the third time I've recreated essentially this same structure in different languages/environments. The first time was in Lua in the <a href="https://love2d.org/">LOVE2D </a>framework, the second was in Python in <a href="https://www.pygame.org/news">PyGame</a>, and now it's in pseudo-Lua in PICO-8. I'm not sure why this construct - just getting thing to orbit each other, really - appeals to me so much. But clearly there's something there.</p>
 <p class="post-p">Each of the orbiting objects is "on rails" in a sense - rather than apply some kind of gravitational force each timestep, each object is locked into a perfect elliptical orbit defined by four orbital parameters (semi-major axis, eccentricity, argument of periapsis, and mean anomaly at epoch. Given a time T and those four parameters, the engine can calculate exactly where each object should be. Then we just let T advance at some fraction/multiple of real time.</p>
