@@ -13,16 +13,481 @@
       <pubDate>Sun, 13 Mar 2022 00:05:00 -0500</pubDate>
       
       <guid>https://jeff.glass/post/quick-dirty-system-power/</guid>
-      <description>Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.</description>
-    </item>
-    
-    <item>
-      <title>Demilight-version 0.9.1</title>
-      <link>https://jeff.glass/backup-post/demilight-v-0-9-1/</link>
-      <pubDate>Tue, 22 Sep 2020 17:52:04 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/demilight-v-0-9-1/</guid>
-      <description>The Demilight (miniature moving light) project has been slowed down in the past few months, mostly by good things.</description>
+      <description>&lt;p class=&#34;font-bold post-p&#34;&gt;Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;My dayjob involves solving technical problems for a large, multi-acre education facility with over 400 computer-driven interactives. To prolong the life of these devices (many of which are built around off-the-shelf computers and monitors), we like to power them down after operating hours and start them up in the morning. These are mostly windows machines, and just like a desktop they &lt;span class=&#34;italic&#34;&gt;love&lt;/span&gt; to be rebooted.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;What makes this challenging is both the number and placement of these devices. While many are in dedicated control rooms with &lt;a href=&#34;&#34;&gt;linked KVM systems&lt;/a&gt;, even using a mouse and keyboard to manually shut down 400 PCs would take the onsite staff far longer than designed, and could be error-prone. Worse, some computers are embedded inside consoles, cabinets, and displays, making the process of walking around and hitting power buttons (where accessible) or using a wireless keyboard (where not) even longer. The same is true of startup, except that a wireless keyboard isn&#39;t an option in that case. A central startup and shutdown solution is essential.&lt;/p&gt;
+&lt;div class=&#34;max-w-xl px-10 mx-auto xl:float-right&#34;&gt;
+    &lt;img src=&#34;medialon.jpg&#34; alt=&#34;A complex touchscreen controller based around a Medialon control system&#34; class=&#34;post-img&#34;&gt;
+    &lt;p class=&#34;max-w-xl post-img-caption&#34;&gt;Not from my workplace, but grabbed from google images - just as an example of how involved a software-defined control system can be.&lt;/p&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, there are many ways to make this happen. The most ideal, when the money is available, is to use a central controller, like a &lt;a href=&#34;https://medialon.com/products/showmaster-pro/&#34;&gt;Medialon System&lt;/a&gt;, &lt;a href=&#34;https://www.crestron.com/Products/Control-Hardware-Software/Hardware&#34;&gt;Creston Controller&lt;/a&gt;, &lt;a href=&#34;https://derivative.ca/&#34;&gt;TouchDesigner interface&lt;/a&gt;, or similar. The control is put in charge of signalling the computers to wake up (via Wake-on-LAN), shut down (through  proprietary software modules), and handles cycling &lt;a href=&#34;https://www.se.com/us/en/product-range/7340-powerlink-intelligent-panelboards/#overview&#34;&gt;remotely-controller AC breakers&lt;/a&gt;, turning projcets on and off via various ethernet protocols, and so on. The dream is for whoever&#39;s operating the system to press one button (or click one button on a screen) to have the whole system turn on, or off.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Life is rarely a dream.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;We sometimes run into a situation where, for reasons of cost, planning, location, or timing, there is no exterior control of any kind. There&#39;s just a breaker in a panel (which may or may not be remote controlled) providing power to an installed cabinet. And as much as PC&#39;s love to be rebooted, they &lt;span class=&#34;italic&#34;&gt;hate&lt;/span&gt; having their power yanked unexpectedly.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So the challenge is: &lt;span class=&#34;font-bold&#34;&gt;given only control over their power, can we create a system that soft-starts and soft-shuts-down a PC?&lt;/span&gt; &lt;span class=&#34;italic&#34;&gt;(Yes we can, or this would be a very short post.)&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-h2&#34;&gt;Shutdown&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Getting a PC to soft shutdown on power loss is relatively straightfoward. There are (fairly fancy) &lt;a href=&#34;https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/ups-network-management-cards/N-o7asnt&#34;&gt;networkable UPS systems and add-on cards&lt;/a&gt; that are meant just for this kind of thing. When mains power is killed, the UPS kicks into keep the computer(s) in question on, while sending a network message to do... whatever you want. Wait a minute then hibernate, run a backup, dump memory, etc.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Unfortunately, these solutions are somewhat cost-prohibitive, and also rather large. They seem designed for rackmount systems where they could be used to manage a bank of servers. The particular situation that I&#39;m building this for for is very tightly space-confired, and doing it for less than a grand would be great.&lt;/p&gt;
+&lt;div class=&#34;max-w-lg px-10 mx-auto xl:float-left&#34;&gt;
+    &lt;img src=&#34;apcups.jpg&#34; alt=&#34;A complex touchscreen controller based around a Medialon control system&#34; class=&#34;post-img&#34;&gt;
+    &lt;p class=&#34;max-w-xl post-img-caption&#34;&gt;A cheap, off the shelf, 300W / ~30wH UPS. At time of writing, about $60 shipped.&lt;/p&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Thankfully, there&#39;s a way to make this work on a cheaper and smaller UPS. Many off-the-shelf UPS&#39;s have the abilitiy to connect directly to a single PC via USB connection. APC, who makes consumer UPSes, has such a connection on even their &lt;a href=&#34;https://amzn.to/31ciSpg&#34;&gt;very basic units&lt;/a&gt;. They even include &lt;a href=&#34;https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/powerchute-personal-edition/N-1b6nbpp&#34;&gt;some basic software (Powerchute)&lt;/a&gt; that can tell the computer to hibernate, shutdown, wait a few minutes and shutdown, etc when the batteries kick in. Sounds perfect, no?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Not quite - we only have the ability to hook one computer directly to the UPS, but we&#39;d like to power multiple small computers &lt;a href=&#34;https://www.intel.com/content/www/us/en/products/details/nuc.html&#34;&gt;(often NUCs)&lt;/a&gt; off a single UPS. And there&#39;s no obvious way to hook into the Powerchute software directly. Having one UPS per computer would be an option, but a needlessly expensive one. Sometimes there&#39;s not even enough room for that to be possible.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The workaround is straightfoward - the Powerchute software logs an event to the Window System Log when it swtches to battery power. We can use Window&#39;s built-in task scheduling service to fire off a script of our choosing when this event occurs. Then it&#39;s just a matter of crafting some very basic network scripts to allow the UPS-connected computer to tell other computers to shut down, then shut itself down.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Here&#39;s what I came up with. It&#39;s not terrible robust, secure, or debuggable, but it&#39;s getting the job done for now. The client script runs on the computer connected to a UPS, and is triggered when the UPS switches to battery power. The server runs on as many connected computers as we want, and should be set to run at startup. The (static) IPs of the computers running the server script must be enterred in the client script.&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;client.py&lt;/p&gt;
+&lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This program (&amp;#39;client&amp;#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;The server program should be running on any computers that need to be shutdown in this context.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; socket
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; os
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; sleep
+
+socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;setdefaulttimeout(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+PORT &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1933&lt;/span&gt;
+MSG &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SHUTDOWN NOW&amp;#39;&lt;/span&gt;
+RSP &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SHUTDOWN CONFIRMED&amp;#34;&lt;/span&gt;
+
+deviceIPs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.2&amp;#34;&lt;/span&gt;
+]
+attempts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+MAX_ATTEMPTS &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;
+
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Client program is contacting remote computers to shut them down&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; len(deviceIPs) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+    attempts &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; attempts &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; MAX_ATTEMPTS:
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;System could not shut down the following IPs: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;deviceIPs&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Shutting down self in 15 seconds&amp;#34;&lt;/span&gt;)
+        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; ip &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; deviceIPs:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket(socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;AF_INET, socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SOCK_STREAM) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; s:
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Attempting to connect tp &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;, attempt &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;attempts&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; of &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;MAX_ATTEMPTS&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; (timeout is &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;int(socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getdefaulttimeout())&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s)&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+                s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;connect((ip, PORT))
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TimeoutError&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; err:
+                print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Connection timed out&amp;#34;&lt;/span&gt;)
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Connection successful, sending message: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;MSG&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+            s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sendall(MSG)
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;recv(&lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;)
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Received &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;repr(data)&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data[:len(RSP)] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; RSP:
+                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Received shutdown confirmation message from host at ip &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+                deviceIPs&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remove(ip)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Got some other message than we expected from host at ip &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+    sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&amp;#34;&lt;/span&gt;)
+    sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;system(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;shutdown /s /f /t 10&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;pb-8 post-img-caption&#34;&gt;Scroll to see full code&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;server.py&lt;/p&gt;
+&lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This program (&amp;#39;server&amp;#39;) runs on any computer that is NOT receiving the direct singal to shut down.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;The &amp;#39;client&amp;#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; socket
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; os
+
+HOST &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+PORT &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1933&lt;/span&gt;
+MSG &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SHUTDOWN NOW&amp;#34;&lt;/span&gt;
+RSP &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SHUTDOWN CONFIRMED&amp;#34;&lt;/span&gt;
+
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Server program is listening for shutdown commands from primary client&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket(socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;AF_INET, socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SOCK_STREAM) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; s:
+    s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;bind((HOST, PORT))
+    s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;listen()
+    conn, addr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;accept()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; conn:
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Connected by &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;addr&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;:
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; conn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;recv(&lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data[:len(MSG)] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; MSG:
+                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Got shutdown MSG &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+                conn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sendall(RSP)
+                os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;system(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;shutdown /s /f /t 10&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;: 
+                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Got &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#e6db74&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; instead of expected &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data[:len(MSG)]&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; data:
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see full code&lt;/p&gt;
+&lt;p class=&#34;post-h2&#34;&gt;Startup&lt;/p&gt;
+&lt;div class=&#34;max-w-lg px-10 mx-auto xl:float-right&#34;&gt;
+    &lt;img src=&#34;feather.jpg&#34; alt=&#34;A complex touchscreen controller based around a Medialon control system&#34; class=&#34;post-img&#34;&gt;
+    &lt;p class=&#34;max-w-xl post-img-caption&#34;&gt;An Adafruit ESP-32 Featherwing - the purple Neopixel light indicates the unit has booted but does not see an attached ethernet cable&lt;/p&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Almost every BIOS has the ability to wake the system when power is restored following an unexpected power loss. Most have the ability to boot the computer when power is removed and restored, regardless of whether the computer was gently shut down or rudely had its power cut. Unfortunately, neither of these options work for us - since the computer is on a UPS, as far the the power supply is concerned,&lt;span class=&#34;italic&#34;&gt; the computer never loses power.&lt;/span&gt; So, we&#39;ll have to rely on some other mechanism to detect when power is restored to cause the computer(s) to boot.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The hammer for this particular nail is a small, ethernet-capable microcontroller that sends out Wake-on-LAN packets at regular intervals whenever its powered on. We plug this microcontroller into an outlet &lt;span class=&#34;underline&#34;&gt;not&lt;/span&gt; backed by the UPS - when power is lost, the microcontroller shuts off almost immediately, allowing the computers to shut down as above. When power is restored, the microcontroller starts up and, after a brief delay, starts sending out Wake-On-LAN messages to all the MAC addresses it knows about.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I chose the &lt;a href=&#34;https://www.adafruit.com/product/5000&#34;&gt;Adafruit ESP-32 Feather&lt;/a&gt; for a couple reasons. One, Python is &lt;a href=&#34;../../tags/python&#34;&gt;my language of choice&lt;/a&gt; for hacking things together, and I was excited to play more with &lt;a href=&#34;https://circuitpython.readthedocs.io/en/latest/README.html&#34;&gt;CircuitPython&lt;/a&gt;. Second, Adafruit&#39;s commitment to documentation and process is just great, and I wanted to get this project up on its feet quickly. And third, Adafruit&#39;s Featherwing line of accessory boards (specifically the &lt;a href=&#34;https://www.adafruit.com/product/3201&#34;&gt;Ethernet Featherwing&lt;/a&gt;) made it easy to get an Ethernet Stack and PHY running with minimal custom effort.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So, I bashed together the following code to wake up, establish a network connection, and send a Wake-On-LAN message to each MAC address in a given array every 15 seconds or so:&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;code.py&lt;/p&gt;
+&lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# SPDX-License-Identifier: MIT&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; board
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; busio
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; digitalio
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; neopixel
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; sleep
+
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; adafruit_wiznet5k.adafruit_wiznet5k &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; adafruit_wiznet5k.adafruit_wiznet5k_socket &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; socket
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; adafruit_requests &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; requests
+
+pixel &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; neopixel&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;NeoPixel(board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;NEOPIXEL, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+
+targetMACs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
+    [&lt;span style=&#34;color:#ae81ff&#34;&gt;0x12&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x34&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x56&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x78&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x9A&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0xBC&lt;/span&gt;], &lt;span style=&#34;color:#75715e&#34;&gt;#Computer NW&lt;/span&gt;
+    [&lt;span style=&#34;color:#ae81ff&#34;&gt;0x12&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x34&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x56&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x78&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x9A&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0xBD&lt;/span&gt;], &lt;span style=&#34;color:#75715e&#34;&gt;#Computer NE&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;#... more computers as necessary&lt;/span&gt;
+    ]
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Initialize ethernet interface with DHCP&lt;/span&gt;
+cs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; digitalio&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DigitalInOut(board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;D10)
+spi_bus &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; busio&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SPI(board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SCK, MOSI&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;MOSI, MISO&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;MISO)
+eth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; WIZNET5K(spi_bus, cs, is_dhcp&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;)
+
+ip &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
+subnet_mask &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;255.255.0.0&amp;#34;&lt;/span&gt;)
+gateway &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
+dns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
+eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ifconfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (ip, subnet_mask, gateway, dns)
+&lt;span style=&#34;color:#75715e&#34;&gt;#If using DHCP, uncomment the following line&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#eth.ifconfig = (ip, subnet_mask, None, None)&lt;/span&gt;
+
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Assigned Ethernet Address: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; str(eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;pretty_ip(eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ip_address)))
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#Built-in neopixel will be purple while waiting for Ethernet to connect&lt;/span&gt;
+pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;)
+
+retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; retry:
+    retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+        eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_connect(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;172.16.255.255&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#ae81ff&#34;&gt;556&lt;/span&gt;, conn_mode&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;SNMR_UDP)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;AssertionError&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; err:
+        print(str(err) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;, retrying in 10 Seconds&amp;#34;&lt;/span&gt;)
+        retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
+        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+
+    status &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_status(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; [int(b) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; b &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; status] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; [SNSR_SOCK_UDP]:
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Socket 0 connected as UDP&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Socket not connected, status is &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;status&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+        retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
+        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#Built in neopixel will be blue when standing by to send WOL packets&lt;/span&gt;
+pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;)
+sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;:
+&lt;span style=&#34;color:#75715e&#34;&gt;#Built in neopixel will be green when sending WOL packets&lt;/span&gt;
+    pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i, target &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; enumerate(targetMACs):
+        
+        fullPacket &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bytearray([&lt;span style=&#34;color:#ae81ff&#34;&gt;0xFF&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; target &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt;)
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Sending WoL packet to computer &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;i&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; with mac address &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;pretty_mac(target)&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+        eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_write(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, fullPacket, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+        
+        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;.1&lt;/span&gt;)
+
+    pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;)
+    sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;)
+
+eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_close(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see full code&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;If you&#39;re making use of this code yourself, you&#39;ll need the following libraries in your CIRCUITPY/libs folder:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;adafruit_wiznet5k&lt;/li&gt;
+    &lt;li&gt;adafruit_requests.mpy&lt;/li&gt;
+    &lt;li&gt;neopixel.mpy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;And, if it&#39;s helpful, here is the basic process of getting the ESP32-S2 feather up and running (summarized from &lt;a href=&#34;https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader&#34;&gt;Adafruit&#39;s excellent guide&lt;/a&gt;):&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Download the appropriate &lt;a href=&#34;https://circuitpython.org/board/adafruit_feather_esp32s2/&#34;&gt;Bootloader .BIN File&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;https://learn.adafruit.com/adafruit-esp32-s2-feather/install-uf2-bootloader#step-2-place-your-board-in-bootloader-mode-3089837-8&#34;&gt;Put the board in bootloader mode&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;Use the online &lt;a href=&#34;https://adafruit.github.io/Adafruit_WebSerial_ESPTool/&#34;&gt;Adafruit ESPTool and Webserial&lt;/a&gt; tool to burn BIN file to the ESP32&lt;/p&gt;&lt;/li&gt;
+    &lt;li&gt;Reset the feather - it will appear as an attached USB drive called CIRCUITPY, onto which the above code can be dropped&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;pb-4 post-h2&#34;&gt;System Diagram&lt;/p&gt;
+&lt;img src=&#34;networkMap.png&#34; alt=&#34;&#34; class=&#34;post-img&#34;&gt;
+&lt;p class=&#34;post-h2&#34;&gt;Step-by-Step Instructions&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For those who came here looking for an actual step-by-step how-to, here&#39;s the full process of getting this system set up. (This is based on my particular steps with the Intel NUCs and APC UPS in the most recent setup - some steps, especially relating to the BIOS, may need to be adjusted for your hardware.)&lt;/p&gt;
+&lt;p class=&#34;pb-2 post-h3&#34;&gt;Computer Info Gathering&lt;/p&gt;
+&lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+    &lt;li&gt;Identify the MAC addresses of the relevent NICs on all the computers you intend to use.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;pb-2 post-h3&#34;&gt;Feather Prep&lt;/p&gt;
+&lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+    &lt;li&gt;Solder headers onto the Adafruit ESP32 Feather and Ethernet featherwing, as necessary. Attach the two together.&lt;/li&gt;
+    &lt;li&gt;Using the steps above, prepare the feather with its bootloader.&lt;/li&gt;
+    &lt;li&gt;Load the code above onto the Feather.&lt;/li&gt;
+    &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+        &lt;li class=&#34;italic&#34;&gt;Modify the list of MAC addresses in the code to include all of the MAC addresses you previously identified.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;pb-2 post-h3&#34;&gt;Physical Install&lt;/p&gt;
+&lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+    &lt;li&gt;Install the UPS, connected to the (switchable or unpredicable) power source. It may need to charge for several hours before it&#39;s usable.&lt;/li&gt;
+    &lt;li&gt;Install the network switch, plugged into the battery-backed power on the UPS. A cheap unmanaged switch will do.&lt;/li&gt;
+    &lt;li&gt;Install the computer(s). Plug them into the battery-backed power on the UPS&lt;/li&gt;
+    &lt;li&gt;Plug the Feather assembly you prepped earlier into the NON-battery-backed power on the UPS.&lt;/li&gt;
+    &lt;li&gt;Use CAT cables to attach the computers and Feather to the network switch.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;pb-2 post-h3&#34;&gt;Wake on Lan Setup&lt;/p&gt;
+&lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+    &lt;li&gt;In both computer&#39;s BIOS&#39;s&#34;:&lt;/li&gt;
+    &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+        &lt;li&gt;Make sure &#39;Wake on LAN from S4/S5 is set to &#39;Power On - Normal Boot&#39;&lt;/li&gt;
+        &lt;li&gt;Make sure &#39;Deep S4/S5&#39; is Off&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;li&gt;In both computer&#39;s Device Managers:&lt;/li&gt;
+    &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+        &lt;li&gt;Find the network interface that is plugged into the network switch, and open its settings.&lt;/li&gt;
+        &lt;li&gt;In the Power Management Tab:&lt;/li&gt;
+        &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+            &lt;li&gt;Make sure &#39;Allow the computer to turn off this device&#39; is OFF&lt;/li&gt;
+            &lt;li&gt;Make sure &#39;Allow this device to wake the computer&#39; is ON&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;li&gt;In the Advanced Tab: Make sure &#39;Wake on Magic Packet&#39; is ENABLED&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-h3&#34;&gt;Control Computer Setup&lt;/p&gt;
+&lt;p class=&#34;italic post-p&#34;&gt;This will be the computer listening to the status of the UPS, and telling the other computers to turn off. There should be only one per setup.&lt;/p&gt;
+&lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+    &lt;li&gt;Assign the computer a static IP on the NIC you&#39;re using. The code above assumes this is &lt;code class=&#34;code&#34;&gt;172.16.0.1&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Plug the USB cable from the UPS into the control computer.&lt;/li&gt;
+    &lt;li&gt;If not prompted, manually download and install the &lt;a href=&#34;https://www.apc.com/shop/us/en/categories/power/uninterruptible-power-supply-ups-/ups-management/powerchute-personal-edition/N-1b6nbpp&#34;&gt;Powerchute Control Software&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;Unplug the UPS from wall-power once and plug it back in, to log the necessary events in the System Log.&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;https://www.python.org/downloads/&#34;&gt;Install Python&lt;/a&gt;. I used Python 3.10.0 at time of writing, but any later version should also be fine.&lt;/li&gt;
+    &lt;li&gt;Copy the &lt;code class=&#34;code&#34;&gt;client.py&lt;/code&gt; code from above to a convienient file location on the computer (desktop, My Documents, etc).&lt;/li&gt;
+    &lt;li&gt;In Task Scheduler, add a new event:&lt;/li&gt;
+    &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+        &lt;li&gt;Title: Shutdown on Power Loss to UPS&lt;/li&gt;
+        &lt;li&gt;Triggers:&lt;/li&gt;
+        &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+            &lt;li&gt;On an Event&lt;/li&gt;
+            &lt;li&gt;Log: Application&lt;/li&gt;
+            &lt;li&gt;Source: APC UPS Service&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;li&gt;Actions:&lt;/li&gt;
+        &lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+            &lt;li&gt;Start a Program&lt;/li&gt;
+            &lt;li&gt;Select &lt;code class=&#34;code&#34;&gt;client.py&lt;/code&gt; script from wherever you put it&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/ul&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-h3&#34;&gt;Target Computer Setup&lt;/p&gt;
+&lt;p class=&#34;italic post-p&#34;&gt;These computers will run a script on boot that listens for commands from the client computer to shut down. There can be as many of these per system as you like.&lt;/p&gt;
+&lt;ul class=&#34;pl-8 text-justify list-disc list-outside&#34;&gt;
+    &lt;li&gt;Assign the computer a static IP on the NIC you&#39;re using. The code above assumes this is &lt;code class=&#34;code&#34;&gt;172.16.0.2&lt;/code&gt;; if you add additional computers, you will need to add them to them to the deviceIPs array in the &lt;code class=&#34;code&#34;&gt;client.py&lt;/code&gt; script.&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;https://www.python.org/downloads/&#34;&gt;Install Python&lt;/a&gt;. I used Python 3.10.0 at time of writing, but any later version should also be fine.&lt;/li&gt;
+    &lt;li&gt;Copy the &lt;code class=&#34;code&#34;&gt;server.py&lt;/code&gt; code from above to a convienient file location on the computer (desktop, My Documents, etc).&lt;/li&gt;
+    &lt;li&gt;Create a shortcut to the &lt;code class=&#34;code&#34;&gt;server.py&lt;/code&gt; script in your startup folder. In Windows 10, this is located by default at: &lt;code class=&#34;code&#34;&gt;C:/users/{username}/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup.&lt;/code&gt; Any shortcuts/executables in this folder get executed automatically when Windows boots.&lt;/li&gt;
+&lt;/ul&gt;</description>
+      &lt;
     </item>
     
     <item>
@@ -31,16 +496,15 @@
       <pubDate>Tue, 22 Sep 2020 17:52:04 -0500</pubDate>
       
       <guid>https://jeff.glass/post/demilight-v-0-9-1/</guid>
-      <description>The Demilight (miniature moving light) project has been slowed down in the past few months, mostly by good things.</description>
-    </item>
-    
-    <item>
-      <title>How to Livestream a (Technology Focused) Class</title>
-      <link>https://jeff.glass/backup-post/how-to-livestream-a-technology-focused-class/</link>
-      <pubDate>Sat, 29 Aug 2020 17:37:26 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/how-to-livestream-a-technology-focused-class/</guid>
-      <description>In BC times (Before Covid), I had often dreamed of setting up a semi-regular gathering with some nerd friends to make things.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;The Demilight (miniature moving light) project has been slowed down in the past few months, mostly by good things. Namely, my return to my fulltime job and other interesting technical nerdery. But the project soldiers on!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I made a video detailing the trials and tribulations of getting version 0.9.1 built, which you can watch below (embedded) or &lt;a href=&#34;https://www.youtube.com/watch?v=P-ZiBg6NIeI&#34;&gt;over on YouTube&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/P-ZiBg6NIeI&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -49,16 +513,123 @@
       <pubDate>Sat, 29 Aug 2020 17:37:26 -0500</pubDate>
       
       <guid>https://jeff.glass/post/how-to-livestream-a-technology-focused-class/</guid>
-      <description>In BC times (Before Covid), I had often dreamed of setting up a semi-regular gathering with some nerd friends to make things.</description>
-    </item>
-    
-    <item>
-      <title>Demilight Version 0.8.1</title>
-      <link>https://jeff.glass/backup-post/demilight-version-0-8-1/</link>
-      <pubDate>Thu, 16 Jul 2020 03:01:51 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/demilight-version-0-8-1/</guid>
-      <description>The newest round of Demilight PCBs and 3D-Prints have taken shape as version 0.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;In BC times (&lt;span style=&#34;text-decoration: underline;&#34;&gt;B&lt;/span&gt;efore &lt;span style=&#34;text-decoration: underline;&#34;&gt;C&lt;/span&gt;ovid), I had often dreamed of setting up a semi-regular gathering with some nerd friends to make things. We&#39;d all sit around, drink beer, eat trail mix, and bash things together with Arduinos and Raspberry Pis and servos and LEDs and what have you. And then March 2020 rolled around - getting together in person was suddenly passé, but with my day job sending us home for &#34;three weeks&#34; of shelter-at-home, I also had a lot more time on my hands...&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;And so, the &lt;a href=&#34;https://jeff.glass/electronics-bash/&#34;&gt;Electronics Bash live video classes&lt;/a&gt; were born. Starting Sunday, March 15, I begin streaming live electronics classes every Sunday night. They have centered around Arduino programming and usage, but I&#39;ve also branched off into electrical theory, battery types, microcontroller hardware, and other related topics. After 20 weeks of that, I shifted gears to Raspberry Pi programming and single board computers. Many of the topics have been suggested by the small but enthusiastic core group of nerds who come together on Sunday nights to share ideas and learn things.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-841 post-img&#34; height=&#34;405&#34; src=&#34;3-29-2020-Thumb-1024x576.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;It&#39;s now late-August 2020, I&#39;ve taught 22 of these classes, I&#39;m back at my day job, and having &#34;completed&#34; the Arduino course, it feels like I&#39;ve created &#34;one whole thing&#34; . And so I thought it might be a fun time to look back at what I&#39;ve learned about online teaching, streaming setups, electronics, and life over the first 22 Electronics Bash classes.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Some of this is going to be technical, some philosophical, some nonsensical. But what else is new.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span clas=&#34;m-auto&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1296 size-large post-img&#34; height=&#34;405&#34; src=&#34;streamcap1-1024x576.png&#34; width=&#34;720&#34;/&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;The stream looks pretty good these days, I like to think.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;h3 class=&#34;text-3xl&#34;&gt;Technology&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;My technology setup has been relatively consistent since about week 4 of Electronics Bash, with a few adjustments along the way as noted below. Let&#39;s break it down by technology categories.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;(&lt;span class=&#34;italic&#34;&gt;My setup in many areas changed significantly with the shift to Raspberry Pi classes, so all those changes are noted at the end of this section.&lt;/span&gt;)&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Goals&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;When I leapt into the idea of teaching these classes, the thought was to focus on &#34;Arduino, Electronics, and Related Stuff.&#34; I knew I would need at least two things to be visible: a computer desktop (for the programming IDE and explanatory slides) and the workbench itself (for showing wiring and physical demos). Seeing my face I&#39;d count as a bonus. I also wanted to stream in reasonably high resolution - 720p as a goal, 1080p would be nice - and to make the process of switching between what the viewer is seeing as seamless as possible. Most topics would involve a good amount of swapping back and forth between slides, code, the workbench, and verbal explanation. And it should all look reasonably clear and clean.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The setup that I came up with has served me well in these regards over time, and wasn&#39;t terribly complicated nor expensive to put together.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Computer&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;I use my &lt;a href=&#34;https://amzn.to/3lk85P0&#34;&gt;Lenovo Legion Y7000&lt;/a&gt; laptop for basically all my computer purposes these days, including streaming and programming. It&#39;s a &#34;gaming laptop&#34;, which essentially means it has a mid-tier GPU stuffed inside a laptop chassis with some extra fans. I personally like the versatility this gives me - I can run &lt;a href=&#34;https://www.autodesk.com/products/fusion-360/overview&#34;&gt;Fusion360&lt;/a&gt; or &lt;a href=&#34;https://www.autodesk.com/products/autocad/overview&#34;&gt;AutoCAD&lt;/a&gt; pretty well, rendering a video out from &lt;a href=&#34;https://www.blackmagicdesign.com/products/davinciresolve/&#34;&gt;Da Vinci Resolve&lt;/a&gt; is pretty efficient, and my setup is still portable.&lt;/p&gt;
+&lt;img alt=&#34;Lenovo Legion Y7000P-1060 - Notebookcheck.net External Reviews&#34; class=&#34;aligncenter post-img&#34; height=&#34;256&#34; src=&#34;https://www.notebookcheck.net/typo3temp/_processed_/a/3/csm__MG_3512_b10bc87ad6.jpg&#34; width=&#34;341&#34;/&gt;
+&lt;p class=&#34;post-p&#34;&gt;I have an external monitor more or less permanently behind my workbench to accommodate the streaming setup - it&#39;s a basic 1600x900 monitor that I picked up from &lt;a href=&#34;https://www.freegeekchicago.org/&#34;&gt;FreeGeek Chicago&lt;/a&gt; at some point, just fed from the HDMI output on my laptop.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1313 size-large post-img&#34; height=&#34;540&#34; src=&#34;IMG_0986-1024x768.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Cameras&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;My stream setup centers around two primary views- looking at something on the workbench (with my face in a little window in the corner) and looking at something on the computer (with my face in a little window in the corner). Sometimes, it&#39;s looking at my face alone, but that&#39;s mostly for the beginning and end of the class, and any long explanations in the middle. The full list of stream looks is below, but these are the big two/three.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To achieve these core looks, I have three cameras: two &lt;a href=&#34;https://amzn.to/3lk86T1&#34;&gt;Logitech c920 HD webcams&lt;/a&gt; as the face-cameras, and a &lt;a href=&#34;https://amzn.to/3hJiFwV&#34;&gt;Sony a5100 mirrorless camera&lt;/a&gt; feeding an &lt;a href=&#34;https://amzn.to/2G03QrH&#34;&gt;Elgato CamLink 4k HDMI capture dongle&lt;/a&gt; pointing straight down at the workbench.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The c920s are both mounted on &lt;a href=&#34;https://www.thingiverse.com/thing:2477180&#34;&gt;3D-printed&lt;/a&gt; &lt;a href=&#34;https://www.thingiverse.com/thing:3015022&#34;&gt;reposition-able arms&lt;/a&gt;, which mount to some 2020 aluminum extrusion that clips onto the front of my workbench shelves. They&#39;re really decent face cameras, with a wide field-of-view and decent autofocus. It&#39;s a shame that the Logitech drivers don&#39;t like to save their settings very well, so I end up needing to reconfigure things like color temperature and gain every time I restart my streaming software. But that&#39;s only an annoyance.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can see both &lt;a href=&#34;https://amzn.to/2YB3Qoe&#34;&gt;ducting tape&lt;/a&gt; (NOT duct tape) and &lt;a href=&#34;http://store.gopherstagelighting.com/city-theatrical-black-tak/&#34;&gt;Black Tack&lt;/a&gt; in the pictures below, used as barn-doors to shield the cameras from the nearby lights to avoid flare. I have one for when I&#39;m working at the workbench and another for when I&#39;m looking at the laptop screen.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1300 size-medium post-img&#34; height=&#34;225&#34; src=&#34;IMG_0951-300x225.jpg&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The a5100 is usually attached to an &lt;a href=&#34;https://amzn.to/2QsvSOw&#34;&gt;11&#34; magic arm&lt;/a&gt; with a soft-clamp on a higher shelf; I also have a&lt;a href=&#34;https://amzn.to/3jh3r2u&#34;&gt; desktop boom-arm&lt;/a&gt; for filming things up-close, but I almost never stream that way. I originally had a &lt;a href=&#34;https://amzn.to/31uNL5D&#34;&gt;cheaper, plastic-y 11&#34; magic arm&lt;/a&gt;, in the theory that I wasn&#39;t sure if it would actually be useful. Turns out they&#39;re a great tool, but the cheapiest ones wear out pretty quick - the metal ones like the one linked above are worth the investment.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-medium wp-image-1301 post-img&#34; height=&#34;225&#34; src=&#34;IMG_0961-300x225.jpg&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I use the &lt;a href=&#34;https://amzn.to/3gtAiiM&#34;&gt;kit OSS 18-55mm lens&lt;/a&gt; that the A5100 came with - with &#34;digital true zoom&#34; providing another 2x magnification beyond the longest zoom range, I find I get a really good range of full-desk to close-up-on-table. A &lt;a href=&#34;https://amzn.to/34Ah5JZ&#34;&gt;battery-replacer&lt;/a&gt; (wall-wart-to-battery-form-&lt;wbr/&gt;factor-plug) is a must for streaming, because any internal battery is going to die very quickly. The a5100 also requires a &lt;a href=&#34;https://amzn.to/2YFRBXw&#34;&gt;micro-HDMI to HDMI cable&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Software&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;I use &lt;a href=&#34;https://obsproject.com/&#34;&gt;Open Broadcast System (OBS)&lt;/a&gt; as my primary streaming software. I find it does most everything I want it to, and a couple other things besides. Since I&#39;m not monetizing my streams at all, and don&#39;t need features like pop-up notifications when somebody throws me some digi-chits or something, I don&#39;t feel the need to switch to something like &lt;a href=&#34;https://streamlabs.com/&#34;&gt;Streamlabs&lt;/a&gt; or &lt;a href=&#34;https://streamelements.com/&#34;&gt;Stream Elements&lt;/a&gt;. But perhaps someday I should play with them.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1311 size-large post-img&#34; height=&#34;408&#34; src=&#34;obs-with-chat-cropped-1024x580.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As I mentioned above, my big 3 scenes are: Computer Screen (+ small face), Workbench (with small face), and Face (With small computer screen and workbench). But I have 13 different scenes in my active collection; for the sake of completeness, they are:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li&gt;Just facecam&lt;/li&gt;
+&lt;li&gt;Facecam with small workbench and laptop views&lt;/li&gt;
+&lt;li&gt; Just workbench&lt;/li&gt;
+&lt;li&gt;Workbench with small facecam&lt;/li&gt;
+&lt;li&gt;Workbench with small facecam and laptop views&lt;/li&gt;
+&lt;li&gt;Just laptop screen&lt;/li&gt;
+&lt;li&gt;Laptop with small facecam&lt;/li&gt;
+&lt;li&gt;Laptop screen with small facecam and workbench views&lt;/li&gt;
+&lt;li&gt;Raspberry Pi Display with small facecam&lt;/li&gt;
+&lt;li&gt;&#34;Video Adjustments in Progress&#34; slide with microphone ON - &lt;span class=&#34;italic&#34;&gt;I use this mostly when I need to stand up from my workbench to grab something on the shelves behind it, and I don&#39;t want viewers to be staring at my tummy&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&#34;We&#39;ll Be Right Back&#34; slide with Microphone OFF and music on - &lt;span class=&#34;italic&#34;&gt;For times I actually need to step away for a moment&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class=&#34;italic&#34;&gt;&#34;&lt;/span&gt;Stream Starting Soon&#34; slide with countdown to start&lt;/li&gt;
+&lt;li&gt;&#34;Goodnight&#34; slide - &lt;span class=&#34;italic&#34;&gt;for end of streams&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;Switching between the various views smoothly on the fly as necessary to explain a concept is, I think, critical to maintaining flow. For that, I use the &lt;a href=&#34;https://www.elgato.com/en/gaming/stream-deck-mobile&#34;&gt;Stream Deck Mobile app&lt;/a&gt; for my iPhone, which emulates a &lt;a href=&#34;https://www.elgato.com/en/gaming/stream-deck&#34;&gt;Stream Deck controller&lt;/a&gt;. The Stream Deck configuration app is easy to use if just a little bit buggy - it allows me to have up to 15 buttons on my phone which switch between scenes in OBS on the fly.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;m-auto text-center&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1312 size-large post-img&#34; height=&#34;333&#34; src=&#34;IMG_0987-1024x473.png&#34; width=&#34;720&#34;/&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;My Streamdeck App configuration&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To do the &#34;Starting Soon&#34; and &#34;waiting for stragglers to arrive&#34; countdowns, I use a little script called &lt;a href=&#34;https://montemagno.com/introducing-my-stream-timer-a-countdown-timer-for-obs/&#34;&gt;My Stream Timer&lt;/a&gt;, which updates a .txt file with the current countdown time and specified by some very basic controls. OBS then uses this text file as the source for some text that appears on the screen.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Lighting&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;I spent more than a decade as a stage lighting professional before shifting gears into my current job. As such, I have opinions about lighting.  Of all the physical elements of my setup, this is the one that&#39;s changed most over time. But thankfully, it doesn&#39;t take a ton of cash to make a halfway decent lighting environment, particularly when you&#39;re in charge of your own camera angles.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;One good rule of thumb for video that&#39;s meant to be clear and communicative - get a lot of light on your subject, and get light off of whatever&#39;s behind your subject. In my case, I have an &lt;a href=&#34;https://amzn.to/2CZtyLG&#34;&gt;11W 6500K LED bulb&lt;/a&gt; strung above my workbench as the primary bench light, as well as a small LED A-lamp fixture that used to be in a bedroom as some fill light. These just blast the bench with light, and allow me to turn the ISO on my camera down to keep the grain away.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1314 size-large post-img&#34; height=&#34;540&#34; src=&#34;IMG_0988-1024x768.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;On my face, I have a &lt;a href=&#34;https://amzn.to/32pAURv&#34;&gt;small LED gooseneck&lt;/a&gt; that was on an alternate workbench in my last apartment. Hanging above my chair is a &lt;a href=&#34;https://amzn.to/2QtsMtG&#34;&gt;clip light&lt;/a&gt; with another cool-while LED acting as a hair light. Finally, down near my left knee is a small clip light with a blue LED bulb, which acts as a fill light when I turn 45 degrees to look at my laptop screen.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-medium wp-image-1303 post-img&#34; height=&#34;300&#34; src=&#34;IMG_0958-225x300.jpg&#34; width=&#34;225&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The background behind your subject doesn&#39;t need to be totally dark, though relative darkness does help with contrast. Creating color contrast can help draw a figure out from the background as well. To that end, I have some &lt;a href=&#34;https://amzn.to/2EzEpfO&#34;&gt;RGB LED tape&lt;/a&gt; (with only blue and green hardwired on) on my storage shelves that sit behind me on camera, and a &lt;a href=&#34;https://amzn.to/3hrwcsC&#34;&gt;red LED PAR bulb&lt;/a&gt; that scrapes up my blinds for some additional color and texture. Just provides a little additional pop and saturation to the scene.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-medium wp-image-1305 post-img&#34; height=&#34;300&#34; src=&#34;IMG_0959-225x300.jpg&#34; width=&#34;225&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;All together this adds up to what I feel is a balanced lighting look, that keeps my face visible and clear, illuminates the desktop, and hopefully doesn&#39;t look &lt;span class=&#34;italic&#34;&gt;too&lt;/span&gt; cheesy.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1307 size-large post-img&#34; height=&#34;404&#34; src=&#34;streamcap3-1024x574.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;h4 class=&#34;text-xl&#34;&gt;Audio&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;For the first 16 weeks or so of classes, my microphone setup was incredibly inexpensive - a &lt;a href=&#34;https://amzn.to/3linOhn&#34;&gt;wired BOYA lavalier&lt;/a&gt; from Amazon and a &lt;a href=&#34;https://amzn.to/3gvgnA2&#34;&gt;generic USB Audio Interface&lt;/a&gt; that a picked up when I was &lt;a href=&#34;https://kk9jef.wordpress.com/2015/10/20/enabling-a-usb-sound-card-on-the-raspberry-pi/&#34;&gt;experimenting with Audio input to the Raspberry Pi&lt;/a&gt; a few years back. I like the BOYA a lot for the price - decent response, nice long cable, fairly durable. More decently, I&#39;ve been used a &lt;a href=&#34;https://amzn.to/3jeF5Gv&#34;&gt;Fifine wireless boom-style microphone&lt;/a&gt;, which gives me a little more freedom to move around, but the low-frequency response isn&#39;t nearly as good.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;m-auto text-center&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1308 size-large post-img&#34; height=&#34;405&#34; src=&#34;streamcap4-1024x576.png&#34; width=&#34;720&#34;/&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=&#34;post-img-caption&#34;&gt;I&#39;m not in love with the look of the boom mic, but it does its job.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To make things sound just a little rounder, use a couple of OBS&#39;s built-in VST audio plugins - EQ and Compressor - to keep the frequency response pleasant and the volume to a reasonable level.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I used an &lt;a href=&#34;https://amzn.to/31rQSv4&#34;&gt;inexpensive pair of over-the-ear headphones&lt;/a&gt; to hear myself and any notification sounds that come up. They&#39;re pretty darn good for headphones that cost less than $20.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I enjoy having a little background music on my stream, just to fill air and make things a little more cozy. All of it is pulled from &lt;a href=&#34;https://www.youtube.com/audiolibrary/music&#34;&gt;YouTube&#39;s music library&lt;/a&gt;, which guarantees I won&#39;t be hit with an obscure copyright strike someday.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Raspberry Pi Class Adjustments&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;When I start the Raspberry Pi classes, I&#39;m wanted to capture the HDMI output directly from the Pi into the capture software as well, so I went ahead and picked up one of the &lt;a href=&#34;https://amzn.to/3aYYc4D&#34;&gt;$20 HDMI capture dongles&lt;/a&gt; that have popped up from overseas in the past couple months. The thing works really amazingly well for how inexpensive it is - decent color, framerate, resolution, HDCP support... I&#39;ve had no issues with it so far, and at least on my system the automatically-installed drivers work just fine. There does seem to be about 200ms of lag going into OBS, but for desktop instruction this is just fine. If you were using it to capture the output of an external camera, it might be necessary to delay your audio to match.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;m-auto text-center&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;size-medium wp-image-1309 post-img&#34; height=&#34;265&#34; src=&#34;hdmi-300x265.jpg&#34; width=&#34;300&#34;/&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;It could not look any more generic, but it actually works pretty well.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For my very first RPi class, I interacted with the Pi via OBS - that is, my view of the Raspberry Pi&#39;s desktop was inside of my streaming output inside of OBS. This wasn&#39;t ideal. The display is, of course, somewhat shrunk down; worse, the slight lag made the interface feel very floaty and hard to use. By the next class, I had dropped an &lt;a href=&#34;https://amzn.to/32H5t5p&#34;&gt;HDMI splitter&lt;/a&gt; in between the Pi and the capture card, whose second output feeds a second external monitor. So now I have my laptop screen (where slides/IDE live), my streaming screen (HDMI output from laptop, where OBS/chat lives) and a Raspberry Pi screen (showing Pi desktop). This works really quite well as an interface.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Sometime I had discovered during my initial setup about USB video sources and USB hubs has also popped up again with this setup. I won&#39;t claim to fully understand the issue, but something about t&lt;a href=&#34;https://superuser.com/questions/497933/50-usb-webcams-in-a-single-computer-is-that-really-possible&#34;&gt;he way USB 2.0/3.0 handle video streaming resources&lt;/a&gt; is less than ideal. The result is that putting multiple video devices (webcams, capture cards) into the same USB port on a computer (via a hub) doesn&#39;t necessarily allow them to utilize all the available bandwidth, so having multiple video devices on one hub can be a problem. &lt;a href=&#34;https://yokim.net/3231/&#34;&gt;This blog post by Yokim&lt;/a&gt; encapsulates the same experiences I had.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;My workaround for this is to have two of the video sources on the same hub, and then only ever activate one of them at a time. The two I chose are the webcam which shows my face when I&#39;m looking at my laptop, and the cheapie capture card bringing in the Raspberry Pi desktop. These are the two feeds I think I&#39;m least likely to ever need at the same time.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;m-auto text-center&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1316 size-large post-img&#34; height=&#34;540&#34; src=&#34;IMG_0989-1024x768.jpg&#34; width=&#34;720&#34;/&gt; &lt;span class=&#34;italic&#34;&gt;I had to take both monitors off their OEM stands to fit them under the lowest shelf in my workspace. Currently fitting them with 3D-printed stands.&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;h3 class=&#34;text-3xl&#34;&gt;Teaching: In Person vs. Streaming vs. Zooming&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;There was a time in my life that I thought I was going to be a school teacher. All of my summer jobs in high-school involved teaching a theater camp for kids and teens. Many of my college classes focused on &#34;teaching artist&#34; work, theater for young audiences, and pedagogical theory. I even accidentally ended up in a &#34;&lt;span class=&#34;italic&#34;&gt;How to Teach High School English&lt;/span&gt;&#34; class in college that was meant for M.S.Ed. students, and stuck it out because it was so fascinating. And while that&#39;s not ultimately the direction my career has lead me at the moment, I&#39;ve always had an interest in teaching skills and sharing knowledge.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;There&#39;s been a real learning curve to teaching a course online though. And in my case, teaching it via stream, which I think is worth distinguishing from teaching via Zoom (or one of its thousand clones), which I&#39;ll shorten to &#39;Zooming.&#39; When one is Zooming, whether with friends or students, there&#39;s still a modicum of feedback, even when no ones saying something. You can see faces. You can see confusion or comprehension. You can roughly gather whether a class is engaged or lost or checked out or eager for what&#39;s next. It&#39;s a poor substitute for in-person lessons, I think, but at least there&#39;s still some faces in the digital crowd.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In a streaming setup like I use, none of that is guaranteed. I spend a good chunk of my classes essentially talking to myself, and assuming it&#39;s being absorbed on the other side of the internet. Which is not to say the participants are unresponsive - they&#39;re wonderfully good about asking questions, poking fun, chiming in, giving suggestions. But especially for more complex topics, it&#39;s difficult to not be able to look into somebody&#39;s eyes every 30 seconds and make sure they&#39;re following along.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Classes &lt;a href=&#34;https://www.youtube.com/watch?v=QSuMkkyTpvA&#34;&gt;16&lt;/a&gt;, &lt;a href=&#34;https://www.youtube.com/watch?v=O2JppZIh6Cw&#34;&gt;17&lt;/a&gt;, and &lt;a href=&#34;https://www.youtube.com/watch?v=e0cF5v9Pnyo&#34;&gt;18&lt;/a&gt; on Interrupts and Timers are a great example of these challenges. These topics are super interesting (I think), but they&#39;re fairly dense. You need to understand a little bit about program flow, a little bit about memory, a little bit about hardware, and a little bit about timing to understand them. All of which we covered. But it&#39;s the kind of thing where one wants to ask &#34;Does that make sense? Are we all following?&#34; after each tidbit... and that&#39;s just not practical or actionable in a streaming environment. Especially with 6-10 seconds of lag between question and response.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;h3 class=&#34;text-3xl&#34;&gt;Dealing with Errors: Doing it live&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;In teaching over 60 hours of live classes at this point, some errors were inevitable. Especially in an electronics course where I think it&#39;s valuable to build up the circuits, code, and understanding in real time. No matter how much I prep, experiment, and try to plan, there is inevitably going to be something that goes wrong. Such is life.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The challenge, then, is what to do when something fails? I personally find it throws me very much off my game - but I&#39;ve consistently gotten feedback that the process of working through problems on camera is actually super useful to those watching.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I&#39;ve wondered as part of these classes if a whole stream on just &#34;Troubleshooting&#34; would be valuable, but I think the more useful version of that is to make an earnest effort to solve the real issues as they come up. Of course, spending 20 minutes tracking down typos would suck. Those are the times I pull out a cake-I-baked-earlier version of the code. But most errors can be fixed quickly, and talking out how to find them - &#34;Oh, this error message usually means...&#34; &#34;Oh, this behavior is wrong because...&#34; is valuable to those learning to code and wire.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;h3 class=&#34;text-3xl&#34;&gt;Lesson Development&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Anyone who&#39;s ever built a course from scratch (&lt;span class=&#34;italic&#34;&gt;and I know that&#39;s what a lot of traditionally-in-person instructors are doing these days!) &lt;/span&gt;knows how time consuming it is. First to make sure you fully understand the topic for a given lesson. Then to synthesize that knowledge into a logical sequence of explanations, topics, and themes. And finally to reify those ideas into tangible explanations and demos. Especially with a sweeping topic like &lt;a href=&#34;https://youtu.be/KiQKojmzBRs&#34;&gt;Fundamentals of Electricity&lt;/a&gt;- where do you even start?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;m-auto text-center&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1319 size-large post-img&#34; height=&#34;404&#34; src=&#34;resistnace-1024x575.png&#34; width=&#34;720&#34;/&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;This did end up being a really fun week.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Especially since I was making these classes up as I went along, week to week, my process typically looked something like this:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li&gt;Previous Saturday - identify a potential theme for the &lt;span class=&#34;italic&#34;&gt;following&lt;/span&gt; week&#39;s lesson; ruminate, ponder while finalizing the &lt;span class=&#34;italic&#34;&gt;current&lt;/span&gt; week&#39;s lesson&lt;/li&gt;
+&lt;li&gt;&lt;span class=&#34;italic&#34;&gt;Sunday is stream-day - focus on the day&#39;s lesson. Possibly announce the next week&#39;s lesson if feeling very confident&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;Monday/Tuesday - Do broad research, identify gaps in current knowledge (&lt;span class=&#34;italic&#34;&gt;&#39;wait I didn&#39;t know that was a thing&#39;&lt;/span&gt;), form idea of scope of topic&lt;/li&gt;
+&lt;li&gt;Wednesday - Start prepping slides with specific research, rearranging and re-shaping the lesson order as they form. Announce stream on Facebook/YouTube&lt;/li&gt;
+&lt;li&gt;Thursday/Friday - Finalize slides while starting to build demo circuits, programs.&lt;/li&gt;
+&lt;li&gt;Saturday - Finish building demo circuits, test that they can be built in real time for stream. Start pondering the following week...&lt;/li&gt;
+&lt;li&gt;Sunday - STREAM IT!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;h3 class=&#34;text-3xl&#34;&gt;Taking Breaks and &#39;Bye&#39; Days&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Writing a new 2-3 hour class every week and teaching it online would be exhausting enough, especially for someone a little rusty with teaching. Doing it in the throws of a Pandemic was... well, let&#39;s just say a lot.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I really wanted to keep to the every-single-week schedule as much as I could, both for continuity of those watching and frankly to maintain some structure for myself as the world changed. To that end, I did 20 straight streams from March through the end of July, every single Sunday (well, 1 Monday). Which I felt great about, but I did need to find ways to give myself little breaks in there.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The outlet I came up with was taking what I thought of as &#39;bye weeks;&#39; like when a team is doing so well in a sports tournament that they&#39;re just &#34;assumed to have won&#34; they&#39;re week and advance automatically. I did this by selecting topics that I either knew well enough to be able to teach with minimal preparation, or that I had already taught for some other purpose.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1320 size-large post-img&#34; height=&#34;404&#34; src=&#34;pcbs-1024x575.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The two weeks that exemplified this were &lt;a href=&#34;https://www.youtube.com/watch?v=i7fFieY7mFA&#34;&gt;Week 10: Write Better Code&lt;/a&gt; and &lt;a href=&#34;https://www.youtube.com/watch?v=6_772Sg5K8U&#34;&gt;Week 13: Creating a Printed Circuit Board&lt;/a&gt;. The former was essentially refactoring existing code in an IDE, a straightforward thing to do live. The latter was based on a lesson I had actually given at my previous job to some employees and interns. Both provided a little brain space in weeks where I was otherwise swamped.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Now that I&#39;m back to work at my fulltime job, I&#39;ve elected to go to an every-other-weekend schedule, which gives me a lot more breathing room in terms of ruminating, absorbing, and developing the upcoming lessons. And I think the lessons themselves are turning out better for it. Slamming a lesson together in a week &lt;span class=&#34;italic&#34;&gt;on top of &lt;/span&gt; a 40-hour-a-week job would lead to some substandard teaching, no doubt.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;h3 class=&#34;text-3xl&#34;&gt;Conclusion&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;I don&#39;t think there&#39;s any better way to illuminate the holes in your knowledge of a topic than to try to teach that topic. Once you have to verbalize/write down/illustrate/demo a subject to someone who&#39;s never touched it before, you discover exactly what you&#39;ve always glossed over. What does happen in that edge case? What situations would cause this specific thing to happen? Why this and not that?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Though I wouldn&#39;t have wished for the current state of the world, I&#39;m grateful to have spent so many Sundays in the last five-and-a-half months with other nerds, teaching, learning, and exploring. I hope we can do the same over beer and trail mix real soon.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;italic&#34;&gt;Many of the above links are Amazon Affiliate links; they are also all products I use in my everyday work and think are decent and worth the money.&lt;/span&gt;&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -67,16 +638,15 @@
       <pubDate>Thu, 16 Jul 2020 03:01:51 -0500</pubDate>
       
       <guid>https://jeff.glass/post/demilight-version-0-8-1/</guid>
-      <description>The newest round of Demilight PCBs and 3D-Prints have taken shape as version 0.</description>
-    </item>
-    
-    <item>
-      <title>Reverse Engineering and Replacing an Industrial 7-Segment Display – Part 2, Investigation</title>
-      <link>https://jeff.glass/backup-post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-2-investigation/</link>
-      <pubDate>Mon, 13 Jul 2020 20:51:45 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-2-investigation/</guid>
-      <description>This is Part 2 of an N-part series. See also [Part 1].</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;The newest round of Demilight PCBs and 3D-Prints have taken shape as version 0.8.1. Here&#39;s a brief video overview of the current state of thing:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;{{&amp;lt; youtube _Rrdo-xNau4 &amp;gt;}}&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The biggest change, as I mention in the video, is that I tried out JLCPCB&#39;s surface mount parts assembly service for the firs time. Overall, I&#39;m very satisfied, and I&#39;m delighted to have such a useful shortcut for assembly of these PCBs. The version 0.7 and 0.8 prototype boards, which are essentially the same as 0.8 with their 0603 passives and tqfp ATmega, took between 60 and 90 minutes each to assemble. I wouldn&#39;t say they were an enormous challenge to assemble, they just took time and concentration.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;But now, with JLCPCB assembling the surface mount components, each of the 0.8.1 PCBs took just 3 minutes to finalize assembly, and it&#39;s all easy thru-hole parts. As I&#39;m considering making a little flock of these, or providing them to folks who aren&#39;t as practiced at soldering, finding ways to accelerate the assembly process is a huge boon.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-1228 post-img&#34; height=&#34;405&#34; src=&#34;Assembly-11_1.13.1-1024x576.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, there&#39;s some additional cost to getting the boards machine-assembled. And for ordering just two assembled boards, of course the unit-cost is going to be high. But it drops off quickly with any kind of scale. I just put in an order for some 0.9 PCBs, and getting 10 of them instead of 2 dropped the unit-cost by almost 70%. All the fixed costs - DHL shipping, extended-part-charges from JLCPCB - start to amortize real quick. Most of the components themselves have a 10- or 20-part minimum order, due to part-loss loading and unloading the pick-n-place machines, so the component cost didn&#39;t actually increase all that much except for the expensive IC&#39;s (ATmega, AL8860).&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Looking forward to 0.9.0.&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -85,16 +655,52 @@
       <pubDate>Mon, 13 Jul 2020 20:51:45 -0500</pubDate>
       
       <guid>https://jeff.glass/post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-2-investigation/</guid>
-      <description>This is Part 2 of an N-part series. See also [Part 1].</description>
-    </item>
-    
-    <item>
-      <title>Video: Demilight Version 0.8</title>
-      <link>https://jeff.glass/backup-post/video-demilight-version-0-8/</link>
-      <pubDate>Fri, 26 Jun 2020 16:37:14 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/video-demilight-version-0-8/</guid>
-      <description>It&#39;s been quite awhile since the mini-moving light project (now renamed The Demilight) has been written up on the blog.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;&lt;em&gt;This is Part 2 of an N-part series. See also [&lt;a href=&#34;../../post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-1-research&#34;&gt;Part 1&lt;/a&gt;].&lt;/em&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In part one of this series, we began the process of developing a replacement for the LASCAR EM-4-LED 4-digit industrial 7 segment display. To recap: we mined the display&#39;s datasheet for all it we could, then opened up the device to reveal its component parts and continued to dig into their datasheets until we had a reasonably complete view of the device&#39;s functions. With the research phase complete, it&#39;s time to move into in investigation, and we&#39;ll think about how we might begin to probe an unknown device and its connections more specifically.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;em&gt;Author&#39;s Note: The&lt;/em&gt; post &lt;em&gt;has been sitting fully written in my drafts since before things locked-down in mid-March, but was lacking a couple of illustrative screenshots/pictures of the signal-capture process. Since the pandemic&#39;s effects are still dragging on, I&#39;m pushing this post out now with a couple of substitute images - they are noted below where applicable.&lt;/em&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-799 size-large post-img&#34; height=&#34;669&#34; src=&#34;IMG_9557-scaled-e1583250423936-1024x952.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;A refresher - this is the little display we are attempting to replace.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As you move into the phase of actually powering a device up and testing it, there are a few key parameters to keep in mind. Power and signal voltage levels are key - is this a 5V part, perhaps 3.3V, perhaps 12 or 24 or higher for industrial parts? And even if the device has a high or wide-range power voltage, any I/O ports may be more limited. This is why gathering as much data on-paper first is useful: to avoid letting the magic smoke out of the device-under-test before you get all its juicy secrets out.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Other specs worth keeping in mind are:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li&gt;Voltage level of outputs - can you safely probe all external pins with a TTL logic probe? Do you need to start with an oscilloscope to verify voltage ranges? Or even a multimeter?&lt;/li&gt;
+&lt;li&gt;Output clock rates - does your instrumentation have the bandwidth to reveal useful information.&lt;/li&gt;
+&lt;li&gt;Open-collector vs. current-source outputs - if you&#39;re expecting to see some output (for driving LEDs, relays, etc), do you need to supply external power to see if anything is actually happening?&lt;/li&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;Since we have this info (fairly) confidently in hand, let&#39;s dive into probing our hardware and see what new things we can learn.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Utilizing a Logic Analyzer&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;One thing that many folks pointed out &lt;a href=&#34;https://hackaday.com/2019/12/14/what-does-an-electronics-tinkerers-workbench-need/&#34;&gt;in the comments&lt;/a&gt; of &lt;a href=&#34;https://jeff.glass/2019/12/01/electronics-lab-tools/&#34;&gt;my writeup of useful electronics bench tools&lt;/a&gt; was the lack of a logic analyzer on my list. I confess before this project, I had never used one, nor particularly found a need for one. For many years, my primary electrical hobby was amateur radio (indeed, I had a &lt;a href=&#34;http://kk9jef.wordpress.com&#34;&gt;whole separate blog for ham radio pursuits&lt;/a&gt;) - which, as a side note, is also a wonderful place to jump into learning about electricity in a very hands on way. Working in the handfuls-of-megahertz with analog signals, a &lt;a href=&#34;https://kk9jef.wordpress.com/2015/09/16/hello-world-and-a-scope/&#34;&gt;25MHz analog oscilloscope &lt;/a&gt; was a much more useful tool than something that operated only on digital logic. But for this particular project, while a scope is useful for verifying voltage levels and seeing whether a signal is present or not, the right tool for the job is a &lt;span style=&#34;text-decoration: underline;&#34;&gt;logic analyzer.&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;size-large wp-image-975 post-img&#34; height=&#34;482&#34; src=&#34;old-scope-e1587840938266-1024x686.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;The old analog oscilloscope that got me through years of Ham Radio adventures&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;A logic analyzer is a piece of digital test gear that reads the voltage on two or more input connectors and creates a digital representation of the logic-levels of the voltages present over time. So where a digital oscilloscope records and displays analog voltages over time with some degree of precision, a logic analyzer is only interested as to whether the voltage is above or below a threshold, so as to be a logic high or logic low (typically 0v-12v, 0v-5v, 0-3.3v).&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For talking to some other nerds and receiving some feedback online, it seems like the standout stars in the relatively-low-cost logic analyzer space are the &lt;a href=&#34;https://amzn.to/2S8ryoJ&#34;&gt;offerings from Saleae&lt;/a&gt; and the &lt;a href=&#34;https://amzn.to/2VAhp6y&#34;&gt;Analog Discovery&lt;/a&gt; and &lt;a href=&#34;https://amzn.to/3eTwS9a&#34;&gt;Digital Discovery&lt;/a&gt; from Digilent. All of the above are modules that plug into a computer via USB for their control and display capabilities, so they cannot be used as stand-alone devices in the field. While &lt;a href=&#34;https://amzn.to/2x7aPLd&#34;&gt;some mid-to-high-end oscilloscopes&lt;/a&gt; also have signal-analysis capabilities built in - these are often listed as &#34;mixed signal&#34; oscilloscopes -  those are a bit beyond my current needs at the moment. And in fact, while the Digilent products have had my eye for awhile, as a place to get my feet wet with signal analyzers for this project, I wanted to verify that this would be a useful tool before I committed my department&#39;s funding to a few-hundred-dollar purchase.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;size-full wp-image-974 post-img&#34; height=&#34;472&#34; src=&#34;oscope.png&#34; width=&#34;826&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;A fancy Rigol scope with logic analyzer functions - note the multipin connector under the display.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I ended up with a &lt;a href=&#34;https://amzn.to/3aEAEAa&#34;&gt;$25 8-Channel Sparkfun Logic Analyzer&lt;/a&gt;, which handles 3.3V and 5V signals with a sample rate of us to 24 MHz. This nominally means it can handle digital signals up to about 12 MHz, but in practice, something somewhat lower would be a safer choice. Since the LASCAR display we&#39;re working on has a nominal data rate of 500 KHz, this should be plenty for my purposes.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-972 post-img&#34; height=&#34;400&#34; src=&#34;logicanalyzer.jpg&#34; width=&#34;400&#34;/&gt;&lt;/p&gt;
+The basic 8-channel logic analyzer from Sparkfun
+&lt;p class=&#34;post-p&#34;&gt;The Sparkfun Analyzer seems to essentially be a branded version of the many &lt;a href=&#34;https://amzn.to/3eUJnBI&#34;&gt;inexpensive logic analyzers&lt;/a&gt; floating around Amazon - all of which pretty much will work with the open-source logic analysis software &lt;a href=&#34;https://sigrok.org/wiki/PulseView&#34;&gt;PulseView&lt;/a&gt;, which is itself a graphical frontend for the command line program &lt;a href=&#34;https://sigrok.org/&#34;&gt;Sigrok&lt;/a&gt;. While PulseView doesn&#39;t allow access to all of Sigrok&#39;s many capabilities, its a significantly more approachable way to get started with these devices in my opinion.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt; to compile and install PulseView on Ubuntu · &lt;img alt=&#34;One Transistor&#34; class=&#34;post-img&#34; height=&#34;379&#34; src=&#34;https://4.bp.blogspot.com/-3jojqtnZsQM/Wf7ue9r10tI/AAAAAAAAHxI/POypJ6alOhINsrA2Dgtz8zSmgWsw8zUegCLcBGAs/s1600/pulseview-main-window.png&#34; width=&#34;595&#34;/&gt; Pulseview can capture samples and decode them visually for you.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Sparkfun has already written up a great &lt;a href=&#34;https://learn.sparkfun.com/tutorials/using-the-usb-logic-analyzer-with-sigrok-pulseview/all&#34;&gt;Getting Started with Sigrok, Pulseview, and the Logic Analyzer tutorial&lt;/a&gt;, so I won&#39;t try to duplicate their work here. Suffice to say, after getting the software installed, you attach the ground probe on the analyzer to a ground point on the circuit you&#39;re probing, and attach one or more signal probes to the signal lines you&#39;re like to test. After configuring the sample rate at which you want to capture data points and how many points to capture, you &#34;run&#34; the analyzer, which then then a few seconds to minutes capturing the number of points you selected. After capture, you can select one of a number of &#34;decoders&#34; that attempt to turn the individual high-or-low, one-or-zero datapoints into a structured view of what data contained therein. For example, if you&#39;re probing what you think is a serial UART stream, the UART decoder will give you a view of the data as ASCII characters being transmitted over the UART, which is much easier than looking at pure sample points.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Here&#39;s a look at the data and power lines going to the existing LASCAR display:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;(&lt;em&gt;Getting this picture has been pre-empted by a global pandemic! A picture will be here when I can get back in the building someday.&lt;/em&gt;)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;What a nice set of labels! The presence of the clock and data lines matches with our expectations, since last time we spotted a shift-register built into the brains of the EM-32 display. The shift register will &#34;clock in&#34; or take in one bit of data from the data line each time it transitions, either from low-to-high or high-to-low. So we should expect to see these lines changing in alternation - first, the data line will go low or high to establish the next bit of data, then the clock line will be pulled low or high to tell the shift register to take-in this bit of data.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Or at least, that&#39;s what I would expect, given the schematics of the EM-32 that we were looking at last time. Probing the signals will hopefully allow us to confirm this. So, let&#39;s hook up a the signal analyzer&#39;s ground to the GND wire and channels 1 and 2 of the analyzer to the CLOCK and DATA lines, here&#39;s what we capture:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;]&lt;img alt=&#34;&#34; class=&#34;wp-image-1221 size-large post-img&#34; height=&#34;121&#34; src=&#34;lascar-cap1-1024x172.png&#34; width=&#34;720&#34;/&gt; &lt;em&gt;This is a substitute image of a different capture - the actual image is inaccessible due to pandemic conditions. But the capture would look much like this.&lt;/em&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The first thing we note is that the data rate here is nowhere near the 500KHz rate that the datasheet says we can tolerate - we&#39;re seeing about 40 bits of data at a rate of roughly 1KHz, in bursts about 10 times a second. So we can turn our data capture rate waaaay down from its maximum 24 MHz. Which is great. Applying the SPI decoder to this data (which has a similar clock-and-data-lines structure to what we expect) allows us to see a view of the individual 1&#39;s and 0&#39;s that make up the stream of bits coming from the PLC.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;]&lt;img alt=&#34;&#34; class=&#34;size-full wp-image-1222 post-img&#34; height=&#34;655&#34; src=&#34;refresh-rate.png&#34; width=&#34;804&#34;/&gt; &lt;em&gt;This is a substitute image of a different capture - the actual image is inaccessible due to pandemic conditions. But the capture would look much like this.&lt;/em&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Comparing this bitstream with the timing diagram we saw last time, we thankfully see things lining up pretty well - we can see the initial clock pulse and start data bit, which tells the display to begin expecting data, following by 35 bits of data more. The PLC then pauses for approximately 100ms before sending more data.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-full wp-image-780 post-img&#34; height=&#34;852&#34; src=&#34;timing.png&#34; width=&#34;947&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The two major takeaways from our logic-analyzer work are:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li&gt;The bitstream coming from the PLC is as-expected given what we learned from the datasheet, and&lt;/li&gt;
+&lt;li&gt;Its datarate is at most 1KHz, in bursts about 10 times a second.&lt;/li&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;This will help us develop our testing solution - knowing that we have reasonable data rates means that we don&#39;t need to throw anything particularly fancy at this problems in term of hardware.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -103,16 +709,31 @@
       <pubDate>Fri, 26 Jun 2020 16:37:14 -0500</pubDate>
       
       <guid>https://jeff.glass/post/video-demilight-version-0-8/</guid>
-      <description>It&#39;s been quite awhile since the mini-moving light project (now renamed The Demilight) has been written up on the blog.</description>
-    </item>
-    
-    <item>
-      <title>Stream - Electrics and Electronics Bash - Arduino #1</title>
-      <link>https://jeff.glass/backup-post/stream-electrics-and-electronics-bash-arduino-1/</link>
-      <pubDate>Sat, 21 Mar 2020 18:27:14 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/stream-electrics-and-electronics-bash-arduino-1/</guid>
-      <description>This Sunday evening, March 22nd 2020 at 7pm Central time, I&#39;ll be hosting a livestreaming Introduction to Arduino over on YouTube!</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;It&#39;s been quite awhile since the &lt;a href=&#34;https://jeff.glass/demilight/&#34;&gt;mini-moving light project&lt;/a&gt; (now renamed The Demilight) has been written up on the blog. The project was in hiatus for a few months while dove into the technical challenges of a new job, but as the job isn&#39;t keeping quite as busy at the moment (here in early summer 2020), it&#39;s back on the workbench. I&#39;ve put together a video showcasing the current state of the project, now in &lt;strong&gt;version 0.8:&lt;/strong&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;{{&amp;lt; youtube 4a-9JGK8H4I &amp;gt;}}&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The video does a pretty decent job of capturing the current state of things. So what&#39;s next?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Firstly, the goofs I alluded to in the video that I consider to be &lt;em&gt;must-fix&lt;/em&gt; items before the files are ready for primetime. Theu mostly have to do with the 3D-printed parts - I adjusted the access holes and programming slots from version 0.5 to 0.8, but I didn&#39;t do a great job double-checking everything, and things don&#39;t line up very well. That&#39;ll need another few test prints and some adjustment to alleviate the all the filing that&#39;s currently necessary.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I&#39;ve also been having some issues with mechanical assembly - I&#39;ve been using some &lt;a href=&#34;https://amzn.to/2Vg1pWw&#34;&gt;M2 insert nuts&lt;/a&gt; to hold the case and case-lid together, and to secure the PCB into the case, but that doesn&#39;t seem to be a particularly good system. It&#39;s possibly my nuts and bolts are just really high-tolerance, but they&#39;re constantly cross-threading and not inserting all the way. I think a more robust solution is in order.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The other main error has to do with the footprint for the &lt;a href=&#34;https://www.digikey.com/product-detail/en/recom-power/R-78E5.0-0.5/945-1648-5-ND/2834904&#34;&gt;5V buck-converter&lt;/a&gt; module - somehow, my pin placement is off by .2&#34; on the PCB footprint, which makes the part overlap with the attachment points for the servos unless you bend the voltage-regulator&#39;s pins over. Not insurmountable, but really annoying. That&#39;ll have to get fixed in version 0.9. Once those two most-egregious errors are corrected, though, I think the unit will be decent enough to publish as a beta version.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;post-img&#34; height=&#34;236&#34; src=&#34;https://media.digikey.com/Photos/Recom%20Power%20Inc/MFG_R-78-e%20series.jpg&#34; width=&#34;243&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-image-caption&#34;&gt;It&#39;s a pretty simple part... how did I goof this up?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;There are several more substantial improvements in the pipeline as well. In no particular order:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As I mention in the video, I&#39;m working on a &lt;strong&gt;miniaturized programmer interface&lt;/strong&gt; based on some little &lt;a href=&#34;https://www.digikey.com/product-detail/en/mill-max-manufacturing-corp/0985-0-15-20-71-14-11-0/ED1122-ND/3635123&#34;&gt;0.05&#34;-pitch pogo pins&lt;/a&gt;. The results, so far, have been mixed - I have been able to confirm that the interface is providing gnd/5V to the ATmega328, at least enough that its 16 MHz ceramic resonator is oscillating, but I can&#39;t seem to program the chips in-place. Further experiments will be necessary.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-1095 post-img&#34; height=&#34;194&#34; src=&#34;Pogo-Pins-1024x718.jpg&#34; width=&#34;276&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Some iterations of the Demilight have incorporated a &lt;strong&gt;heatsink &lt;/strong&gt;to help manage the heat-output from the LED emitter chips. To be honest, I&#39;m not sure how necessary it is - I would love to set up some tests with the unit running at its full 1 Amp current and see just how hot things get. Perhaps the first test would be in free-air, then inside the case in multiple orientations. I know from &lt;a href=&#34;https://www.youtube.com/watch?v=sYT-xtOL4rU&amp;amp;t=299s&#34;&gt;some tests I did on a livestream last summer&lt;/a&gt; that with enough heatsinking the LED stars can handle up to about 5 Amps, but they dump a huge amount of heat at the point.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1118 post-img&#34; height=&#34;256&#34; src=&#34;heatsink.png&#34; width=&#34;341&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-image-caption&#34;&gt;If the heatsink comes back, should it still be in candy-apple red?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;strong&gt;RGB &lt;/strong&gt;or &lt;strong&gt;RGBW&lt;/strong&gt; dimming capacity would be really neat - as spiffy as the pure-white versions are, there&#39;s something about color-changing light that feels like it would take this project to the next level. I would need to free up some more PCB space, and possibly move from a single-channel driver to a 3 or 4 channel driver, but finding those in the ~1A current capacity range seems a little tricky.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;There are also a couple of purely aesthetic things which could get bumped up to something better. I&#39;ve ordered some &lt;a href=&#34;https://amzn.to/31g67Yj&#34;&gt;1/4&#34; white wire sleeving&lt;/a&gt; to take the place of the gaff tape covering the wires that run from head to base. And I need to invest a little time dialing in my 3D printer - after &lt;a href=&#34;https://jeff.glass/2019/03/09/3d-printing-in-the-home-workshop/&#34;&gt;3.5 years of printing,&lt;/a&gt; it&#39;s starting to show its age a little bit, and a little extra tightening and lubrication wouldn&#39;t be a bad idea.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So many of my projects during quarantine have focused on building my digital communication mediums - building out this video feels very much like a continuation of that skill-building. The &lt;a href=&#34;https://jeff.glass/electronics-bash/&#34;&gt;weekly Arduino/Electronics classes&lt;/a&gt; I&#39;ve been teaching for 15 weeks now have been a serious crash course in live digital video. That learning process deserves a write-up of it&#39;s own, but if you compare the following two frames from &lt;a href=&#34;https://www.youtube.com/watch?v=rRVTTIWVcXA&amp;amp;t&#34;&gt;Episode 0 (testing)&lt;/a&gt; and &lt;a href=&#34;https://www.youtube.com/watch?v=QQYhC7xHG_s&#34;&gt;Episode 14 (Wireless Signals)&lt;/a&gt;, I think the improvements are pretty clear:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1116 post-img&#34; height=&#34;253&#34; src=&#34;EarlySnap-300x168.png&#34; width=&#34;450&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;Epsiode one was.... pretty rough. The audio is really crunchy too - turns out I had two microphones on (lav and webcam) and they did unkind things together.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-1117 post-img&#34; height=&#34;253&#34; src=&#34;latesnip-300x168.png&#34; width=&#34;450&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;We&#39;ve got things pretty well dialed in by now.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;It&#39;s been a joy to build some more digital video skills putting this video together, like putting together a basic script, recording a voiceover, learning the editting, effects, and color-grading processes... it&#39;s been both fascinating and time-consuming. The video definitely has some rough edges, but I&#39;m thinking of it as good-enough, and I&#39;m excited to take what I&#39;ve learned from this early creation and apply it to future videos. Much like the tiny-light itself, it&#39;s good to just make a thing, anything, a small thing, and iterate from there.&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -121,16 +742,17 @@
       <pubDate>Sat, 21 Mar 2020 18:27:14 -0500</pubDate>
       
       <guid>https://jeff.glass/post/stream-electrics-and-electronics-bash-arduino-1/</guid>
-      <description>This Sunday evening, March 22nd 2020 at 7pm Central time, I&#39;ll be hosting a livestreaming Introduction to Arduino over on YouTube!</description>
-    </item>
-    
-    <item>
-      <title>Reverse Engineering and Replacing an Industrial 7-Segment Display - Part 1, Research</title>
-      <link>https://jeff.glass/backup-post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-1-research/</link>
-      <pubDate>Wed, 04 Mar 2020 00:05:00 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-1-research/</guid>
-      <description>Building one-off hardware is one part inventing, one part dissecting, one part scrounging.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;This Sunday evening, March 22nd 2020 at 7pm Central time, I&#39;ll be hosting a &lt;a href=&#34;https://youtu.be/H7LOfnseQ7o&#34;&gt;livestreaming Introduction to Arduino over on YouTube&lt;/a&gt;!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;We&#39;ll start from scratch installing the Arduino IDE software, then moving on to programming fundamentals, wiring to the Arduino and using a breadboard, and more. We should cover enough ground to be useful to absolute beginners and pro&#39;s alike.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Grab a cold one and come join me live as we make stuff and learn things. Bring your projects, bring your questions, bring your ideas for what we should learn or talk about. Let&#39;s hang and talk about something other than hand washing. See you there.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This page will be updated with links and resources following the stream.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/H7LOfnseQ7o&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -139,16 +761,64 @@
       <pubDate>Wed, 04 Mar 2020 00:05:00 -0500</pubDate>
       
       <guid>https://jeff.glass/post/reverse-engineering-and-replacing-an-industrial-7-segment-display-part-1-research/</guid>
-      <description>Building one-off hardware is one part inventing, one part dissecting, one part scrounging.</description>
-    </item>
-    
-    <item>
-      <title>Arduino DMX &#39;Light Board&#39;, Mini Moving Light Hanging Hardware</title>
-      <link>https://jeff.glass/backup-post/arduino-dmx-light-board-mini-moving-light-hanging-hardware/</link>
-      <pubDate>Wed, 19 Jun 2019 03:15:08 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/arduino-dmx-light-board-mini-moving-light-hanging-hardware/</guid>
-      <description>Over the past week, I got to the point with the mini moving light that I needed some way to consistently pump DMX into my prototypes to test their functionality.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;Building one-off hardware is one part inventing, one part dissecting, one part scrounging. When we try to hit that magic mixture of good, fast, &lt;em&gt;and&lt;/em&gt; cheap, so often we must rely on prebuilt modules - if we&#39;re trying to build a widget that gets us from zero to 100, it may only be financially/temporarily/technologically reasonable if someone already makes a module that gets us from 0 to 80. Utilizing economies of scale of already-developed parts can bring a one-off project from the realm of fantasy into feasibility.  Often, the solution is to develop a chain of off-the-shelf components that can fulfill the end goal.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;But all components have a service life, and a manufacturing lifetime. And when your part goes out of production and then your spares-bin runs dry, sometimes keeping your machine running requires some deeper problem solving. When you work in the public-facing technology sphere (theatre, museum work, retail displays, etc), a lot of the solutions are literally one-of-a-kind, even if they&#39;re constructed from commercial parts.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;I recently had the need to replace a very specific module in some equipment. While it didn&#39;t end up being the most high-tech/high speed/highfalutin bit of technology, it presents a good opportunity to talk through how one can approach an unknown part, come to understand its workings, and develop a replacement. So in this N-part series, we&#39;ll look at the process of researching, developing, and implementing a custom one-off solution to a failed part in a unique piece of gear.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-799 size-large post-img&#34; height=&#34;669&#34; src=&#34;IMG_9557-scaled-e1583250423936-1024x952.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;The &lt;a href=&#34;https://www.alliedelec.com/m/d/535531da0cc330e5c959e59360401632.pdf&#34;&gt;Lascar EM32-4-LED&lt;/a&gt; is a four-digit seven-segment panel mount LED display meant for general-purpose data display. Its small digit size (.39&#34; tall), machined aluminum housing, small footprint (32.5mm diameter punchout) and NEMA 4X/IP67 made it a compact choice for anyone needing to display a single value with 4 digits of precision. It also had the ability to drive four external LEDs, for additional status or process indicators.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;Lascar Electronics EM32-4 LED&#34; class=&#34;aligncenter post-img&#34; height=&#34;400&#34; src=&#34;https://assets.alliedelec.com/f_auto,c_scale,w_400/70101381.jpg&#34; width=&#34;400&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;A piece of equipment I&#39;ve been working on recently had just such a LASCAR display installed a few years back to serve as a timer. I&#39;&#39;m going to have to be a little vague about the specifics of the equipment itself, but since this post is focused on technical process and not the piece itself, I think I can safely share enough details for the following to make sense:&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;The piece is an interactive object that triggers some actions and servos, demonstrates a physical phenomenon, and then takes about 25 seconds to cool back down before can be used again. The user is presented with a &lt;a href=&#34;https://www.bulgin.com/us/products/stainless-steel-vandal-resistant-illuminated-ip66-push-button-switch-mpi001-mpi002-series-22mm-diameter-group.html&#34;&gt;green illuminated button&lt;/a&gt; to activate the system - when the system is in active or cooling down, the illuminated button turns red. But because it&#39;s not entirely clear from the action of the device alone when it will be cool enough for use, a countdown timer (two digits) is displayed on the EM32 display, counting the number of seconds until we&#39;re good to run again.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;Sadly, this particular EM32 display died shortly after LASCAR decided the product hit its End of Life. What&#39;s more, I&#39;m currently without the ability to modify the programming of the PLC that&#39;s driving the whole shebang. In order to maintain the functionality of the piece, it became necessary to build a device that would ingest the existing signals being sent by the PLC, interpret them, and drive a newly crafted 7-segment display of some kind.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-800 post-img&#34; height=&#34;600&#34; src=&#34;IMG_9967-scaled-e1583254082764-1024x853.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;&lt;a href=&#34;https://www.alliedelec.com/m/d/535531da0cc330e5c959e59360401632.pdf&#34;&gt;The &#39;datasheet&#39; for the EM32-4&lt;/a&gt; is a paltry 2 pages long. Presumably there was additional documentation provided to those who were using the device, but since it&#39;s now EOL, that documentation seems to be unobtanium. But the existing pair of pages does contain some useful information.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;We&#39;ll start at the very beginning (a very good place to start): the &lt;strong&gt;opening&lt;/strong&gt; &lt;strong&gt;prose&lt;/strong&gt; &lt;strong&gt;paragraph&lt;/strong&gt;:&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-762 size-large post-img&#34; height=&#34;199&#34; src=&#34;Intro-1024x283.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;This is where we find a high-level overview of the part, it&#39;s intended purpose, and (&lt;em&gt;sometimes&lt;/em&gt;) explanations of the differences between any variants of the part. Say, for example, a given part is made in a standard and a mil-spec version, or a normal and a slew-rate limited version, a manufacturer will often encompass them in a single datasheet. It&#39;s important to identify specifically what part you have, so you can characterize it accurately. &lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;In our case, the EM32-4 is unique enough that there are no major variants. The paragraph mostly tells us what we already know - it&#39;s a 4-digit, 3 decimal point display in a metal bezel. But it does call out the &#34;optional external LEDs.&#34; While it&#39;s unclear at this point exactly what this means, it&#39;s useful to make note of these surprises early on, as they&#39;ll often explain a what-the-heck-is-that moment late in the datasheet.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;Moving on then to the next useful block in just about any datasheet; the electrical specifications. This is where you&#39;ll find input-voltage ranges for power and signals, output voltages and timing, and other device-specific characteristics (transistor beta and voltage spreads, op-amp gain and slew rate, power ratings, etc). If I was doing a &lt;a href=&#34;http://www.nick.com.au/doubledare/videos/double-dare-104-physical-challenge-balloon/&#34;&gt;Double Dare Physical Challenge&lt;/a&gt; and had to utilize a part with only one table of its datasheet available, I&#39;d take the electrical specs chart 9 out of 10 times.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-763 size-large post-img&#34; height=&#34;177&#34; src=&#34;elecspec-1024x252.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;In our case, there&#39;s only 6 lines, but 6 important lines they are. We learn that this is a 5V part, but can run at up to 9V so we can&#39;t assume we&#39;ll have 5V power available. Nominal power  usage is ~20mA, so the power available on existing supply lines may be limited. The operating and storage temperature ranges are typical. V&lt;sub&gt;LED&lt;/sub&gt; is a a bit confusing - does this refer to the display itself, in which case we have no real purpose for this voltage? Or perhaps it refers to the voltage available for the external LEDs. &lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;The final line is promising - that the typical clock input frequency is 500KHz. This is the first we&#39;ve seen any information about how this device receives communication from a controller. But now we know it&#39;s some kind of clocked input (perhaps sometime like SPI?), and that its possible frequency is not unreasonable from something we might interpret with off-the-shelf hardware. Not that 500KHz is a stroll in the park, but it&#39;s not in the many-megahertz range, say.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;The last really useful part of the datasheet is the Functional Block Diagram. This block shows a symbolic representation of what&#39;s happening inside the device, as an aid to the user in visualizing what&#39;s happening on the interior and how we need to interface with it. You really only see this with integrated circuits or other modules (the functional bock diagram of a transistor would be... just a transistor).&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;To highlight the purpose of the block diagram, let&#39;s do a quick comparison between two drawings on another part: the venerable &lt;a href=&#34;https://www.youtube.com/watch?v=fLaexx-NMj8&#34;&gt;555 Timer IC.&lt;/a&gt; Its datasheet sports both a schematic diagram and a functional diagram; here are the two side-by-side:&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-766 size-full post-img&#34; height=&#34;745&#34; src=&#34;555func.png&#34; width=&#34;778&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;This demonstrates pretty clearly the distinct purposes of the schematic diagram versus the functional one. The functional diagram is there to give users a high-level understanding of how the device functions, where inputs and outputs attach, and what the essential parts of the device are. The schematic diagram is there for those who need to really drill into exactly how the chip is built, because of some precise technical reason. When I&#39;m driving a car, I need to know whether the transmission is manual or automatic, two-wheel vs four wheel, and so on - a functional understanding is enough. A mechanic needs a schematic showing the various linkages and gears of my transmission to diagnose and repair issues; holding that level of information in my head all the time would get in the way of the business of driving around.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;With that diversion hopefully making clear the purpose of the functional block diagram, let&#39;s check out the one for the EM32-4.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-761 size-full post-img&#34; height=&#34;699&#34; src=&#34;block-diagram.png&#34; width=&#34;850&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;There&#39;s some really good info here! Let&#39;s start with the external connections:&lt;/p&gt;&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li style=&#34;text-align: justify;&#34;&gt;We could have guessed V+ and 0V are supply voltage and ground, but this confirms it.&lt;/li&gt;
+&lt;li style=&#34;text-align: justify;&#34;&gt;The 35-bit &lt;a href=&#34;https://en.wikipedia.org/wiki/Shift_register&#34;&gt;shift register&lt;/a&gt; is intriguing, and illuminates the purpose of the D (Data) and Ck (Clock) terminals. There&#39;s also an Ē (enable) pin for the data line which is active low (indicated by the bar over the pin name, for &#34;not&#34;). &lt;/li&gt;
+&lt;li style=&#34;text-align: justify;&#34;&gt;Since we don&#39;t have direct control over the latches or buffer layer of the shift register, it seems that data will be shown as soon as its clocked in.&lt;/li&gt;
+&lt;li&gt;There&#39;s a weird hanging &lt;a href=&#34;https://en.wikipedia.org/wiki/Inverter_(logic_gate)&#34;&gt;inverter&lt;/a&gt; on the left side of the diagram attached to the output buffers, as if there was some kind of external buffer control possible at some point. How odd.&lt;/li&gt;
+&lt;li style=&#34;text-align: justify;&#34;&gt;It seems that the  V&lt;sub&gt;L&lt;/sub&gt; pin is on the downstream side from the voltage regulator, so it probably puts out the 3 volts listed under electrical specifications above.
+&lt;li&gt;This probably means that L1 thru L4 are &lt;a href=&#34;https://en.wikipedia.org/wiki/Open_collector#:~:text=&#34;&gt;open-collector outputs&lt;/a&gt;, so we have a sense of how we might use the part to drive the external LEDs.&lt;/li&gt;
+&lt;li style=&#34;text-align: justify;&#34;&gt;Finally, there&#39;s a Reset pin for soft-resetting the data displayed - this would be useful if the end product was configured so the displayed retained power when the controller turned off - the controller could simply reset the display (or many displays in parallel) to ensure that no data was present for a fresh start.&lt;/li&gt;
+&lt;/li&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;One of the starting placing for replacing this display was the possibility that there might be some driver circuitry driving a&lt;a href=&#34;https://www.adafruit.com/product/865&#34;&gt; generic 7-segment display&lt;/a&gt;. If the display itself was still good, perhaps we can simply replace the driver and have a visually identical display. Those hopes were dashed, however, when I opened up the EM32-4 LED to find...&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-776 post-img&#34; height=&#34;540&#34; src=&#34;IMG_9565-1024x768.jpg&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;An &lt;a href=&#34;http://www.farnell.com/datasheets/83212.pdf&#34;&gt;OEM 4-LED&lt;/a&gt; - the power behind the throne - it&#39;s the same product, right down to the block diagram, but in a DIP-style package. The EM32-4, it turns out, is the OEM-4 with a nice aluminum case and terminal blocks. And the back of the OEM-4 is epoxy-blobbed together, so even if we were to break into the thing, there&#39;s a good chance everything is wirebonded all the way to nowhere and back. Reusing the display on this thing is a non-starter.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;All is not in vain, however - the OEM-4&#39;s datasheet is a whopping &lt;em&gt;four&lt;/em&gt; pages to the EM32&#39;s paltry two. The first two pages are essentially identical (which makes sense, since one &lt;em&gt;is&lt;/em&gt; the other in a very real way), but the two additional pages in the OEM-4&#39;s datasheet have four additional juicy diagrams. Starting with a timing diagram:&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-780 post-img&#34; height=&#34;648&#34; src=&#34;timing.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;We can now see in much more detail that, yes indeed, the display is based around an internal shift register architecture, with bits being clocked in and held in the device. We can see that there&#39;s a start bit (&#34;1&#34;) and the 35 data bits we saw in the EM32&#39;s datasheet, so we&#39;ll need to clock 36 physical bits into the device, whereupon it will automatically load the data (presumably into the data latches and output buffer). Then in 30 ns it will automatically reset and be ready The clock timing, which is listed as 500 Khz nominal, can in theory be pushed to 2 MHz if the 500 ns cycle time (250 ns + 250 ns) can be believed. (&lt;em&gt;Not that we&#39;re hoping it&#39;s that high&lt;/em&gt;). We can also get some detail about the external reset signals and the data input timing.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;Remember, all this sleuthing is with a goal -  not of driving an EM32, but of creating a display controller which &lt;em&gt;takes the place of &lt;/em&gt;an EM32 in a specific installation. Any details we can deduce from the datasheets will help us narrow down where we begin with our investigation of the controller itself.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-full wp-image-777 post-img&#34; height=&#34;511&#34; src=&#34;applications.png&#34; width=&#34;960&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;The &#34;applications&#34; diagram gives us a few pointers - not all are useful to our goal, but are interesting nonetheless. As we guessed before, the LED1 through LED4 pins are open collector drivers - but unlike our guess, we actually need to provide the +3 volts for that control from an external regulator, not from the V&lt;sub&gt;LED&lt;/sub&gt; pin. And the typical current should be 2.5mA per LED, so there&#39;s aren&#39;t high-current drivers in any sense. We can also see that the OEM-4 module has an option for external brightness control via a 50kΩ potentiometer, but we don&#39;t have the ability to access those pins on the EM32 unit.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;There&#39;s also a sneaky note at the bottom of the diagram that there is a &#39;special version&#39; OEM-4 LED with a built-in 3V regulator and brightness control. I wonder which version we have?&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-778 post-img&#34; height=&#34;573&#34; src=&#34;ps035.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;At first blush the circuit diagram appears to tell us what we already know - there&#39;s a &lt;a href=&#34;https://www.digchip.com/datasheets/parts/datasheet/922/PS035-pdf.php&#34;&gt;shift-register LED driver&lt;/a&gt; inside this thing that&#39;s taking clocked data in and driving LEDs on the downstream side. But there are actually two key things to note here - while I had assumed the V&lt;sub&gt;LED&lt;/sub&gt; pin was only for the external LED&#39;s, it&#39;s actually the anode connection for all the segments of the display! This means that connecting it isn&#39;t optional for driving external LEDs, it&#39;s mandatory if we want the OEM-4 to work. Looking back at the block diagram from the EM32, we can understand the purpose of the built-in regulator shown there.&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-784 size-full post-img&#34; height=&#34;282&#34; src=&#34;regulator.png&#34; width=&#34;814&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;The EM32&#39;s built-in 3V regulator on the EM32.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;The second key thing we learn from the circuit diagram is &lt;em&gt;which bits control which segments.&lt;/em&gt; But it&#39;s made even more clear in the final diagram from the OEM-4 datasheet: the serial data input sequence:&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter size-large wp-image-779 post-img&#34; height=&#34;326&#34; src=&#34;serial-data.png&#34; width=&#34;720&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;p class=&#34;post-p&#34; style=&#34;text-align: justify;&#34;&gt;Now we don&#39;t have to try to deducing the bit-order from what we think the data stream is displaying, we can build that data into our programming from the beginning. Thank goodness, since I&#39;d never actually seen this display in action before I undertook the task to replace it!&lt;/p&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;hr class=&#34;wp-block-separator&#34;/&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is about as deep as the research rabbit-hole goes, it seems. We&#39;ve found the datasheet for the EM32 module itself, the OEM-4 module inside it, and the PS035 inside that.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In the next post, we&#39;ll start probing the signals coming from the controller, building a version of the display in software, and testing some theories about how the display operates.&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -157,16 +827,27 @@
       <pubDate>Wed, 19 Jun 2019 03:15:08 -0500</pubDate>
       
       <guid>https://jeff.glass/post/arduino-dmx-light-board-mini-moving-light-hanging-hardware/</guid>
-      <description>Over the past week, I got to the point with the mini moving light that I needed some way to consistently pump DMX into my prototypes to test their functionality.</description>
-    </item>
-    
-    <item>
-      <title>DMX Mini Moving Light First Assembly - Live Stream</title>
-      <link>https://jeff.glass/backup-post/dmx-mini-moving-light-first-assembly-live-stream/</link>
-      <pubDate>Wed, 29 May 2019 01:47:48 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/dmx-mini-moving-light-first-assembly-live-stream/</guid>
-      <description>With the shell 3D-printed and the PCB assembled, I went ahead and put together my first &#34;</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Over the past week, I got to the point with the mini moving light that I needed some way to consistently pump DMX into my prototypes to test their functionality. Thankfully, the first set of PCBs I built for this project function as both DMX receivers and transmitters, so whipping together a basic DMX controller only took about 20 minutes.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So here it is: my tiny DMX controlled &#34;light board&#34;:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-469 post-img&#34; height=&#34;281&#34; src=&#34;IMG_7845-e1560912415251-1024x768.jpg&#34; width=&#34;375&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Not much to look at, really. It&#39;s just the DMX Control Shield I build earlier, with its Arduino Pro Mini, and 3 potentiometers from the junk box. The ends of each pot are tied to +5V and ground, and the wipers are tied to three analog pins. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Originally, I had the Arduino just reading the straight value from the analog pins, mapping those 10-bit (0 to 1023) values from the ADC to 8 bit (0 to 255) values suitable for DMX, and shoving those out as DMX addresses 1,2, and 3 as fast as possible. But I found that some inconsistency in the analog readings caused the servos and LED to twitch and flicker noticeably. So I modified the code to read the values from the pots every 20 milliseconds and average the last 10 readings when outputting. The output values calmed right down.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The result is a reasonably stable controller, and plenty to test the mini moving-light with:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;{{&amp;lt; youtube &#34;iKoxd065b-U&#34; &amp;gt;}}&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;I also made some specific improvements to the physical design of the light, including:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;Lengthening the body to accommodate the Carclo optic and heatsink&lt;/li&gt;&lt;li&gt;Adding vents to the body for heat-removal&lt;/li&gt;&lt;li&gt;Including some new wire-routing holes in the base and widening others for improved cable routing.&lt;/li&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;I also designed and printed some (really adorable) 1&#34; triangle truss and some hanging brackets to mount this thing on. Here&#39;s the moment from my Sunday night livestream where I hung the light on its truss for the first time:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;{{&amp;lt; youtube &#34;sYT-xtOL4rU&#34; &amp;gt;}}&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;Just today, I got in another couple orders from DigiKey, and my latest batch of PCBs from JLCPCB should arrive tomorrow. The notable improvements to the PCB and parts include:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;Separating the Pan and Tilt servo pads (doh!)&lt;/li&gt;&lt;li&gt;Switching to a stout-er 5V regulator&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;I also ordered a few &lt;a href=&#34;https://www.digikey.com/product-detail/en/cui-inc/VX7805-1000/102-4253-ND/7350292&#34;&gt;VX7805-1000&#39;s&lt;/a&gt; to play with. They&#39;re a self-contained, fixed-output buck converter that&#39;s meant to be a drop-in replacement for a 7805 linear regulator. Neat part if it works, and not horribly expensive.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;Switching to an inductor spec&#39;d for 1A forward current instead of 500mA.&lt;/li&gt;&lt;li&gt;Switching to a schottky diode rated for 30V instead of 20V.&lt;/li&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;Assuming this assembly goes well, I hope to build two or three of this version (which I&#39;m calling version 0.4) and set them up for a little DMX-controlled dance party. Here&#39;s hoping!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -175,16 +856,20 @@
       <pubDate>Wed, 29 May 2019 01:47:48 -0500</pubDate>
       
       <guid>https://jeff.glass/post/dmx-mini-moving-light-first-assembly-live-stream/</guid>
-      <description>With the shell 3D-printed and the PCB assembled, I went ahead and put together my first &#34;</description>
-    </item>
-    
-    <item>
-      <title>DMX Mini Moving Light Shield V0.3</title>
-      <link>https://jeff.glass/backup-post/dmx-mini-moving-light-shield-v0.3/</link>
-      <pubDate>Fri, 24 May 2019 03:23:46 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/dmx-mini-moving-light-shield-v0.3/</guid>
-      <description>As I hinted to in my original post about the Arduino Pro Mini DMX Shield, and then talked some about in my PCB Assembly Livestream, the latest version of my DMX shield is geared toward driving in miniature moving light.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;With the shell 3D-printed and the PCB assembled, I went ahead and put together my first &#34;completed&#34; mini-moving light, live on camera:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/lroMq1nJ0Ds&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;It went fairly well - everything mostly worked and nothing caught fire!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;There are a few mechanical and electrical takeaways for the next version, including:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;Mechanical:&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;Ennlarge the hole for LED wires in the lower case&lt;/li&gt;&lt;li&gt;Make a brief instruction manual for myself of what needs to be assembled/installed/solder in what order&lt;/li&gt;&lt;li&gt;Hole for program/enable switch access&lt;/li&gt;&lt;li&gt;Fix tolerances on the tilt-servo/yoke interface&lt;/li&gt;&lt;li&gt;Lengthen the body to accommodate a heatsink for the LED star&lt;/li&gt;&lt;li&gt;Figure out mounting/hanging hardware&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;Electrical:&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;Increase the spacing between Pan and Tilt Servo pads&lt;/li&gt;&lt;li&gt;Order higher-current 5V regulator (1.5A 7805)&lt;/li&gt;&lt;li&gt;Select a new inductor for up to 1A of current&lt;/li&gt;&lt;li&gt;Select a new schottky diode for up to 24V&lt;/li&gt;&lt;li&gt;Combine the transmit/receive control lines onto a single pin of the Arduino.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;But all in all, for a first assembly, even tripping over a couple of silly mistakes on my part, things went pretty well. Onward to V0.4.&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -193,16 +878,44 @@
       <pubDate>Fri, 24 May 2019 03:23:46 -0500</pubDate>
       
       <guid>https://jeff.glass/post/dmx-mini-moving-light-shield-v0.3/</guid>
-      <description>As I hinted to in my original post about the Arduino Pro Mini DMX Shield, and then talked some about in my PCB Assembly Livestream, the latest version of my DMX shield is geared toward driving in miniature moving light.</description>
-    </item>
-    
-    <item>
-      <title>DMX Mini Mover Shield PCB Assembly Stream</title>
-      <link>https://jeff.glass/backup-post/dmx-mini-mover-shield-pcb-assembly-stream/</link>
-      <pubDate>Wed, 22 May 2019 14:44:40 -0500</pubDate>
-      
-      <guid>https://jeff.glass/backup-post/dmx-mini-mover-shield-pcb-assembly-stream/</guid>
-      <description>Last night, as I started to assemble V0.3 of my DMX Mini-Mover Shield, I thought it might be fun to switch on my webcam and stream the assembly live to the World Wide Web.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;As I hinted to in my original post about the &lt;a href=&#34;https://jeff.glass/2019/05/20/arduino-pro-mini-dmx-shield/&#34;&gt;Arduino Pro Mini DMX Shield&lt;/a&gt;, and then talked some about in my &lt;a href=&#34;https://jeff.glass/2019/05/22/dmx-mini-mover-shield-pcb-assembly-stream/&#34;&gt;PCB Assembly Livestream&lt;/a&gt;, the latest version of my DMX shield is geared toward driving in miniature moving light. This means that, in addition to being able to receive DMX, the Arduino driving the device will need to be able to drive a couple of servos and dim a relatively high power LED. There are many way of skinning both of those cats, so let&#39;s look at the solutions that are present in V0.3 of the DMX shield.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-397 post-img&#34; height=&#34;310&#34; src=&#34;IMG_7277-1024x768.jpg&#34; width=&#34;413&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Servo Control
+&lt;p class=&#34;post-p&#34;&gt;Of LED dimming and Servo control, the latter is the easier problem to solve. While there are &lt;a href=&#34;https://www.digikey.com/products/en/integrated-circuits-ics/pmic-motor-drivers-controllers/744?k=&amp;amp;pkeyword=&amp;amp;sv=0&amp;amp;pv1664=28&amp;amp;pv1664=10&amp;amp;pv1664=2&amp;amp;sf=0&amp;amp;FV=ffe002e8&amp;amp;quantity=&amp;amp;ColumnSort=0&amp;amp;page=1&amp;amp;stock=1&amp;amp;pageSize=25&#34;&gt;dedicated servo-driving IC&#39;s&lt;/a&gt;, and &lt;a href=&#34;https://www.digikey.com/products/en/motors-solenoids-driver-boards-modules/motor-driver-boards-modules/181?k=servo&amp;amp;k=&amp;amp;pkeyword=servo&amp;amp;sv=0&amp;amp;pv1987=9&amp;amp;sf=0&amp;amp;FV=ffe000b5&amp;amp;quantity=&amp;amp;ColumnSort=0&amp;amp;page=1&amp;amp;pageSize=25&#34;&gt;modules&lt;/a&gt;, almost any microcontroller, including the ATMEGA238/Arduino can control a hobby servo in a straightforward way using minimal additional hardware.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;A typical hobby servo needs only three wires running to it - +5 for power, Ground, and a control line. The control line carries the position data for the servo in the form of pulse width modulation. The servo expects to see a pulse every 20 milliseconds. A pulse of 1.5 ms corresponds to the center (90°) position of the servo. A 1 ms pulse rotates all the way in one direction (0°) and a 2 ms pulse rotates fully the other direction (180°). There is a standard&lt;a href=&#34;https://www.arduino.cc/en/Reference/Servo&#34;&gt; Arduino Servo Library&lt;/a&gt; that translates degrees inputted into the appropriate duration Servo pulses.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-409 post-img&#34; src=&#34;Sinais_controle_servomotor.jpg&#34;/&gt;&lt;/figure&gt;&lt;p class=&#34;post-img-caption&#34;&gt;Image Credit: Wikimedia Member Hforesti, CC-SA-4.0&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The only additional hardware present on the V0.3 board for Servo control is, therefore, a bulkier &lt;a href=&#34;https://www.digikey.com/product-detail/en/stmicroelectronics/L7805CV/497-1443-5-ND/585964&#34;&gt;5V regulator&lt;/a&gt;. The 5V regulator on an Arduino Pro Mini isn&#39;t particularly stout to begin with, and I&#39;ve had issues on previous projects with &#34;off brand&#34; Pro Minis having even less 5V oomph than that. So there&#39;s a pair of DC input pads and a TO-220 packaged 7805 to provide a healthy amount of current for the servos.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;LED Dimming
+&lt;p class=&#34;post-p&#34;&gt;The LED dimming half of this project has a wider solution space than servo control. The typical solution is MOSFET dimming. A FET is switched on and off rapidly, with a variable duty cycle to control brightness. This is the solution that commercial &lt;a href=&#34;https://www.amazon.com/Channel-Controller-Smoother-Indicator-Function/dp/B00Q1N1NVK/ref=sr_1_1_sspa?keywords=led+decoder&amp;amp;qid=1558576077&amp;amp;s=gateway&amp;amp;sr=8-1-spons&amp;amp;psc=1&#34;&gt;DMX LED decoders&lt;/a&gt; use, with a bank of 3A-5A fets, one per driven channel. It&#39;s simple and inexpensive.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-410 post-img&#34; src=&#34;dmxled.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;The problem is heat. MOSFETS with super-low on-DC resistances are expensive, and those with higher DC resistances create more heat. There&#39;s always a balance being struck between cost and current carrying capacity. Which is why most commercial DMX led dimmers sit in &lt;a href=&#34;https://www.amazon.com/Channel-Controller-Smoother-Indicator-Function/dp/B01CCBG1SO/ref=sr_1_7?keywords=dmx+driver&amp;amp;qid=1558576476&amp;amp;s=gateway&amp;amp;sr=8-7&#34;&gt;a sweet spot between 3A and 5A&lt;/a&gt;. And all of them come in metal cases, sometimes mounted to large heatsinks, to help with heat dissipation. Less than ideal for what is ultimately meant to be a 3D-printed moving light made of thermoplastic.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The other problem is overcurrent regulation. For typical, inexpensive 3A per channel DMX LED driver, there&#39;s nothing to protect the FETs if you load up a channel with, say, 5A of load, there&#39;s nothing in the drivers to prevent the FETs heating up to their failure point. Or worse. See, for example, this example from a local theater:&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-2&#34;&gt;
+&lt;img alt=&#34;&#34; class=&#34;w-auto wp-image-408 post-img&#34; data-id=&#34;408&#34; data-link=&#34;https://jeff.glass/?attachment_id=408#main&#34; src=&#34;IMG_5124-1024x768.jpeg&#34;/&gt;
+&lt;img alt=&#34;&#34; class=&#34;w-auto wp-image-407 post-img&#34; data-id=&#34;407&#34; data-link=&#34;https://jeff.glass/?attachment_id=407#main&#34; src=&#34;IMG_7222-e1558576797290-1024x768.jpg&#34;/&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;After some investigation, it turned out that there was a wiring error causing a dead-short across one of the channels. Which subsequently burst into flames. No kidding. The Stage Manager reported seeing a cloud of smoke roll out of the vom, which it turned out was discharge from the fire extinguisher the crew was using. Yikes!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;With a controlled environment and a defined load, an overcurrent load is slightly less of a concern, but it seemed like there must be a more elegant solution to both the heat and overcurrent issues.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The solution I&#39;m currently trying is the the &lt;a href=&#34;https://www.diodes.com/assets/Datasheets/AL8860.pdf&#34;&gt;AL8860 Buck LED Driver&lt;/a&gt;. It is essentially a DC-DC step-down converter which derives the average current through its load from a SET resistor between a couple of its pins. It has an input voltage from 4.5V to 40V, and in TSOT-25 form factor a maximum current of 1A. A TTL PWM signal applied to its CTRL pin brings the average current down from the maximum SET current to between 0 and 100% of maximum, depending on duty cycle.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-411 post-img&#34; src=&#34;AL8860_circuit.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;While the IC itself ultimately uses an NDMOS FET to do its switching with a relatively high on-state resistance (200 mOhm), its incorporation of current management and a step-down converter directly into the IC makes it an attractive option. And for the form factors I&#39;m looking at, I&#39;m not likely to be pushing more than 1A through an LED star anyway.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The AL8860 requires a few external components as a buck converter would - an inductor and a schottky diode - as well as a bypass cap and the SET resistor(s). These altogether take up about as much PCB space as a decently sized FET switch would, let a long the voltage conversation IC&#39;s that would allow this to run on a variable voltage.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-412 post-img&#34; src=&#34;PCB-layout-focus-dimming.png&#34;/&gt;&lt;/figure&gt;&lt;p class=&#34;post-img-caption&#34;&gt;The portion of the PCB directly responsibly for 1A LED dimming. Approximately 8mm x 8mm. The two large thru holes directly below this are points to solder leads from the LED star directly.&lt;/p&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Testing&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;I made the bold choice of testing this IC and hardware on a livestream recently. But not before an unscucessful attempt test attempt.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In an attempt to validate this IC idea before committing to it, I purchased a handful of AL8860s, schottky diodes, 0.1 Ohm resistors, and inductors, and tried to piece together this idea on a piece of copper-clad. That did not, in short, go well. Without proper pads, I couldn&#39;t get the IC to stay in place well enough to solder magnet-wire to it. Even after I super-glued it down, the heat from my soldering iron weakened the super glue and caused it to come unstuck. And release superglue fumes. Fun!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So I pulled the trigger on ordering a batch of the V0.3 PCB&#39;s, this time from JLCPCB. But in my rush, I didn&#39;t run a final Design Rule Check, and the pads for my Pan and Tilt servos overlap. Ah well, this was mostly to validate the LED dimming circuit.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;And validate it did! Check out this gif from my testing session:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-415 post-img&#34; src=&#34;DimmingTestGif.gif&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Now that&#39;s some light! The arduino was just running a simple ramp-up/ramp-down for validation.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The LEDs are from LEDSupply, a vendor on the east coast that I haven&#39;t used before, but stumbled upon while looking for LED options. They happen to be having a closeout sale on some &lt;a href=&#34;https://www.ledsupply.com/closeout/luxeon-r-triple-3-up-neutral-white-led-star&#34;&gt;Luxeon R 3-LED stars&lt;/a&gt;, which seemed like a good option for something I might smoke or blow up. The LEDs themselves are &lt;a href=&#34;https://www.lumileds.com/uploads/355/DS101-pdf&#34;&gt;Luxeon LXA7-PW40&lt;/a&gt;s. And with the appropriate &lt;a href=&#34;https://www.ledsupply.com/triple-carclo-led-optics&#34;&gt;Carclo optic&lt;/a&gt;, the beam width is fairly narrow. The heatsink is just something from the junk bin.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;At 1000mA forward current (which LEDSupply recommends as the maximum allowed current), they emit around 975 lumens total, around &lt;a href=&#34;https://www.1000bulbs.com/search?breadcrumbs%5B0%5D=light-bulbs&amp;amp;breadcrumbs%5B1%5D=halogen-light-bulbs&amp;amp;breadcrumbs%5B2%5D=halogen-par-lamps&amp;amp;facet.multiselect=true&amp;amp;page=1&amp;amp;q=%2A&amp;amp;rows=15&amp;amp;son=0&amp;amp;sort=price+asc&amp;amp;start=0&amp;amp;filter=(category:%225659%22)&amp;amp;filter=(a_bulb_shape_t_fq:%22PAR16%22)&#34;&gt;what a 75W PAR16 lamp emits.&lt;/a&gt; Even testing at 500mA as I was, it&#39;s a punchy little package!&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Next Steps
+&lt;p class=&#34;post-p&#34;&gt;There&#39;s some CAD time in my future. I&#39;ll need to whip up a case to hold the PCB and accommodate a pan servo. I think the arm and body components I will be able to mostly re-use from my previous design, possibly with a little extra room in the head for a proper heatsink.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-418 post-img&#34; height=&#34;376&#34; src=&#34;MovingLightTinySnip.png&#34; width=&#34;357&#34;/&gt;&lt;/figure&gt;&lt;p class=&#34;post-img-caption&#34;&gt;The previous tiny moving-light design&lt;/p&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;At some point, I&#39;ll have to re-order PCB&#39;s with the errors corrected, especially the overlapping servo-control pads. I may also want to rethink the mounting hole locations, and possibly bring the DC and DMX inputs out onto their own little tabs to solder connectors onto. But first, I think it will be satisfying to bring this version of the LED to life.&lt;/p&gt;
+&lt;/h4&gt;&lt;/h4&gt;&lt;/h4&gt;</description>
+      &lt;
     </item>
     
     <item>
@@ -211,7 +924,16 @@
       <pubDate>Wed, 22 May 2019 14:44:40 -0500</pubDate>
       
       <guid>https://jeff.glass/post/dmx-mini-mover-shield-pcb-assembly-stream/</guid>
-      <description>Last night, as I started to assemble V0.3 of my DMX Mini-Mover Shield, I thought it might be fun to switch on my webcam and stream the assembly live to the World Wide Web.</description>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Last night, as I started to assemble V0.3 of my &lt;a href=&#34;https://jeff.glass/2019/05/20/arduino-pro-mini-dmx-shield/&#34;&gt;DMX Mini-Mover Shield&lt;/a&gt;, I thought it might be fun to switch on my webcam and stream the assembly live to the World Wide Web. What follows is about 80 minutes of unstructured benchwork, chatting about DMX, sACN, and circuitry, and a first test of the new LED dimming circuit. Will it light up, or will it go boom? Watch the video to find out:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/Zn5qGsw7OlI&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+</description>
+      &lt;
     </item>
     
     <item>
@@ -220,7 +942,83 @@
       <pubDate>Mon, 20 May 2019 17:54:43 -0500</pubDate>
       
       <guid>https://jeff.glass/post/arduino-pro-mini-dmx-shield/</guid>
-      <description>IntroductionIn my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on.</description>
+      <description>&lt;h4 class=&#34;post-h4&#34;&gt;Introduction&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;In my dayjob as the lighting supervisor of a midsize regional theater, we get to play with all kinds of fancy (and expensive) lighting equipment - moving lights, high-power color changing LED units, ultra-compact wireless dimmers, and so on. But it&#39;s also fun to build inexpensive, maker-size versions of of this equipment, and it can be done on a shoestring budget.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;About a year ago, I built a couple versions of tiny moving lights - one directly from &lt;a href=&#34;https://www.thingiverse.com/thing:1912706&#34;&gt;a design from Thingiverse&lt;/a&gt;, the other of my own making. The end result was super cute!&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed-youtube wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/BTafFpI3Vgc&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;The thing with this tiny light compared to real moving lights was... I cheated a bit. The light itself only contains the servos and LED chip itself, while the controller, LED driver and ballast were all external. The full setup took up almost 3 times the volume of the individual light:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-391 post-img&#34; src=&#34;IMG_7264spun-1024x768.jpg&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;Not only did I cheat on size, I cheated on control a bit too. The unit has a number of &#39;test&#39; modes that run simple movement and color patterns, but there was no means of controlling the light externally. While there are It was basically a fancy keychain toy. And there are &lt;a href=&#34;https://www.amazon.com/CQRobot-network-Management-Extended-Functions/dp/B01DUHZAT0&#34;&gt;DMX Shields&lt;/a&gt; in the Arduino Uno form factor, they themselves would have outsized the lights by another 200%. It was all getting too bulky to be reasonable.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;But after many months away from this project, I&#39;ve been devoting some time to scaling down both the dimming and DMX control sides of the circuitry. The result is a shield for an &lt;a href=&#34;https://store.arduino.cc/usa/arduino-pro-mini&#34;&gt;Arduino Pro Mini&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;DMX&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;As described in my previous &lt;a href=&#34;https://jeff.glass/2019/02/23/lighting-control-protocols-and-standards/&#34;&gt;write-up of contemporary lighting control protocols&lt;/a&gt;, the core standard for modern stage and event lighting is DMX, or properly, ANSI E1.11 DMX 512-A Digital Multiplex. In short, DMX is a serial protocol and physical spec that caries up to 512 one-byte values over each individual cable, usually with 5-pin DMX connectors. One set of 512 values is termed a &#34;universe,&#34; and to carry additional values, additional cables carrying different universes of information may be added.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-387 post-img&#34; src=&#34;dmx512-1024x252.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;More formally, DMX is a 250 kbps serial protocol transmitted over a 2-wire bus following &lt;a href=&#34;https://en.wikipedia.org/wiki/RS-485&#34;&gt;RS-485&lt;/a&gt; standards. The ESTA standard standards also dictate standardized connectors (XLR5 for temporary installations, RJ45 for permanent infrastructure), network topologies, impedances, terminations, and so on. &lt;a href=&#34;https://tsp.esta.org/tsp/documents/published_docs.php&#34;&gt;The standard is pretty readable&lt;/a&gt;, if you enjoy that sort of thing.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;DMX was developed in the late 80&#39;s/early 90&#39;s as a replacement for systems in which lighting equipment was controlled via analog control voltages, meaning each parameter (each individual dimmer, say) required one wire. A rack of 96 dimmers would have 100+ pin wiring harness attached to it, each with an analog voltage specifying level. With the introduction and adoption of DMX, all that was replaced with a single 3-conductor cable. All modern stage lighting controllers speak DMX, although most rely on transporting universes of DMX over Ethernet and using &#39;DMX Nodes&#39; to turn that digital data back into &#39;hard&#39; DMX close to the fixtures being controlled.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Circuit Components&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;There is really only on piece of hardware required to add to an Arduino-compatible design to allow it to send/receive DMX: an RS485 transceiver chip. There are many of these on the market, the common ones being the &lt;a href=&#34;https://www.maximintegrated.com/en/products/interface/transceivers/MAX485.html&#34;&gt;MAX485 &lt;/a&gt;and the &lt;a href=&#34;http://www.ti.com/product/SN75176B&#34;&gt;SN75176&lt;/a&gt;. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-373 post-img&#34; height=&#34;263&#34; src=&#34;max485-pins.png&#34; width=&#34;336&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;These take a single-ended input and turn it into a balanced output or, conversely, receive a differential RS485-compatible input and convert it to a single ended signal to a microcontroller. There are two control pins which determine whether the chip is a receiver or a driver. The control circuitry is essentially the same at both the transmitting and receiving end:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-374 post-img&#34; src=&#34;MAX485-1024x463.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;A more sophisticated/robust approach would also incorporate an optoisolator to prevent the processor from being damaged by faults on the signal side. There are some good guides on the interwebs on &lt;a href=&#34;https://electronics.stackexchange.com/questions/100487/dmx-on-arduino-with-rs485&#34;&gt;setting up optoisolation with DMX for an Arduino&lt;/a&gt; (Mathertel.de has a good &lt;a href=&#34;http://www.mathertel.de/Arduino/DMXShield.aspx&#34;&gt;write up of their isolated DMX shield&lt;/a&gt;), but for the sake of quick progress I&#39;m making this a future goal.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Circuit Layout and PCB Manufacture&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The circuit is ultimately very simple - a couple headers, some resistors, a MAX485 IC, and some pads to connect the DMX connectors to. And a switch - the DMX library I&#39;m using abuses the Arduino&#39;s built-in Serial library for some of its functionality, which means it has to use pins D0 and D1. Which means you can&#39;t reprogram the Arduino with DMX coming in. The DPDT switch just removes the connection between the DMX connectors and pins D0 and D1 of the Arduino to allow for programming. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Mostly for my own reference, the connections between a standard XLR3 or XLR5 connector and the Max485 pin are:&lt;/p&gt;
+&lt;table class=&#34;m-auto text-center table-fixed&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;w-1/3&#34;&gt;Net Name&lt;/th&gt;
+&lt;th class=&#34;w-1/3&#34;&gt;XLR Connector Pin&lt;/th&gt;
+&lt;th class=&#34;w-1/3&#34;&gt;Max485 Pin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;&#34;&gt;GND&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;1&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;&#34;&gt;Data - &lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;2&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;&#34;&gt;Data +&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;3&lt;/td&gt;
+&lt;td class=&#34;&#34;&gt;6&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p class=&#34;post-p&#34;&gt;Here&#39;s what draft one of version 0.1 looked like when it came back from &lt;a href=&#34;https://oshpark.com/&#34;&gt;OSHPark&lt;/a&gt; and following assembly&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-379 post-img&#34; src=&#34;FullSizeRender-1024x768.jpg&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;All the passives are 0603 and the max485 is an SOIC, both of which are pretty easy to solder by hand. The SMD switches are adorable! They&#39;re &lt;a href=&#34;https://www.digikey.com/product-detail/en/c-k/JS202011SCQN/401-2002-1-ND/1640098&#34;&gt;these little guys from C&amp;amp;K&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The major flaw with version 0.1 is: one you&#39;ve attached headers, where do you attach anything else?? So version 0.2 added an additional row of thru-hole pads, cleaned up some labeling, and added some mounting holes for M2 screws:&lt;/p&gt;
+&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-380 post-img&#34; data-id=&#34;380&#34; data-link=&#34;https://jeff.glass/?attachment_id=380#main&#34; src=&#34;V02-Board.png&#34;/&gt;&lt;/figure&gt;
+&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-381 post-img&#34; data-id=&#34;381&#34; data-link=&#34;https://jeff.glass/?attachment_id=381#main&#34; src=&#34;V02-Schematic-1024x510.png&#34;/&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-p&#34;&gt;And once its all assembled, it looks something like this:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-image&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-393 post-img&#34; src=&#34;IMG_7266-spun2-1024x768.png&#34;/&gt;&lt;/figure&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Programming&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;I&#39;ve been making use of the &lt;a href=&#34;https://sourceforge.net/p/dmxlibraryforar/wiki/Home/&#34;&gt;Conceptinetics DMX library&lt;/a&gt;, which I&#39;ve found to be both functional and stable. I haven&#39;t yet experimented with the RDM capabilities of that library.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The library is very easy to use, and its usage is described well on the &lt;a href=&#34;https://sourceforge.net/p/dmxlibraryforar/wiki/DMX%20Slave/&#34;&gt;Conceptinetics Documentation page&lt;/a&gt;. Essentially, one defines a DMX_Slave object, which has enable(), setStartAddress(), and getChannelValue() methods. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For example, once the object is set up and addressed, a loop() with the single command &lt;strong&gt;analogWrite(LED_PIN, getChannelValue(1));&lt;/strong&gt; will dim an LED attached to pin 9 dim in response to incoming DMX. Easy as pi.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Usage&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;So, what can one do with an Arduino Pro Mini that can receive DMX? Well...&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can make a DMX level monitor, a DMX controlled LED source. And really, anything else you can think of to do with an Arduino - drive servos, WS2812s, solenoids, relays...&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The shield can also transmit DMX, though I haven&#39;t thoroughly tested this yet. But it&#39;s possible to make a miniature DMX controller, itty bitty light board, or testing tool. Or wire up some interesting input devices and make an interesting lighting controller.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;What&#39;s Next&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The shield has been a useful proving ground for the Conceptinetics DMX library (though we&#39;ve used it onstage before), as well as for OSHPark&#39;s manufacturing tolerances. I wasn&#39;t sure that having holes as close to the edge of the PCB as both V0.1 and V0.2 have would be manufacturable, but they came back no problem.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This all started for me with a miniature moving light project, and while that&#39;s not quite ready for a write-up, I&#39;ll just leave V0.3 of the DMX shield here. Not without errors/improvements to be made, but I&#39;m excited to try out some new LED dimming tech:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-383 post-img&#34; height=&#34;288&#34; src=&#34;V03-Board.png&#34; width=&#34;304&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;div class=&#34;wp-block-image&#34;&gt;&lt;figure class=&#34;aligncenter is-resized&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;wp-image-397 post-img&#34; height=&#34;291&#34; src=&#34;IMG_7277-1024x768.jpg&#34; width=&#34;390&#34;/&gt;&lt;/figure&gt;&lt;/div&gt;&lt;/p&gt;
+</description>
+      &lt;
     </item>
     
   </channel>
