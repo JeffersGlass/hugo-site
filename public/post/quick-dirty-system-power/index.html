@@ -142,8 +142,9 @@
 				</div>
 				
 				<div>
-					<p class="font-bold post-p">Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.</p>
-<p class="post-p"><hr/></p>
+					<p class="italic post-p">Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.</p>
+<p class="font-bold post-p">Update: The <a href="https://hackaday.com/2022/03/18/power-cycling-museum-computers-on-the-cheap/">comments on the Hackaday post</a> had a lot of other interesting solutions, some of which I'd considered and some of which I didn't. Skip to the <a href="#othersolutions">Other Solutions</a> for evaluation of these.</p>
+<hr/>
 <p class="post-p">My dayjob involves solving technical problems for a large, multi-acre education facility with over 400 computer-driven interactives. To prolong the life of these devices (many of which are built around off-the-shelf computers and monitors), we like to power them down after operating hours and start them up in the morning. These are mostly windows machines, and just like a desktop they <span class="italic">love</span> to be rebooted.</p>
 <p class="post-p">What makes this challenging is both the number and placement of these devices. While many are in dedicated control rooms with <a href="">linked KVM systems</a>, even using a mouse and keyboard to manually shut down 400 PCs would take the onsite staff far longer than designed, and could be error-prone. Worse, some computers are embedded inside consoles, cabinets, and displays, making the process of walking around and hitting power buttons (where accessible) or using a wireless keyboard (where not) even longer. The same is true of startup, except that a wireless keyboard isn't an option in that case. A central startup and shutdown solution is essential.</p>
 <div class="max-w-xl px-10 mx-auto xl:float-right">
@@ -616,6 +617,35 @@ eth<span style="color:#f92672">.</span>socket_close(<span style="color:#ae81ff">
     <li>Copy the <code class="code">server.py</code> code from above to a convienient file location on the computer (desktop, My Documents, etc).</li>
     <li>Create a shortcut to the <code class="code">server.py</code> script in your startup folder. In Windows 10, this is located by default at: <code class="code">C:/users/{username}/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup.</code> Any shortcuts/executables in this folder get executed automatically when Windows boots.</li>
 </ul>
+<h2 id="othersolutions" class="post-h2">Other Solutions Considered (March 21, 2022)</h2>
+<p class="post-p">The commenters <a href="https://hackaday.com/2022/03/18/power-cycling-museum-computers-on-the-cheap/">over at Hackaday</a> had some opinions and thoughts about other ways to accomplish this - which is great! It's certainly a fairly large nail and there are lots of hammers. Hackaday Columnist Chris Wilkinson even asked readers "how [they] would have tackled this problem? Sound off in the comments below." And boy did they. </p>
+<p class="post-p">So, let me address some of the proposed solutions and concerns, with some background that I didn't provide in the original post.</p>
+<h3 class="post-h3">Scheduled Shutdown</h3>
+<img src="commentschedule.PNG" alt="A screenshot of a hackaday comment, of a use suggesting that scheduled shutdown would be better" class="post-img">
+<p class="post-p">Many, many of the comments suggested using some version of Windows' scheduled shutdown feature to turn the computers off at the same time every day. This is a very reasonable suggestion, and in fact <span class="italic">was the solution in place before I undertook this project.</span> There was a scheuled shutdown at 4:10pm every day (shortly after "normal" closing) and another at midnight (after "the latest the museum could be open").</p>
+<p class="post-p">The issue is that the museum's span-of-day changes wildly day-to-day, week-to-week, and month-to-month without notice. Sometimes closing is at 5:30pm. Sometimes 8:00pm or 11:00pm for an event. Sometimes it needs to be shut off at 3pm for photo sessions in the space. While I wish we had the ability to accurately describe the closing time of the museum on a day-to-day basis, like any large public-facing institution with an events staff, things change quickly and regularly. This pretty much ruled out scheduled shutdown.</p>
+<h3 class="post-h3">Remote Management Commands</h3>
+<img src="commentactive.PNG" alt="A screenshot of a hackaday comment, saying that one should use Active Directory commands" class="post-img">
+<p class="post-p">I wrestled with this solution for a fairly long time, but ultimately deemed it unsuccesful in Windows 10 personal (the OS I'm forced to use). To be honest, I can't recall what every single obstacle was, but some were:</p>
+<ul class="post-ul">
+    <li>Needing to address each computer by hostname, with the hostnames having some character restrictions (which I could not change)</li>
+    <li>Not having an Active Directory/Domain setup in this environemnt. For any number of reasons, we keep interactives isolated from our workplace domain system, so there's no Active Directory to be used.</li>
+    <li><a href="https://www.groovypost.com/howto/remote-shutdown-restart-windows-10/#:~:text=Enter%20your%20username%20on%20the,on%20the%20switches%20you%20choose.">Several</a> <a href="https://www.maketecheasier.com/remote-shutdown-restart-windows-10/">Resources</a> suggest needing to make registry changes to enable remote shutdown, and while I tried several of these, none were successful. This also doesn't seem like the most durable/transportable solution. The various uses of batch files and services at affect the same didn't work for me either - not saying there wasn't something I missed, but it wasn't anywhere near as simple as run <code class="code">shutdown /r /m \\pc2</code> and walk away.</li>
+    <li>One of the comments suggested using <a href="https://www.ansible.com/">Ansible</a>, which I may have to give a look.</li>
+</ul>
+<h3 class="post-h3">UPS With Lan Card</h3>
+<img src="commentupslan.PNG" alt="A screenshot of a hackaday comment, suggesting using a UPS with build in LAN card" class="post-img">
+<p class="post-p">A couple users encouraged me to look at UPS' that can be directly connected to a network, which would save the whole client-server model of the hacky python scripts above.</p>
+<p class="post-p">This is something we looked at as well, but discarded for space reasons. The entire space inside the primary enclosure this project was designed for is only 5" deep, which ruled out any rackmount components, which seem to be the major source of UPS' with LAN interfaces. The standalone UPS' with LAN attachability were either too large or two expensive for this project.</p>
+<h3 class="post-h3">Read Only Harddrives</h3>
+<img src="commentreadonly.PNG" alt="A screenshot of a hackaday commnet, suggesting making the hard drives read-only" class="post-img">
+<p class="post-p">Here's something I hadn't thought about - making the hard drives read only to prevent damage in the case of an untimely shutdown. Didn't know that was a thing! Stil not sure it's a thing, will have to look into it more.</p>
+<h3 class="post-h3">RTS/CTS Signalling</h3>
+<img src="commnetmultipleserial.PNG" alt="A screenshot of a hackaday comment, suggesting using one RTS/CTS line among multiple computers" class="post-img">
+<p class="post-p">Another expansion of an idea I had discarded - the UPS' all have some varient of serial lines on them, but I assumed using serial to connect to the UPS' was out for the same multi-computer reason that lead to me using the client/server model. But if it's really just a binary on/off signal on one of the control lines, there's no reason I couldn't read that simultaneously on several machines. Interesting!</p>
+<h3 class="post-h3">Virtualization</h3>
+<img src="commentvirtualized.PNG" alt="A screenshot of a hackaday comment, suggesting using virtualization to run all the interactives" class="post-img">
+<p class="post-p">Make all the intereactives virtualized and run in their own VMs?? Now there's something that would never have crossed my mind. It's probably way out of scope for the kind of retrofit work that I've been tasked with doing, but it's a nifty idea if we had the will and archetechture to handle it.</p>
 				</div>
 				
 			</article>
