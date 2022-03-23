@@ -18,7 +18,7 @@ module.exports = {
     },
   },
   variants: {
-    margin: ['first'],
+    margin: ['first', 'responsive'],
     borderRadius: ['responsive', 'hover', 'focus'],
     scale: ['responsive', 'hover', 'focus'],
     transform: ['responsive', 'hover', 'focus'],
