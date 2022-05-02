@@ -1,0 +1,250 @@
+---
+title: "Pyscript Intro"
+date: 2022-05-02T07:36:11-05:00
+draft: false
+tags:
+- python
+- pyscript
+description: "First Explorations of Pyscript"
+Summary: "A first-day dive into PyScript - Python in the Browser"
+---
+<p class="post-p">Installation is simple, as noted on the <a href="https://github.com/pyscript/pyscript">Github repository</a>: clone the repo, cd into the pyscriptjs folder, run <code class="code">npm install</code> and you're good to go. <code class="code">npm run dev</code> starts a live server for playing with code or examples. You can also just include Pyscript via CDN.</p>
+<p class="post-p">Looking at the core part of the hello_world example shows us a few things:</p>
+<p class="code-title">hello_world.html</p>
+{{< highlight html>}}
+<body>
+    Hello world! <br>
+    This is the current date and time, as computed by Python:
+    <py-script>
+from datetime import datetime
+now = datetime.now()
+now.strftime("%m/%d/%Y, %H:%M:%S")
+    </py-script>
+  </body>
+{{< /highlight >}}
+<img src="firstoutput.PNG" alt="A screenshot of the pyscript Hello World app, with generated HTML source code clipped from the inspector" class="mb-4 post-img">
+<p class="post-p">It seems that, REPL-like, the raw string output of... the final line? Is printed to the sceen. In our case,  inside a div with what looks like a UUID:</p>
+
+<img src="firsthtml.PNG" alt="A screenshot of the pyscript Hello World app, with generated HTML source code clipped from the inspector" class="post-img">
+<p class="post-p">It seems that this is only true for raw, literal values. That is, adding <code class="code">test_name = "test"</code> to the end of the py-script tag means that nothing is output, but just adding <code class="code">"test"</code> prints <span class="italic">test</span> to the screen.</p>
+<p class="code-title">&lt;py-script&gt;</p>
+{{< highlight python3>}}
+from datetime import datetime
+now = datetime.now()
+now.strftime("%m/%d/%Y, %H:%M:%S")
+"test"
+{{< /highlight >}}
+<img src="testoutput.PNG" alt="" class="my-4 post-img">
+<hr>
+<p class="post-p">Let's look at a slightly more complicated example with the simple clock:</p>
+<p class="code-title">&lt;py-script&gt;</p>
+{{< highlight html>}}
+<body>
+    <div class="font-mono">start time: 
+        <label id="outputDiv"></label>
+    </div>
+    <div id="outputDiv2" class="font-mono"></div>
+    <div id="outputDiv3" class="font-mono"></div>
+    <py-script output="outputDiv">
+import utils
+utils.now()
+    </py-script>
+    <py-script>
+{{< /highlight >}}
+{{< highlight python3 "linenostart=12" >}}
+from utils import now
+import asyncio
+
+async def foo():
+  while True:
+    await asyncio.sleep(1)
+    output = now()
+    pyscript.write("outputDiv2", output)
+    
+    out3 = Element("outputDiv3")
+    if output[-1] in ["0", "4", "8"]:
+      out3.write("It's espresso time!")
+    else:
+      out3.clear()
+
+pyscript.run_until_complete(foo())
+{{< /highlight >}}
+{{< highlight html>}}
+    </py-script>
+  </body>
+{{< /highlight >}}
+<img src="simple_clock_output.gif" alt="" class="my-4 post-img">
+<p class="post-p">What's going on here? Well, the static text that is the start time of the program comes from the first py-script tag, again using that "final value is exported as a string" thing we saw before. The second py-script takes care of of the constatntly updating time, as well as printing "It's espresso time!" if the final character in the datetime string is a 0, 4, or 8. We're using <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep">asynchio.sleep</a> to handle the timing</p>
+<p class="post-p">Out of curiousity, I replaced <code class="code">await asyncio.sleep(1)</code> with <code class="code">import time</code> and <code class="code">time.sleep(1)</code>, and not only does the program not wake up after 1 second to continue running, the entire chrome tab is frozen. I can't even right-click to inspect/view source. And if I try to close it or rfresh the page, I get a "page not responsive" error and the option to kill the process. So time.sleep, it seems, is right out.</p>
+<p class="post-p">Other things I'm noticing - the <code class="code">pyscript.write</code> function, which apparently puts takes an element id and a value, and stuffs the value into a div within that element id. Let's look at the source to see what's actually happening here. </p>
+<p class="code-title">src/pyscript.py</p>
+{{< highlight python3 >}}
+class PyScript:
+    #...
+
+    @staticmethod
+    def write(element_id, value, append=False, exec_id=0):
+        """Writes value to the element with id "element_id"""
+        console.log(f"APPENDING: {append} ==> {element_id} --> {value}")
+        if append:
+            child = document.createElement('div');
+            element = document.querySelector(f'#{element_id}');
+            if not element:
+                return
+            exec_id = exec_id or element.childElementCount + 1
+            element_id = child.id = f"{element_id}-{exec_id}";
+            element.appendChild(child);
+
+        element = document.getElementById(element_id)
+        html, mime_type = format_mime(value)
+        if mime_type in ('application/javascript', 'text/html'):
+            scriptEl = document.createRange().createContextualFragment(html)
+            element.appendChild(scriptEl)
+        else:
+            element.innerHTML = html
+{{< /highlight >}}
+<p class="post-p">So the <code class="code">pyscript.write</code> static method takes an element id and value, as well as two optional arguments. The <code class="code">append</code> argument specifies whether to append the value as an additional div, as the final child of the given element, or simply set the innerHTML of the provided element to the value given. And the exec-id seems to be an index of which child of the given element is being modified, though it's also auto-incremented when appending, so probably one wouldn't set this manually much.</p>
+<p class="post-p">Adding <code class="code">append = True</code> to the final pyscript.write statement behaves as expected:</p>
+<img src="simple_clock_output_append.gif" alt="" class="post-img">
+<p class="post-p">And since this particular app is built with Svelte and includes tailwind, we can use all the familiar tailwind classes to start formatting the output, to make it a little more clear where our data is coming from. Let's make the first div red, the second green, and the 'espresso time' div blue:</p>
+<p class="code-title">simple_clock.html</p>
+{{< highlight html >}}
+<div class="font-mono bg-red-200">start time: <label id="outputDiv"></label></div>
+<div id="outputDiv2" class="font-mono bg-green-200"></div>
+<div id="outputDiv3" class="font-mono bg-blue-200"></div>
+{{< /highlight >}}
+<img src="colorful_append.gif" alt="" class="my-4 post-img">
+<hr>
+<p class="post-p">As long as we're in the source, let's see whatever methods and classes live in pyscript.py.</p>
+<p class="post-p">It looks like the <span class="font-bold">PyScript class</span> has only two methods: write and run_until_complete, i.e. loop forever.</p>
+<p class="post-p">There's also the <span class="font-bold">Element class</span>, which seems to be the internal, pythonic representation of a DOM element, with basic write, clear, and select method, as well as a clone(duplciate) method</p>
+<p class="post-p">Finally, there's quite a few functions that appear to deal with the output formatting of various objects based on their <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MIME types</a>, allowing rendering of objects to the screen.</p>
+<ul class="post-ul">
+<li><code class="code">PyScript.write</code> calls <code class="code">format_mime</code> to get the properly formatted HTML for an object (in theory) before stuffing it into (or appending it to) the targetted element. If the object is a string, it simply returns that string with the MIME type 'text/plain'. Otherwise, the <code class="code">eval_formatter</code> method is called to determine if the object has a <code class="code">print_method</code> attribute.</li>
+<li>In most cases, <code class="code">eval_formatter</code>, just returns the objects <code class="code">print_method</code> attribute, if it has one. But if the object's print_method is 'savefig', it stuffs the image into a base64-encoded png and returns that as well. Neat!</li>
+<li>Once the content (possibly text, or a now-base64-encoded image) and MIME type are determined, some additional transformations on the content may be made. The <code class="code">MIME_RENDERERS</code> dict maps MIME types to functions, some of which are the identity function, and some of which add additional html tags or boilerplate around the contetn so it will display properly. At this point, </li>
+</ul>
+<p class="code-title">pyscript.py</p>
+{{< highlight python3 "linenostart=22">}}
+def render_image(mime, value, meta):
+    data = f'data:{mime};charset=utf-8;base64,{value}'
+    attrs = ' '.join(['{k}="{v}"' for k, v in meta.items()])
+    return f'<img src="{data}" {attrs}</img>'
+
+def identity(value, meta):
+    return value
+
+
+MIME_RENDERERS = {
+    'text/plain': identity,
+    'text/html' : identity,
+    'image/png' : lambda value, meta: render_image('image/png', value, meta),
+    'image/jpeg': lambda value, meta: render_image('image/jpeg', value, meta),
+    'image/svg+xml': identity,
+    'application/json': identity,
+    'application/javascript': lambda value, meta: f'<script>{value}</script>'
+} 
+{{< /highlight >}}
+<p class="post-p">So, the flow is:</p>
+<ul class="post-ul">
+<li>PyScript.write finds the element with the given element_id</li>
+<li>PySript.write calls format_mime to get the appropriate html-formatted representation of the value passed to PyScript.write</li>
+<li>If the value was a string, format_mime just returns it with a mime_type of 'text/plain'</li>
+<li>Otherwise, format_mime calls eval_formatter to get the print_method's of the object, and possibly the base64 representation of it if it's an iamge.</li>
+<li>Once format_mime has these methods, it looks up the repr names in its MIME_METHODS dict to map the presence of __repr__ methods to a probably mime type</li>
+<li>Once the mime type is known, the value may optionally be transformed by the functions that are the values in the MIME_RENDERERS dictionary</li>
+<li>Finally, if the type turned out to be either application/javascript or text/html, the given value is wrapped up in a next html or script element and stuffed into the desired element in the DOM. Otherwise, the content is simply overwritten/appended to the elements innerHTML.</li>
+</ul>
+<p class="post-p">I dug through all this as I was digging into <a href="https://github.com/pyscript/pyscript/issues/103">Issue #103</a> on the PyScript Github, and learned a few things about Python on the way. Namely, print() is pretty much just a wrapper to sys.stdout.write() (or any other file-like object, if specified). And while print() can be called with any number of positional arguments and will send them all to stdout, it does so as <span class="italic">individual calls to stdout.writer()</span>. So programs (like PyScript) that interrupt that output to do other things with may get results that look off if they behave differently than the line-o'-text that a terminal would display.</p>
+<div id="my_canvas"><canvas class="m-auto"></canvas></div>
+<py-env>
+- paths:
+  - ./pathing.py
+</py-env>
+<py-script>
+from js import document
+from pathing import PathFollower
+
+canvas = document.querySelector("#my_canvas canvas")
+canvas.style.display = "block"
+width = canvas.width
+print(width)
+
+p = PathFollower(canvas, width, 250)
+p.start(interval = 100)
+</py-script>
+<hr>
+<p class="post-p">If all has gone well (and you're viewing this on a compatible browser), you should see my final experiment of the day, a line jumping around on an HTML canvas, powered entirely by Python (well, via JS too, but I didn't have to write any).</p>
+<p class="my-8 code-title">pyscript-intro.html</p>
+{{< highlight html >}}
+<py-env>
+    - paths:
+      - ./pathing.py
+    </py-env>
+    <py-script>
+    from js import document
+    from pathing import PathFollower
+    
+    canvas = document.querySelector("#my_canvas canvas")
+    canvas.style.display = "block"
+    width = canvas.width
+    print(width)
+    
+    p = PathFollower(canvas, width, 250)
+    p.start(interval = 100)
+    </py-script>
+{{< /highlight >}}
+<br>
+<p class="my-8 code-title">pathing.py</p>
+<div class="overflow-y-scroll h-124">
+{{< highlight python3 >}}
+from random import randint
+from js import setInterval, document, DOMParser
+from pyodide import create_proxy
+
+class PathFollower:
+    def __init__(self, canvas, width, height, numPoints = 10):
+        self.numPoints = numPoints
+        self.width = width
+        self.height = height
+        self.ctx = canvas.getContext("2d")
+        
+        canvas.style.width = f"{width}px"
+        canvas.style.height = f"{height}px"
+
+        canvas.width = width
+        canvas.height = height
+        self.randomizePath()
+        print(self.pathPoints)
+
+    def getNewPoint(self):
+        return (randint(2,self.width-2), randint(2, self.height-2))
+    
+    def randomizePath(self):
+        self.pathPoints = [self.getNewPoint() for _ in range(self.numPoints)]
+
+    def movePath(self):
+        self.pathPoints = self.pathPoints[1:]
+        self.pathPoints.append(self.getNewPoint())
+
+    def clearPath(self):
+        self.ctx.clearRect(0,0,1000,1000)
+    
+    def drawPath(self):
+        self.ctx.beginPath()    
+        self.ctx.moveTo(*self.pathPoints[0])
+        for i, point in enumerate(self.pathPoints[1:]):
+            self.ctx.lineTo(*point)
+            self.ctx.stroke()
+
+    def remakePath(self):
+        self.clearPath()
+        #self.randomizePath()
+        self.movePath()
+        self.drawPath()
+
+    def start(self, interval):
+        setInterval(create_proxy(self.remakePath), interval)
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
