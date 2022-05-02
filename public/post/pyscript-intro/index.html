@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Pyscript Intro</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Pyscript Intro"/>
+<meta name="twitter:description" content="First Explorations of Pyscript"/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+	<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Pyscript Intro</h1>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+				</div>
+				
+				<div>
+					<p class="post-p">Installation is simple, as noted on the <a href="https://github.com/pyscript/pyscript">Github repository</a>: clone the repo, cd into the pyscriptjs folder, run <code class="code">npm install</code> and you're good to go. <code class="code">npm run dev</code> starts a live server for playing with code or examples. You can also just include Pyscript via CDN.</p>
+<p class="post-p">Looking at the core part of the hello_world example shows us a few things:</p>
+<p class="code-title">hello_world.html</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">body</span>&gt;
+    Hello world! &lt;<span style="color:#f92672">br</span>&gt;
+    This is the current date and time, as computed by Python:
+    &lt;<span style="color:#f92672">py-script</span>&gt;
+from datetime import datetime
+now = datetime.now()
+now.strftime(&#34;%m/%d/%Y, %H:%M:%S&#34;)
+    &lt;/<span style="color:#f92672">py-script</span>&gt;
+  &lt;/<span style="color:#f92672">body</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<img src="firstoutput.PNG" alt="A screenshot of the pyscript Hello World app, with generated HTML source code clipped from the inspector" class="mb-4 post-img">
+<p class="post-p">It seems that, REPL-like, the raw string output of... the final line? Is printed to the sceen. In our case,  inside a div with what looks like a UUID:</p>
+
+<img src="firsthtml.PNG" alt="A screenshot of the pyscript Hello World app, with generated HTML source code clipped from the inspector" class="post-img">
+<p class="post-p">It seems that this is only true for raw, literal values. That is, adding <code class="code">test_name = "test"</code> to the end of the py-script tag means that nothing is output, but just adding <code class="code">"test"</code> prints <span class="italic">test</span> to the screen.</p>
+<p class="code-title">&lt;py-script&gt;</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+now <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now()
+now<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#34;%m/</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">/%Y, %H:%M:%S&#34;</span>)
+<span style="color:#e6db74">&#34;test&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<img src="testoutput.PNG" alt="" class="my-4 post-img">
+<hr>
+<p class="post-p">Let's look at a slightly more complicated example with the simple clock:</p>
+<p class="code-title">&lt;py-script&gt;</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">body</span>&gt;
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;font-mono&#34;</span>&gt;start time: 
+        &lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv&#34;</span>&gt;&lt;/<span style="color:#f92672">label</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv2&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;font-mono&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv3&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;font-mono&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+    &lt;<span style="color:#f92672">py-script</span> <span style="color:#a6e22e">output</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv&#34;</span>&gt;
+import utils
+utils.now()
+    &lt;/<span style="color:#f92672">py-script</span>&gt;
+    &lt;<span style="color:#f92672">py-script</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> utils <span style="color:#f92672">import</span> now
+<span style="color:#f92672">import</span> asyncio
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">foo</span>():
+  <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+    <span style="color:#66d9ef">await</span> asyncio<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">1</span>)
+    output <span style="color:#f92672">=</span> now()
+    pyscript<span style="color:#f92672">.</span>write(<span style="color:#e6db74">&#34;outputDiv2&#34;</span>, output)
+    
+    out3 <span style="color:#f92672">=</span> Element(<span style="color:#e6db74">&#34;outputDiv3&#34;</span>)
+    <span style="color:#66d9ef">if</span> output[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">in</span> [<span style="color:#e6db74">&#34;0&#34;</span>, <span style="color:#e6db74">&#34;4&#34;</span>, <span style="color:#e6db74">&#34;8&#34;</span>]:
+      out3<span style="color:#f92672">.</span>write(<span style="color:#e6db74">&#34;It&#39;s espresso time!&#34;</span>)
+    <span style="color:#66d9ef">else</span>:
+      out3<span style="color:#f92672">.</span>clear()
+
+pyscript<span style="color:#f92672">.</span>run_until_complete(foo())</code></pre></td></tr></table>
+</div>
+</div>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">    &lt;/<span style="color:#f92672">py-script</span>&gt;
+  &lt;/<span style="color:#f92672">body</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<img src="simple_clock_output.gif" alt="" class="my-4 post-img">
+<p class="post-p">What's going on here? Well, the static text that is the start time of the program comes from the first py-script tag, again using that "final value is exported as a string" thing we saw before. The second py-script takes care of of the constatntly updating time, as well as printing "It's espresso time!" if the final character in the datetime string is a 0, 4, or 8. We're using <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep">asynchio.sleep</a> to handle the timing</p>
+<p class="post-p">Out of curiousity, I replaced <code class="code">await asyncio.sleep(1)</code> with <code class="code">import time</code> and <code class="code">time.sleep(1)</code>, and not only does the program not wake up after 1 second to continue running, the entire chrome tab is frozen. I can't even right-click to inspect/view source. And if I try to close it or rfresh the page, I get a "page not responsive" error and the option to kill the process. So time.sleep, it seems, is right out.</p>
+<p class="post-p">Other things I'm noticing - the <code class="code">pyscript.write</code> function, which apparently puts takes an element id and a value, and stuffs the value into a div within that element id. Let's look at the source to see what's actually happening here. </p>
+<p class="code-title">src/pyscript.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PyScript</span>:
+    <span style="color:#75715e">#...</span>
+
+    <span style="color:#a6e22e">@staticmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">write</span>(element_id, value, append<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, exec_id<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>):
+        <span style="color:#e6db74">&#34;&#34;&#34;Writes value to the element with id &#34;element_id&#34;&#34;&#34;</span>
+        console<span style="color:#f92672">.</span>log(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;APPENDING: </span><span style="color:#e6db74">{</span>append<span style="color:#e6db74">}</span><span style="color:#e6db74"> ==&gt; </span><span style="color:#e6db74">{</span>element_id<span style="color:#e6db74">}</span><span style="color:#e6db74"> --&gt; </span><span style="color:#e6db74">{</span>value<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+        <span style="color:#66d9ef">if</span> append:
+            child <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>createElement(<span style="color:#e6db74">&#39;div&#39;</span>);
+            element <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>querySelector(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;#</span><span style="color:#e6db74">{</span>element_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>);
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> element:
+                <span style="color:#66d9ef">return</span>
+            exec_id <span style="color:#f92672">=</span> exec_id <span style="color:#f92672">or</span> element<span style="color:#f92672">.</span>childElementCount <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+            element_id <span style="color:#f92672">=</span> child<span style="color:#f92672">.</span>id <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>element_id<span style="color:#e6db74">}</span><span style="color:#e6db74">-</span><span style="color:#e6db74">{</span>exec_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>;
+            element<span style="color:#f92672">.</span>appendChild(child);
+
+        element <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>getElementById(element_id)
+        html, mime_type <span style="color:#f92672">=</span> format_mime(value)
+        <span style="color:#66d9ef">if</span> mime_type <span style="color:#f92672">in</span> (<span style="color:#e6db74">&#39;application/javascript&#39;</span>, <span style="color:#e6db74">&#39;text/html&#39;</span>):
+            scriptEl <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>createRange()<span style="color:#f92672">.</span>createContextualFragment(html)
+            element<span style="color:#f92672">.</span>appendChild(scriptEl)
+        <span style="color:#66d9ef">else</span>:
+            element<span style="color:#f92672">.</span>innerHTML <span style="color:#f92672">=</span> html</code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">So the <code class="code">pyscript.write</code> static method takes an element id and value, as well as two optional arguments. The <code class="code">append</code> argument specifies whether to append the value as an additional div, as the final child of the given element, or simply set the innerHTML of the provided element to the value given. And the exec-id seems to be an index of which child of the given element is being modified, though it's also auto-incremented when appending, so probably one wouldn't set this manually much.</p>
+<p class="post-p">Adding <code class="code">append = True</code> to the final pyscript.write statement behaves as expected:</p>
+<img src="simple_clock_output_append.gif" alt="" class="post-img">
+<p class="post-p">And since this particular app is built with Svelte and includes tailwind, we can use all the familiar tailwind classes to start formatting the output, to make it a little more clear where our data is coming from. Let's make the first div red, the second green, and the 'espresso time' div blue:</p>
+<p class="code-title">simple_clock.html</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;font-mono bg-red-200&#34;</span>&gt;start time: &lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv&#34;</span>&gt;&lt;/<span style="color:#f92672">label</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv2&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;font-mono bg-green-200&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;outputDiv3&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;font-mono bg-blue-200&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<img src="colorful_append.gif" alt="" class="my-4 post-img">
+<hr>
+<p class="post-p">As long as we're in the source, let's see whatever methods and classes live in pyscript.py.</p>
+<p class="post-p">It looks like the <span class="font-bold">PyScript class</span> has only two methods: write and run_until_complete, i.e. loop forever.</p>
+<p class="post-p">There's also the <span class="font-bold">Element class</span>, which seems to be the internal, pythonic representation of a DOM element, with basic write, clear, and select method, as well as a clone(duplciate) method</p>
+<p class="post-p">Finally, there's quite a few functions that appear to deal with the output formatting of various objects based on their <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MIME types</a>, allowing rendering of objects to the screen.</p>
+<ul class="post-ul">
+<li><code class="code">PyScript.write</code> calls <code class="code">format_mime</code> to get the properly formatted HTML for an object (in theory) before stuffing it into (or appending it to) the targetted element. If the object is a string, it simply returns that string with the MIME type 'text/plain'. Otherwise, the <code class="code">eval_formatter</code> method is called to determine if the object has a <code class="code">print_method</code> attribute.</li>
+<li>In most cases, <code class="code">eval_formatter</code>, just returns the objects <code class="code">print_method</code> attribute, if it has one. But if the object's print_method is 'savefig', it stuffs the image into a base64-encoded png and returns that as well. Neat!</li>
+<li>Once the content (possibly text, or a now-base64-encoded image) and MIME type are determined, some additional transformations on the content may be made. The <code class="code">MIME_RENDERERS</code> dict maps MIME types to functions, some of which are the identity function, and some of which add additional html tags or boilerplate around the contetn so it will display properly. At this point, </li>
+</ul>
+<p class="code-title">pyscript.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">render_image</span>(mime, value, meta):
+    data <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;data:</span><span style="color:#e6db74">{</span>mime<span style="color:#e6db74">}</span><span style="color:#e6db74">;charset=utf-8;base64,</span><span style="color:#e6db74">{</span>value<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>
+    attrs <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39; &#39;</span><span style="color:#f92672">.</span>join([<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{k}</span><span style="color:#e6db74">=&#34;</span><span style="color:#e6db74">{v}</span><span style="color:#e6db74">&#34;&#39;</span> <span style="color:#66d9ef">for</span> k, v <span style="color:#f92672">in</span> meta<span style="color:#f92672">.</span>items()])
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;&lt;img src=&#34;</span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34; </span><span style="color:#e6db74">{</span>attrs<span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/img&gt;&#39;</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">identity</span>(value, meta):
+    <span style="color:#66d9ef">return</span> value
+
+
+MIME_RENDERERS <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#39;text/plain&#39;</span>: identity,
+    <span style="color:#e6db74">&#39;text/html&#39;</span> : identity,
+    <span style="color:#e6db74">&#39;image/png&#39;</span> : <span style="color:#66d9ef">lambda</span> value, meta: render_image(<span style="color:#e6db74">&#39;image/png&#39;</span>, value, meta),
+    <span style="color:#e6db74">&#39;image/jpeg&#39;</span>: <span style="color:#66d9ef">lambda</span> value, meta: render_image(<span style="color:#e6db74">&#39;image/jpeg&#39;</span>, value, meta),
+    <span style="color:#e6db74">&#39;image/svg+xml&#39;</span>: identity,
+    <span style="color:#e6db74">&#39;application/json&#39;</span>: identity,
+    <span style="color:#e6db74">&#39;application/javascript&#39;</span>: <span style="color:#66d9ef">lambda</span> value, meta: <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;&lt;script&gt;</span><span style="color:#e6db74">{</span>value<span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/script&gt;&#39;</span>
+} </code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">So, the flow is:</p>
+<ul class="post-ul">
+<li>PyScript.write finds the element with the given element_id</li>
+<li>PySript.write calls format_mime to get the appropriate html-formatted representation of the value passed to PyScript.write</li>
+<li>If the value was a string, format_mime just returns it with a mime_type of 'text/plain'</li>
+<li>Otherwise, format_mime calls eval_formatter to get the print_method's of the object, and possibly the base64 representation of it if it's an iamge.</li>
+<li>Once format_mime has these methods, it looks up the repr names in its MIME_METHODS dict to map the presence of __repr__ methods to a probably mime type</li>
+<li>Once the mime type is known, the value may optionally be transformed by the functions that are the values in the MIME_RENDERERS dictionary</li>
+<li>Finally, if the type turned out to be either application/javascript or text/html, the given value is wrapped up in a next html or script element and stuffed into the desired element in the DOM. Otherwise, the content is simply overwritten/appended to the elements innerHTML.</li>
+</ul>
+<p class="post-p">I dug through all this as I was digging into <a href="https://github.com/pyscript/pyscript/issues/103">Issue #103</a> on the PyScript Github, and learned a few things about Python on the way. Namely, print() is pretty much just a wrapper to sys.stdout.write() (or any other file-like object, if specified). And while print() can be called with any number of positional arguments and will send them all to stdout, it does so as <span class="italic">individual calls to stdout.writer()</span>. So programs (like PyScript) that interrupt that output to do other things with may get results that look off if they behave differently than the line-o'-text that a terminal would display.</p>
+<div id="my_canvas"><canvas class="m-auto"></canvas></div>
+<py-env>
+- paths:
+  - ./pathing.py
+</py-env>
+<py-script>
+from js import document
+from pathing import PathFollower
+
+canvas = document.querySelector("#my_canvas canvas")
+canvas.style.display = "block"
+width = canvas.width
+print(width)
+
+p = PathFollower(canvas, width, 250)
+p.start(interval = 100)
+</py-script>
+<hr>
+<p class="post-p">If all has gone well (and you're viewing this on a compatible browser), you should see my final experiment of the day, a line jumping around on an HTML canvas, powered entirely by Python (well, via JS too, but I didn't have to write any).</p>
+<p class="my-8 code-title">pyscript-intro.html</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">py-env</span>&gt;
+    - paths:
+      - ./pathing.py
+    &lt;/<span style="color:#f92672">py-env</span>&gt;
+    &lt;<span style="color:#f92672">py-script</span>&gt;
+    from js import document
+    from pathing import PathFollower
+    
+    canvas = document.querySelector(&#34;#my_canvas canvas&#34;)
+    canvas.style.display = &#34;block&#34;
+    width = canvas.width
+    print(width)
+    
+    p = PathFollower(canvas, width, 250)
+    p.start(interval = 100)
+    &lt;/<span style="color:#f92672">py-script</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<br>
+<p class="my-8 code-title">pathing.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> random <span style="color:#f92672">import</span> randint
+<span style="color:#f92672">from</span> js <span style="color:#f92672">import</span> setInterval, document, DOMParser
+<span style="color:#f92672">from</span> pyodide <span style="color:#f92672">import</span> create_proxy
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PathFollower</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, canvas, width, height, numPoints <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>):
+        self<span style="color:#f92672">.</span>numPoints <span style="color:#f92672">=</span> numPoints
+        self<span style="color:#f92672">.</span>width <span style="color:#f92672">=</span> width
+        self<span style="color:#f92672">.</span>height <span style="color:#f92672">=</span> height
+        self<span style="color:#f92672">.</span>ctx <span style="color:#f92672">=</span> canvas<span style="color:#f92672">.</span>getContext(<span style="color:#e6db74">&#34;2d&#34;</span>)
+        
+        canvas<span style="color:#f92672">.</span>style<span style="color:#f92672">.</span>width <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>width<span style="color:#e6db74">}</span><span style="color:#e6db74">px&#34;</span>
+        canvas<span style="color:#f92672">.</span>style<span style="color:#f92672">.</span>height <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>height<span style="color:#e6db74">}</span><span style="color:#e6db74">px&#34;</span>
+
+        canvas<span style="color:#f92672">.</span>width <span style="color:#f92672">=</span> width
+        canvas<span style="color:#f92672">.</span>height <span style="color:#f92672">=</span> height
+        self<span style="color:#f92672">.</span>randomizePath()
+        print(self<span style="color:#f92672">.</span>pathPoints)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getNewPoint</span>(self):
+        <span style="color:#66d9ef">return</span> (randint(<span style="color:#ae81ff">2</span>,self<span style="color:#f92672">.</span>width<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>), randint(<span style="color:#ae81ff">2</span>, self<span style="color:#f92672">.</span>height<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>))
+    
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">randomizePath</span>(self):
+        self<span style="color:#f92672">.</span>pathPoints <span style="color:#f92672">=</span> [self<span style="color:#f92672">.</span>getNewPoint() <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(self<span style="color:#f92672">.</span>numPoints)]
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">movePath</span>(self):
+        self<span style="color:#f92672">.</span>pathPoints <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>pathPoints[<span style="color:#ae81ff">1</span>:]
+        self<span style="color:#f92672">.</span>pathPoints<span style="color:#f92672">.</span>append(self<span style="color:#f92672">.</span>getNewPoint())
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">clearPath</span>(self):
+        self<span style="color:#f92672">.</span>ctx<span style="color:#f92672">.</span>clearRect(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1000</span>,<span style="color:#ae81ff">1000</span>)
+    
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">drawPath</span>(self):
+        self<span style="color:#f92672">.</span>ctx<span style="color:#f92672">.</span>beginPath()    
+        self<span style="color:#f92672">.</span>ctx<span style="color:#f92672">.</span>moveTo(<span style="color:#f92672">*</span>self<span style="color:#f92672">.</span>pathPoints[<span style="color:#ae81ff">0</span>])
+        <span style="color:#66d9ef">for</span> i, point <span style="color:#f92672">in</span> enumerate(self<span style="color:#f92672">.</span>pathPoints[<span style="color:#ae81ff">1</span>:]):
+            self<span style="color:#f92672">.</span>ctx<span style="color:#f92672">.</span>lineTo(<span style="color:#f92672">*</span>point)
+            self<span style="color:#f92672">.</span>ctx<span style="color:#f92672">.</span>stroke()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">remakePath</span>(self):
+        self<span style="color:#f92672">.</span>clearPath()
+        <span style="color:#75715e">#self.randomizePath()</span>
+        self<span style="color:#f92672">.</span>movePath()
+        self<span style="color:#f92672">.</span>drawPath()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start</span>(self, interval):
+        setInterval(create_proxy(self<span style="color:#f92672">.</span>remakePath), interval)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see full code</p>
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>
