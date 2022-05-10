@@ -255,15 +255,96 @@ while True:
 
 <h2 class="mt-12 post-h2">CRUD<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#timer"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">The task is to build a frame containing the following elements: a textfield Tprefix, a pair of textfields Tname and Tsurname, a listbox L, buttons BC, BU and BD and the three labels as seen in the screenshot. L presents a view of the data in the database that consists of a list of names. At most one entry can be selected in L at a time. By entering a string into Tprefix the user can filter the names whose surname start with the entered prefix—this should happen immediately without having to submit the prefix with enter. Clicking BC will append the resulting name from concatenating the strings in Tname and Tsurname to L. BU and BD are enabled iff an entry in L is selected. In contrast to BC, BU will not append the resulting name but instead replace the selected entry with the new name. BD will remove the selected entry. The layout is to be done like suggested in the screenshot. In particular, L must occupy all the remaining space.</h3>
+<py-script>
+from js import console
+from pyodide import create_proxy
+from dataclasses import dataclass, field
+from collections import UserList
+from random import randint
+
+@dataclass(order=True)
+class Entry():
+    surname: str    
+    firstname: str
+    
+
+class EntryList(UserList):
+    def append(self, other):
+        super().append(other)
+        self.data = sorted(self.data)
+
+entries = EntryList()
+
+def _get_namefields():
+    first = document.getElementById("firstname-input").value
+    sur = document.getElementById("surname-input").value
+    return first, sur
+
+def _update_view():
+    console.log("Updating listbox view")
+    list = document.getElementById("listbox")
+    list.innerHTML = ""
+
+    filter_text = document.getElementById("filter-input").value
+    if filter_text == "": filter = None
+    else: filter = filter_text
+
+    for entry in entries:
+        if filter is None or entry.surname.startswith(filter):
+            option = document.createElement('option')
+            option.value = entry.firstname + ", " + entry.surname
+            option.text = entry.firstname + ", " + entry.surname
+            list.appendChild(option)
+
+def _create_entry(*args, **kwargs):
+    console.log("Create clicked")
+    first, sur = _get_namefields()
+    new_entry = Entry(firstname = first, surname = sur)
+    entries.append(new_entry)
+    _update_view()
+
+def _delete_entry(*args, **kwargs):
+    console.log("Delete clicked")
+    list = document.getElementById("listbox")
+    index = list.selectedIndex
+    
+    if index >= 0:
+        entries.pop(index)
+        _update_view()
+
+def _update_entry(*args, **kwargs):
+    list = document.getElementById("listbox")
+    index = list.selectedIndex
+
+    if index >= 0:
+        entries.pop(index)
+        _create_entry()
+
+def _filter_key(*args, **kwargs):
+    console.log("Filter input changed")
+    _update_view()
+
+create_entry = create_proxy(_create_entry)
+delete_entry = create_proxy(_delete_entry)
+update_entry = create_proxy(_update_entry)
+filter_key = create_proxy(_filter_key)
+
+document.getElementById("create").addEventListener("click", create_entry)
+document.getElementById("delete").addEventListener("click", delete_entry)
+document.getElementById("update").addEventListener("click", update_entry)
+
+document.getElementById("filter-input").addEventListener("input", filter_key)
+
+</py-script>
 <div class="m-4">
     <div class="grid p-4 m-auto border-2 bg-green-50 justify-items-start">
         <div id="upper-content" class="grid bg-red-200">
             <div id="filter-box" class="grid w-full grid-cols-2 bg-green-400">
-                <p id="filter-label">Filter Prefix</p>
-                <input type="text" id="filter-input" class="bg-purple-300">
+                <p id="filter-label w-auto">Filter Prefix
+                <input type="text" id="filter-input" class="bg-purple-300"></p>
             </div>
             <div id="middle-section" class="grid grid-cols-2">
-                <div id="listbox" class="h-48 m-4 bg-blue-400">test</div>
+                <select id="listbox" size="5" class="h-48 m-4 bg-blue-200">test</select>
                 <div id="name-entry-container" class="grid">
                     <div id="firstname-container" class="grid grid-cols-2">
                         <p>Name:</p>
