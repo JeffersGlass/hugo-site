@@ -1,0 +1,285 @@
+---
+title: "7GUIs Pyscript"
+date: 2022-05-10T07:16:07-05:00
+draft: true
+tags:
+- post
+description: "Let's build 'The 7 GUIs' with Python in the Browser using PyScript"
+---
+<head>
+    <script defer src="./pyscript.js"></script>
+</head>
+<p class="post-p"><a href="https://eugenkiss.github.io/7guis/tasks/">The Seven Guis</a> is a set of typical challenges in GUI programming. <a href="https://eugenkiss.github.io/7guis/implementations">Implementations abound</a>, in lower-level frameworks like tcl and Qt to modernist frameworks like React and Svelte.</p>
+<p class="post-p">Let's see what it takes to implement them in PyScript.</p>
+
+<h2 class="post-h2">Counter <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#counter"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">"The task is to build a frame containing a label or read-only textfield T and a button B. Initially, the value in T is “0” and each click of B increases the value in T by one." </h3>
+<py-script src="counter.py"></py-script>
+<div class="m-4">
+    <div class="grid grid-cols-2 p-4 m-auto border-2 bg-green-50 justify-items-center">
+        <label id="counter-target" class="w-full text-center bg-white border-2">Some Placeholder Text</label>
+        <py-button id="counter-btn" label="Count" class="">
+            def on_click(event):
+                add_one()
+        </py-button>
+        </div>
+</div>
+<p class="post-p">We can break the parts of this initial problem into a few key questions, with answers:
+<h4 class="text-lg font-semibold">How do buttons works in PyScript</h4>
+<p class="post-p">When you add a <span class="font-bold">&lt;py-button&gt;</span> tag to your page, on page-load, PyScript (specifically the code in <a href="https://github.com/pyscript/pyscript/blob/main/pyscriptjs/src/components/pybutton.ts">pybutton.ts</a> adds a &lt;button&gt; tag to the DOM with all the same classes that the py-button tag had. Then, if the Python code inside the py-button tag defines an <code class="code">on_focus</code> or <code class="code">on_click</code> method, callbacks are registered in Javascript to cause those methods to run on focus/click as appropriate.</p>
+<p class="post-p">So, to create a "Count" button to increment our counter, we can do something as simple as:</p>
+<p class="code-title">myPage.html</p>
+{{< highlight python3 >}}
+<py-button>
+    def on_click(event):
+        add_one()
+</py-button>
+{{< /highlight >}}
+<h4 class="text-lg font-semibold">How do we put output from a script in a specific place on a page?</h4>
+<p class="post-p">Of course, we'll need to actually define that <code class="code">add_one</code> function somewhere, to add one to... </p>
+<p class="post-p">Well, I guess we'll somewhere to display the count as well. Lets add a paragraph tag to our HTML code, and give it an id so we can refer to it later: <pre><code class="code">&lt;p class="counter-target"&gt;Some Placeholder Text&lt;/p&gt;</code></pre></p>
+<p class="post-p">We could choose to leave the tag empty for now, or perhaps have a "0" there to hide a bit of ugliness as the page loads, but I having placeholder text will give us a clearer view of what's happening when.</p>
+<p class="post-p">To actually change the content of our new tag, we can use the <a href="https://github.com/pyscript/pyscript/blob/bc4581d9e50286f0463285f13c015e487831fa0e/pyscriptjs/src/pyscript.py#L110-L129">PyScript.write() function</a>, which takes an <code>element_id</code> as a string, a <code>value</code> to replace/append there (another string), and an optional <code>append</code> argument to tell whether the new content should be appended (as a new div) or replace the existing content.</p>
+<p class="post-p">So, to start our count at zero and have it increment each time we press the "Count" button, our code could look something like:</p>
+<p class="code-title">myPage.html</p>
+{{< highlight python3 >}}
+<p id="counter-target">Some Placeholder Text</p>
+<py-button>
+    def on_click(event):
+        add_one()
+</py-button>
+
+<py-script>
+internalCount = 0
+target = "counter-target"
+PyScript.write(target, str(internalCount), append=False)
+
+def add_one():
+    global internalCount
+    internalCount += 1
+    PyScript.write(target, str(internalCount), append=False)
+</py-script>
+{{< /highlight >}}
+<h4 class="text-lg font-semibold">How do we seperate Python code into external files?</h4>
+<p class="post-p">For cleanliness, let's put our code in a separate file called <code>counter.py</code>. To include use this in our html page, we simple use the <code class="code">src</code> attribute of the py-script tag to specify an additional external source. Thus, our complete solution looks like:</p>
+<p class="code-title">myPage.html</p>
+{{< highlight python3 >}}
+<p id="counter-target">Some Placeholder Text</p>
+<py-button>
+    def on_click(event):
+        add_one()
+</py-button>
+<py-script src="counter.py"></py-script>
+{{< /highlight >}}
+<br>
+<p class="code-title">counter.py</p>
+{{< highlight python3 >}}
+internalCount = 0
+target = "counter-target"
+PyScript.write(target, str(internalCount), append=False)
+
+def add_one():
+    global internalCount
+    internalCount += 1
+    PyScript.write(target, str(internalCount), append=False)
+{{< /highlight >}}
+</p>
+<h2 class="mt-12 post-h2">Temperature Converter <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#temp"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">"The task is to build a frame containing two textfields TC and TF representing the temperature in Celsius and Fahrenheit, respectively. Initially, both TC and TF are empty. When the user enters a numerical value into TC the corresponding value in TF is automatically updated and vice versa. When the user enters a non-numerical string into TC the value in TF is not updated and vice versa. The formula for converting a temperature C in Celsius into a temperature F in Fahrenheit is C = (F - 32) * (5/9) and the dual direction is F = C * (9/5) + 32." </h3>
+<py-script>
+from js import document
+
+#This is necessary for reasons I don't understand
+from pyodide import create_proxy
+
+write_in_progress = False
+
+def isTemp(input_temp):
+    try:
+        _ = float(input_temp)
+    except Exception as err:
+        return False
+    
+    return True
+
+def _f(self, *args, **kwargs):
+    global write_in_progress
+    if write_in_progress:
+        return
+    else:
+        write_in_progress = True
+        f_input = document.getElementById("f-temp")
+        input_value = f_input.value
+        if isTemp(input_value):
+            c_output = document.getElementById("c-temp")
+            c_output.value = (int(input_value) - 32) * (5/9)
+        write_in_progress = False
+
+def _c(self, *args, **kwargs):
+    global write_in_progress
+    if write_in_progress:
+        return
+    else:
+        write_in_progress = True
+        c_input = document.getElementById("c-temp")
+        input_value = c_input.value
+        if isTemp(input_value):
+            f_output = document.getElementById("f-temp")
+            f_output.value = (int(input_value) * (9/5)) + 32
+        write_in_progress = False
+
+f_change = create_proxy(_f)
+c_change = create_proxy(_c)
+
+document.querySelector("#f-temp").addEventListener("input", f_change)
+document.querySelector("#c-temp").addEventListener("input", c_change)
+</py-script>
+<div class="m-4">
+    <div class="grid grid-cols-2 p-4 m-auto border-2 bg-green-50 justify-items-center">
+            <div>
+                <h4 class="font-semibold">Fahrenheit</h4>
+                <input id = "f-temp" class="w-3/4 bg-white border-4">
+            </div>
+            <div>
+                <h4 class="font-semibold">Celcius</h4>
+                <input id="c-temp" class="w-3/4 bg-white border-4">
+            </div>
+    </div>
+</div>
+<h2 class="mt-12 post-h2">Flight Booker <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#flight"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">"The task is to build a frame containing a combobox C with the two options “one-way flight” and “return flight”, two textfields T1 and T2 representing the start and return date, respectively, and a button B for submitting the selected flight. T2 is enabled iff C’s value is “return flight”. When C has the value “return flight” and T2’s date is strictly before T1’s then B is disabled. When a non-disabled textfield T has an ill-formatted date then T is colored red and B is disabled. When clicking B a message is displayed informing the user of his selection (e.g. “You have booked a one-way flight on 04.04.2014.”). Initially, C has the value “one-way flight” and T1 as well as T2 have the same (arbitrary) date (it is implied that T2 is disabled).</h3>
+<py-script>
+from js import document
+#This is necessary for reasons I don't understand
+from pyodide import create_proxy
+
+def _flight_mode_change(*args, **kwargs):
+    currentMode = document.getElementById("flight-mode-select").value
+    if currentMode == 'one':
+        document.getElementById("ret").disabled = True
+    else:
+        document.getElementById("ret").disabled = False
+
+flight_mode_change = create_proxy(_flight_mode_change)
+document.getElementById("flight-mode-select").addEventListener("input", flight_mode_change)
+
+def _book_flight(*args, **kwargs):
+    currentMode = document.getElementById("flight-mode-select").value
+    departure = document.getElementById("dep").value
+    return_flight = document.getElementById("ret").value
+
+    if currentMode == 'one':
+        document.getElementById("flight-info").innerText = f"You've booked a one-way flight departing on {departure}."
+    else:
+        document.getElementById("flight-info").innerText = f"You've booked a round-trip flight departing on {departure} and returning on {return_flight}."
+
+book_flight = create_proxy(_book_flight)
+document.getElementById("book-flight").addEventListener("click", book_flight)
+
+flight_mode_change()
+
+</py-script>
+<div class="m-4">
+    <div class="grid grid-rows-4 p-4 border-2 bg-green-50 justify-items-left">
+            <div>
+                <select name="flight-mode" id="flight-mode-select">
+                    <option value="one">One Way</option>
+                    <option value="round">Round Trip</option>
+                </select>
+            </div>
+            <div>
+                <h4 class="font-semibold">Departure Date</h4>
+                <input id = "dep" class="w-3/4 bg-white border-4">
+            </div>
+            <div>
+                <h4 class="font-semibold">Return Date</h4>
+                <input id="ret" class="w-3/4 bg-white border-4">
+            </div>
+            <div>
+                <button id="book-flight" class="p-2 my-2 bg-green-200 border-2 rounded-lg">Book Flight</button>
+                <p id="flight-info" class="italic">Flight Info will go here</p>
+            </div>
+    </div>
+</div>
+<h2 class="mt-12 post-h2">Timer<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#timer"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">The task is to build a frame containing a gauge G for the elapsed time e, a label which shows the elapsed time as a numerical value, a slider S by which the duration d of the timer can be adjusted while the timer is running and a reset button R. Adjusting S must immediately reflect on d and not only when S is released. It follows that while moving S the filled amount of G will (usually) change immediately. When e ≥ d is true then the timer stops (and G will be full). If, thereafter, d is increased such that d > e will be true then the timer restarts to tick until e ≥ d is true again. Clicking R will reset e to zero.</h3>
+<py-script>
+import asyncio
+from js import document, console
+from pyodide import create_proxy
+
+my_time = 0
+seconds_element = document.getElementById("seconds")
+duration_slider = document.getElementById("duration-slider")
+progress_bar = document.getElementById("progress-bar")
+
+def _reset_time(*args, **kwargs):
+    console.log("Time reset")
+    global my_time
+    my_time = 0
+
+reset_time = create_proxy(_reset_time)
+document.getElementById("reset").addEventListener("click", reset_time)
+
+while True:
+    await asyncio.sleep(.1)
+    my_time = round(my_time + .1, 2)
+    seconds_element.innerText = my_time
+
+    min_time = int(duration_slider.min)
+    max_time = int(duration_slider.value)
+
+    min_bar = 0
+    max_bar = int(progress_bar.max)
+
+    progress_bar.value = (my_time - min_time) * (max_bar - 0) / (max_time - min_time + 1)
+</py-script>
+<div class="m-4">
+    <div class="grid grid-rows-4 p-4 m-auto border-2 bg-green-50 justify-items-start">
+        <div class="grid grid-cols-2 justify-items-start">
+            <p>Ellapsed Time:</p>
+            <progress id="progress-bar" value="32" max="100"> 32% </progress>
+        </div>
+        <div>
+            <p id="seconds">Seconds</p>
+        </div>
+        <div class="flex flex-row justify-items-center">
+            <p>Duration</p>
+            <div class="w-full m-auto"><input type="range" min="1" max="100" value="50" id="duration-slider" class="w-72"></div>
+        </div>
+        <div>
+            <button id="reset" class="px-2 my-2 bg-green-200 border-2 rounded-lg">RESET</button>
+        </div>
+    </div>
+</div>
+
+<h2 class="mt-12 post-h2">CRUD<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#timer"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">The task is to build a frame containing the following elements: a textfield Tprefix, a pair of textfields Tname and Tsurname, a listbox L, buttons BC, BU and BD and the three labels as seen in the screenshot. L presents a view of the data in the database that consists of a list of names. At most one entry can be selected in L at a time. By entering a string into Tprefix the user can filter the names whose surname start with the entered prefix—this should happen immediately without having to submit the prefix with enter. Clicking BC will append the resulting name from concatenating the strings in Tname and Tsurname to L. BU and BD are enabled iff an entry in L is selected. In contrast to BC, BU will not append the resulting name but instead replace the selected entry with the new name. BD will remove the selected entry. The layout is to be done like suggested in the screenshot. In particular, L must occupy all the remaining space.</h3>
+<div class="m-4">
+    <div class="grid p-4 m-auto border-2 bg-green-50 justify-items-start">
+        <div id="upper-content" class="grid bg-red-200">
+            <div id="filter-box" class="grid w-full grid-cols-2 bg-green-400">
+                <p id="filter-label">Filter Prefix</p>
+                <input type="text" id="filter-input" class="bg-purple-300">
+            </div>
+            <div id="middle-section" class="grid grid-cols-2">
+                <div id="listbox" class="h-48 m-4 bg-blue-400">test</div>
+                <div id="name-entry-container" class="grid">
+                    <div id="firstname-container" class="grid grid-cols-2">
+                        <p>Name:</p>
+                        <input type="text" id="firstname-input">
+                    </div>
+                    <div id="surname-container" class="grid grid-cols-2">
+                        <p>Surname:</p>
+                        <input type="text" id="surname-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="lower-buttons" class="grid w-full grid-cols-3">
+            <button id="create" class="m-4 bg-gray-200 border-2 border-gray-400 rounded-md">Create</button>
+            <button id="update" class="m-4 bg-gray-200 border-2 border-gray-400 rounded-md">Update</button>
+            <button id="delete" class="m-4 bg-gray-200 border-2 border-gray-400 rounded-md">Delete</button>
+        </div>
+    </div>
+</div>
