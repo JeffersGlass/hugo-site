@@ -366,3 +366,90 @@ document.getElementById("filter-input").addEventListener("input", filter_key)
         </div>
     </div>
 </div>
+<h2 class="mt-12 post-h2">Circle Drawer<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#circle"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">The task is to build a frame containing an undo and redo button as well as a canvas area underneath. Left-clicking inside an empty area inside the canvas will create an unfilled circle with a fixed diameter whose center is the left-clicked point. The circle nearest to the mouse pointer such that the distance from its center to the pointer is less than its radius, if it exists, is filled with the color gray. The gray circle is the selected circle C. Right-clicking C will make a popup menu appear with one entry “Adjust diameter..”. Clicking on this entry will open another frame with a slider inside that adjusts the diameter of C. Changes are applied immediately. Closing this frame will mark the last diameter as significant for the undo/redo history. Clicking undo will undo the last significant change (i.e. circle creation or diameter adjustment). Clicking redo will reapply the last undoed change unless new changes were made by the user in the meantime.</h3>
+<div class="grid p-4 m-auto border-2 bg-green-50">
+    <canvas id="circle-canvas" width="500" height="500" class="m-auto border-2" ></canvas>
+</div>
+<py-script>
+from js import document,console
+from math import pi, sqrt
+from pyodide import create_proxy
+from random import randint
+from dataclasses import dataclass
+
+canvas = document.getElementById("circle-canvas")
+ctx = canvas.getContext("2d")
+#Fill background with white
+ctx.fillStyle = "white"
+ctx.fillRect(0,0, canvas.width, canvas.height)
+
+@dataclass
+class Circle():
+    x: int
+    y: int
+    radius: int
+
+my_circles = list()
+closest_circle_index = -1
+
+def _clear_screen():
+    ctx.fillStyle = "white"
+    ctx.fillRect(0,0, canvas.width, canvas.height)
+
+def _draw_circle(x, y, radius):
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2*pi)
+    ctx.stroke()
+
+def _draw_filled_circle(x, y, radius):
+    console.log(f"Drawing filled circle at {x}, {y}, with radius {radius}")
+    
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2*pi)
+    ctx.fillStyle = "gray"
+    ctx.fill()
+
+def _redraw_all():
+    _clear_screen()
+    if len(my_circles):
+        if closest_circle_index >= 0:
+            c = my_circles[closest_circle_index]
+            _draw_filled_circle(c.x, c.y, c.radius)
+        for c in my_circles:
+            _draw_circle(c.x, c.y, c.radius)
+
+def _on_click(e):
+    global my_circles
+    console.log(str(e.offsetX) + " " + str(e.offsetY))
+    if e.button == 0:
+        new_circle = Circle(e.offsetX, e.offsetY, randint(40,70))
+        my_circles.append(new_circle)
+        _redraw_all()
+    else:
+        _clear_screen()
+        my_circles = list()
+
+def _on_move(e):
+    if len(my_circles):
+        closest_index = -1
+        closest_distance = 1000000
+        for i, c in enumerate(my_circles):
+            dist = sqrt((e.offsetX - c.x) ** 2 + (e.offsetY - c.y) ** 2)
+            if dist < closest_distance: 
+                closest_index = i
+                closest_distance = dist
+        
+        global closest_circle_index
+        if closest_index != closest_circle_index:
+            closest_circle_index = closest_index
+            _redraw_all()
+
+
+on_click = create_proxy(_on_click)
+on_move = create_proxy(_on_move)
+
+document.getElementById("circle-canvas").addEventListener("mousedown", on_click)
+document.getElementById("circle-canvas").addEventListener("mousemove", on_move)
+
+</py-script>
