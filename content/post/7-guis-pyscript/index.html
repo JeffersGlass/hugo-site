@@ -371,8 +371,20 @@ document.getElementById("filter-input").addEventListener("input", filter_key)
 <div class="grid p-4 m-auto border-2 bg-green-50">
     <canvas id="circle-canvas" width="500" height="500" class="m-auto border-2" ></canvas>
 </div>
+<div id="contextMenu" class="context-menu" 
+    style="display: none">
+    <ul>
+        <li><a href="#">Element-1</a></li>
+        <li><a href="#">Element-2</a></li>
+        <li><a href="#">Element-3</a></li>
+        <li><a href="#">Element-4</a></li>
+        <li><a href="#">Element-5</a></li>
+        <li><a href="#">Element-6</a></li>
+        <li><a href="#">Element-7</a></li>
+    </ul>
+</div>
 <py-script>
-from js import document,console
+from js import document, console, window
 from math import pi, sqrt
 from pyodide import create_proxy
 from random import randint
@@ -427,8 +439,13 @@ def _on_click(e):
         my_circles.append(new_circle)
         _redraw_all()
     else:
-        _clear_screen()
-        my_circles = list()
+        #_clear_screen()
+        #my_circles = list()
+        e.preventDefault() 
+        window.alert("Right click!")
+        ####TODO: IMPLEMENT RIGHT CLICK BEHAVIOR
+        return False
+        
 
 def _on_move(e):
     if len(my_circles):
@@ -444,7 +461,6 @@ def _on_move(e):
         if closest_index != closest_circle_index:
             closest_circle_index = closest_index
             _redraw_all()
-
 
 on_click = create_proxy(_on_click)
 on_move = create_proxy(_on_move)
