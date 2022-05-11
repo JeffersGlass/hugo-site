@@ -67,10 +67,15 @@ class FormulaParser():
         tokens.append(Node(TokenType.T_END, "end"))
         return tokens
 
+    def get_referenced_cells(token_list: list) -> list[str]:
+        return [node for node in token_list if isinstance(node, Node) and node.token_type == TokenType.T_CELL]
+
+
 if __name__ == "__main__":
-    value = "3+4 / 7 + 2"
+    value = "3+ C4 / 7 + D2"
     result = FormulaParser.tokenize(value)
-    for token in result:
+    references = FormulaParser.get_referenced_cells(result)
+    for token in references:
         print(token)
 
 
