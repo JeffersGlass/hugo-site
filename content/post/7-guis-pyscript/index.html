@@ -148,6 +148,11 @@ document.querySelector("#c-temp").addEventListener("input", c_change)
 </div>
 <h2 class="mt-12 post-h2">Flight Booker <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#flight"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">"The task is to build a frame containing a combobox C with the two options “one-way flight” and “return flight”, two textfields T1 and T2 representing the start and return date, respectively, and a button B for submitting the selected flight. T2 is enabled iff C’s value is “return flight”. When C has the value “return flight” and T2’s date is strictly before T1’s then B is disabled. When a non-disabled textfield T has an ill-formatted date then T is colored red and B is disabled. When clicking B a message is displayed informing the user of his selection (e.g. “You have booked a one-way flight on 04.04.2014.”). Initially, C has the value “one-way flight” and T1 as well as T2 have the same (arbitrary) date (it is implied that T2 is disabled).</h3>
+<py-env>
+- paths:
+    - ./table.py
+    - ./formula_parser.py
+</py-env>
 <py-script>
 from js import document
 #This is necessary for reasons I don't understand
@@ -503,5 +508,17 @@ change_radius = create_proxy(_change_radius)
 document.getElementById("circle-canvas").addEventListener("mousedown", on_click)
 document.getElementById("circle-canvas").addEventListener("mousemove", on_move)
 document.getElementById("circle-slider").addEventListener("input", change_radius)
-
+</py-script>
+<h2 class="mt-12 post-h2">Cells<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#cells"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
+<h3 class="italic">The task is to create a simple but usable spreadsheet application. The spreadsheet should be scrollable. The rows should be numbered from 0 to 99 and the columns from A to Z. Double-clicking a cell C lets the user change C’s formula. After having finished editing the formula is parsed and evaluated and its updated value is shown in C. In addition, all cells which depend on C must be reevaluated. This process repeats until there are no more changes in the values of any cell (change propagation). Note that one should not just recompute the value of every cell but only of those cells that depend on another cell’s changed value. If there is an already provided spreadsheet widget it should not be used. Instead, another similar widget (like JTable in Swing) should be customized to become a reusable spreadsheet widget.</h3>
+<link rel ="stylesheet" type="text/css" href="./cells-table.css">
+<div class="grid p-4 m-auto border-2 bg-green-50">
+    <div id="spreadsheet-wrapper" class="overflow-x-auto overflow-y-auto h-72">
+        <table id="spreadsheet" style="empty-cells:show" class="m-auto bg-white">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<py-script src="./cells-table.py">
 </py-script>
