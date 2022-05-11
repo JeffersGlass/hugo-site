@@ -371,17 +371,13 @@ document.getElementById("filter-input").addEventListener("input", filter_key)
 <div class="grid p-4 m-auto border-2 bg-green-50">
     <canvas id="circle-canvas" width="500" height="500" class="m-auto border-2" ></canvas>
 </div>
-<div id="contextMenu" class="context-menu" 
+<link rel ="stylesheet" type="text/css" href="./context-menu.css">
+<div id="right-click-menu" class="absolute bg-gray-200 border-1" 
     style="display: none">
-    <ul>
-        <li><a href="#">Element-1</a></li>
-        <li><a href="#">Element-2</a></li>
-        <li><a href="#">Element-3</a></li>
-        <li><a href="#">Element-4</a></li>
-        <li><a href="#">Element-5</a></li>
-        <li><a href="#">Element-6</a></li>
-        <li><a href="#">Element-7</a></li>
-    </ul>
+    <div class="mx-4 my-2">
+        <p id="circle-slider-label">Adjust diameter of Circle at (x, y)</p>
+        <div class="w-full m-auto"><input type="range" min="1" max="100" value="50" id="circle-slider" class="w-5/6"></div>
+    </div>
 </div>
 <py-script>
 from js import document, console, window
@@ -434,25 +430,63 @@ def _redraw_all():
 def _on_click(e):
     global my_circles
     console.log(str(e.offsetX) + " " + str(e.offsetY))
-    if e.button == 0:
+    if e.button == 0: #left mouse button
         new_circle = Circle(e.offsetX, e.offsetY, randint(40,70))
         my_circles.append(new_circle)
+        _hide_menu(e)
         _redraw_all()
     else:
-        #_clear_screen()
-        #my_circles = list()
-        e.preventDefault() 
-        window.alert("Right click!")
-        ####TODO: IMPLEMENT RIGHT CLICK BEHAVIOR
+        if (document.getElementById("right-click-menu").style.display == "block"): _hide_menu(e)
+        elif closest_circle_index >= 0: _show_menu(e)
+        e.preventDefault()
+        e.stopPropagation()
         return False
-        
 
+def _no_context(e):
+    e.preventDefault()
+    e.stopPropagation()
+    return False
+
+canvas.oncontextmenu = _no_context
+document.getElementById("right-click-menu").oncontextmenu = _no_context
+
+def _show_menu(event):
+    console.log("Right mouse button clicked, showing menu")
+    menu = document.getElementById("right-click-menu")
+    menu.style.display = "block"
+    menu.style.left = str(event.pageX) + "px"
+    menu.style.top = str(event.pageY) + "px"
+
+    c = my_circles[closest_circle_index]
+
+    label = document.getElementById("circle-slider-label")
+    label.innerText = f"Adjust diameter of Circle at ({c.x}, {c.y})"
+
+    slider = document.getElementById("circle-slider")
+    slider.value = my_circles[closest_circle_index].radius
+
+def _change_radius(_):
+    slider = document.getElementById("circle-slider")
+    new_radius = slider.value
+    my_circles[closest_circle_index].radius = new_radius
+    _redraw_all()
+    
+
+def _hide_menu(e):
+    document.getElementById("right-click-menu").style.display = "none"
+    _recalc_nearest_circle(e.offsetX, e.offsetY)
+        
 def _on_move(e):
+    #Do not reselect circle when menu is open
+    if document.getElementById("right-click-menu").style.display == "block": return 
     if len(my_circles):
+        _recalc_nearest_circle(e.offsetX, e.offsetY)
+
+def _recalc_nearest_circle(mouse_x, mouse_y):
         closest_index = -1
         closest_distance = 1000000
         for i, c in enumerate(my_circles):
-            dist = sqrt((e.offsetX - c.x) ** 2 + (e.offsetY - c.y) ** 2)
+            dist = sqrt((mouse_x - c.x) ** 2 + (mouse_y - c.y) ** 2)
             if dist < closest_distance: 
                 closest_index = i
                 closest_distance = dist
@@ -464,8 +498,10 @@ def _on_move(e):
 
 on_click = create_proxy(_on_click)
 on_move = create_proxy(_on_move)
+change_radius = create_proxy(_change_radius)
 
 document.getElementById("circle-canvas").addEventListener("mousedown", on_click)
 document.getElementById("circle-canvas").addEventListener("mousemove", on_move)
+document.getElementById("circle-slider").addEventListener("input", change_radius)
 
 </py-script>
