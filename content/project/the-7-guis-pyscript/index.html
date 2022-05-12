@@ -1,0 +1,248 @@
+---
+title: "The 7 Guis - Pyscript"
+date: 2022-05-12T07:57:13-05:00
+draft: true
+tags:
+- Python
+- PyScript
+description: "Building 7 Foundational WEB GUIs in Python"
+---
+<style>
+    .project-row {
+        padding-top: 1em;
+        padding-bottom: 1em;
+    }
+    .project-description {
+        text-align: justify;
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
+    }
+</style>
+<p class="post-p">Since <a href="https://anaconda.cloud/pyscript-pycon2022-peter-wang-keynote">it's announcement at PyCon 2022</a>, the Python community has been buzzing about <a href="https://www.pyscript.com/">PyScript</a>, a framewok for creating and running Python applications in the browser. Below are implementations of <a href="https://eugenkiss.github.io/7guis/tasks">The 7 GUIs</a> in PyScript, which hopefully will hopefully be educational for those looking to get into writing Python for the web. (They were certainly educational to create.) Using <span class="font-semibold">View Source</span> is highly encouraged.</p>
+<p class="italic post-p">Examples are only tested in Chrome on Desktop. Your experience on mobile/touch devices may vary. If you find a glaring error, or you make something cool with PyScript, <a href="https://www.twitter.com/jeffersglass">I want to hear about it!</a></p>
+<div class="grid grid-cols-1" id="row-container">
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-centerw-full md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">Counter</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#counter" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span> A label which starts are zero and a button labelled "Count." Pressing the button increments the number in the label by 1.</p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Basic interactivity, scaffolding, buttons</p>
+                <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Browser console, PyScript.write()</p>
+            </div>
+        </div>
+        <py-script src="/post/7-guis-pyscript/counter.py"></py-script>
+        <div class="flex items-center justify-center w-full my-8 md:w-1/2">
+            <div class="grid w-full grid-cols-2 p-4 m-auto border-2 rounded-md bg-green-50 justify-items-center">
+                <label id="counter-target" class="w-full text-center align-middle bg-white border-2">{PyScript Loading}</label>
+                <py-button id="counter-btn" label="Count" class="">
+                    def on_click(event):
+                        add_one()
+                </py-button>
+                </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-center w-full my-8 md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">Temperature Converter</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#temp" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span> Two input boxes, labelled Fahrenheit and Celcius. Typing a number into either immediately updates the other to the corresponding converted temperature. Entering anything other than a number has no effect.</p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Bidirectional data flow, user-provided text imput, live-updating in response to input</p>
+                <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Atached event listeners to DOM objects, JS proxies, math, function flow</p>
+            </div>
+        </div>
+        <py-script src="/post/7-guis-pyscript/temperature.py"></py-script>
+        <div class="flex items-center justify-center w-full my-8 md:w-1/2">
+            <div class="grid w-full grid-cols-2 p-4 m-auto border-2 rounded-md bg-green-50 justify-items-center">
+                <div>
+                    <h4 class="font-semibold">Fahrenheit</h4>
+                    <input id = "f-temp" class="w-3/4 bg-white border-4">
+                </div>
+                <div>
+                    <h4 class="font-semibold">Celcius</h4>
+                    <input id="c-temp" class="w-3/4 bg-white border-4">
+                </div>
+        </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-center w-full md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">Flight Booker</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#flight" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span>Two input boxes, labelled Departure Date and Arrival Date, along with a selector for One-Way or Round-Trip and a Book Flight button. When One-Way is selected, input to the Departure Date field is disabled. When the Book Flight button is pressed, the user is notified that they have booked a flight for one or both dates, as appropriate.</p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Constraints on input (inputs affect each other), additional text handling, options-box</p>
+                    <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Enabling and disabling inputs, changing innerHTML and innerText</p>
+            </div>
+        </div>
+        <py-script src="/post/7-guis-pyscript/temperature.py"></py-script>
+        <div class="flex items-center justify-center w-full md:w-1/2">
+            <!-- Code for content goes in here -->
+            <div class="grid w-full grid-rows-4 p-4 border-2 rounded-md bg-green-50 justify-items-left">
+                <div>
+                    <select name="flight-mode" id="flight-mode-select">
+                        <option value="one">One Way</option>
+                        <option value="round">Round Trip</option>
+                    </select>
+                </div>
+                <div>
+                    <h4 class="font-semibold">Departure Date</h4>
+                    <input id = "dep" class="w-3/4 bg-white border-4">
+                </div>
+                <div>
+                    <h4 class="font-semibold">Return Date</h4>
+                    <input id="ret" class="w-3/4 bg-white border-4">
+                </div>
+                <div>
+                    <button id="book-flight" class="p-2 my-2 bg-green-200 border-2 rounded-lg">Book Flight</button>
+                    <p id="flight-info" class="italic">Flight Info will go here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-center w-full md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">Timer</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#timer" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span> When the program starts, a timer begins, which is shown on both a text label and a visual guage, with a slider and reset button for control. The duration of the timer is adjusted by moving the slider, and pressing the reset button sets the ellapsed time back to zero.</p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Concurrency, real-time interaction, responsiveness</p>
+                <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Asyncio.sleep(), connected control-flow without events</p>
+            </div>
+        </div>
+        <py-script src="/post/7-guis-pyscript/timer.py"></py-script>
+        <div class="flex items-center justify-center w-full py-8 md:w-1/2">
+            <!-- Code for content goes in here -->
+            <div class="grid w-full grid-rows-4 p-4 border-2 rounded-md bg-green-50 justify-items-start">
+                <div class="flex w-full justify-items-start">
+                    <p class="flex-none">Ellapsed Time:</p>
+                    <progress id="progress-bar" value="50" max="100" class="flex-grow mx-4"> 0% </progress>
+                </div>
+                <div>
+                    <p id="seconds">0.0 Seconds</p>
+                </div>
+                <div class="flex w-full justify-items-center">
+                    <p class="flex-none">Duration</p>
+                    <div class="flex-grow mx-4 "><input type="range" min="1" max="100" value="50" id="duration-slider" class="w-full"></div>
+                </div>
+                <div>
+                    <button id="reset" class="px-2 my-2 bg-green-200 border-2 rounded-lg">RESET</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-center w-full md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">CRUD</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#crud" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span> A selection box shows a 'database' of names. Entering a given-name and surname into to text boxes and pressing the 'create' button adds a new entry to the database. Selecting an entry in the database and clicking the 'update' button will change the selected entry to the values currently in the name boxes. Selecting an entry and pressing the 'delete' button will delete that entry. Enterring text into the 'filter-prefix' textbox will filter the presented entries by surname.</p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Separating domain and presentation logic, managing mutation, building a non-trivial layout
+                <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Managing/sharing state with Python objects, separating data from view, dataclasses</p>
+            </div>
+        </div>
+        <py-script src="/post/7-guis-pyscript/crud.py"></py-script>
+        <div class="flex items-center justify-center w-full py-8 md:w-1/2">
+            <!-- Code for content goes in here -->
+            <div class="grid p-4 m-auto border-2 rounded-md bg-green-50 justify-items-start">
+                <div class="m-auto">
+                    <div id="upper-content" class="bg-green-100">
+                        <div id="filter-box" class="grid w-full grid-cols-2">
+                            <p id="filter-label" class="px-4">Filter Prefix:
+                            <input type="text" id="filter-input" class="border-2 border-gray-300"></p>
+                        </div>
+                        <div id="middle-section" class="grid grid-cols-2">
+                            <select id="listbox" size="5" class="h-48 m-4 bg-blue-50">test</select>
+                            <div id="name-entry-container" class="grid grid-rows-2">
+                                <div id="firstname-container" class="flex flex-rows">
+                                    <p>Name:</p>
+                                    <input type="text" id="firstname-input" class="w-full h-8 mx-2">
+                                </div>
+                                <div id="surname-container" class="flex flex-rows">
+                                    <p>Surname:</p>
+                                    <input type="text" id="surname-input" class="w-full h-8 mx-2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="lower-buttons" class="grid w-full grid-cols-3">
+                        <button id="create" class="m-4 bg-green-200 border-2 border-gray-400 rounded-lg">Create</button>
+                        <button id="update" class="m-4 bg-green-200 border-2 border-gray-400 rounded-lg">Update</button>
+                        <button id="delete" class="m-4 bg-green-200 border-2 border-gray-400 rounded-lg">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-center w-full md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">Circle Drawer</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#circle" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span> A blank drawing canvas is creating. Left-clicking on the canvas creates an empty circle of a random size centered on the mouse. The circle nearest the mouse is shaded gray. Right clicking opens a custom menu that presents a slider which changes the radius of the shaded circle in realtime. Undo and Redo buttons step forward and backward through operations.</p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Undo/redo. Custom drawing, dialog control, realtime interactivity</p>
+                <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Canvas, list and index management, dataclasses, actions-as-objects (undo/redo), hiding/showing/positioning custom elements</p>
+            </div>
+        </div>
+        <py-script src="/post/7-guis-pyscript/circle.py"></py-script>
+        <div class="flex items-center justify-center w-full py-8 md:w-1/2">
+            <!-- Code for content goes in here -->
+            <div class="p-2 border-2 rounded-md bg-green-50 ">
+                <canvas id="circle-canvas" width="400" height="500" class="m-auto border-2" ></canvas>
+                <div id="button-holder" class="flex w-full mt-2 justify-evenly"><button id="undo" class="px-2 bg-green-200 border-2 rounded-lg">Undo</button><button id="redo" class="px-2 bg-green-200 border-2 rounded-lg">Redo</button></div>
+            </div>
+            <link rel ="stylesheet" type="text/css" href="/post/7-guis-pyscript/context-menu.css">
+            <div id="right-click-menu" class="absolute bg-gray-100 rounded-lg border-1" 
+                style="display: none">
+                <div class="mx-4 my-2 ">
+                    <p id="circle-slider-label">Adjust diameter of Circle at (x, y)</p>
+                    <div class="w-full m-auto"><input type="range" min="1" max="100" value="50" id="circle-slider" class="w-5/6"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row project-row">
+        <div class="flex items-center justify-center w-full md:w-1/2">
+            <div>
+                <div class="flex flex-row items-end">
+                    <h3 class="mr-2 post-h3">Cells</h3>
+                    <span>(<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#cells" class="">Spec <img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a>)</span>
+                </div>
+                <p class="project-description"><span class="font-semibold">Description:</span> A spreadsheet is presented to the user, which allows for basic mathematical operations. (+ - / *) <span class="italic">Referencing of other cells is not yet implemented.</span></p>
+                <p class="project-description"><span class="font-semibold">Core Ideas:</span> Change propagation, widget customization, implementing a more involved/authentic GUI application.</p>
+                <p class="project-description"><span class="font-semibold">PyScript/Python Concepts:</span> Input focus/defocus management (blur), realtime and input-trigger processing combined, data structures.</p>
+            </div>
+        </div>
+        <py-env>
+            - paths:
+                - /post/7-guis-pyscript/spreadsheet.py
+                - /post/7-guis-pyscript/formula_parser.py
+            </py-env>
+        <py-script src="/post/7-guis-pyscript/cells-table.py"></py-script>
+        <div class="flex items-center justify-center w-full py-8 md:w-1/2">
+            <!-- Code for content goes in here -->
+            <link rel ="stylesheet" type="text/css" href="/post/7-guis-pyscript/cells-table.css">
+            <div class="grid w-full p-4 m-auto border-2 rounded-md bg-green-50">
+                <div id="spreadsheet-wrapper" class="overflow-x-auto overflow-y-auto h-72">
+                    <table id="spreadsheet" style="empty-cells:show" class="m-auto bg-white border-2">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
