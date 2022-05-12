@@ -5,18 +5,18 @@
 			<div class="pt-16"></div>
 			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
 				<h1 class="pb-2 text-4xl">Project: {{ .Title }}</h1>
+				{{ with .Params.tags }}
+				<div class="flex flex-row text-sm">
+						Tags: 
+						{{ range . }}
+						<a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}" class="px-1">{{ . }}</a>
+						{{ end }}
+				</div>
+				{{ end }}
+				<hr class="py-2">
 				<div>
 					{{ .Content }}
 				</div>
-				{{ with .Params.tags }}
-				<div>
-					<ul id="tags">
-						{{ range . }}
-						<li><a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a></li>
-						{{ end }}
-					</ul>
-				</div>
-				{{ end }}
 				{{ with .Site.DisqusShortname }}
 				<div>
 					{{ template "_internal/disqus.html" . }}
