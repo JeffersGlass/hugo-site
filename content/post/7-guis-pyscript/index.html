@@ -49,16 +49,7 @@ description: "Let's build 'The 7 GUIs' with Python in the Browser using PyScript
         add_one()
 </py-button>
 
-<py-script>
-internalCount = 0
-target = "counter-target"
-PyScript.write(target, str(internalCount), append=False)
-
-def add_one():
-    global internalCount
-    internalCount += 1
-    PyScript.write(target, str(internalCount), append=False)
-</py-script>
+<py-script src="./counter.py"></py-script>
 {{< /highlight >}}
 <h4 class="text-lg font-semibold">How do we seperate Python code into external files?</h4>
 <p class="post-p">For cleanliness, let's put our code in a separate file called <code>counter.py</code>. To include use this in our html page, we simple use the <code class="code">src</code> attribute of the py-script tag to specify an additional external source. Thus, our complete solution looks like:</p>
@@ -86,54 +77,7 @@ def add_one():
 </p>
 <h2 class="mt-12 post-h2">Temperature Converter <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#temp"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">"The task is to build a frame containing two textfields TC and TF representing the temperature in Celsius and Fahrenheit, respectively. Initially, both TC and TF are empty. When the user enters a numerical value into TC the corresponding value in TF is automatically updated and vice versa. When the user enters a non-numerical string into TC the value in TF is not updated and vice versa. The formula for converting a temperature C in Celsius into a temperature F in Fahrenheit is C = (F - 32) * (5/9) and the dual direction is F = C * (9/5) + 32." </h3>
-<py-script>
-from js import document
-
-#This is necessary for reasons I don't understand
-from pyodide import create_proxy
-
-write_in_progress = False
-
-def isTemp(input_temp):
-    try:
-        _ = float(input_temp)
-    except Exception as err:
-        return False
-    
-    return True
-
-def _f(self, *args, **kwargs):
-    global write_in_progress
-    if write_in_progress:
-        return
-    else:
-        write_in_progress = True
-        f_input = document.getElementById("f-temp")
-        input_value = f_input.value
-        if isTemp(input_value):
-            c_output = document.getElementById("c-temp")
-            c_output.value = (int(input_value) - 32) * (5/9)
-        write_in_progress = False
-
-def _c(self, *args, **kwargs):
-    global write_in_progress
-    if write_in_progress:
-        return
-    else:
-        write_in_progress = True
-        c_input = document.getElementById("c-temp")
-        input_value = c_input.value
-        if isTemp(input_value):
-            f_output = document.getElementById("f-temp")
-            f_output.value = (int(input_value) * (9/5)) + 32
-        write_in_progress = False
-
-f_change = create_proxy(_f)
-c_change = create_proxy(_c)
-
-document.querySelector("#f-temp").addEventListener("input", f_change)
-document.querySelector("#c-temp").addEventListener("input", c_change)
-</py-script>
+<py-script src="./temperature.py"></py-script>
 <div class="m-4">
     <div class="grid grid-cols-2 p-4 m-auto border-2 bg-green-50 justify-items-center">
             <div>
@@ -148,42 +92,7 @@ document.querySelector("#c-temp").addEventListener("input", c_change)
 </div>
 <h2 class="mt-12 post-h2">Flight Booker <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#flight"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">"The task is to build a frame containing a combobox C with the two options “one-way flight” and “return flight”, two textfields T1 and T2 representing the start and return date, respectively, and a button B for submitting the selected flight. T2 is enabled iff C’s value is “return flight”. When C has the value “return flight” and T2’s date is strictly before T1’s then B is disabled. When a non-disabled textfield T has an ill-formatted date then T is colored red and B is disabled. When clicking B a message is displayed informing the user of his selection (e.g. “You have booked a one-way flight on 04.04.2014.”). Initially, C has the value “one-way flight” and T1 as well as T2 have the same (arbitrary) date (it is implied that T2 is disabled).</h3>
-<py-env>
-- paths:
-    - ./table.py
-    - ./formula_parser.py
-</py-env>
-<py-script>
-from js import document
-#This is necessary for reasons I don't understand
-from pyodide import create_proxy
-
-def _flight_mode_change(*args, **kwargs):
-    currentMode = document.getElementById("flight-mode-select").value
-    if currentMode == 'one':
-        document.getElementById("ret").disabled = True
-    else:
-        document.getElementById("ret").disabled = False
-
-flight_mode_change = create_proxy(_flight_mode_change)
-document.getElementById("flight-mode-select").addEventListener("input", flight_mode_change)
-
-def _book_flight(*args, **kwargs):
-    currentMode = document.getElementById("flight-mode-select").value
-    departure = document.getElementById("dep").value
-    return_flight = document.getElementById("ret").value
-
-    if currentMode == 'one':
-        document.getElementById("flight-info").innerText = f"You've booked a one-way flight departing on {departure}."
-    else:
-        document.getElementById("flight-info").innerText = f"You've booked a round-trip flight departing on {departure} and returning on {return_flight}."
-
-book_flight = create_proxy(_book_flight)
-document.getElementById("book-flight").addEventListener("click", book_flight)
-
-flight_mode_change()
-
-</py-script>
+<py-script src="./flight.py"></py-script>
 <div class="m-4">
     <div class="grid grid-rows-4 p-4 border-2 bg-green-50 justify-items-left">
             <div>
@@ -208,37 +117,7 @@ flight_mode_change()
 </div>
 <h2 class="mt-12 post-h2">Timer<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#timer"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">The task is to build a frame containing a gauge G for the elapsed time e, a label which shows the elapsed time as a numerical value, a slider S by which the duration d of the timer can be adjusted while the timer is running and a reset button R. Adjusting S must immediately reflect on d and not only when S is released. It follows that while moving S the filled amount of G will (usually) change immediately. When e ≥ d is true then the timer stops (and G will be full). If, thereafter, d is increased such that d > e will be true then the timer restarts to tick until e ≥ d is true again. Clicking R will reset e to zero.</h3>
-<py-script>
-import asyncio
-from js import document, console
-from pyodide import create_proxy
-
-my_time = 0
-seconds_element = document.getElementById("seconds")
-duration_slider = document.getElementById("duration-slider")
-progress_bar = document.getElementById("progress-bar")
-
-def _reset_time(*args, **kwargs):
-    console.log("Time reset")
-    global my_time
-    my_time = 0
-
-reset_time = create_proxy(_reset_time)
-document.getElementById("reset").addEventListener("click", reset_time)
-
-while True:
-    await asyncio.sleep(.1)
-    my_time = round(my_time + .1, 2)
-    seconds_element.innerText = my_time
-
-    min_time = int(duration_slider.min)
-    max_time = int(duration_slider.value)
-
-    min_bar = 0
-    max_bar = int(progress_bar.max)
-
-    progress_bar.value = (my_time - min_time) * (max_bar - 0) / (max_time - min_time + 1)
-</py-script>
+<py-script src="timer.py"></py-script>
 <div class="m-4">
     <div class="grid grid-rows-4 p-4 m-auto border-2 bg-green-50 justify-items-start">
         <div class="grid grid-cols-2 justify-items-start">
@@ -260,87 +139,7 @@ while True:
 
 <h2 class="mt-12 post-h2">CRUD<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#timer"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">The task is to build a frame containing the following elements: a textfield Tprefix, a pair of textfields Tname and Tsurname, a listbox L, buttons BC, BU and BD and the three labels as seen in the screenshot. L presents a view of the data in the database that consists of a list of names. At most one entry can be selected in L at a time. By entering a string into Tprefix the user can filter the names whose surname start with the entered prefix—this should happen immediately without having to submit the prefix with enter. Clicking BC will append the resulting name from concatenating the strings in Tname and Tsurname to L. BU and BD are enabled iff an entry in L is selected. In contrast to BC, BU will not append the resulting name but instead replace the selected entry with the new name. BD will remove the selected entry. The layout is to be done like suggested in the screenshot. In particular, L must occupy all the remaining space.</h3>
-<py-script>
-from js import console
-from pyodide import create_proxy
-from dataclasses import dataclass, field
-from collections import UserList
-from random import randint
-
-@dataclass(order=True)
-class Entry():
-    surname: str    
-    firstname: str
-    
-
-class EntryList(UserList):
-    def append(self, other):
-        super().append(other)
-        self.data = sorted(self.data)
-
-entries = EntryList()
-
-def _get_namefields():
-    first = document.getElementById("firstname-input").value
-    sur = document.getElementById("surname-input").value
-    return first, sur
-
-def _update_view():
-    console.log("Updating listbox view")
-    list = document.getElementById("listbox")
-    list.innerHTML = ""
-
-    filter_text = document.getElementById("filter-input").value
-    if filter_text == "": filter = None
-    else: filter = filter_text
-
-    for entry in entries:
-        if filter is None or entry.surname.startswith(filter):
-            option = document.createElement('option')
-            option.value = entry.firstname + ", " + entry.surname
-            option.text = entry.firstname + ", " + entry.surname
-            list.appendChild(option)
-
-def _create_entry(*args, **kwargs):
-    console.log("Create clicked")
-    first, sur = _get_namefields()
-    new_entry = Entry(firstname = first, surname = sur)
-    entries.append(new_entry)
-    _update_view()
-
-def _delete_entry(*args, **kwargs):
-    console.log("Delete clicked")
-    list = document.getElementById("listbox")
-    index = list.selectedIndex
-    
-    if index >= 0:
-        entries.pop(index)
-        _update_view()
-
-def _update_entry(*args, **kwargs):
-    list = document.getElementById("listbox")
-    index = list.selectedIndex
-
-    if index >= 0:
-        entries.pop(index)
-        _create_entry()
-
-def _filter_key(*args, **kwargs):
-    console.log("Filter input changed")
-    _update_view()
-
-create_entry = create_proxy(_create_entry)
-delete_entry = create_proxy(_delete_entry)
-update_entry = create_proxy(_update_entry)
-filter_key = create_proxy(_filter_key)
-
-document.getElementById("create").addEventListener("click", create_entry)
-document.getElementById("delete").addEventListener("click", delete_entry)
-document.getElementById("update").addEventListener("click", update_entry)
-
-document.getElementById("filter-input").addEventListener("input", filter_key)
-
-</py-script>
+<py-script src="./crud.py"></py-script>
 <div class="m-4">
     <div class="grid p-4 m-auto border-2 bg-green-50 justify-items-start">
         <div class="m-auto">
@@ -384,131 +183,7 @@ document.getElementById("filter-input").addEventListener("input", filter_key)
         <div class="w-full m-auto"><input type="range" min="1" max="100" value="50" id="circle-slider" class="w-5/6"></div>
     </div>
 </div>
-<py-script>
-from js import document, console, window
-from math import pi, sqrt
-from pyodide import create_proxy
-from random import randint
-from dataclasses import dataclass
-
-canvas = document.getElementById("circle-canvas")
-ctx = canvas.getContext("2d")
-#Fill background with white
-ctx.fillStyle = "white"
-ctx.fillRect(0,0, canvas.width, canvas.height)
-
-@dataclass
-class Circle():
-    x: int
-    y: int
-    radius: int
-
-my_circles = list()
-closest_circle_index = -1
-
-def _clear_screen():
-    ctx.fillStyle = "white"
-    ctx.fillRect(0,0, canvas.width, canvas.height)
-
-def _draw_circle(x, y, radius):
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2*pi)
-    ctx.stroke()
-
-def _draw_filled_circle(x, y, radius):
-    console.log(f"Drawing filled circle at {x}, {y}, with radius {radius}")
-    
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2*pi)
-    ctx.fillStyle = "gray"
-    ctx.fill()
-
-def _redraw_all():
-    _clear_screen()
-    if len(my_circles):
-        if closest_circle_index >= 0:
-            c = my_circles[closest_circle_index]
-            _draw_filled_circle(c.x, c.y, c.radius)
-        for c in my_circles:
-            _draw_circle(c.x, c.y, c.radius)
-
-def _on_click(e):
-    global my_circles
-    console.log(str(e.offsetX) + " " + str(e.offsetY))
-    if e.button == 0: #left mouse button
-        new_circle = Circle(e.offsetX, e.offsetY, randint(40,70))
-        my_circles.append(new_circle)
-        _hide_menu(e)
-        _redraw_all()
-    else:
-        if (document.getElementById("right-click-menu").style.display == "block"): _hide_menu(e)
-        elif closest_circle_index >= 0: _show_menu(e)
-        e.preventDefault()
-        e.stopPropagation()
-        return False
-
-def _no_context(e):
-    e.preventDefault()
-    e.stopPropagation()
-    return False
-
-canvas.oncontextmenu = _no_context
-document.getElementById("right-click-menu").oncontextmenu = _no_context
-
-def _show_menu(event):
-    console.log("Right mouse button clicked, showing menu")
-    menu = document.getElementById("right-click-menu")
-    menu.style.display = "block"
-    menu.style.left = str(event.pageX) + "px"
-    menu.style.top = str(event.pageY) + "px"
-
-    c = my_circles[closest_circle_index]
-
-    label = document.getElementById("circle-slider-label")
-    label.innerText = f"Adjust diameter of Circle at ({c.x}, {c.y})"
-
-    slider = document.getElementById("circle-slider")
-    slider.value = my_circles[closest_circle_index].radius
-
-def _change_radius(_):
-    slider = document.getElementById("circle-slider")
-    new_radius = slider.value
-    my_circles[closest_circle_index].radius = new_radius
-    _redraw_all()
-    
-
-def _hide_menu(e):
-    document.getElementById("right-click-menu").style.display = "none"
-    _recalc_nearest_circle(e.offsetX, e.offsetY)
-        
-def _on_move(e):
-    #Do not reselect circle when menu is open
-    if document.getElementById("right-click-menu").style.display == "block": return 
-    if len(my_circles):
-        _recalc_nearest_circle(e.offsetX, e.offsetY)
-
-def _recalc_nearest_circle(mouse_x, mouse_y):
-        closest_index = -1
-        closest_distance = 1000000
-        for i, c in enumerate(my_circles):
-            dist = sqrt((mouse_x - c.x) ** 2 + (mouse_y - c.y) ** 2)
-            if dist < closest_distance: 
-                closest_index = i
-                closest_distance = dist
-        
-        global closest_circle_index
-        if closest_index != closest_circle_index:
-            closest_circle_index = closest_index
-            _redraw_all()
-
-on_click = create_proxy(_on_click)
-on_move = create_proxy(_on_move)
-change_radius = create_proxy(_change_radius)
-
-document.getElementById("circle-canvas").addEventListener("mousedown", on_click)
-document.getElementById("circle-canvas").addEventListener("mousemove", on_move)
-document.getElementById("circle-slider").addEventListener("input", change_radius)
-</py-script>
+<py-script src="circle.py"></py-script>
 <h2 class="mt-12 post-h2">Cells<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#cells"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">The task is to create a simple but usable spreadsheet application. The spreadsheet should be scrollable. The rows should be numbered from 0 to 99 and the columns from A to Z. Double-clicking a cell C lets the user change C’s formula. After having finished editing the formula is parsed and evaluated and its updated value is shown in C. In addition, all cells which depend on C must be reevaluated. This process repeats until there are no more changes in the values of any cell (change propagation). Note that one should not just recompute the value of every cell but only of those cells that depend on another cell’s changed value. If there is an already provided spreadsheet widget it should not be used. Instead, another similar widget (like JTable in Swing) should be customized to become a reusable spreadsheet widget.</h3>
 <link rel ="stylesheet" type="text/css" href="./cells-table.css">
@@ -520,5 +195,10 @@ document.getElementById("circle-slider").addEventListener("input", change_radius
         </table>
     </div>
 </div>
-<py-script src="./cells-table.py">
+<py-env>
+- paths:
+    - ./table.py
+    - ./formula_parser.py
+</py-env>
+<!-- <py-script src="./cells-table.py"> -->
 </py-script>
