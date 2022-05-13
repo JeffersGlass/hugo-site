@@ -17,7 +17,7 @@ slug_image: circles.PNG
 <h2 class="post-h2" id="counter-header">Counter <a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#counter"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">"The task is to build a frame containing a label or read-only textfield T and a button B. Initially, the value in T is “0” and each click of B increases the value in T by one." </h3>
 <div class="m-4">
-    <div class="grid grid-cols-2 p-4 m-auto border-2 bg-green-50 justify-items-center">
+    <div class="grid grid-cols-2 p-4 m-auto bg-blue-100 border-2 justify-items-center">
         <label id="counter-target" class="w-full text-center bg-white border-2">Some Placeholder Text</label>
         <py-button id="counter-btn" label="Count" class="">
             def on_click(event):
@@ -39,7 +39,7 @@ slug_image: circles.PNG
 {{< /highlight >}}
 <h4 class="mt-8 text-lg font-semibold">How do we put output from a script in a specific place on a page?</h4>
 <p class="post-p">Of course, we'll need to actually define that <code class="code">add_one</code> function somewhere, to add one to... </p>
-<p class="post-p">Well, I guess we'll somewhere to display the count as well. Lets add a paragraph tag to our HTML code, and give it an id so we can refer to it later: <pre><code class="code">&lt;p class="counter-target"&gt;Some Placeholder Text&lt;/p&gt;</code></pre></p>
+<p class="post-p">Well, I guess we'll want somewhere to display the count as well. Lets add a paragraph tag to our HTML code, and give it an id so we can refer to it later: <pre><code class="code">&lt;p class="counter-target"&gt;Some Placeholder Text&lt;/p&gt;</code></pre></p>
 <p class="post-p">We could choose to leave the tag empty for now, or perhaps have a "0" there to hide a bit of ugliness as the page loads, but I having placeholder text will give us a clearer view of what's happening when.</p>
 <p class="post-p">To actually change the content of our new tag, we can use the <a href="https://github.com/pyscript/pyscript/blob/bc4581d9e50286f0463285f13c015e487831fa0e/pyscriptjs/src/pyscript.py#L110-L129">PyScript.write() function</a>, which takes an <code>element_id</code> as a string, a <code>value</code> to replace/append there (another string), and an optional <code>append</code> argument to tell whether the new content should be appended (as a new div) or replace the existing content.</p>
 <p class="post-p">So, to start our count at zero and have it increment each time we press the "Count" button, our code could look something like:</p>
@@ -82,7 +82,7 @@ def add_one():
 <h3 class="italic">"The task is to build a frame containing two textfields TC and TF representing the temperature in Celsius and Fahrenheit, respectively. Initially, both TC and TF are empty. When the user enters a numerical value into TC the corresponding value in TF is automatically updated and vice versa. When the user enters a non-numerical string into TC the value in TF is not updated and vice versa. The formula for converting a temperature C in Celsius into a temperature F in Fahrenheit is C = (F - 32) * (5/9) and the dual direction is F = C * (9/5) + 32." </h3>
 <py-script src="./temperature.py"></py-script>
 <div class="m-4">
-    <div class="grid grid-cols-2 p-4 m-auto border-2 bg-green-50 justify-items-center">
+    <div class="grid grid-cols-2 p-4 m-auto bg-blue-100 border-2 justify-items-center">
             <div>
                 <h4 class="font-semibold">Fahrenheit</h4>
                 <input id = "f-temp" class="w-3/4 bg-white border-4">
@@ -92,7 +92,7 @@ def add_one():
                 <input id="c-temp" class="w-3/4 bg-white border-4">
             </div>
     </div>
-</div><p class="post-p">Since we're handle user-inputted text for this project, we'll need to learn a bit about how PyScript interacts with Javascript event listeners. After some experimentation, here's some sample code that will work - a breakdown follows:</p>
+</div><p class="post-p">Since we're handle user-inputted text for this project, we'll need to learn a bit about how PyScript interacts with Javascript event listeners. Let's look at a stripped-down example:</p>
 <p class="code-title">sample-event-handling.html</p>
 {{< highlight python3 >}}
 <input id="my-input" style="background-color: lightgray;">
@@ -107,7 +107,6 @@ def _log_input_to_console(e):
 log_input_to_console = create_proxy(_log_input_to_console)
 
 document.getElementById("my-input").addEventListener("input", log_input_to_console)
-
 </py-script>
 {{< /highlight >}}
 <style>
@@ -143,12 +142,28 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
         </div>
     </div>
 </div>
+<p class="post-p">And here's that example running live:</p>
+<div class="w-full p-4 m-4 bg-blue-100">
+    <p class="post-p">Open the developer console and type here: <input id="my-input" class="bg-white border-2 border-gray-700 "></p>
+</div>
+<py-script>
+from js import document, console
+from pyodide import create_proxy
+
+def _log_input_to_console(e):
+    console.log("The value of the input is currently " + e.target.value)
+
+log_input_to_console = create_proxy(_log_input_to_console)
+
+document.getElementById("my-input").addEventListener("input", log_input_to_console)
+</py-script>
 <p class="post-p">With this in place, if you type into the inputbox, you should see its contents being output to the console with each keystroke. If you want to have it log (or take any other action) only when the input is submitted/enter is pressed... I think the best option is to wrap the input in a <code class="code">form</code> tag and use the "submit" event to handle it, but I'm not %100 sure what best practice is there.</p>
-<p class="post-p">The full code of this solution is as follows:</p>
+
+<p class="post-p">The full code of the Temperature Converter  is as follows:</p>
 <p class="mt-4 code-title">my-page.html</p>
 {{< highlight html >}}
 <py-script src="./temperature.py"></py-script>
-<div class="grid grid-cols-2 p-4 m-auto border-2 bg-green-50 justify-items-center">
+<div class="grid grid-cols-2 p-4 m-auto bg-blue-100 border-2 justify-items-center">
     <div>
         <h4 class="font-semibold">Fahrenheit</h4>
         <input id = "f-temp" class="w-3/4 bg-white border-4">
@@ -161,53 +176,57 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
 <br>
 <p class="code-title">temperature.py</p>
 <div class="overflow-y-scroll h-124">
-    {{< highlight python3 >}}
-    from js import document
+{{< highlight python3 >}}
+from js import document
+
+#This is necessary for reasons I don't understand
+from pyodide import create_proxy
+
+write_in_progress = False
+
+def isTemp(input_temp):
+    try:
+        _ = float(input_temp)
+    except Exception as err:
+        return False
     
-    #This is necessary for reasons I don't understand
-    from pyodide import create_proxy
-    
-    write_in_progress = False
-    
-    def isTemp(input_temp):
-        try:
-            _ = float(input_temp)
-        except Exception as err:
-            return False
-    
-        return True
-    
-    def _f(self, *args, **kwargs):
-        global write_in_progress
-        if write_in_progress:
-            return
+    return True
+
+def _f(self, *args, **kwargs):
+    global write_in_progress
+    if write_in_progress:
+        return
+    else:
+        write_in_progress = True
+        f_input = document.getElementById("f-temp")
+        c_output = document.getElementById("c-temp")
+        input_value = f_input.value
+        if isTemp(input_value):
+            c_output.value = round((int(float(input_value)) - 32) * (5/9), 2)
         else:
-            write_in_progress = True
-            f_input = document.getElementById("f-temp")
-            input_value = f_input.value
-            if isTemp(input_value):
-                c_output = document.getElementById("c-temp")
-                c_output.value = (int(input_value) - 32) * (5/9)
-            write_in_progress = False
-    
-    def _c(self, *args, **kwargs):
-        global write_in_progress
-        if write_in_progress:
-            return
+            c_output.value = ""
+        write_in_progress = False
+
+def _c(self, *args, **kwargs):
+    global write_in_progress
+    if write_in_progress:
+        return
+    else:
+        write_in_progress = True
+        c_input = document.getElementById("c-temp")
+        f_output = document.getElementById("f-temp")
+        input_value = c_input.value
+        if isTemp(input_value):
+            f_output.value = round((int(float(input_value)) * (9/5)) + 32, 2)
         else:
-            write_in_progress = True
-            c_input = document.getElementById("c-temp")
-            input_value = c_input.value
-            if isTemp(input_value):
-                f_output = document.getElementById("f-temp")
-                f_output.value = (int(input_value) * (9/5)) + 32
-            write_in_progress = False
-    
-    f_change = create_proxy(_f)
-    c_change = create_proxy(_c)
-    
-    document.querySelector("#f-temp").addEventListener("input", f_change)
-    document.querySelector("#c-temp").addEventListener("input", c_change){{< /highlight >}}
+            f_output.value = ""
+        write_in_progress = False
+
+f_change = create_proxy(_f)
+c_change = create_proxy(_c)
+
+document.querySelector("#f-temp").addEventListener("input", f_change)
+document.querySelector("#c-temp").addEventListener("input", c_change){{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
 
@@ -215,7 +234,7 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
 <h3 class="italic">"The task is to build a frame containing a combobox C with the two options “one-way flight” and “return flight”, two textfields T1 and T2 representing the start and return date, respectively, and a button B for submitting the selected flight. T2 is enabled iff C’s value is “return flight”. When C has the value “return flight” and T2’s date is strictly before T1’s then B is disabled. When a non-disabled textfield T has an ill-formatted date then T is colored red and B is disabled. When clicking B a message is displayed informing the user of his selection (e.g. “You have booked a one-way flight on 04.04.2014.”). Initially, C has the value “one-way flight” and T1 as well as T2 have the same (arbitrary) date (it is implied that T2 is disabled).</h3>
 <py-script src="./flight.py"></py-script>
 <div class="m-4">
-    <div class="grid grid-rows-4 p-4 border-2 bg-green-50 justify-items-left">
+    <div class="grid grid-rows-4 p-4 bg-blue-100 border-2 justify-items-left">
             <div>
                 <select name="flight-mode" id="flight-mode-select">
                     <option value="one">One Way</option>
@@ -231,7 +250,7 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
                 <input id="ret" class="w-3/4 bg-white border-4">
             </div>
             <div>
-                <button id="book-flight" class="p-2 my-2 bg-green-200 border-2 rounded-lg">Book Flight</button>
+                <button id="book-flight" class="p-2 my-2 bg-green-200 border-2 border-gray-400 rounded-lg">Book Flight</button>
                 <p id="flight-info" class="italic">Flight Info will go here</p>
             </div>
     </div>
@@ -242,7 +261,7 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
 <p class="code-title">my-page.html</p>
 {{< highlight html >}}
 <py-script src="./flight.py"></py-script>
-<div class="grid grid-rows-4 p-4 border-2 bg-green-50 justify-items-left">
+<div class="grid grid-rows-4 p-4 bg-blue-100 border-2 justify-items-left">
     <div>
         <select name="flight-mode" id="flight-mode-select">
             <option value="one">One Way</option>
@@ -258,7 +277,7 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
         <input id="ret" class="w-3/4 bg-white border-4">
     </div>
     <div>
-        <button id="book-flight" class="p-2 my-2 bg-green-200 border-2 rounded-lg">Book Flight</button>
+        <button id="book-flight" class="p-2 my-2 bg-green-200 border-2 border-gray-400 rounded-lg">Book Flight</button>
         <p id="flight-info" class="italic">Flight Info will go here</p>
     </div>
 </div>
@@ -304,7 +323,7 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
 <h3 class="italic">The task is to build a frame containing a gauge G for the elapsed time e, a label which shows the elapsed time as a numerical value, a slider S by which the duration d of the timer can be adjusted while the timer is running and a reset button R. Adjusting S must immediately reflect on d and not only when S is released. It follows that while moving S the filled amount of G will (usually) change immediately. When e ≥ d is true then the timer stops (and G will be full). If, thereafter, d is increased such that d > e will be true then the timer restarts to tick until e ≥ d is true again. Clicking R will reset e to zero.</h3>
 <py-script src="timer.py"></py-script>
 <div class="m-4">
-    <div class="grid grid-rows-4 p-4 m-auto border-2 bg-green-50 justify-items-start">
+    <div class="grid grid-rows-4 p-4 m-auto bg-blue-100 border-2 justify-items-start">
         <div class="grid grid-cols-2 justify-items-start">
             <p>Ellapsed Time:</p>
             <progress id="progress-bar" value="32" max="100"> 32% </progress>
@@ -317,17 +336,17 @@ document.getElementByID("my-input").addEventListener("input", log_input_to_conso
             <div class="w-full m-auto"><input type="range" min="1" max="100" value="50" id="duration-slider" class="w-72"></div>
         </div>
         <div>
-            <button id="reset" class="px-2 my-2 bg-green-200 border-2 rounded-lg">RESET</button>
+            <button id="reset" class="px-2 my-2 bg-green-200 border-2 border-gray-400 rounded-lg">RESET</button>
         </div>
     </div>
 </div>
-<p class="post-p">We'll explore a slightly different style of interactivity with this one - using an infinite loop to constantly update the timer as tracked, and update the values of the onscreen label and slider. Before we jump into this infinite loop, we'll see up an event listener to handle pressing the 'reset' button.</p>
-<p class="post-p">Handily, we don't actually need an separate event handler to handle the changing of the input slider (though that would also be a valid away to do it). Instead, we can directly read the value of the slider each time through out loop using the <code class="code">value</code> property of the slider to get its currnt value.</p>
+<p class="post-p">We'll explore a slightly different style of interactivity with this one - using an infinite loop to constantly update the timer as tracked, and update the values of the onscreen label and slider. Before we jump into this infinite loop, we'll set up an event listener to handle pressing the 'reset' button.</p>
+<p class="post-p">Handily, we don't actually need an separate event handler to handle the changing of the input slider (though that would also be a valid away to do it). Instead, we can directly read the value of the slider each time through out loop using the <code class="code">value</code> property of the slider to get its current value.</p>
 <p class="post-p">The full code of this solution is as follows:</p>
 <p class="code-title">my-page.html</p>
 {{< highlight html >}}
 <py-script src="timer.py"></py-script>
-<div class="grid grid-rows-4 p-4 m-auto border-2 bg-green-50 justify-items-start">
+<div class="grid grid-rows-4 p-4 m-auto bg-blue-100 border-2 justify-items-start">
     <div class="grid grid-cols-2 justify-items-start">
         <p>Ellapsed Time:</p>
         <progress id="progress-bar" value="32" max="100"> 32% </progress>
@@ -384,8 +403,8 @@ while True:
 <h3 class="italic">The task is to build a frame containing the following elements: a textfield Tprefix, a pair of textfields Tname and Tsurname, a listbox L, buttons BC, BU and BD and the three labels as seen in the screenshot. L presents a view of the data in the database that consists of a list of names. At most one entry can be selected in L at a time. By entering a string into Tprefix the user can filter the names whose surname start with the entered prefix—this should happen immediately without having to submit the prefix with enter. Clicking BC will append the resulting name from concatenating the strings in Tname and Tsurname to L. BU and BD are enabled iff an entry in L is selected. In contrast to BC, BU will not append the resulting name but instead replace the selected entry with the new name. BD will remove the selected entry. The layout is to be done like suggested in the screenshot. In particular, L must occupy all the remaining space.</h3>
 <py-script src="./crud.py"></py-script>
 <div class="m-4">
-    <div class="grid p-4 m-auto border-2 bg-green-50 justify-items-start">
-        <div class="p-2 m-auto bg-green-100 rounded-lg">
+    <div class="grid p-4 m-auto bg-blue-100 border-2 justify-items-start">
+        <div class="p-2 m-auto bg-gray-300 rounded-lg">
             <div id="upper-content" class="grid ">
                 <div id="filter-box" class="grid w-full grid-cols-2">
                     <p id="filter-label" class="px-4">Filter Prefix:
@@ -406,23 +425,23 @@ while True:
                 </div>
             </div>
             <div id="lower-buttons" class="grid w-full grid-cols-3">
-                <button id="create" class="m-4 bg-gray-200 border-2 border-gray-400 rounded-md">Create</button>
-                <button id="update" class="m-4 bg-gray-200 border-2 border-gray-400 rounded-md">Update</button>
-                <button id="delete" class="m-4 bg-gray-200 border-2 border-gray-400 rounded-md">Delete</button>
+                <button id="create" class="m-4 bg-green-200 border-2 border-gray-400 rounded-md">Create</button>
+                <button id="update" class="m-4 bg-green-200 border-2 border-gray-400 rounded-md">Update</button>
+                <button id="delete" class="m-4 bg-green-200 border-2 border-gray-400 rounded-md">Delete</button>
             </div>
         </div>
     </div>
 </div>
 <p class="post-p">This is the first challenge where we get to play a little bit with DOM manipulation. So far we've only been reading/manipulating the values of inputs and textboxes - now we'll actually add and remove elements.</p>
 <p class="post-p">To do this, we'll use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement">document.creteElement()</a> method, which takes a tag name as a string (like <code class="code">p</code> or <code class="code">div</code>) and creates a tag of that type. We can then set the <code class="code">value</code> of that tag (if appropriate for an input-like object), its <code class="code">text</code>, <code class="code">innerHTML</code>, and so on. We can then add that tag as a child of an existing DOM element by calling <code class="code">myOtherElement.appendChild(myNewTagElement)</code>.</p>
-<p class="post-p">I will admit to somewhat brute-forcing the issues of handling removal and replacement of 'database' entries by wiping the list view of all entries and re-displaying them each time the user takes an action the modifies the list. This is certainly not the most efficient way to handle things. For a better example of managing the state of a list of objects, see the <a href="#circle-header">Circle Drawer example</a>.</p>
-<p class="post-p">I also took the opportunity to introduce <a href="https://docs.python.org/3/library/dataclasses.html">Dataclasses</a> here, a really useful tool if you haven't encountered them before. They make the processes of making a small class to hold some data easy - no more writing <code class="code">__str__</code>, <code class="code">__repr__</code>, or even <code class="code">__init__</code> by hand! There's a <a href="https://www.youtube.com/watch?v=vBH6GRJ1REM">great video about Dataclasses from mCoding</a> the explains this in greater detail.</p>
+<p class="post-p">I will admit to somewhat brute-forcing the issue removal and replacement of 'database' entries by wiping the list view of all entries and re-displaying them each time the user takes an action the modifies the list. This is certainly not the most efficient way to handle things. For a better example of managing the state of a list of objects, see the <a href="#circle-header">Circle Drawer example</a>.</p>
+<p class="post-p">I also took the opportunity to introduce <a href="https://docs.python.org/3/library/dataclasses.html">Dataclasses</a> here, a really useful tool if you haven't encountered them before. They really simply small container classes - no more writing <code class="code">__str__</code>, <code class="code">__repr__</code>, or even <code class="code">__init__</code> by hand! There's a <a href="https://www.youtube.com/watch?v=vBH6GRJ1REM">great video about Dataclasses from mCoding</a> the explains this in greater detail.</p>
 <p class="post-p">The full code of this solution is as follows:</p>
 <p class="code-title">my-page.html</p>
 <div class="overflow-y-scroll h-124">
     {{< highlight html >}}
     <py-script src="./crud.py"></py-script>
-    <div class="grid p-4 m-auto border-2 bg-green-50 justify-items-start">
+    <div class="grid p-4 m-auto bg-blue-100 border-2 justify-items-start">
         <div class="p-2 m-auto bg-green-100 rounded-lg">
             <div id="upper-content" class="grid ">
                 <div id="filter-box" class="grid w-full grid-cols-2">
@@ -541,9 +560,9 @@ document.getElementById("filter-input").addEventListener("input", filter_key)
 
 <h2 class="mt-12 post-h2 " id="circle-header">Circle Drawer<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#circle"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">The task is to build a frame containing an undo and redo button as well as a canvas area underneath. Left-clicking inside an empty area inside the canvas will create an unfilled circle with a fixed diameter whose center is the left-clicked point. The circle nearest to the mouse pointer such that the distance from its center to the pointer is less than its radius, if it exists, is filled with the color gray. The gray circle is the selected circle C. Right-clicking C will make a popup menu appear with one entry “Adjust diameter..”. Clicking on this entry will open another frame with a slider inside that adjusts the diameter of C. Changes are applied immediately. Closing this frame will mark the last diameter as significant for the undo/redo history. Clicking undo will undo the last significant change (i.e. circle creation or diameter adjustment). Clicking redo will reapply the last undoed change unless new changes were made by the user in the meantime.</h3>
-<div class="grid p-4 m-auto border-2 bg-green-50">
+<div class="grid p-4 m-auto bg-blue-100 border-2">
     <canvas id="circle-canvas" width="500" height="500" class="m-auto border-2" ></canvas>
-    <div id="button-holder" class="flex w-full mt-2 justify-evenly"><button id="undo" class="px-6 bg-green-200 border-2 rounded-lg">Undo</button><button id="redo" class="px-6 bg-green-200 border-2 rounded-lg">Redo</button></div>
+    <div id="button-holder" class="flex w-full mt-2 justify-evenly"><button id="undo" class="px-6 bg-green-200 border-2 border-gray-400 rounded-lg">Undo</button><button id="redo" class="px-6 bg-green-200 border-2 border-gray-400 rounded-lg">Redo</button></div>
 </div>
 <link rel ="stylesheet" type="text/css" href="./context-menu.css">
 <div id="right-click-menu" class="absolute bg-gray-200 border-1" 
@@ -555,7 +574,7 @@ document.getElementById("filter-input").addEventListener("input", filter_key)
 </div>
 <py-script src="circle.py"></py-script>
 <p class="post-p">Oh boy we get to play with the canvas! There are almost-certainly Javascript libraries for handling onscreen objects as sprites, with undo-redo perhaps, but the whole point of this challenge is to learn by doing. So I'll start with a bare canvas object and work up from there.</p>
-<p class="post-p">When thinging about a somewhat-involved challenge like this, it's useful to break it down into managable chunks. I figured I'd get circles being drawn with a mouse-click, then figure out the right-click-to-change-size functionality, then work on undo/redo.</p>
+<p class="post-p">When thinking about a somewhat-involved challenge like this, it's useful to break it down into managable chunks. I figured I'd get circles being drawn with a mouse-click, then figure out the right-click-to-change-size functionality, then work on undo/redo.</p>
 <p class="post-p">Thanks again to Pyodide's marvelous JS-to-Python mapping, we can directly use all the methods available in the <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D">CanvasRenderingContext2D</a> object to draw to our existing canvas. The <code class="code">arc</code> method is perfect for drawing circles, and <code class="code">stroke</code> or <code class="code">fill</code> actually place the drawn strokes on the canvas.</p>
 <p class="post-p">With just those simple functions in place, if we hook up an eventListener to listen for the <code class="code">mousedown</code> event, which relies on our _draw_circle function, we can pretty quickly begin clicking away:</p>
 <p class="code-title">canvas-context-examples.py</p>
@@ -594,7 +613,7 @@ document.getElementById("circle-canvas").addEventListener("mousedown", on_click)
 <p class="code-title">my-page.html</p>
 {{< highlight html >}}
 <py-script src="circle.py"></py-script>
-<div class="grid p-4 m-auto border-2 bg-green-50">
+<div class="grid p-4 m-auto bg-blue-100 border-2">
     <canvas id="circle-canvas" width="500" height="500" class="m-auto border-2" ></canvas>
     <div id="button-holder" class="flex w-full mt-2 justify-evenly"><button id="undo" class="px-6 bg-green-200 border-2 rounded-lg">Undo</button><button id="redo" class="px-6 bg-green-200 border-2 rounded-lg">Redo</button></div>
 </div>
@@ -820,7 +839,7 @@ document.getElementById("redo").addEventListener("click", press_redo){{< /highli
 <h2 class="mt-12 post-h2 " id="cells-header">Spreadsheet<a target="_blank" href="https://eugenkiss.github.io/7guis/tasks#cells"><img src="/svg/externallink.svg" alt="" class="inline-block h-6"></a></h2>
 <h3 class="italic">The task is to create a simple but usable spreadsheet application. The spreadsheet should be scrollable. The rows should be numbered from 0 to 99 and the columns from A to Z. Double-clicking a cell C lets the user change C’s formula. After having finished editing the formula is parsed and evaluated and its updated value is shown in C. In addition, all cells which depend on C must be reevaluated. This process repeats until there are no more changes in the values of any cell (change propagation). Note that one should not just recompute the value of every cell but only of those cells that depend on another cell’s changed value. If there is an already provided spreadsheet widget it should not be used. Instead, another similar widget (like JTable in Swing) should be customized to become a reusable spreadsheet widget.</h3>
 <link rel ="stylesheet" type="text/css" href="./cells-table.css">
-            <div class="grid w-full p-4 m-auto border-2 rounded-md bg-green-50">
+            <div class="grid w-full p-4 m-auto bg-blue-100 border-2 rounded-md">
                 <div id="spreadsheet-wrapper" class="overflow-x-auto overflow-y-auto h-72">
                     <table id="spreadsheet" style="empty-cells:show" class="m-auto bg-white border-2">
                         <thead></thead>
@@ -855,7 +874,7 @@ document.getElementById("redo").addEventListener("click", press_redo){{< /highli
 <p class="code-title">my-page.html</p>
 {{< highlight html >}}
 <link rel ="stylesheet" type="text/css" href="./cells-table.css">
-<div class="grid w-full p-4 m-auto border-2 rounded-md bg-green-50">
+<div class="grid w-full p-4 m-auto bg-blue-100 border-2 rounded-md">
     <div id="spreadsheet-wrapper" class="overflow-x-auto overflow-y-auto h-72">
         <table id="spreadsheet" style="empty-cells:show" class="m-auto bg-white border-2">
             <thead></thead>
@@ -1186,4 +1205,4 @@ if __name__ == "__main__":
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
 <hr>
-<p class="post-p">If you've made it this far down the page, I'm truly honored. <a href="https://twitter.com/jeffersglass">I'm just a guy who loves Python and playing with code</a>, and I'd love to hear what you think of PyScript and the brave new world of interactivity we're entering.</p>
+<p class="post-p">If you've made it this far down the page, I'm truly honored. <a href="https://twitter.com/jeffersglass">I'm just a guy who loves Python and playing with code</a>, and I'd love to hear what you think of PyScript.</p>
