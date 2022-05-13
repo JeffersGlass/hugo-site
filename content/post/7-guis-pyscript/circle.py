@@ -71,7 +71,7 @@ def _make_new_circle(x, y, radius):
 
 def _on_click(e):
     global my_circles
-    console.log(str(e.offsetX) + " " + str(e.offsetY))
+    console.log("Making circle at " + str(e.offsetX) + " " + str(e.offsetY))
     if (document.getElementById("right-click-menu").style.display == "block"): _hide_menu(e)
     if e.button == 0: #left mouse button
         _make_new_circle(e.offsetX,e.offsetY, randint(40, 70))
