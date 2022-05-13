@@ -20,10 +20,12 @@ def _f(self, *args, **kwargs):
     else:
         write_in_progress = True
         f_input = document.getElementById("f-temp")
+        c_output = document.getElementById("c-temp")
         input_value = f_input.value
         if isTemp(input_value):
-            c_output = document.getElementById("c-temp")
-            c_output.value = (int(input_value) - 32) * (5/9)
+            c_output.value = round((int(float(input_value)) - 32) * (5/9), 2)
+        else:
+            c_output.value = ""
         write_in_progress = False
 
 def _c(self, *args, **kwargs):
@@ -33,10 +35,12 @@ def _c(self, *args, **kwargs):
     else:
         write_in_progress = True
         c_input = document.getElementById("c-temp")
+        f_output = document.getElementById("f-temp")
         input_value = c_input.value
         if isTemp(input_value):
-            f_output = document.getElementById("f-temp")
-            f_output.value = (int(input_value) * (9/5)) + 32
+            f_output.value = round((int(float(input_value)) * (9/5)) + 32, 2)
+        else:
+            f_output.value = ""
         write_in_progress = False
 
 f_change = create_proxy(_f)
