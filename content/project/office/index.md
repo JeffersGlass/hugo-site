@@ -2,7 +2,9 @@
 title: "Office"
 date: 2021-11-02T11:40:27-05:00
 draft: true
-slug: "The workshop overhaul is an ongoing project"
+description: "The workshop overhaul is an ongoing project"
+aliases:
+- project/the-workshop-overhaul-is-an-ongoing-project/
 slug_image: 'workshop.jpg'
 ---
 My office used to be so neat
