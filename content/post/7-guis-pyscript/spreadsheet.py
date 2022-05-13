@@ -15,7 +15,6 @@ class Spreadsheet():
         value = self.data[location] 
         if value and self.data[location][0] == "=":
             tokens = FormulaParser.tokenize(value[1:])
-            console.log(f"Tokens: {tokens}")
             if any([t.token_type == TokenType.T_CELL for t in tokens]):
                 return FormulaParser.solve_with_references(tokens, self.data)
             else:
