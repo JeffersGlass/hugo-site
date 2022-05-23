@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Electronics Bash</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Electronics Bash"/>
+<meta name="twitter:description" content="A series of livestreamed classes on Arduino, Raspberry Pi, and electronics."/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Project: Electronics Bash</h1>
+				
+				<div class="flex flex-row text-sm">
+						Tags: 
+						
+						<a href="../../tags/project" class="px-1">project</a>
+						
+						<a href="../../tags/arduino" class="px-1">arduino</a>
+						
+						<a href="../../tags/raspberry-pi" class="px-1">raspberry pi</a>
+						
+				</div>
+				
+				<hr class="py-2">
+				<div>
+					<style>
+    ul {
+        list-style-type: circle;
+        list-style-position: inside;
+        padding-left:2em;
+    } ;
+</style>
+<div id="pl-820"  class="panel-layout"><div id="pg-820-0"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;flex-start&quot;}"  data-ratio="1"  data-ratio-direction="right" ><div id="pgc-820-0-0"  class="panel-grid-cell"  data-weight="1" ><div id="panel-820-0-0-0" class="so-panel widget widget_sow-editor panel-first-child" data-index="0" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class= p-2 siteorigin-widget-tinymce textwidget">
+        <h1 class="post-h1">Electronics Bash: Livestream Electronics Classes</h1>
+    </div>
+    </div></div><div id="panel-820-0-0-1" class="so-panel widget widget_sow-editor panel-last-child" data-index="1" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="siteorigin-widget-tinymce textwidget">
+        <p>If you're interested in the technology behind these streams, I wrote up <a href="https://jeff.glass/2020/08/29/how-to-livestream-an-electronics-class/">the state of my setup following the first 22 classes.</a></p>
+    </div>
+    </div></div></div></div><div id="pg-820-1"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-1" ><div id="pgc-820-1-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-1-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="2" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-1-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-1-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="3" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 31 - Using Analog Dials</h3>
+                <p>Analog dials just look so darn classy, right? But with the world moving ever more toward digital control, is there any point in continuing to have them on our workbench projects? And even if we did, could we even control them via our digital controllers?</p>
+                <p>Of course, and yes we can. We'll look at:</p>
+                <ul>
+                <li>The basics of how an analog meter works.</li>
+                <li>Determining what type of meter you have/you're looking for without blowing it up</li>
+                <li>Driving a meter via analog or digital control, including Arduino</li>
+                <li>Creating a new legend or faceplate for your meter</li>
+                </ul>
+                <p>This episode was be streamed <a href="https://youtu.be/EjOwDTff0Oo"><strong>live on YouTube on Sunday, October 24 2021</strong></a>.</p>
+                </div>
+                <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/10-24-21-thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div></div></div></div></div><div id="pg-820-2"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;flex-start&quot;}"  data-ratio="1"  data-ratio-direction="right" ><div id="pgc-820-2-0"  class="panel-grid-cell"  data-weight="1" ><div id="panel-820-2-0-0" class="so-panel widget widget_sow-editor panel-first-child" data-index="4" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col my-4 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <h1 class="post-h1">Introduction to Raspberry Pi</h1>
+                </div>
+                </div></div><div id="panel-820-2-0-1" class="so-panel widget widget_sow-editor panel-last-child" data-index="5" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+
+            <p>The Raspberry Pi single board computer launched a revolution in the availability of low-cost computers for hobby projects, education, and experimentation. For less than $40, the amount of processing power, interconectivity, and flexibility a user gets out of these boards is staggering. We'll be looking at what the Raspberry Pi is, what it can do, and - since the original 20 episodes of Electronics Bash focused on the Arduino - how the two systems compare to each other.</p>
+
+                </div></div></div></div><div id="pg-820-3"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-3" ><div id="pgc-820-3-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-3-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="6" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-3-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-3-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="7" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 30 - Regular Expressions</h3>
+                    <p>Doncha hate it when you do a bunch of calculations, download a bunch of data, or generate a ton of useful python objects, only for them to vanish when your program ends? Wouldn't it be nice if there was a way to preserve data on some kind of physical media in-between program runs, so you could save and reuse data? Or even make use of data that other people had created before? If only...</p>
+                    <p>Is reading and writing data from files the ~sexiest~ thing you can do with code? No. Is it one of the most useful? Oh yeah. We'll look at:</p>
+                    <ul>
+                    <li>Reading and writing plain text in files</li>
+                    <li>Reading and writing structured data using JSON</li>
+                    <li>Reading and writing raw python objects using Pickle</li>
+                    <li>Strategies to avoid re-generating data when not necessary</li>
+                    <li>How to avoid using too much web data my caching locally</li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-29-programming-challenges-live-2/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was streamed <a href="https://youtu.be/EjOwDTff0Oo"><strong>live on YouTube on Sunday, January 3 2020</strong></a>.</p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/1-3-21-Thumb-768x432.jpg" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div>
+                </div></div></div></div></div><div id="pg-820-4"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-4-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-4-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="8" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-4-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-4-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="9" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 29 - Problem Solving Live</h3>
+                    <p>No, I don't intend to light my code on fire... but then I didn't mean to set my circuit board on fire last week, and we saw how that turned out.</p>
+                    <p>The holidays are here, and with them, the annual Advent of Code challenge! This festive yuletide tradition presents a language-agnostic coding challenge for each of the first 25 days in December. This week, we'll use the first five challenges as an excuse to talk about problem solving, list comprehension, and iterables in Python. Then we'll try and solve the Day 6 challenge in real time! Fingers crossed!</p>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash%27graphical-user-interfaces/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was streamed live on Sunday, December 6 2020.  <a href="https://youtu.be/s7UDMUALBxU"><strong>The full episode is archived on YouTube.</strong></a></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/12-6-20-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+        </div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-5"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-5" ><div id="pgc-820-5-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-5-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="10" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-5-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-5-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="11" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 28 - 'Saving' the Day</h3>
+                <p>Doncha hate it when you do a bunch of calculations, download a bunch of data, or generate a ton of useful python objects, only for them to vanish when your program ends? Wouldn't it be nice if there was a way to preserve data on some kind of physical media in-between program runs, so you could save and reuse data? Or even make use of data that other people had created before? If only...</p>
+                <p>Is reading and writing data from files the ~sexiest~ thing you can do with code? No. Is it one of the most useful? Oh yeah. We'll look at:</p>
+                <ul>
+                <li>Reading and writing plain text in files</li>
+                <li>Reading and writing structured data using JSON</li>
+                <li>Reading and writing raw python objects using Pickle</li>
+                <li>Strategies to avoid re-generating data when not necessary</li>
+                <li>How to avoid using too much web data my caching locally</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-28-saving-the-day/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on November 22, 2020. <a href="https://youtu.be/Hpm1Vzw8a3o"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/11-22-20-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-6"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-6-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-6-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="12" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-6-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-6-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="13" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 27 - Graphical User Interfaces</h3>
+                <p>Sick and tired of typing? Bored of button mashing? Tucked out by using the terminal? What if you could interact with your programs using a graphical user interface you designed yourself? No more of that boring old typing-everything-out style of interaction. Now, we've got mice!</p>
+                <p>This week, we'll look at using TK/TKinter to build simple graphical interfaces to underlying Python programs.</p>
+                <ul>
+                <li>Topics Include:
+                <ul>
+                <li>The structure of a TKinter GUI program</li>
+                <li>Various TKinter widgets</li>
+                <li>Layering a TKinter program over your existing code</li>
+                </ul>
+                </li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash%27graphical-user-interfaces/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, November 8 2020. <strong><a href="https://youtu.be/Hxfx2jl8vn4">The full episode is archived on YouTube.</a></strong></p>
+                <p>&nbsp;</p>
+                </div>
+                <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/11-8-20-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div></div></div></div><div id="pg-820-7"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-7" ><div id="pgc-820-7-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-7-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="14" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-7-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-7-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="15" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 26 - Pumpkin Pi</h3>
+                    <p>Jinkies! What's that over there? It looks like a Raspberry Pi... but headless! Let's get out of here!</p>
+                    <p>No worries gang, it's just our regular old Raspberry Pi python programs in a mask. This week, we'll built a spooky Halloween prop, incorporating some of the skills we've learned so far. We'll drive a couple of servo motors, some LEDs for the eyes, playback sound, and link it all to the internet so we can tell when the sun goes down and things should get spooky.</p>
+                    <ul>
+                    <li>Topics Include:
+                    <ul>
+                    <li>Sound Playback</li>
+                    <li>Sunset/Sunrise API</li>
+                    <li>The polling loop</li>
+                    <li>Multitasking</li>
+                    </ul>
+                    </li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-25-object-oriented-programming-2/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was streamed live on Sunday, October 24 2020. <a href="https://youtu.be/OoGLiHDOvKk"><strong>The full episode is archived on YouTube</strong>.</a></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/Pumpkin-Pi-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+        </div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-8"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-8-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-8-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="16" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-8-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-8-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="17" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 25 - Object Oriented Programming</h3>
+                <p>What is an object? Is it just a list of numbers, strings, and data? Not at all - each thing has its own unique behavior, identity, its core, its platonic ideal of "thing"-ness. And we can represent the true nature of each thing by using Object Oriented Programming approaches.</p>
+                <p>Too abstract? Yeah maybe. Come join us for this week's lesson, I promise things will make more sense.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li>Python classes</li>
+                <li>Using existing classes</li>
+                <li>Creating our own classes and instances</li>
+                <li>Using classes to organize behavior</li>
+                <li>Making a simple game with PyGame and OOP</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-25-object-oriented-programming/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, October 11 2020.  <strong><a href="https://youtu.be/IHdAHau7i7w">The full episode is archived on YouTube.</a></strong></p>
+                <p>&nbsp;</p>
+                </div>
+                <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/Untitled-1-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div></div></div></div><div id="pg-820-9"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-9" ><div id="pgc-820-9-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-9-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="18" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-9-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-9-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="19" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 24 - Visual Displays</h3>
+                    <p>Some get into programming computers to look at data on a chart, but let's be real - we want to make shiny things in lots of pretty colors! Today we're looking at how to use a fundamental graphics library to make visual displays in Python on the Raspberry Pi.</p>
+                    <p>Topics Include:</p>
+                    <ul>
+                    <li>The PyGame library</li>
+                    <li>Drawing to the Screen</li>
+                    <li>Primative objects (lines, rectangles, circles)</li>
+                    <li>Including images</li>
+                    <li>The perpetual loop</li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-24-visual-displays-in-python/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was live on Sunday, September 27 2020. <a href="https://youtu.be/qPLjllAOBCY"><strong>The full episode is archived on YouTube.</strong></a></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/hqdefault-436x272.jpg" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+        </div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-10"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-10-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-10-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="20" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-10-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-10-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="21" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 23 - Raspberry Pi and the Internet</h3>
+                <p>One computer isn't cool. You know what's cool? A billion computers. And a few million other computers to connect them together. This week, we'll continue delving into programming on the Raspberry Pi with Python, and how we can connect to the internet to receive data, scrape websites, and influence our programs with online data.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li>Getting web data with the Requests library</li>
+                <li>Parsing HTML using Beautiful Soup</li>
+                <li>Python Dictionaries and Sets</li>
+                <li>API's - what are they and how can we use them?</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-23-raspberry-pi-and-the-internet/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Sunday, September 13 2020. be <strong><a href="https://youtu.be/T-slrVATN1w">The full episode is archived on YouTube.</a></strong></p>
+                <p>&nbsp;</p>
+                </div>
+                <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/StreamThumb-9-13-20-768x432.png  " alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div></div></div></div><div id="pg-820-11"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-11" ><div id="pgc-820-11-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-11-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="22" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-11-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-11-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="23" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 22 - GPIO: Inputs and Outputs</h3>
+                    <p>So the Raspberry Pi is just a computer, right? A nice cheap computer, but just a computer... except this computer makes it really easy to tap into low-level GPIO interface lines to respond to buttons and switches and show its state on outputs like LEDs and speakers.</p>
+                    <p>This week, we'll continue delving into programming on the Raspberry Pi with Python to make things blink, flash, and respond.</p>
+                    <p>Topics Include:</p>
+                    <ul>
+                    <li>-GPIO Core Concepts:
+                    <ul>
+                    <li>Voltages</li>
+                    <li>Currents</li>
+                    </ul>
+                    </li>
+                    <li>Flashing, blinking, and dimming external LEDs</li>
+                    <li>Responding to button and switch inputs</li>
+                    <li>Python tidbits like:
+                    <ul>
+                    <li>importing other modules</li>
+                    <li>user-defined functions</li>
+                    <li>The time, gpiozero, sys, and random modules</li>
+                    </ul>
+                    </li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-22-inputs-and-outputs/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was streamed live on August 30, 2020.  <strong><a href="https://youtu.be/tEsSfkqacZ4">The full episode is archived on YouTube.</a></strong></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/Thumb-8-30-20-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div>
+                </div></div></div></div></div><div id="pg-820-12"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-12-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-12-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="24" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-12-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-12-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="25" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 21 - Python and Pi</h3>
+                    <p>There are many ways of getting your Raspberry Pi to do things on its own - different languages, different scripts, different schedulers. Let's introduce a simple but powerful language - Python - that will form the core of our interactivity on our devices.</p>
+                    <p>Topics Include:</p>
+                    <ul>
+                    <li>What is Python?</li>
+                    <li>Programming in Python on the Pi</li>
+                    <li>Basic program structure and commands</li>
+                    <li>Interpreted vs. Compiled Languages</li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-21-python-and-pi/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was live on Sunday, August 16 2020. <strong><a href="https://youtu.be/vMsT8uE9XEQ">The full episode is archived on YouTube.</a></strong></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/thumb-8-16-19-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                <p>&nbsp;</p>
+                </div>
+                </div></div></div></div><div id="pg-820-13"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-13" ><div id="pgc-820-13-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-13-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="26" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-13-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-13-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="27" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 20 - What is Raspberry Pi?</h3>
+                    <p>The Raspberry Pi is the most popular single board computer, and has opened up an enormous landscape of the kinds of projects that are accessible to hobbyists, robotics, educators, and tinkerers. But what exactly is a Raspberry Pi? And where do you get started with one? That's where we'll dive in this week, at the very beginning.</p>
+                    <p>Topics Include:</p>
+                    <ul>
+                    <li>What is a Raspberry Pi?</li>
+                    <li>What is it useful for?</li>
+                    <li>How is it different from Arduino?</li>
+                    <li>Where to start?</li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-20-what-is-raspberry-pi/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was live on Sunday, August 8 2020. The  <a href="https://youtu.be/lm3t5EfN-rU"><strong>full stream is archived on YouTube.</strong></a></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/PiThumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+        </div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-14"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;flex-start&quot;}"  data-ratio="1"  data-ratio-direction="right" ><div id="pgc-820-14-0"  class="panel-grid-cell"  data-weight="1" ><div id="panel-820-14-0-0" class="so-panel widget widget_sow-editor panel-first-child" data-index="28" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="siteorigin-widget-tinymce textwidget">
+        <h1 class="post-h1">Introduction to Arduino</h1>
+    </div>
+    </div></div><div id="panel-820-14-0-1" class="so-panel widget widget_sow-editor panel-last-child" data-index="29" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="siteorigin-widget-tinymce textwidget">
+        <p>Over the 10+ years I've been working with Arduinos, the most common questions I've gotten are: what is it, what can it do, and how do I get started? In this series of livestreams, we'll start from the very basics of what an Arduino is and what it's useful for, and work through useful inputs, outputs, and programming structures. Newcommers should find plenty of information to get them started and inspired, and hopefully long-time users learn something new.</p>
+    </div>
+    </div></div></div></div><div id="pg-820-15"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-15" ><div id="pgc-820-15-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-15-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="30" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-15-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-15-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="31" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 19 - Fantastic Parts and Where to Find Them</h3>
+                <p>How do you find just the right part for your electronics project? What even is the right part? And where can you find it? This week, we'll be exploring a to of electronics suppliers, from those who focus on hobbyist materials to professional electronics vendors,. We'll look at the various product lines, Arduino variants, sensor families, and so on that they bring to the market, so you can find the best parts for you.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li style="font-weight: 400;"><span style="font-weight: 400;">Hobbyist Suppliers</span></li>
+                <li style="font-weight: 400;"><span style="font-weight: 400;">Overseas Internet Suppliers</span></li>
+                <li style="font-weight: 400;"><span style="font-weight: 400;">Warehouse Suppliers</span></li>
+                <li style="font-weight: 400;"><span style="font-weight: 400;">Professional Hardware Suppliers</span></li>
+                <li style="font-weight: 400;"><span style="font-weight: 400;">Professional Parts Suppliers</span></li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-17-control-registers/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, July 26th 2020.  <a href="https://www.youtube.com/watch?v=m5M6rpmXJJo"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/7-26-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-16"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-16-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-16-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="32" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-16-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-16-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="33" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 18 - Timers</h3>
+                <p>The ATmega328 in a typical Arduino has three powerful Timers that allow us to schedule events, manipulate time, and keep ourselves on track. In fact, we've been using them all along in things like AnalogWrite and Delay. This week, we'll unlock the power of Timers and Timer Interrupts.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li>Timers in the ATmega328</li>
+                <li>Timer Interrupts and Configuration</li>
+                <li>Timers and built-in Functions (AnalogWrite, Tone, Millis, Delay, Servo)</li>
+                <li>Using timers to build new code</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-18-timers/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, July 19 2020. <a href="https://youtu.be/e0cF5v9Pnyo"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/7-19-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-17"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-17" ><div id="pgc-820-17-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-17-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="34" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-17-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-17-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="35" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 17 - Control Registers</h3>
+                <p>The code we write for an Arduino is ultimately meant to get certain bits and bytes into the microprocessor so that it does what we want. This week, we'll continue to peek behind the curtain and see how standard Arduino code represents modifications to various places in the microprocessor's memory, and how we can directly access those places to gain faster, tighter, more precise control of the Arduino.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li>The Three Types of Memory</li>
+                <li>What is a register?</li>
+                <li>Register Access</li>
+                <li>Bitwise Math</li>
+                <li>Introduction to Timers?</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-17-control-registers/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, July 12th 2020.  <a href="https://youtu.be/O2JppZIh6Cw"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/7-12-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-18"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-18-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-18-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="36" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-18-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-18-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="37" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 16 - Hardware Interrupts</h3>
+                <p>Writing interactive code without interrupts can be like waiting for a letter to come - you have to keep checking the mailbox to see if any new info has arrived. Interrupts are like an alarm on your mailbox that draws your attention so you don't need to keep checking. They're powerful, useful, and a little finicky - they'll be our subject this week.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li>Interrupts</li>
+                <li>ISRs</li>
+                <li>The 'volatile' quantifier</li>
+                <li>Timers</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-16-interrupts/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Monday, July 6th 2020. <a href="https://youtu.be/QSuMkkyTpvA">The full episode is archived on YouTube.</a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/7-6-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-19"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-19" ><div id="pgc-820-19-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-19-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="38" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-19-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-19-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="39" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 15 - Long Distance Communication</h3>
+                <p>We've got a couple ways to pass signals between Arduinos sitting next to each other on the workbench now, or even 50' away via a wireless dongle. But what if you need to get signals from 1000' away or more?</p>
+                <p>That's where a robust wired system based on RS485 can help. As a physical protocol, RS485 won't get you there alone - you'll need a communications protocol built on top of it to actually pass data. This week, we'll look at DMX, the most common control protocol in the entertainment lighting field, how it relates to DMX , and how you can use both to pass messages long distances.</p>
+                <p>Topics Include:</p>
+                <ul>
+                <li>RS485 fundamentals</li>
+                <li>The OSI Model</li>
+                <li>DMX (Digital Multiplex)</li>
+                <li>Network Topologies</li>
+                <li>Singalling and Addressing schemes</li>
+                <li>Transmission lines, impedance, and ternimation</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-15-long-distance-signals/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, June 28 2020. <a href="https://youtu.be/PB7s1CzWkh0"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/6-28-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-20"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-20-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-20-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="40" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-20-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-20-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="41" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 14 - Wireless Signals</h3>
+                <p>Why wires? Not not... not wires? This week, we'll look at ways of passing simple wireless information between two or more Arduinos.</p>
+                <p>Topics include:</p>
+                <ul>
+                <li>Radio and Wireless fundamentals</li>
+                <li>ASK/OOK Radio Signals</li>
+                <li>The Radiohead library that sends wireless information</li>
+                <li>*Pointers</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-14-wireless-signals/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was streamed live on Sunday, June 21 2020. <a href="https://youtu.be/QQYhC7xHG_s"><strong>iThe full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/6-21-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-21"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-21" ><div id="pgc-820-21-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-21-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="42" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-21-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-21-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="43" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 13 - Creating a Printed Circuit Board</h3>
+                <p>Hand soldering a prototype is all well and good. Heck, making two or three of a thing isn't too bad. But what if you need ten widgets, all wired together the same way? Or a hundred? Or you're using parts too small to be wired to perfboard? These are situations where an inexpensive Printed Circuit Board (PCB) comes in handy.</p>
+                <p>PCBs are easier to design, order, and use than ever! In this session we'll look at:</p>
+                <ul>
+                <li>Schematic Capture (getting your circuit design into the computer)</li>
+                <li>Circuit board layout</li>
+                <li>Creating custom parts and part footprints from a datasheet</li>
+                <li>Ordering a circuit board from an online board house</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-13-creating-a-printed-circuit-board/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Sunday, June 14th 2020. <a href="https://youtu.be/6_772Sg5K8U"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/6-14-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    </div>
+    </div></div></div></div></div><div id="pg-820-22"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-22-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-22-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="44" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-22-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-22-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="45" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 12 - Soldering</h3>
+                <p>Getting one thing to stick to itself? Not so hard. Getting two bits of metal to stick together in a way that conducts electricity? Just a little bit harder. So this week, let's do it together. Let's look at soldering.</p>
+                <p>Topics include:</p>
+                <ul>
+                <li>Hand soldering skills</li>
+                <li>Types and mixes of solder</li>
+                <li>Soldering iron and tip species</li>
+                <li>Soldering thru-hole and surface-mount parts</li>
+                <li>Soldering safety</li>
+                <li>Hot air and soldering rework</li>
+                <li>Desoldering with hot air, solder braid, and solder suckers</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-12-soldering/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Sunday, June 7th 2020.e <a href="https://youtu.be/WHWGS7AI-Pw"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/6-7-Thumb-Bash-768x432.jpg" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-23"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-23" ><div id="pgc-820-23-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-23-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="46" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-23-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-23-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="47" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 11 - Making it Permanent</h3>
+                <p>So you've made a cool thing with an Arduino Uno that works fine on the workbench. But when you try to install it somewhere for long term use - wires start falling out, components come out of the breadboard, it's a big ole mess. There must be a better way to make Arduino projects more permanent. We'll look at several topics in this vein, including:</p>
+                <ul>
+                <li>Working with sodler-able perfboard/protoboard</li>
+                <li>Transferring the Microprocessor itself from the Arduino to a breadboard/protoboard</li>
+                <li>Programming microprocessors without the Arduino itself</li>
+                <li>Working with smaller/cheaper microprocessors (ATMEGA, ATTINY) to cut down pricing on large-scale projects</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-11-making-it-permanent/">Code and Circuit Diagrams here!</a></h3>
+                <p>This was live on Sunday, May 31st, 2020.  <strong><a href="https://youtu.be/kXcBsnG8epE">The full episode is archived on YouTube.</a>.</strong></p>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+                </div>
+                <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/5-31-20-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div></div></div></div></div><div id="pg-820-24"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-24-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-24-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="48" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-24-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-24-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="49" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 10 - Write Better Code</h3>
+                    <p>The joy of the Arduino is that you can get the thing running while writing really bad code. Heck, you can make it do really interesting things while writing really bad code. But what if... and hear me out... the code.... was good?</p>
+                    <p>This week's stream will focus on coding strategies and common coding patterns, including:</p>
+                    <ul>
+                    <li>Arrays are Your Friend</li>
+                    <li>Delta Time avoids delay()</li>
+                    <li>Switching Program MODES</li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-10-write-better-code/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was live on May 24th, 2020. <a href="https://youtu.be/i7fFieY7mFA"><strong>The full episode is archived on YouTube.</strong></a></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/5-24-Thumb-Correct-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+        </div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-25"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-25" ><div id="pgc-820-25-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-25-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="50" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-25-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-25-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="51" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 9 - Batteries</h3>
+                <p>Being plugged into the wall is great and all, but wouldn't it be nice if your project could come with you? This week's stream will focus on batteries - using them with Arduino, what types have what ramifications for your project, and what do you need to watch out for. We'll focus on:</p>
+                <ul>
+                <li>Basics of using batteries with Arduino</li>
+                <li>Different types of batteries and battery chemistries</li>
+                <li>Using voltage regulators</li>
+                <li>Using voltage dividers</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-9-batteries/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Sunday, May 10th. <a href="https://youtu.be/riuVM_Xqi_I"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/5-17-20-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div></div><div id="pg-820-26"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-26-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-26-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="52" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-26-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-26-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="53" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 8 - Remote Control with Infrared</h3>
+                <p>Are you still actually physically touching your Arduino creations to control them? Walking across the room to adjust them like a caveman? Harness the power of infrared remote controls to control your circuits from a distance - and how to turn things around and control your TV from your Arduino.</p>
+                <p>This week's stream will continue our look at Arduino, the most popular microcontroller on the planet. We'll focus on using infrared communications, both to control the Arduino from a remote and using the Arduino as a remote to control other things (computers, TV's, LED Candles, etc.)</p>
+                <p>Topics Include</p>
+                <ul>
+                <li>Using the IRLib library to decode infrared messages from a remote</li>
+                <li>Responding to remote messages to do things within your Arduino sketch</li>
+                <li>Using IRLib to send messages to other IR-controlled things</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-8-remote-control-with-infrared/">Code and Circuit Diagrams here!</a></h3>
+                <p>This was live on Sunday, May 10th. <a href="https://youtu.be/NvXuO7dqthQ"><strong>The full episode is archived on YouTube.</strong></a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/5-10-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-27"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-27" ><div id="pgc-820-27-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-27-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="54" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-27-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-27-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="55" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 7 - Text Displays and Multicolor LEDs</h3>
+                <p>What if your Arduino project could talk back to you, without having to hook it up to a serial console your computer? Or maybe you want to use a little multicolor LED to tell you the status of how you're Arduino's doing - or a lot of LEDs to make a psychedelic light show. This week, we're adding dot-matrix text displays and RGB/Bi-color LEDs to our Arduino toolbox, focusing on:</p>
+                <ul>
+                <li>Using the LiquidCrystal library to drive LCD displays</li>
+                <li>Strategies for working with text and cursors</li>
+                <li>Controlling multicolor LEDs</li>
+                <li>Tips for working with color and color values</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-7-text-displays-and-multicolor-leds/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Sunday, May 3rd. <strong><a href="https://youtu.be/mlgw8CUWLrY">The full recording is archived on YoutTube.</a></strong></p>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+                </div>
+                <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/5-3-20-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+                </div></div></div></div></div><div id="pg-820-28"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-28-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-28-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="56" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-28-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-28-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="57" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+                <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+            <div class="w-full project-text">
+                <h3 class="post-h3">Episode 6 - Putting it Together</h3>
+                    <p>After a couple of very hardware-centric weeks, this week's focus will be on programming. Specifically, how do we take this individual skills we've built up - reading a button or switch, lighting up an LED or turning a motor - and string them together into our very first game?</p>
+                    <p>Topics Include</p>
+                    <ul>
+                    <li>"Returning" from methods</li>
+                    <li>Pseudocode and code planning</li>
+                    <li>Code encapsulation and breaking down high level concepts</li>
+                    <li>A little more hardware, including:
+                    <ul>
+                    <li>Shift Registers and their function in driving lots of outputs</li>
+                    <li>ShiftOut() for sending data to shift-registers</li>
+                    </ul>
+                    </li>
+                    </ul>
+                    <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-6-your-first-game/">Code and Circuit Diagrams here!</a></h3>
+                    <p>This episode was <a href="https://youtu.be/DakKcfluyqU">l</a><a href="https://youtu.be/DakKcfluyqU">ive on YouTube on Sunday, April</a><a href="https://youtu.be/DakKcfluyqU"> 26.</a></p>
+            </div>
+            <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/4-26-Thumb-2-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+        </div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-29"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-29" ><div id="pgc-820-29-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-29-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="58" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-29-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-29-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="59" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 5 - Transistors and FETs</h3>
+                <p>Feeling a little limited by the 5 Volts and 20 milliAmps that the Arduino can provide? In this Sunday's stream, we'll incorporate transistors and FETs into our toolbox, to allow for driving higher power loads. We'll look at topics like:</p>
+                <ul>
+                <li>What are bipolar transistors?</li>
+                <li>What are FETs?</li>
+                <li>How to select the right transistor or FET for your product?</li>
+                <li>Using transistors and FETs to drive high power/high voltage loads, including:
+                <ul>
+                <li>LED tape</li>
+                <li>Lamps</li>
+                <li>Motors</li>
+                </ul>
+                </li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-5-transistors-and-fets/">Codeand Circuit Diagrams here!</a></h3>
+                <p>This episode was live on Sunday, April 19 2020. <a href="https://youtu.be/aeR3IrRhJxY">The full stream is archived on YouTube</a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/4-19-2020-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div></div><div id="pg-820-30"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-30-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-30-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="60" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-30-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-30-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="61" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 4 - Electricity Fundamentals</h3>
+                <p>This week we're going back to basics, diving into fundamental concepts like:</p>
+                <ul>
+                <li>Voltage</li>
+                <li>Resistance</li>
+                <li>Current</li>
+                <li>Power</li>
+                <li><em>How electricity do</em></li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/arduino-4-electricity-fundamentals/">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on YouTube on Sunday, April 12.  <a href="https://youtu.be/KiQKojmzBRs">The full stream is archived on YouTube.</a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/4-12-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-31"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-31" ><div id="pgc-820-31-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-31-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="62" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-31-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-31-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="63" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 3 - Servos and Steppers</h3>
+                <p>This week's stream focused on motion control, including:</p>
+                <ul>
+                <li>Stepper motor control</li>
+                <li>Serial control</li>
+                <li>The DO...WHILE loop</li>
+                <li>randomness and the random() function</li>
+                </ul>
+                <h3 class="post-h3"><a href="https://jeff.glass/?page_id=874&amp;preview=true">Code and Circuit Diagrams here!</a></h3>
+                <p>This episode was live on YouTube on Sunday, April 5.  <a href="https://youtu.be/8rpLSXYDi6g">The full stream is archived on YouTube.</a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/4-5-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div></div><div id="pg-820-32"  class="panel-grid panel-no-style"  data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div id="pgc-820-32-0"  class="panel-grid-cell"  data-weight="0.47284656444607" ><div id="panel-820-32-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="64" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-32-1"  class="panel-grid-cell"  data-weight="0.52715343555393" ><div id="panel-820-32-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="65" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 2 - Flashes Beep and Boops</h3>
+                <p>Picking up where we left off last time, this stream covered</p>
+                <ul>
+                <li>Analog Output</li>
+                <li>The Serial console, input and output</li>
+                <li>The basics of Casting variables (String(), Int)</li>
+                <li>Analog Input</li>
+                <li>Potentiometers</li>
+                <li>The map() function</li>
+                <li>Buzzers and the tone() function</li>
+                </ul>
+                <p>This episode was live on Sunday, March 29 2020. <a href="https://www.youtube.com/watch?v=7XJ0XWCJCXQ">The full recording is available on YouTube.</a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2 "><img src="thumbs/3-29-2020-Thumb-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div><div id="pg-820-33"  class="panel-grid panel-has-style"  data-style="{&quot;row_css&quot;:&quot;background: #eeeeee&quot;,&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;,&quot;cell_alignment&quot;:&quot;center&quot;}" ><div class="panel-row-style panel-row-style-for-820-33" ><div id="pgc-820-33-0"  class="panel-grid-cell"  data-weight="0.47212140128436" ><div id="panel-820-33-0-0" class="so-panel widget widget_sow-image panel-first-child panel-last-child" data-index="66" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ></div></div><div id="pgc-820-33-1"  class="panel-grid-cell"  data-weight="0.52787859871564" ><div id="panel-820-33-1-0" class="so-panel widget widget_sow-editor panel-first-child panel-last-child" data-index="67" data-style="{&quot;background_image_attachment&quot;:false,&quot;background_display&quot;:&quot;tile&quot;}" ><div class="so-widget-sow-editor so-widget-sow-editor-base">
+    <div class="flex flex-col p-2 my-4 bg-gray-100 border-2 md:flex-row siteorigin-widget-tinymce textwidget project-line">
+        <div class="w-full project-text">
+            <h3 class="post-h3">Episode 1 - Introductions and Basic I/O</h3>
+                <p>In the first episode of this streaming adventure, we covered:</p>
+                <ul>
+                <li>What is Arduino? What can it do?</li>
+                <li>Software installation</li>
+                <li>Fundamentals of Arduino code (setup, loop)</li>
+                <li>Digital Input and Output</li>
+                <li>Introduction to Variables</li>
+                <li>Conditionals (if... then... else)</li>
+                <li>FOR loops</li>
+                <li>millis() and the basics of time</li>
+                </ul>
+                <p>This episode was streamed live on March 22, 2020. <a href="https://www.youtube.com/watch?v=H7LOfnseQ7o">The full recording is available on YouTube.</a></p>
+        </div>
+        <div class="flex items-center w-auto rounded-md justify-evenly md:w-1/2"><img src="thumbs/3-22-2020-Thumb-3-768x432.png" alt="The thumbnail image for this weeks class, as it appeared on YouTube."></div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+    </div></div></div></div></div></div>
+				</div>
+				
+			</article>
+		</div>
+	</main>
+<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>
