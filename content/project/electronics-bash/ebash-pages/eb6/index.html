@@ -1,0 +1,87 @@
+---
+title: "Electronics Bash - Arduino #6- Putting it Together"
+date: 2020-04-22T20:57:52-05:00
+draft: false
+aliases:
+  - /electronics-bash/electronics-bash-arduino-6-your-first-game/
+---
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/04/Putting-it-Together-Thumb.png"><img alt="" class="aligncenter wp-image-992 size-large post-img" height="405" src="Putting-it-Together-Thumb-1024x576.png" width="720"/></a></p>
+<p class="post-paragraph">In this stream, we'll be looking at:</p>
+<ul class="post-ul">
+<li>Driving LED Matrices</li>
+<li>Using Shift registers to expand input and output capabilities</li>
+<li>Tying together input, output, and processing into a cohesive game</li>
+</ul>
+<p class="post-paragraph">This is the space where I'll be posting code samples and circuit layouts sometime in advance of the stream, for those who want to follow along more directly. You can expect the code and formatting here to change up to a couple hours before the stream as the plan for the evening comes together.</p>
+<p class="post-paragraph"><a href="https://docs.google.com/presentation/d/1qYqruQui8BE8nnygL2KKB7LVhQR-CeZr3u7R5vYw3Sg/edit?usp=sharing"><img alt="" class="aligncenter wp-image-921 post-img" height="214" src="streamslides.png" width="500"/></a></p>
+<!-- wp:heading -->
+<h2 class="post-h2">Shift Register Demos</h2>
+<!-- /wp:heading -->
+<!-- wp:image {"id":984,"sizeSlug":"large"} -->
+<figure class="wp-block-image size-large"><img alt="" class="wp-image-984 post-img" src="Scm_Reg1-1024x459.png"/><figcaption>This circuit will be used for the following code examples:</figcaption></figure>
+<!-- /wp:image -->
+<h4 class="post-h4">shiftBasic</h4>
+<p class="post-paragraph">Demonstrates the basic usage of the shiftOut() function to send a byte of data out to a shift register.</p>
+<a href="https://gist.github.com/JeffersGlass/20596cf3ab00792508f9e556d1aad62b">Click here to view code on Github</a>
+<h4 class="post-h4">shiftFunction</h4>
+<p class="post-paragraph">We'll wrap our shiftOut() usage into a function we've written to keep things clean and concise.</p>
+<a href="https://gist.github.com/JeffersGlass/c419c96dfb558c0fd08fb105a5a2b32e">Click here to view code on Github</a>
+<!-- wp:image {"id":985,"sizeSlug":"large"} -->
+<figure class="wp-block-image size-large"><img alt="" class="wp-image-985 post-img" src="Scm_Reg2-1024x642.png"/><figcaption>This circuit will be used for the following code examples:</figcaption></figure>
+<!-- /wp:image -->
+<h4 class="post-h4">shiftInt</h4>
+<p class="post-paragraph">When writing out two bytes in a row, we can do two things. First, we can store both bytes as an int to keep them together by multiplying one of the bytes by 256. Second, we can delay latching the data in until both bytes are written using a new function called sendIntOut() that we've written.</p>
+<a href="https://gist.github.com/JeffersGlass/394a5bf559b92c9bfa1bbef253ba0c28">Click here to view code on Github</a>
+<!-- wp:heading -->
+<h2 class="post-h2">LED Matrix and Gameplay</h2>
+<!-- /wp:heading -->
+<!-- wp:image {"id":991,"sizeSlug":"large"} -->
+<figure class="wp-block-image size-large"><img alt="" class="wp-image-991 post-img" src="scm_Arduino_matrix-1024x400.png"/><figcaption>This circuit will be used for the following code examples:</figcaption></figure>
+<!-- /wp:image -->
+<!-- wp:separator -->
+<hr class="wp-block-separator"/>
+<!-- /wp:separator -->
+<h4 class="post-h4">A_Pins.ino</h4>
+<p class="post-paragraph">Take our basic display code with shift registers as a starting point for our game code.</p>
+<a href="https://gist.github.com/JeffersGlass/cf8b5b6acd961fe6634c7a37cf93b3a4">Click here to view code on Github</a>
+<h4 class="post-h4">B_DisplayConstants.ino</h4>
+<p class="post-paragraph">Add some implementation-specific definitions for which bit on our shift register is connected to which Row/Column of the matrix. Includes a 2D array as well.</p>
+<a href="https://gist.github.com/JeffersGlass/4bb3e0abafc955b2ca9a735dcf62f731">Click here to view code on Github</a>
+<h4 class="post-h4">TwoD_Array.ino</h4>
+<p class="post-paragraph">A small bit of code to illustrate 2D arrays, since this is the first time we're seeing them.</p>
+<a href="https://gist.github.com/JeffersGlass/7ae59891d270ce37fe5703be0da2a16b">Click here to view code on Github</a>
+<h4 class="post-h4">C_Multiplex.ino</h4>
+<p class="post-paragraph">Create a full 8x8 LED display by sequentially running displaying each row of the display at high speed.</p>
+<a href="https://gist.github.com/JeffersGlass/dab381b4c9fadfe8785158a2628acef5">Click here to view code on Github</a>
+<h4 class="post-h4">D_Gamestart.ino</h4>
+<p class="post-paragraph">We start to build the code for our actual game - thinking about how we'll represent our game within our 2D array data structure, and what variables we'll need to use to capture that data. Also we start thinking about initializing that data at the start of the game.</p>
+<p class="post-paragraph">This is the point where our little Snake will start moving (in one direction) around the display!</p>
+<a href="https://gist.github.com/JeffersGlass/a82a1bcaa3bf1c5f35c919445ca1fd96">Click here to view code on Github</a>
+<h4 class="post-h4">E_Input.ino</h4>
+<p class="post-paragraph">We write some simple code to accept input from 4 directional buttons</p>
+<a href="https://gist.github.com/JeffersGlass/4ccf855ede2b2c04240e85504a4cad52">Click here to view code on Github</a>
+<h4 class="post-h4">F_Input2.ino</h4>
+<p class="post-paragraph">We tidy up the previous code using a new function that will set the direction of our snake for us.</p>
+<a href="https://gist.github.com/JeffersGlass/0bacf7d822368d16772182f9e2583fb8">Click here to view code on Github</a>
+<h4 class="post-h4">G_Food.ino</h4>
+<p class="post-paragraph">Now the board has a piece of food on it for our snake to see (but not yet eat). We modify the gameplay and display code to account for this, and make use of the random() function to put the food in a random place each time.</p>
+<a href="https://gist.github.com/JeffersGlass/6ef4fc474e37bec29ebdf1d57035bded">Click here to view code on Github</a>
+<h4 class="post-h4">H_Eatfood.ino</h4>
+<p class="post-paragraph">Now the snake can eat the food! We modify our gameplay code, and show how we can reuse the function that originally placed our food to give it a new spot on the board. We also add a function to allow our snake to grow by 1 each time we eat a piece of food.</p>
+<a href="https://gist.github.com/JeffersGlass/44a7763831574c84cee5646ef6f0a111">Click here to view code on Github</a>
+<h4 class="post-h4">I_Walls.ino</h4>
+<p class="post-paragraph">Up till now, the snake could slide right off the board at any time. We add a new function, isValidPosition(), to see if the snake should be able to move ot its next position before it actually moves tehre.</p>
+<a href="https://gist.github.com/JeffersGlass/61034bb4cfc500cb2051aea2a8b887c2">Click here to view code on Github</a>
+<h4 class="post-h4">J_Gameover.ino</h4>
+<p class="post-paragraph">A game isn't much of a game without a fail state. We'd add some checking so that if the snake collides with itself, it's gameover and we see a frowny face.</p>
+<a href="https://gist.github.com/JeffersGlass/2428de6e1d84eb0fc7a08bf03ad43a26">Click here to view code on Github</a>
+<h4 class="post-h4">K_RandomStart.ino</h4>
+<p class="post-paragraph">Rather than start in the same place each time, we'll incorporate some more randomness to have the snake start in a random position. We'll use a loop structure that picks a starting position and direction for the snake, sees if it's valid, and if it's not, pick a new one!</p>
+<a href="https://gist.github.com/JeffersGlass/5e7ad35042fd94b2480ff7fe1316ec92">Click here to view code on Github</a>
+<h4 class="post-h4">L_Cornerfix.ino</h4>
+<p class="post-paragraph">One last pernicious bug - when our snake is in a corner, the input-logic allows it to "turn," but then it's still stuck. The new logic eliminates this edge case.</p>
+<a href="https://gist.github.com/JeffersGlass/b29377bf7ec62ea386778e499cc1fd2f">Click here to view code on Github</a>
+<h4 class="post-h4">Z_Final.ino</h4>
+<p class="post-paragraph">The completed snake game! If you're interested in just browsing the completed code, you can find it here.</p>
+<a href="https://gist.github.com/JeffersGlass/747dac815e41b2adedc32973bf979031">Click here to view code on Github</a>
+<h3 class="post-h3"><a href="https://jeff.glass/electronics-bash/">&lt;&lt; Return to all Electronics Bash Information</a></h3>
