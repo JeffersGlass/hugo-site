@@ -1,0 +1,127 @@
+---
+title: "Electronics Bash - Arduino #11 - Making it Permanent"
+date: 2020-05-25T16:18:58-05:00
+draft: false
+aliases:
+  - /electronics-bash/electronics-bash-arduino-11-making-it-permanent/
+---
+<p class="post-paragraph"><a href="https://jeff.glass/wp-content/uploads/2020/05/5-31-20-Thumb.png"><img alt="" class="aligncenter wp-image-1052 size-large post-img" height="405" src="5-31-20-Thumb-1024x576.png" width="720"/></a></p>
+<p class="post-paragraph">So you've made a cool thing with an Arduino Uno that works fine on the workbench. But when you try to install it somewhere for long term use - wires start falling out, components come out of the breadboard, it's a big ole mess. There must be a better way to make Arduino projects more permanent.</p>
+<p class="post-paragraph">This week's stream will continue our look at Arduino, the most popular microcontroller on the planet. We'll focus on ways of turning a transitory and experimental Arduino project into a more permanent installation, including:</p>
+<ul class="post-ul">
+<li>Working with sodler-able perfboard/protoboard</li>
+<li>Transferring the Microprocessor itself from the Arduino to a breadboard/protoboard</li>
+<li>Programming microprocessors without the Arduino itself</li>
+<li>Working with smaller/cheaper microprocessors (ATMEGA, ATTINY) to cut down pricing on large-scale projects</li>
+</ul>
+<p class="post-paragraph">This is the space where I'll be posting code samples and circuit layouts sometime in advance of the stream, for those who want to follow along more directly. You can expect the code and formatting here to change up to a couple hours before the stream as the plan for the evening comes together.</p>
+<p class="post-paragraph"><a href="https://docs.google.com/presentation/d/1T6Ya-daIRirTFU2-05KNZdzAPZL2i8UZvr9b3GWKMGw/edit?usp=sharing"><img alt="" class="aligncenter wp-image-921 post-img" height="214" src="streamslides.png" width="500"/></a></p>
+<!-- wp:heading -->
+<h2 class="post-h2">Materials</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">This week's episode will involve programming several microcontroller chips outside of the Arduino itself. If you're looking to purchase some of the these chips (and the other supporting materials), you have a couple options of where to purchase. <strong>Amazon</strong>, of course, is ubiquitious but there are relatively few options available, it's typically more expensive per unit, and you run the risk of counterfit chips. <strong><a href="https://www.digikey.com/">DigiKey</a></strong>, an online electronics catalog, is much better populated and usually cheaper per unit price, but you will pay for shipping (usually $5 flat rate USPS works fine for ICs). You can choose which is better for you.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="post-h3">Micrcontrollers</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">These are the brains of the operation - literally. They are the heart and sole of the Arduino, the chip that you write your code to and that carries the program forward. The first chip in the list is exactly what's on, say, an Arduino Uno - the others are variants in size/scope/price.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">I should say - there are lots of lots of different microcontrollers in the <a href="https://en.wikipedia.org/wiki/ATtiny_microcontroller_comparison_chart">ATtiny family</a> and <a href="https://www.futurlec.com/ICAtmel_ATMega_Comparison.shtml">ATmega family</a> - this is just a (semi)representative sampling based on a few different IC sizes/scopes.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">ATmega328P-PU</h4>
+<!-- /wp:heading -->
+<!-- wp:image {"align":"right","width":125,"height":125} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="ATMEGA328P-PU Microchip Technology | ATMEGA328P-PU-ND DigiKey Electronics" class="post-img" height="125" src="28-PDip.jpg" width="125"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">This is literally the exact chip that's present on the Arduino Uno, and can be</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p class="post-paragraph"> turned into a breadboard equivalent by moving the chip off the Uno. Note that the Amazon chips come pre-loaded with the bootloader, which isn't really necessary - we'll be looking at how to load the bootloader onto the chips ourselves. (The bootloader is a tiny bit of code that helps the Arduino IDE load code onto the Chip.)<br/><br/><strong>Amazon:</strong> <a href="https://amzn.to/3eerFrB">$13.97 for 4</a> or <a href="https://amzn.to/2zlRkjo">$29.98 for 10</a> (bootloader pre-loaded)<br/><strong>Digikey: </strong><a href="https://www.digikey.com/product-detail/en/microchip-technology/ATMEGA328-PU/ATMEGA328-PU-ND/2271026">$1.90 each</a></p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">ATtiny44a</h4>
+<!-- /wp:heading -->
+<!-- wp:image {"align":"right","width":135,"height":135} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="ATTINY44A-PU Microchip Technology | ATTINY44A-PU-ND DigiKey Electronics" class="post-img" height="135" src="14PDIP.jpg" width="135"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">Somewhat more compact that than the ATMEGA but still with 12 General Purpose Input/Output (GPIO) pins, these is a nice step down in price and complexity from a full ATmega328. Useful in cases where you're doing some heavy lifting, but down need, say, a full 32K of program space.<br/><br/><strong>Amazon:</strong><a href="https://amzn.to/2ywDr1j"> $20 for 5</a><br/><strong>Digikey: </strong><a href="https://www.digikey.com/products/en/integrated-circuits-ics/embedded-microcontrollers/685?k=attiny44a&amp;k=&amp;pkeyword=attiny44a&amp;sv=0&amp;pv69=411897&amp;sf=0&amp;quantity=&amp;ColumnSort=0&amp;page=1&amp;pageSize=25">$1.11 each</a></p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">ATtiny85-20PU</h4>
+<!-- /wp:heading -->
+<!-- wp:image {"align":"right","width":127,"height":127} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="ATTINY85-20PU Microchip Technology | ATTINY85-20PU-ND DigiKey Electronics" class="post-img" height="127" src="8-DIP.jpg" width="127"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">Now we're getting really small - this guy comes in a DIP-8 package less than 1/2" wide and long, though with only 8 pins, it's I/O capabilities are of course somewhat limited.<br/><br/><strong>Amazon:</strong> <a href="https://amzn.to/2ZxWGTe">$10.35 for 5</a><br/><strong>Digikey: </strong><a href="https://www.digikey.com/product-detail/en/microchip-technology/ATTINY85-20PU/ATTINY85-20PU-ND/735469">$1.20 each</a></p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">ATtiny13</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">The cheapest of the lot of the lot - comes in an 8-pin DIP package less than 1/2" wide and long. It's capabilities (clock speed, program storage, flash memory, long-term EEPROM storage) are quite small compared to the AMTEGA328 we're used to, but if price-per-unit is a serious concern, you can push it way down by using something that just barely fills your needs<br/><br/><strong>Amazon:</strong> <a href="https://amzn.to/3eerFrB">$19.50 for 20</a><br/><strong>Digikey:</strong> <a href="https://www.digikey.com/product-detail/en/microchip-technology/ATTINY13A-PU/ATTINY13A-PU-ND/1914671">$0.82 Each</a></p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="post-h3">Ancillaries</h3>
+<!-- /wp:heading -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">Crystal Oscillator</h4>
+<!-- /wp:heading -->
+<!-- wp:image {"align":"right","width":148,"height":148} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="9B-16.000MBBK-B TXC CORPORATION | 887-2015-ND DigiKey Electronics" class="post-img" height="148" src="9B-SERIES.jpg" width="148"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">For any of the ATtiny options, we can run our processors either from the an internal oscillator or an external crystal. For the ATmega328, in order to respond appropriately to the Arduino bootloader, we'll need to have a 16Mhz crystal oscillator present, with a pair of 22pF capacitors that help the crystal to oscillate. Thankfully, both of these parts are really inexpensive:</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p class="post-paragraph"><span style="text-decoration: underline;"><strong>Crystal:</strong></span><br/><br/><strong>Amazon:</strong> <a href="https://amzn.to/3c2aE24">$4.27 for 10</a> or <a href="https://www.amazon.com/a14073000ux0239-Profile-Crystal-Oscillator-Replacements/dp/B00SWK2HCO/ref=sr_1_5?crid=1QY2RBG38FD4K&amp;dchild=1&amp;keywords=16mhz+crystal&amp;qid=1590428554&amp;sprefix=16mhz%2Caps%2C164&amp;sr=8-5">$7.60 for 20</a><br/><strong>Digikey: </strong><a href="https://www.digikey.com/product-detail/en/txc-corporation/9B-16-000MBBK-B/887-2015-ND/3522089">$0.30 each or $2.50 for 10</a><br/><br/><span style="text-decoration: underline;"><strong>Capacitors:</strong></span></p>
+<!-- /wp:paragraph -->
+<!-- wp:image {"align":"right","width":91,"height":91} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="C317C220J2G5TA KEMET | 399-4220-ND DigiKey Electronics" class="post-img" height="91" src="Goldmax,-300.jpg" width="91"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph"><strong>Amazon: </strong><em>If you're going to buy discrete capacitors from Amazon, I think this is a great opportunity to buy yourself an inexpensive capacitor assortment</em> - <em>it will have lots of uses and opportunities for experimentation. Here's a kit that's </em><a href="https://amzn.to/3eli6Ht">$5.99 for 300 pcs</a><br/><strong>Digikey: </strong><a href="https://www.digikey.com/product-detail/en/kemet/C317C220J2G5TA/399-4220-ND/817996">$1.26 for 10 or $6.38 for 100</a></p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">Smoothing Capacitors</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p class="post-paragraph"></p>
+<!-- /wp:paragraph -->
+<!-- wp:image {"align":"right","width":90,"height":90} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="UVR1V100MDD Nichicon | 493-1077-ND DigiKey Electronics" class="post-img" height="90" src="VR%20SERIES%20YELLOW%20HIGHLIGHT%20990-992.jpg" width="90"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">While not strictly necessary, as we've discussed in previous episodes, having a (fairly) large capacitor near the point where your circuit is consuming power can help smooth over gaps in the power supply when your circuit asks for a lot of current. Like I say, if this is just for a lark, don't worry too much about this, but if you're interested in pursuing the idea of moving Arduinos into the world (or honestly, if you're interested in circuitry in general) this is a good excuse to buy an inexpensive electrolytic capacitor assortment - here's one that's <a href="https://amzn.to/2zjXDnB">$10.31 for 240pcs</a>.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p class="post-paragraph"><em>Can i just use the capacitor assortment I bought for the crystals? </em>Unfortunately no - you'll notice that the crystal-related capictors have values in the picofarad (pF) range, and the electrolytics are in the microfarad range (μF) - 1,000,000 times larger! They serve two different purposes in our circuitry, and so are of two massively different scales.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":4} -->
+<h4 class="post-h4">Power </h4>
+<!-- /wp:heading -->
+<!-- wp:image {"align":"right","width":162,"height":162} -->
+<div class="wp-block-image"><figure class="alignright is-resized"><img alt="NCP7805CTG Rochester Electronics, LLC | 2156-NCP7805CTG-ON-ND DigiKey Electronics" class="post-img" height="162" src="TO-220-3.jpg" width="162"/></figure></div>
+<!-- /wp:image -->
+<!-- wp:paragraph -->
+<p class="post-paragraph">In our examples together, we'll be using one of our existing Arduino Unos to provide power to our off-board microprocessors at 5V, but as we discussed two weeks ago in the <a href="https://jeff.glass/electronics-bash/electronics-bash-arduino-9-batteries/">Batteries episode</a>, sometimes you'll need a voltage regulator to provide 5V power to your device in you're moving it out into the real world. (You could, of course, also power it directly from a <a href="https://amzn.to/3bZ0H5O">5V power brick</a>) The 7805 is most basic example:<br/><br/><strong>Amazon: </strong><a href="https://amzn.to/2AUhEBm">$6.99 for 15</a><br/><strong>Digikey: </strong><a href="https://www.digikey.com/product-detail/en/rochester-electronics-llc/NCP7805CTG/2156-NCP7805CTG-ON-ND/11545790">$0.25 Each</a></p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="post-h2">Code</h2>
+<!-- /wp:heading -->
+<!-- wp:image {"id":1047,"sizeSlug":"large"} -->
+<figure class="wp-block-image size-large"><img alt="" class="wp-image-1047 post-img" src="BuildTogether_5-24-759x1024.png"/><figcaption>The following pieces of code will make use of this circuit</figcaption></figure>
+<!-- /wp:image -->
+<p class="post-paragraph">Expository writing goes here</p>
+<h4 class="post-h4">Code heading</h4>
+<p class="post-paragraph">And some more details about some code to come.</p>
+<a href="https://gist.github.com/JeffersGlass/af9bc2787a64b8431aab1c97208db99a">Click here to view code on Github</a>
+<!-- wp:separator -->
+<hr class="wp-block-separator"/>
+<!-- /wp:separator -->
