@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Uploading and Manipulating Images in Pyscript</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/pyscript-image-upload/featured_pillow.png"/>
+<meta name="twitter:title" content="Uploading and Manipulating Images in Pyscript"/>
+<meta name="twitter:description" content="How to upload images into Pyscript and work with them in Pillow in-browser"/>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../resume" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Resume
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+            <div class="w-auto m-auto"><a href="../../resume"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Resume</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-3/4 md:w-5/6 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Uploading and Manipulating Images in Pyscript</h1>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+					<a href="../../tags/python">python</a>
+					
+				</div>
+				
+				<div>
+					<script defer src="../../ps/pyscript.js"></script>
+<p class="post-p">A curious dev on the <a href="https://discord.com/invite/TynfPGRwda">PyScript Discord</a> (which you should really come check out) asked:</p>
+<blockquote class="p-2 mx-6 my-4 italic bg-gray-200 border-l-4 border-gray-800">I am taking file input in HTML where I am selecting image, how to show image when submit button is hit in PyScript?<br><br>Actually, I need to use that file in PyScript to process. How can I do that?</blockquote>
+<p class="post-p">Well, there's an interesting question. How do we deal with uploaded files in Javascript/Pyscript?</p>
+<p class="post-p">For those looking to skip to the punchline - here's a working demo. We'll show off both the ability to upload and display images, as well as manipulating them with <a href="https://pillow.readthedocs.io/en/stable/">the Pillow image manipulation library</a>:</p>
+<py-env>
+    - Pillow
+</py-env>
+<div class="p-4 m-auto mt-6 mb-8 bg-blue-100 border-2 justify-items-center">
+    <label for="File Upload">Upload an image file here to display it onscreen.</label>
+    <br><input type="file" id="file-upload">
+    <div id="output_upload"></div>
+</div>
+<py-script src="./image_upload.py"></py-script>
+<div class="p-4 m-auto mt-6 mb-8 bg-red-100 border-2 justify-items-center">
+    <label for="File Upload">Upload an image file here to display it onscreen with filters</label>
+    <br><input type="file" id="file-upload-pillow">
+    <div id="output_upload_pillow"></div>
+</div>
+<py-script src="./image_upload_pillow.py"></py-script>
+<p class="post-p">If all has gone to plan, images uploaded in the first dialog should just appear onscreen full-size; images uploaded in the second dialog should appear below the upload dialog, having been (1) "embossed", (2) rotated 45 degrees, and (3) had any empty space filled with a dark green background.</p>
+<h2 class="post-h2">Simple Image Upload and Display</h2>
+<p class="post-p">The HTML portion of this project is very straightforward - an input with <code class="code">type=file</code> and an ID to refer to it by, as well as an empty div for us to shove output in later:</p>
+<p class="code-title">my-page.html</p>
+    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Upload a PNG image&#34;</span>&gt;&lt;/<span style="color:#f92672">label</span>&gt;&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file-upload&#34;</span>&gt;
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output_upload&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+&lt;<span style="color:#f92672">py-script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;./image_upload.py&#34;</span>&gt;&lt;/<span style="color:#f92672">py-script</span>&gt;
+    </code></pre></td></tr></table>
+</div>
+</div>
+    <p class="post-p">The Pyscript portion of this example is only slightly more involved. We use <code class="code">addEventListener()</code> to trigger a function when the selected file in the input field changes. Then we get the file targetted by that input, and create a temporary URL for it using <code class="code">window.URL.createObjectURL()</code>. Finally, we create a new <code class="code">&lt;img&gt;</code> tag and stick it inside our output div.</p>
+    <p class="code-title">image_upload.py</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> js <span style="color:#f92672">import</span> document, console, window
+<span style="color:#f92672">from</span> pyodide <span style="color:#f92672">import</span> create_proxy
+<span style="color:#f92672">import</span> asyncio
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_upload_file_and_show</span>(e):
+    console<span style="color:#f92672">.</span>log(<span style="color:#e6db74">&#34;Attempted file upload: &#34;</span> <span style="color:#f92672">+</span> e<span style="color:#f92672">.</span>target<span style="color:#f92672">.</span>value)
+    file_list <span style="color:#f92672">=</span> e<span style="color:#f92672">.</span>target<span style="color:#f92672">.</span>files
+    first_item <span style="color:#f92672">=</span> file_list<span style="color:#f92672">.</span>item(<span style="color:#ae81ff">0</span>)
+
+    new_image <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>createElement(<span style="color:#e6db74">&#39;img&#39;</span>)
+    new_image<span style="color:#f92672">.</span>src <span style="color:#f92672">=</span> window<span style="color:#f92672">.</span>URL<span style="color:#f92672">.</span>createObjectURL(first_item)
+    document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;output_upload&#34;</span>)<span style="color:#f92672">.</span>appendChild(new_image)
+
+upload_file <span style="color:#f92672">=</span> create_proxy(_upload_file_and_show)
+document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;file-upload&#34;</span>)<span style="color:#f92672">.</span>addEventListener(<span style="color:#e6db74">&#34;change&#34;</span>, upload_file)</code></pre></td></tr></table>
+</div>
+</div>
+
+<h2 class="mt-8 post-h2">Image Processing with PILLOW</h2>
+<p class="post-p">Things get slightly more involved if we want to use the Python Image Library (or its kinder wrapper, PILLOW) to work with the images. The HTML looks almost identical, but we do need to add Pillow to a new <code class="code">&lt;py-env&gt;</code> tag so that micropip will install Pillow into our environment for us.</p>
+<p class="code-title">my-page.html</p>
+        <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">py-env</span>&gt;
+    - Pillow
+&lt;/<span style="color:#f92672">py-env</span>&gt;
+&lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Upload a PNG image&#34;</span>&gt;&lt;/<span style="color:#f92672">label</span>&gt;&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file-upload-pillow&#34;</span>&gt;
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output_upload_pillow&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+&lt;<span style="color:#f92672">py-script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;./image_upload_pillow.py&#34;</span>&gt;&lt;/<span style="color:#f92672">py-script</span>&gt;
+        </code></pre></td></tr></table>
+</div>
+</div>
+        <p class="post-p">However, the Pyscript in this case is somewhat more involved, getting the bytes back and forth from Pyscript and the browser in formats they like. Full caveat - through testing, I <span class="italic">think</span> all of these castings and conversions are necessary for this to work, but if anyone finds a shorter way, <a href="https://twitter.com/jeffersglass">please let me know!</a></p>
+        <p class="post-p">That said, to load the image data into Pillow, we:</p>
+        <ul class="post-ul">
+            <li>Get the raw bytes of data from the image using <code class="code">await item.arrayBuffer()</code></li>
+            <li>Cast that data into a <code class="code">bytearray</code> and then as an <code class="code">io.BytesIO</code> object, which is an in-memory object that behaves as a file-like object for IO purposes.</li>
+            <li>Load that BytesIO object into Pillow using <code class="code">Image.open()</code>.</li>
+        </ul>
+        <p class="post-p">Once we have the image loaded, we can do all of our usual Pillow-based adjustments to it - in this case, I'm having it filter, rotate, fill, and resize the image using a succession of operations.</p>
+        <p class="post-p">Finally, to retrieve the data in a format that we can use in the DOM, we:</p>
+        <ul class="post-ul">
+            <li>Create another <code class="code">BytesIO</code> file-link object, and use <code class="code">Image.save()</code> to write our image out to it.</li>
+            <li>Create a new <code class="code">File</code> object containing the bytes of our image, with a placeholder name and a MIME type of <code class="code">image/png</code></li>
+            <li>Create an URL we can use for this File using <code class="code">indow.URL.createObjectURL()</code></li>
+            <li>Use that URL as the src of a new img tag (made with <code class="code">document.createElement()</code>) and append that as a child of our div.</li>
+        </ul>
+    <p class="code-title">image_upload_pillow.py</p>
+    <div class="overflow-y-scroll h-124">
+    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> js <span style="color:#f92672">import</span> document, console, Uint8Array, window, File
+<span style="color:#f92672">from</span> pyodide <span style="color:#f92672">import</span> create_proxy
+<span style="color:#f92672">import</span> asyncio
+<span style="color:#f92672">import</span> io
+
+<span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image, ImageFilter
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_upload_change_and_show</span>(e):
+    <span style="color:#75715e">#Get the first file from upload</span>
+    file_list <span style="color:#f92672">=</span> e<span style="color:#f92672">.</span>target<span style="color:#f92672">.</span>files
+    first_item <span style="color:#f92672">=</span> file_list<span style="color:#f92672">.</span>item(<span style="color:#ae81ff">0</span>)
+
+    <span style="color:#75715e">#Get the data from the files arrayBuffer as an array of unsigned bytes</span>
+    array_buf <span style="color:#f92672">=</span> Uint8Array<span style="color:#f92672">.</span>new(<span style="color:#66d9ef">await</span> first_item<span style="color:#f92672">.</span>arrayBuffer())
+
+    <span style="color:#75715e">#BytesIO wants a bytes-like object, so convert to bytearray first</span>
+    bytes_list <span style="color:#f92672">=</span> bytearray(array_buf)
+    my_bytes <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>BytesIO(bytes_list)
+
+    <span style="color:#75715e">#Create PIL image from Bytes</span>
+    my_image <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(my_bytes)
+
+    <span style="color:#75715e">#Log some of the image data for testing</span>
+    console<span style="color:#f92672">.</span>log(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>my_image<span style="color:#f92672">.</span>format<span style="color:#e6db74">= }</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span>my_image<span style="color:#f92672">.</span>width<span style="color:#e6db74">= }</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span>my_image<span style="color:#f92672">.</span>height<span style="color:#e6db74">= }</span><span style="color:#e6db74">&#34;</span>)
+
+    <span style="color:#75715e"># Now that we have the image loaded with Pillow, we can use all the tools it makes available.</span>
+    <span style="color:#75715e"># &#34;Emboss&#34; the image, rotate 45 degrees, fill with dark green, resize to 300x300</span>
+    my_image <span style="color:#f92672">=</span> my_image<span style="color:#f92672">.</span>filter(ImageFilter<span style="color:#f92672">.</span>EMBOSS)<span style="color:#f92672">.</span>rotate(<span style="color:#ae81ff">45</span>, expand<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, fillcolor<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">100</span>,<span style="color:#ae81ff">50</span>))<span style="color:#f92672">.</span>resize((<span style="color:#ae81ff">300</span>,<span style="color:#ae81ff">300</span>))
+
+    <span style="color:#75715e">#Convert Pillow object back into File type that createObjectURL will take</span>
+    my_stream <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>BytesIO()
+    my_image<span style="color:#f92672">.</span>save(my_stream, format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;PNG&#34;</span>)
+
+    <span style="color:#75715e">#Create a JS File object with our data and the proper mime type</span>
+    image_file <span style="color:#f92672">=</span> File<span style="color:#f92672">.</span>new([Uint8Array<span style="color:#f92672">.</span>new(my_stream<span style="color:#f92672">.</span>getvalue())], <span style="color:#e6db74">&#34;new_image_file.png&#34;</span>, {<span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;image/png&#34;</span>})
+
+    <span style="color:#75715e">#Create new tag and insert into page</span>
+    new_image <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>createElement(<span style="color:#e6db74">&#39;img&#39;</span>)
+    new_image<span style="color:#f92672">.</span>src <span style="color:#f92672">=</span> window<span style="color:#f92672">.</span>URL<span style="color:#f92672">.</span>createObjectURL(image_file)
+    document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;output&#34;</span>)<span style="color:#f92672">.</span>appendChild(new_image)
+
+<span style="color:#75715e"># Run image processing code above whenever file is uploaded</span>
+upload_file <span style="color:#f92672">=</span> create_proxy(_upload_change_and_show)
+document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;file-upload&#34;</span>)<span style="color:#f92672">.</span>addEventListener(<span style="color:#e6db74">&#34;change&#34;</span>, upload_file)</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <p class="post-img-caption">Scroll to see complete code</p>
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>
