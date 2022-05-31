@@ -6,7 +6,229 @@
     <description>Recent content in PyScript on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 May 2022 07:57:13 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 31 May 2022 12:22:16 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Uploading and Manipulating Images in Pyscript</title>
+      <link>https://jeff.glass/post/pyscript-image-upload/</link>
+      <pubDate>Tue, 31 May 2022 12:22:16 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/pyscript-image-upload/</guid>
+      <description>&lt;script defer src=&#34;../../ps/pyscript.js&#34;&gt;&lt;/script&gt;
+&lt;p class=&#34;post-p&#34;&gt;A curious dev on the &lt;a href=&#34;https://discord.com/invite/TynfPGRwda&#34;&gt;PyScript Discord&lt;/a&gt; (which you should really come check out) asked:&lt;/p&gt;
+&lt;blockquote class=&#34;p-2 mx-6 my-4 italic bg-gray-200 border-l-4 border-gray-800&#34;&gt;I am taking file input in HTML where I am selecting image, how to show image when submit button is hit in PyScript?&lt;br&gt;&lt;br&gt;Actually, I need to use that file in PyScript to process. How can I do that?&lt;/blockquote&gt;
+&lt;p class=&#34;post-p&#34;&gt;Well, there&#39;s an interesting question. How do we deal with uploaded files in Javascript/Pyscript?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For those looking to skip to the punchline - here&#39;s a working demo. We&#39;ll show off both the ability to upload and display images, as well as manipulating them with &lt;a href=&#34;https://pillow.readthedocs.io/en/stable/&#34;&gt;the Pillow image manipulation library&lt;/a&gt;:&lt;/p&gt;
+&lt;py-env&gt;
+    - Pillow
+&lt;/py-env&gt;
+&lt;div class=&#34;p-4 m-auto mt-6 mb-8 bg-blue-100 border-2 justify-items-center&#34;&gt;
+    &lt;label for=&#34;File Upload&#34;&gt;Upload an image file here to display it onscreen.&lt;/label&gt;
+    &lt;br&gt;&lt;input type=&#34;file&#34; id=&#34;file-upload&#34;&gt;
+    &lt;div id=&#34;output_upload&#34;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;py-script src=&#34;./image_upload.py&#34;&gt;&lt;/py-script&gt;
+&lt;div class=&#34;p-4 m-auto mt-6 mb-8 bg-red-100 border-2 justify-items-center&#34;&gt;
+    &lt;label for=&#34;File Upload&#34;&gt;Upload an image file here to display it onscreen with filters&lt;/label&gt;
+    &lt;br&gt;&lt;input type=&#34;file&#34; id=&#34;file-upload-pillow&#34;&gt;
+    &lt;div id=&#34;output_upload_pillow&#34;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;py-script src=&#34;./image_upload_pillow.py&#34;&gt;&lt;/py-script&gt;
+&lt;p class=&#34;post-p&#34;&gt;If all has gone to plan, images uploaded in the first dialog should just appear onscreen full-size; images uploaded in the second dialog should appear below the upload dialog, having been (1) &#34;embossed&#34;, (2) rotated 45 degrees, and (3) had any empty space filled with a dark green background.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;Simple Image Upload and Display&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;The HTML portion of this project is very straightforward - an input with &lt;code class=&#34;code&#34;&gt;type=file&lt;/code&gt; and an ID to refer to it by, as well as an empty div for us to shove output in later:&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;my-page.html&lt;/p&gt;
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;label&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Upload a PNG image&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;label&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file-upload&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;output_upload&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;./image_upload.py&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt;&amp;gt;
+    &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;p class=&#34;post-p&#34;&gt;The Pyscript portion of this example is only slightly more involved. We use &lt;code class=&#34;code&#34;&gt;addEventListener()&lt;/code&gt; to trigger a function when the selected file in the input field changes. Then we get the file targetted by that input, and create a temporary URL for it using &lt;code class=&#34;code&#34;&gt;window.URL.createObjectURL()&lt;/code&gt;. Finally, we create a new &lt;code class=&#34;code&#34;&gt;&amp;lt;img&amp;gt;&lt;/code&gt; tag and stick it inside our output div.&lt;/p&gt;
+    &lt;p class=&#34;code-title&#34;&gt;image_upload.py&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; js &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; document, console, window
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; create_proxy
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; asyncio
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_upload_file_and_show&lt;/span&gt;(e):
+    console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Attempted file upload: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; e&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;target&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value)
+    file_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; e&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;target&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;files
+    first_item &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; file_list&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;item(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+
+    new_image &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;createElement(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;img&amp;#39;&lt;/span&gt;)
+    new_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;src &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; window&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;URL&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;createObjectURL(first_item)
+    document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;output_upload&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;appendChild(new_image)
+
+upload_file &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; create_proxy(_upload_file_and_show)
+document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file-upload&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;change&amp;#34;&lt;/span&gt;, upload_file)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;mt-8 post-h2&#34;&gt;Image Processing with PILLOW&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Things get slightly more involved if we want to use the Python Image Library (or its kinder wrapper, PILLOW) to work with the images. The HTML looks almost identical, but we do need to add Pillow to a new &lt;code class=&#34;code&#34;&gt;&amp;lt;py-env&amp;gt;&lt;/code&gt; tag so that micropip will install Pillow into our environment for us.&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;my-page.html&lt;/p&gt;
+        &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-env&lt;/span&gt;&amp;gt;
+    - Pillow
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;py-env&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;label&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Upload a PNG image&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;label&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file-upload-pillow&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;output_upload_pillow&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;./image_upload_pillow.py&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt;&amp;gt;
+        &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;p class=&#34;post-p&#34;&gt;However, the Pyscript in this case is somewhat more involved, getting the bytes back and forth from Pyscript and the browser in formats they like. Full caveat - through testing, I &lt;span class=&#34;italic&#34;&gt;think&lt;/span&gt; all of these castings and conversions are necessary for this to work, but if anyone finds a shorter way, &lt;a href=&#34;https://twitter.com/jeffersglass&#34;&gt;please let me know!&lt;/a&gt;&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;That said, to load the image data into Pillow, we:&lt;/p&gt;
+        &lt;ul class=&#34;post-ul&#34;&gt;
+            &lt;li&gt;Get the raw bytes of data from the image using &lt;code class=&#34;code&#34;&gt;await item.arrayBuffer()&lt;/code&gt;&lt;/li&gt;
+            &lt;li&gt;Cast that data into a &lt;code class=&#34;code&#34;&gt;bytearray&lt;/code&gt; and then as an &lt;code class=&#34;code&#34;&gt;io.BytesIO&lt;/code&gt; object, which is an in-memory object that behaves as a file-like object for IO purposes.&lt;/li&gt;
+            &lt;li&gt;Load that BytesIO object into Pillow using &lt;code class=&#34;code&#34;&gt;Image.open()&lt;/code&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;p class=&#34;post-p&#34;&gt;Once we have the image loaded, we can do all of our usual Pillow-based adjustments to it - in this case, I&#39;m having it filter, rotate, fill, and resize the image using a succession of operations.&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;Finally, to retrieve the data in a format that we can use in the DOM, we:&lt;/p&gt;
+        &lt;ul class=&#34;post-ul&#34;&gt;
+            &lt;li&gt;Create another &lt;code class=&#34;code&#34;&gt;BytesIO&lt;/code&gt; file-link object, and use &lt;code class=&#34;code&#34;&gt;Image.save()&lt;/code&gt; to write our image out to it.&lt;/li&gt;
+            &lt;li&gt;Create a new &lt;code class=&#34;code&#34;&gt;File&lt;/code&gt; object containing the bytes of our image, with a placeholder name and a MIME type of &lt;code class=&#34;code&#34;&gt;image/png&lt;/code&gt;&lt;/li&gt;
+            &lt;li&gt;Create an URL we can use for this File using &lt;code class=&#34;code&#34;&gt;indow.URL.createObjectURL()&lt;/code&gt;&lt;/li&gt;
+            &lt;li&gt;Use that URL as the src of a new img tag (made with &lt;code class=&#34;code&#34;&gt;document.createElement()&lt;/code&gt;) and append that as a child of our div.&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;p class=&#34;code-title&#34;&gt;image_upload_pillow.py&lt;/p&gt;
+    &lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; js &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; document, console, Uint8Array, window, File
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; create_proxy
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; asyncio
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; io
+
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; PIL &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Image, ImageFilter
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_upload_change_and_show&lt;/span&gt;(e):
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Get the first file from upload&lt;/span&gt;
+    file_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; e&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;target&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;files
+    first_item &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; file_list&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;item(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Get the data from the files arrayBuffer as an array of unsigned bytes&lt;/span&gt;
+    array_buf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Uint8Array&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;new(&lt;span style=&#34;color:#66d9ef&#34;&gt;await&lt;/span&gt; first_item&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;arrayBuffer())
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#BytesIO wants a bytes-like object, so convert to bytearray first&lt;/span&gt;
+    bytes_list &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bytearray(array_buf)
+    my_bytes &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;BytesIO(bytes_list)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Create PIL image from Bytes&lt;/span&gt;
+    my_image &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;open(my_bytes)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Log some of the image data for testing&lt;/span&gt;
+    console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;my_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;format&lt;span style=&#34;color:#e6db74&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;my_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;width&lt;span style=&#34;color:#e6db74&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;my_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;height&lt;span style=&#34;color:#e6db74&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;# Now that we have the image loaded with Pillow, we can use all the tools it makes available.&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;#34;Emboss&amp;#34; the image, rotate 45 degrees, fill with dark green, resize to 300x300&lt;/span&gt;
+    my_image &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; my_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;filter(ImageFilter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;EMBOSS)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;rotate(&lt;span style=&#34;color:#ae81ff&#34;&gt;45&lt;/span&gt;, expand&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;, fillcolor&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;))&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;resize((&lt;span style=&#34;color:#ae81ff&#34;&gt;300&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;300&lt;/span&gt;))
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Convert Pillow object back into File type that createObjectURL will take&lt;/span&gt;
+    my_stream &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; io&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;BytesIO()
+    my_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(my_stream, format&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PNG&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Create a JS File object with our data and the proper mime type&lt;/span&gt;
+    image_file &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; File&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;new([Uint8Array&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;new(my_stream&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getvalue())], &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;new_image_file.png&amp;#34;&lt;/span&gt;, {&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;image/png&amp;#34;&lt;/span&gt;})
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;#Create new tag and insert into page&lt;/span&gt;
+    new_image &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;createElement(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;img&amp;#39;&lt;/span&gt;)
+    new_image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;src &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; window&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;URL&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;createObjectURL(image_file)
+    document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;output&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;appendChild(new_image)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Run image processing code above whenever file is uploaded&lt;/span&gt;
+upload_file &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; create_proxy(_upload_change_and_show)
+document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;file-upload&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;change&amp;#34;&lt;/span&gt;, upload_file)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>The 7 GUIs - Pyscript</title>
       <link>https://jeff.glass/project/the-7-guis-pyscript/</link>
