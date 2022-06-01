@@ -8,9 +8,51 @@ tags:
 - Pyodide
 description: "Creating a Pyodide-compatible port of the PyEphem module for astronomical objects"
 ---
+<script defer src="/ps/pyscript.js"></script>
+<pre>
+
 https://pyodide.org/en/stable/development/new-packages.html
 https://pyodide.org/en/latest/development/building-from-sources.html
 
 Download/Install docker desktop
 Follow link from Github repo pyodide/pyodide-env on docker hub https://pyodide.org/en/latest/development/building-from-sources.html
-Use docker pull command to pull down image ```docker pull pyodide/pyodide-env```
+Use docker pull command to pull down image ```docker pull pyodide/pyodide-env:20220525-py310-chrome102-firefox100```  or something newer
+    ^^^ Be sure to pull one of the newer tagged releases, not the 'latest' one!
+In docker desktop, run the container, with a name volume specified specified
+In the command line (in src directory), use ```git clone https://github.com/pyodide/pyodide.git``` to pull down source from github
+```cd pyodide```
+#This takes awhile
+
+pip install ./pyodide-build
+python -m pyodide_build mkpkg ephem
+cd packages/ephem
+
+(apt-get update)
+(apt-get install nano)
+
+nano meta.yaml #check that yaml file was created
+
+python -m pyodide_build buildpkg meta.yaml (in this same package folder)
+
+cp dist /usr/&lt;packagename&gt;
+close command line
+
+```make```
+
+### Why doesn't the new package appear in Pyodide when built?
+
+Process in theory:
+    Use docker image to make emscirpten port of module
+    Create patch files from 
+
+
+</pre>
+<py-script>
+from js import console
+import asyncio
+console.log("Hello, world "   + str(len("Jeff")))
+
+import micropip
+await micropip.install('post\creating-pyodide-package\ephem-4.1.3-cp310-cp310-emscripten_2_0_27_wasm32.whl')
+console.log("DONE!")
+</py-script>
