@@ -8,8 +8,42 @@ import io
 import numpy as np
 from numpy import asarray
 
+from skimage.transform import swirl, PiecewiseAffineTransform, warp
+
 current_emoji = "🤖"
 current_filter_name = "swirl"
+
+def swirl_filter(my_array: np.array) -> np.array:
+    return swirl(my_array, rotation = 0, strength = 15, radius = 300)
+
+def affine_filter(my_array: np.array) -> np.array:
+    rows, cols = my_array.shape[0], my_array.shape[1]
+
+    src_cols = np.linspace(0, cols, 20)
+    src_rows = np.linspace(0, rows, 10)
+    src_rows, src_cols = np.meshgrid(src_rows, src_cols)
+    src = np.dstack([src_cols.flat, src_rows.flat])[0]
+
+    # add sinusoidal oscillation to row coordinates
+    dst_rows = src[:, 1] - np.sin(np.linspace(0, 3 * np.pi, src.shape[0])) * 50
+    dst_cols = src[:, 0]
+    dst_rows *= 1.5
+    dst_rows -= 1.5 * 50
+    dst = np.vstack([dst_cols, dst_rows]).T
+
+
+    tform = PiecewiseAffineTransform()
+    tform.estimate(src, dst)
+
+    out_rows = my_array.shape[0] - 1.5 * 50
+    out_cols = cols
+    return warp(my_array, tform, output_shape=(out_rows, out_cols))
+
+
+filter_names = {
+    "swirl": swirl_filter,
+    "affine": affine_filter
+}
 
 async def get_emoji_bytes(url: str):
     response = await pyfetch(url)
@@ -17,10 +51,12 @@ async def get_emoji_bytes(url: str):
         return await response.bytes()
 
 async def _select_emoji_and_display(e):
+    global current_emoji
     current_emoji = e.target.value
     await _fetch_and_display()
 
-async def _select_filter_and_display():
+async def _select_filter_and_display(e):
+    global current_filter_name
     current_filter_name = e.target.value
     await _fetch_and_display()
 
@@ -45,8 +81,8 @@ async def _fetch_and_display():
 
     # -------- Do image processing here ------
 
-    from skimage.transform import swirl
-    my_array = swirl(my_array, rotation = 0, strength = 15, radius = 300)
+    #my_array = swirl(my_array, rotation = 0, strength = 15, radius = 300)
+    my_array = filter_names[current_filter_name](my_array)
 
     # -------- End image processing -----------
 
@@ -90,7 +126,7 @@ def remove_all_children(parent_id: str):
     parent = document.getElementById(parent_id)
 
     while parent.firstChild is not None:
-        parent.removeChild(parent.firstChild) 
+        parent.removeChild(parent.firstChild)
 
 await _fetch_and_display()
 
