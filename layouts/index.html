@@ -46,7 +46,8 @@
             <p class="italic">Moments in time, works in progress or completed assemblies, on a variety of topics</p>
             <div class="flex flex-wrap">
                 {{ $cloudPages := where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume") }}
-                {{ range first 5 ((where .Site.Pages "Section" "post" ) | complement $cloudPages ) }}
+                {{ $hiddenPages := where .Site.RegularPages ".Params.rss_ignore" true }}
+                {{ range first 5 ((where .Site.Pages "Section" "post" ) | complement $cloudPages | complement $hiddenPages ) }}
                     {{ if .IsPage }}
                         {{ .Render "card"}}
                     {{ end }}
