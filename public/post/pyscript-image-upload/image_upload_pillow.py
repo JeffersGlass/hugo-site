@@ -32,7 +32,7 @@ async def _upload_change_and_show(e):
     my_image.save(my_stream, format="PNG")
 
     #Create a JS File object with our data and the proper mime type
-    image_file = File.new([Uint8Array.new(my_stream.getvalue())], "new_image_file.png", {"type": "image/png"})
+    image_file = File.new([Uint8Array.new(my_stream.getvalue())], "new_image_file.png", {type: "image/png"})
 
     #Create new tag and insert into page
     new_image = document.createElement('img')
