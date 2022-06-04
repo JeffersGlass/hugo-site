@@ -61,4 +61,4 @@ original_image.classList.add("w-auto")
 original_image.src = window.URL.createObjectURL(original_image_file)
 document.getElementById("original_image").appendChild(original_image)
 
-x=1
+x=1 #Prevents an apparent error of Pyscript trying to write its final value to the DOM

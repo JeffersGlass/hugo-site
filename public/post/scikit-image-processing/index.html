@@ -187,6 +187,8 @@ if (!doNotTrack) {
             <select id="filter-selector">
                 <option value="swirl">Swirl</option>
                 <option value="affine">Affine Filter</option>
+                <option value="butterworth_low">Butterworth Low Pass</option>
+                <option value="butterworth_high">Butterworth High Pass</option>
             </select>
         </div>
     </div>
@@ -201,7 +203,373 @@ if (!doNotTrack) {
         </div>
     </div>
 </div>
-<p id="empty"></p>
+<p class="post-p">Here is the source for the examples running above. Some details of formatting and CSS of on this page have bee omitted below for clarity. <span class="italic">(Feel free to use View Source if you're like to look at the details)</span></p>
+<p class="code-title">index.html</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">py-env</span>&gt;
+- Pillow
+- matplotlib
+- scikit-image
+- numpy
+&lt;/<span style="color:#f92672">py-env</span>&gt;
+
+&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">defer</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://pyscript.net/alpha/pyscript.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+&lt;<span style="color:#f92672">py-script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;./emoji_playground.py&#34;</span>&gt;&lt;/<span style="color:#f92672">py-script</span>&gt;
+
+&lt;<span style="color:#f92672">select</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;emoji-selector&#34;</span>&gt;
+    &lt;<span style="color:#f92672">option</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;🤖&#34;</span>&gt;🤖&lt;/<span style="color:#f92672">option</span>&gt;
+    &lt;<span style="color:#f92672">option</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;👨‍🎨&#34;</span>&gt;👨‍🎨&lt;/<span style="color:#f92672">option</span>&gt;
+    &lt;<span style="color:#f92672">option</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;🧠&#34;</span>&gt;🧠&lt;/<span style="color:#f92672">option</span>&gt;
+    &lt;<span style="color:#f92672">option</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;🦞&#34;</span>&gt;🦞&lt;/<span style="color:#f92672">option</span>&gt;
+    &lt;<span style="color:#f92672">option</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;🌯&#34;</span>&gt;🌯&lt;/<span style="color:#f92672">option</span>&gt;
+    &lt;<span style="color:#f92672">option</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;🎭&#34;</span>&gt;🎭&lt;/<span style="color:#f92672">option</span>&gt;
+  &lt;/<span style="color:#f92672">select</span>&gt;
+
+&lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w-full text-lg font-semibold text-center underline&#34;</span>&gt;Original Image&lt;/<span style="color:#f92672">p</span>&gt;
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;original_image&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+&lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w-full text-lg font-semibold text-center underline&#34;</span>&gt;Processed Image&lt;/<span style="color:#f92672">p</span>&gt;
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;new_image&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<br>
+<p class="code-title">emoji_playground.py</p>
+<div class="overflow-y-scroll h-124">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
+
+<span style="color:#f92672">from</span> js <span style="color:#f92672">import</span> document, console, Uint8Array, window, File
+<span style="color:#f92672">from</span> pyodide <span style="color:#f92672">import</span> create_proxy
+<span style="color:#f92672">from</span> pyodide.http <span style="color:#f92672">import</span> pyfetch
+<span style="color:#f92672">import</span> asyncio
+<span style="color:#f92672">import</span> io
+<span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+<span style="color:#f92672">from</span> numpy <span style="color:#f92672">import</span> asarray
+<span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> partial
+
+<span style="color:#f92672">from</span> skimage.transform <span style="color:#f92672">import</span> swirl, PiecewiseAffineTransform, warp
+<span style="color:#f92672">from</span> skimage.filters <span style="color:#f92672">import</span> butterworth
+
+current_emoji <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;🤖&#34;</span>
+current_filter_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;swirl&#34;</span>
+
+emoji_data: dict[str, np<span style="color:#f92672">.</span>array] <span style="color:#f92672">=</span> {}
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">swirl_filter</span>(my_array: np<span style="color:#f92672">.</span>array) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>array:
+    <span style="color:#66d9ef">return</span> swirl(my_array, rotation <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, strength <span style="color:#f92672">=</span> <span style="color:#ae81ff">15</span>, radius <span style="color:#f92672">=</span> <span style="color:#ae81ff">300</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">affine_filter</span>(my_array: np<span style="color:#f92672">.</span>array) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>array:
+    rows, cols <span style="color:#f92672">=</span> my_array<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>], my_array<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]
+
+    src_cols <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, cols, <span style="color:#ae81ff">20</span>)
+    src_rows <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, rows, <span style="color:#ae81ff">10</span>)
+    src_rows, src_cols <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>meshgrid(src_rows, src_cols)
+    src <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>dstack([src_cols<span style="color:#f92672">.</span>flat, src_rows<span style="color:#f92672">.</span>flat])[<span style="color:#ae81ff">0</span>]
+
+    <span style="color:#75715e"># add sinusoidal oscillation to row coordinates</span>
+    dst_rows <span style="color:#f92672">=</span> src[:, <span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> np<span style="color:#f92672">.</span>sin(np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>pi, src<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>])) <span style="color:#f92672">*</span> <span style="color:#ae81ff">50</span>
+    dst_cols <span style="color:#f92672">=</span> src[:, <span style="color:#ae81ff">0</span>]
+    dst_rows <span style="color:#f92672">*=</span> <span style="color:#ae81ff">1.5</span>
+    dst_rows <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1.5</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">50</span>
+    dst <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>vstack([dst_cols, dst_rows])<span style="color:#f92672">.</span>T
+
+
+    tform <span style="color:#f92672">=</span> PiecewiseAffineTransform()
+    tform<span style="color:#f92672">.</span>estimate(src, dst)
+
+    out_rows <span style="color:#f92672">=</span> my_array<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.5</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">50</span>
+    out_cols <span style="color:#f92672">=</span> cols
+    <span style="color:#66d9ef">return</span> warp(my_array, tform, output_shape<span style="color:#f92672">=</span>(out_rows, out_cols))
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">butterworth_filter</span>(my_array: np<span style="color:#f92672">.</span>array, frequency <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>, high_pass<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, order<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>array:
+    <span style="color:#66d9ef">return</span> butterworth(my_array, frequency, high_pass<span style="color:#f92672">=</span>high_pass, order<span style="color:#f92672">=</span>order)
+
+filter_names <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#34;swirl&#34;</span>: swirl_filter,
+    <span style="color:#e6db74">&#34;affine&#34;</span>: affine_filter,
+    <span style="color:#e6db74">&#34;butterworth_low&#34;</span>: partial(butterworth_filter, high_pass<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, order<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>),
+    <span style="color:#e6db74">&#34;butterworth_high&#34;</span>: partial(butterworth_filter, frequency <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>, high_pass<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, order<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>)
+}
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_emoji_bytes</span>(url: str):
+    response <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> pyfetch(url)
+    <span style="color:#66d9ef">if</span> response<span style="color:#f92672">.</span>status <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">await</span> response<span style="color:#f92672">.</span>bytes()
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_select_emoji_and_display</span>(e):
+    <span style="color:#66d9ef">global</span> current_emoji
+    current_emoji <span style="color:#f92672">=</span> e<span style="color:#f92672">.</span>target<span style="color:#f92672">.</span>value
+    <span style="color:#66d9ef">await</span> _fetch_and_display()
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_select_filter_and_display</span>(e):
+    <span style="color:#66d9ef">global</span> current_filter_name
+    current_filter_name <span style="color:#f92672">=</span> e<span style="color:#f92672">.</span>target<span style="color:#f92672">.</span>value
+    <span style="color:#66d9ef">await</span> _fetch_and_display()
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_fetch_emoji_data</span>(emoji_name: str) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>array:
+    emoji_code <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;-&#34;</span><span style="color:#f92672">.</span>join(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>ord(c)<span style="color:#e6db74">:</span><span style="color:#e6db74">x</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> emoji_name)<span style="color:#f92672">.</span>upper()
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/color/618x618/</span><span style="color:#e6db74">{</span>emoji_code<span style="color:#e6db74">}</span><span style="color:#e6db74">.png&#34;</span>
+    console<span style="color:#f92672">.</span>log(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Getting emoji </span><span style="color:#e6db74">{</span>emoji_name<span style="color:#e6db74">}</span><span style="color:#e6db74"> with value </span><span style="color:#e6db74">{</span>emoji_code<span style="color:#e6db74">}</span><span style="color:#e6db74"> at url </span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+
+    <span style="color:#75715e">#BytesIO wants a bytes-like object, so convert to bytearray first</span>
+    bytes_list <span style="color:#f92672">=</span> bytearray(<span style="color:#66d9ef">await</span> get_emoji_bytes(url))
+    my_bytes <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>BytesIO(bytes_list) 
+
+    <span style="color:#75715e">#Create PIL image from BytesIO </span>
+    my_image <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(my_bytes)
+
+    <span style="color:#75715e">#Convert to an np-array to allow for processing</span>
+    <span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>array(my_image<span style="color:#f92672">.</span>convert()) <span style="color:#75715e"># convert() is key, as these images use a pallete!!</span>
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_emoji_data</span>(emoji_name: str) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>array:
+    <span style="color:#66d9ef">if</span> emoji_name <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> emoji_data:
+        emoji_data[emoji_name] <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> _fetch_emoji_data(emoji_name)
+    
+    <span style="color:#66d9ef">return</span> emoji_data[emoji_name]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">array_to_image</span>(data:np<span style="color:#f92672">.</span>array) <span style="color:#f92672">-&gt;</span> Image:
+    <span style="color:#66d9ef">if</span> data[row<span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>][column<span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>][red<span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>] <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">.99</span>:
+        <span style="color:#75715e"># Many transforms represent RGB as floats in the range 0-1, which pillow does not like</span>
+        <span style="color:#75715e"># This converts their values back to 0-255</span>
+        <span style="color:#66d9ef">return</span> Image<span style="color:#f92672">.</span>fromarray((data<span style="color:#f92672">*</span><span style="color:#ae81ff">255</span>)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>uint8)) 
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> Image<span style="color:#f92672">.</span>fromarray(data<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>uint8))
+
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_fetch_and_display</span>():
+    <span style="color:#75715e"># Get an emoji image from cache or fetch from web</span>
+    emoji_data <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> _emoji_data(current_emoji)
+
+    <span style="color:#75715e">#Image Processing</span>
+    my_array <span style="color:#f92672">=</span> filter_names[current_filter_name](emoji_data)
+
+    <span style="color:#75715e">#convert back to Pillow image:</span>
+    my_image <span style="color:#f92672">=</span> array_to_image(my_array)
+
+    <span style="color:#75715e">#Export image from Pillow as bytes to get to Javascript</span>
+    my_processed_stream <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>BytesIO()
+    my_image<span style="color:#f92672">.</span>save(my_processed_stream, format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;PNG&#34;</span>)
+    processed_image_file <span style="color:#f92672">=</span> File<span style="color:#f92672">.</span>new([Uint8Array<span style="color:#f92672">.</span>new(my_processed_stream<span style="color:#f92672">.</span>getvalue())], <span style="color:#e6db74">&#34;new_image_file.png&#34;</span>, {type: <span style="color:#e6db74">&#34;image/png&#34;</span>})
+
+    <span style="color:#75715e">#Export image from </span>
+    my_original_stream <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>BytesIO()
+    original_data <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> _emoji_data(current_emoji)
+    original_image <span style="color:#f92672">=</span> array_to_image(emoji_data)
+    original_image<span style="color:#f92672">.</span>save(my_original_stream, format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;PNG&#34;</span>)
+    original_image_file <span style="color:#f92672">=</span> File<span style="color:#f92672">.</span>new([Uint8Array<span style="color:#f92672">.</span>new(my_original_stream<span style="color:#f92672">.</span>getvalue())], <span style="color:#e6db74">&#34;new_image_file.png&#34;</span>, {type: <span style="color:#e6db74">&#34;image/png&#34;</span>})
+
+    <span style="color:#75715e">#remove all children from divs:</span>
+    remove_all_children(<span style="color:#e6db74">&#34;new_image&#34;</span>)
+    remove_all_children(<span style="color:#e6db74">&#34;original_image&#34;</span>)
+
+    <span style="color:#75715e">#Create new tags and insert into page</span>
+    new_image <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>createElement(<span style="color:#e6db74">&#39;img&#39;</span>)
+    new_image<span style="color:#f92672">.</span>src <span style="color:#f92672">=</span> window<span style="color:#f92672">.</span>URL<span style="color:#f92672">.</span>createObjectURL(processed_image_file)
+    document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;new_image&#34;</span>)<span style="color:#f92672">.</span>appendChild(new_image)
+
+    original_image <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>createElement(<span style="color:#e6db74">&#39;img&#39;</span>)
+    original_image<span style="color:#f92672">.</span>classList<span style="color:#f92672">.</span>add(<span style="color:#e6db74">&#34;w-auto&#34;</span>)
+    original_image<span style="color:#f92672">.</span>src <span style="color:#f92672">=</span> window<span style="color:#f92672">.</span>URL<span style="color:#f92672">.</span>createObjectURL(original_image_file)
+    document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;original_image&#34;</span>)<span style="color:#f92672">.</span>appendChild(original_image)
+
+select_emoji_and_display <span style="color:#f92672">=</span> create_proxy( _select_emoji_and_display)
+document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;emoji-selector&#34;</span>)<span style="color:#f92672">.</span>addEventListener(<span style="color:#e6db74">&#34;change&#34;</span>,  select_emoji_and_display)
+
+select_filter_and_display <span style="color:#f92672">=</span> create_proxy( _select_filter_and_display)
+document<span style="color:#f92672">.</span>getElementById(<span style="color:#e6db74">&#34;filter-selector&#34;</span>)<span style="color:#f92672">.</span>addEventListener(<span style="color:#e6db74">&#34;change&#34;</span>,  select_filter_and_display)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">remove_all_children</span>(parent_id: str):
+    parent <span style="color:#f92672">=</span> document<span style="color:#f92672">.</span>getElementById(parent_id)
+
+    <span style="color:#66d9ef">while</span> parent<span style="color:#f92672">.</span>firstChild <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>:
+        parent<span style="color:#f92672">.</span>removeChild(parent<span style="color:#f92672">.</span>firstChild)
+
+<span style="color:#66d9ef">await</span> _fetch_and_display()
+
+x<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#75715e">#Prevents an apparent error of Pyscript trying to write its final value to the DOM</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
 				</div>
 				
 			</article>
