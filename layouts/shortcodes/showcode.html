@@ -1,0 +1,12 @@
+<div>
+    <p class="code-title">{{ path.Base (.Get 0) }}</p>
+    {{ $lines :=  len (split (os.ReadFile (.Get 0)) "\n") }}
+    {{ if ge $lines 21 }}
+    <div class="overflow-y-scroll h-124">
+    {{ end }}
+    {{ highlight (os.ReadFile (.Get 0) | htmlUnescape | safeHTML) "python3" "" }}
+    {{ if ge $lines 21 }}
+    </div>
+    <p class="post-img-caption">Scroll to see complete code</p>
+    {{ end }}
+</div>
