@@ -1,7 +1,7 @@
 ---
 title: "Pyscript Callbacks and Coroutines"
 date: 2022-07-02T14:06:50-05:00
-draft: true
+draft: false
 tags:
 - pyscript
 - python
@@ -12,8 +12,8 @@ static_slug: img/pyscript-logo.PNG
 <p class="post-p">Another interesting question popped up on the <a href="https://discord.com/invite/TynfPGRwda">PyScript Discord</a> this week:</p>
 <blockquote class="post-blockquote">I've got a question regarding network requests. How to do I call an API without blocking the UI thread? Like in JS you can just give fetch a callback function to call when the backend responds. Is there an equivalent for pyscript?</blockquote>
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
-<p class="post-p">The stock response was "use asyncio," which is true, but not particularly verbose. Let's put together a practical example.</p>
-<blockquote class="p-2 mx-6 my-4 italic text-green-800 bg-green-100">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts asynchronously in the browser, see Pyodid's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</blockquote>
+<p class="post-p">This is a very reasonable question for someone used to the callback-oriented style of modern Javascript programming. Let's put together a practical example of cooperative multitasking with callbacks in Pyscript.</p>
+<blockquote class="p-2 mx-6 my-4 italic text-green-800 bg-green-100">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts truly asynchronously in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</blockquote>
 <p class="post-p">One thing to note is that, by default, Pyscript/Pyodide execute each script tag as its own coroutine, so <code class="code">await</code>ing in one script block will automatically allow other script blocks to continue execution. Consider the following two (nearly identical) snippets, which with no further work independently count upward:</p>
 <div class="flex flex-col gap-2">
     {{< showcode "post/pyscript-futures/sleep_1.py" >}}
@@ -26,7 +26,7 @@ static_slug: img/pyscript-logo.PNG
     {{< loadcode "post/pyscript-futures/sleep_2.py" >}}
 </py-script>
 <div class="flex flex-col md:flex-row">
-    <div class="w-full m-4 md:w-1/2">
+    <div class="w-full my-4 md:w-1/2">
         <span class="text-sm text-gray-500">Output from sleep_1.py</span>
         <div class="h-auto text-base bg-green-100 border-2" id="output-1"></div>
     </div>
@@ -37,37 +37,39 @@ static_slug: img/pyscript-logo.PNG
 </div>
 <p class="post-p">So, with no particular care on our part, we have a certain amount of cooperative multitasking between scripts. But the question asker was specifically asking about callback functions, like Javascripts <code class="code">.then()</code> construct. For that, we'll need to dive a little deeper.</p>
 <hr>
-<p class="post-p">To make things easier to see, we'll need some kind of system process or web call that takes awhile to return a result. We'll make use of the delightfully named <a href="https://deelay.me/">Deelay.me API</a> to cause a (roughly) 3 second delay in our API call. The call itself will be to <a href="https://jsonplaceholder.typicode.com/">JSON Placeholder</a>, a mocked-up API service for exactly this kind of testing. So our endpoint will look like:</p>
+<p class="post-p">To make it easier to see when our code is blocking, we'll need some kind of system process or web call that takes awhile to return a result. We'll make use of the delightfully named <a href="https://deelay.me/">Deelay.me API</a> to cause a (roughly) 7 second delay in our API call. The call itself will be to <a href="https://jsonplaceholder.typicode.com/">JSON Placeholder</a>, a mocked-up API service for exactly this kind of testing. So our endpoint will look like:</p>
+<div class="my-4">
 {{< highlight python3 "linenos=false">}}
 endpoint = "https://jsonplaceholder.typicode.com/posts/1"
-ms_delay = "3000"
+ms_delay = "7000"
 delay_api = f"https://deelay.me/{ms_delay}/{endpoint}"
 {{< /highlight >}}
+</div>
 <p class="post-p">Let's start with some code that does <span class="font-bold">not</span> allow multitasking: each step <span class="italic">awaits</span> on the results of the previous one, so nothing can happen while we're waiting for results. The statement <code class="code">await_output.write("This will not otuput until the results are in")</code>, predictably, isn't visible until our <code class="code">fetch()</code> resolves.</p>
 <p class="post-p">(We'll have our code print <span class="italic">Starting to Fetch Results</span> immediately before the fetch happens, so we can differentiate between Pyscript/Pyodide's load time and the delayed fetch.)</p>
 <py-script output="await-output">
     {{< loadcode "post/pyscript-futures/await_fetch.py" >}}
 </py-script>
 {{< showcode "post/pyscript-futures/await_fetch.py" >}}
-<div class="m-4">
+<div class="my-4">
     <span class="text-sm text-gray-500">Output from await_fetch.py</span>
     <div class="h-auto text-base bg-green-100 border-2" id="await-output"></div>
 </div>
 <p class="post-p">So far, nothing new. But what if we want to keep doing things while our process works in the background?</p>
 <p class="post-p">Pyscript exposes the underlying <code class="code">webloop</code> that Pyodide uses to run our different scripts as separate coroutines. We can use asyncio's <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.create_future">create_future</a> or <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.create_task">create_task</a> functions to add and scheduel additional tasks within this loop.</p>
-<p class="post-p">First, we'll define the function <code class="code">fetch_it()</code> that we wish to run as a new coroutine, and the function <code class="code">print_results()</code> we'd like to use as a callback. Note that the callback function will receive the future (presumably, the result of the resolved future) when the future resolves. <code class="code">functools.partial</code> can be useful here to add additional frozen arguemnts. The <a href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future.add_done_callback">documentation for add_done_callback()</a> has some info on this.</p>
-<p class="post-p">With our two functions in hand, we'll use <code class="code">pyscript.loop</code> to access the event loop and <code class="code">create_task()</code> to schedule our function as a coroutine. Note the parentheses in <code class="code">create_task(fetch_it())</code> - <span class="font-bold">create_task</span> takes a corotine created by a function, not the function name itself.</p>
-<p class="post-p">Finally, <code class="code">add_done_callback()</code> to assign our task a function to call when complete.</p>
+<p class="post-p">First, we'll define the function <code class="code">fetch_it()</code> that we wish to run as a new coroutine, and the function <code class="code">print_results()</code> we'd like to use as a callback. Note that the callback function will receive the future (presumably, the result of the resolved future) as a argument when the future resolves. <code class="code">functools.partial</code> can be useful here to add additional frozen arguemnts. The <a href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future.add_done_callback">documentation for add_done_callback()</a> has some info on this.</p>
+<p class="post-p">With our two functions in hand, we'll use <code class="code">pyscript.loop</code> to access the event loop and <code class="code">create_task()</code> to schedule our function as a coroutine. Note the parentheses in <code class="code">create_task(fetch_it())</code> - <span class="font-bold">create_task</span> takes a corotine created by a function, not the function itself!</p>
+<p class="post-p">Finally, <code class="code">add_done_callback()</code> to tell the event loop to run our <code class="code">print_results()</code> function our when our task is complete.</p>
 <p class="post-p">To show off that we really can do other things in the meanwhile, we'll use a simple <code class="code">for</code> loop over <code class="code">itertools.count()</code> (which will count upward forever) to print out some text every second until our delayed fetch returns. We'll use an <code class="code">isinstance()</code> check to see if the Future created by <code class="code">create_task</code> has already resolved to a result or not, and if it hasn't, check whether it's <code class="code">done()</code>.</p>
 <py-script output="future-output">
     {{< loadcode "post/pyscript-futures/future_fetch.py" >}}
 </py-script>
 {{< showcode "post/pyscript-futures/future_fetch.py" >}}
-<div class="m-4">
+<div class="my-4">
     <span class="text-sm text-gray-500">Output from await_fetch.py</span>
-    <div class="h-auto bg-green-100 border-2" id="future-output"></div>
-</div>
+<div class="h-auto bg-green-100 border-2" id="future-output"></div>
 <p class="post-p">If all has gone wall, you should see that the code above has counted to (about) 7 seconds before returning some JSON. (You may need to refresh the page to see it live.)</p>
+<p class="post-p">There's no reason we can't add multiple callback functions to a single piece coroutine, though if you're doing that regularly you might consider some kind of dispatcher function or other refactoring.</p>
 <hr>
 <p class="post-p">Some things to keep in mind:
     <ul class="post-ul">
