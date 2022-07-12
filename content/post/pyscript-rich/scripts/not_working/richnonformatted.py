@@ -1,0 +1,1 @@
+print("[blink]Blinking Text[/blink]")
