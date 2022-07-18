@@ -9,18 +9,9 @@ tags:
 description: "Patching the Rich formattier to output to Pyscript"
 slug_image: richlogo_square.svg
 ---
-<style>
-    h3 {
-        font-size: 1.5rem/* 24px */;
-        line-height: 2rem/* 32px */;
-        padding-bottom: 0.5rem;
-        width: 100%;
-        --tw-bg-opacity: 1;
-        background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
-        padding-left: 0.25rem;
-    }
-</style>
-
+<p>Though Pyscript is still in its infancy, the possibilities unlocked by running Python in a browser are already blossoming. As such, I'm seeing more and more users on the <a href="https://community.anaconda.cloud/c/tech-topics/pyscript/41">official forums</a>, the <a href="https://discord.com/invite/TynfPGRwda">unofficial Discord</a>, and the <a href="https://github.com/pyscript/pyscript">Github Issue Tracker</a> interested in working with their favorite libraries to the web. Let's look at the process of taking a package that <span class="italic">runs</span> but doesn't run <span class="italic">well</span>, and see how we can use monkeypatching to bring it to life using Pyscript.</p>
+<p class="post-p">Lots of packages work fine right out of the box - anything <a href="https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages">written in Pure Python stands a good chance of at least running). But just because it runs, doesn't mean it'll look good or behave the way we expect objects to on a webpage. Interactive packages, like matplotlib or d3, or terminal-based packages like tqdm or colorama, may not be immediately interactable in the browser, because they've implemented their own methods for interpretting input/output that the browser doesn't play nicely with.</a> Just because the Pyscript/Pyodide interpretter doesn't crash doesn't mean you can get useful info in and out of your program.</p>
+<p class="post-p"></p>
 <p class="post-p">
 <ul class="post-ul">
     <li>Fork the Rich repository</li>
@@ -53,6 +44,17 @@ slug_image: richlogo_square.svg
 <hr>
 
 <script src="https://pyscript.net/releases/2022.06.1/pyscript.js" output="pyoutput" defer></script>
+<style>
+    h3 {
+        font-size: 1.5rem/* 24px */;
+        line-height: 2rem/* 32px */;
+        padding-bottom: 0.5rem;
+        width: 100%;
+        --tw-bg-opacity: 1;
+        background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
+        padding-left: 0.25rem;
+    }
+</style>
 
 <py-env>
     - rich
@@ -66,6 +68,7 @@ slug_image: richlogo_square.svg
         <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2">
             <h3>Text Formatting (Mostly)</h3>
             <py-script class="px-2" src="scripts/working/richtext.py"></py-script>
+            <div id="bar_div"></div>
         </div>
         <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtext.py">}}</div>
     </div>
@@ -82,7 +85,7 @@ slug_image: richlogo_square.svg
         <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
             <h3>Bars</h3>
             <py-script class="px-2" src="scripts/working/richbar.py"></py-script>
-            <div id="bar_div"></div>
+            <!-- <div id="bar_div"></div> -->
     </div>
     <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richbar.py">}}</div>
     </div>
@@ -162,6 +165,9 @@ slug_image: richlogo_square.svg
         <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtree.py">}}</div>
     </div>
 </div>
+<!-- <div>
+    <py-script src="scripts/working/bigexample.py"></py-script>
+</div> -->
 <hr class="my-6">    
 <h2 class="post-h2">Things that Don't Work</h2>
 <div class="flex flex-col space-y-6">
