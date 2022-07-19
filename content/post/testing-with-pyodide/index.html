@@ -1,0 +1,56 @@
+---
+title: "Testing With Pyodide"
+date: 2022-07-19T07:41:22-05:00
+draft: true
+tags:
+- pyscript
+- python
+- pyodide
+description: "Notes on using pyodide's mechanisms for testing pyodide adjacent code"
+static_slug: img/pyscript-logo.PNG
+---
+
+<br>Clone Pyodide repo to disk
+<br>Add empty setup.py to pyodide-test-runner folder (maybe don't need if not editable?)
+<code class="code">pipenv install -e 'D:/pyodide/pyodide-test-runner'</code>
+<br> create new test <code class="code">test_pyodide.py</code> to investigate process
+<pre>def test_selenium_open():
+    from selenium import webdriver
+    import chromedriver_autoinstaller
+
+    chromedriver_autoinstaller.install()
+
+    driver = webdriver.Chrome()
+    driver.get("http://www.python.org")
+    assert "Python" in driver.titl
+</pre>
+
+<br> Fails with wrong chrome version: <pre>selenium.common.exceptions.SessionNotCreatedException: Message: session not created: This version of ChromeDriver only supports Chrome version 97</pre>
+
+<a href="https://github.com/yeongbin-jo/python-chromedriver-autoinstaller">chromedriver_autoinstaller on github</a>
+
+But <code class="code">print(chromedriver_autoinstaller.utils.get_chrome_version())</code> gives 103.0.5060.114
+
+<br>Passing the explicit path to chromedriver (if you have chromedriver elsewhere on your system) helps:
+<pre>def test_selenium_open():
+    from selenium import webdriver
+    import chromedriver_autoinstaller
+
+    path_to_driver = chromedriver_autoinstaller.install(cwd=True)
+
+    driver = webdriver.Chrome(path_to_driver)
+    driver.get("http://www.python.org")
+    assert "Python" in driver.title</pre>
+
+<hr>
+<pre>from pytest import mark
+    @mark.skip
+    def test_....
+</pre>
+<br>Helps with temporarily disabling tests
+<br>Using selenium expected conditions to monitor for page changes: <a href="https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html?highlight=expected">Docs</a>
+<pre>def test_pyscript_load(driver):
+    driver.get(get_page_location('pyodide_load_from_web'))
+    WebDriverWait(driver, timeout=10).until(title_contains('Changed'))
+    assert driver.title == 'Changed'
+    </pre>
