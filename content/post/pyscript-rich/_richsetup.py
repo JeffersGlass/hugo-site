@@ -1,5 +1,7 @@
 from rich import get_console
 import rich.jupyter
+from rich.pretty import Pretty
+from pyodide import JsException
 
 from sys import stdout, modules
 
@@ -17,20 +19,28 @@ def display_pyscript(segments, text: str) -> None:
 
 #monkeypatch jupyter display method to write processed HTML to stdout
 rich.jupyter.display = display_pyscript 
+
+#Overwrite rint with Jupyter print function
 print = rich.jupyter.print
 
 #Allow Element.write() to take an object from rich
 def newWrite(self, value, append=False):
     if hasattr(value, '__rich_console__'):
-        #console.error(f"Using newWrite() __rich_console__ on {str(value)[:min(30, len(str(value)))]}...")
+        console.warn(f"Using newWrite() __rich_console__ on {str(value)[:min(30, len(str(value)))]}...with type {type(value)}")
         self._write(rich.jupyter._render_segments(value.__rich_console__(c, c.options)), append)
         return
     elif hasattr(value, '__rich__'):
-        #console.error(f"Using newWrite() __rich__ on {str(value)[:min(30, len(str(value)))]}...")
+        console.warn(f"Using newWrite() __rich__ on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
         self._write(rich.jupyter._render_segments(value.__rich__(c, c.options)), append)
-    else:
-        #console.error(f"Using newWrite() as passthrough on {str(value)[:min(30, len(str(value)))]}...")
+    elif isinstance(value, str) or isinstance(value, (str, Exception, JsException)):
+        console.warn(f"Using newWrite() as passthrough on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
         self._write(value, append)
+    else:
+        console.warn(f"Using newWrite() with Pretty interpretted on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
+        c.print(value)
+        #self.write(value.__rich_console__(c, c.options), append)
+        #value.__rich__ = value.__rich_console__
+        #self._write(rich.jupyter._render_segments(value.__rich__(c, c.options)), append)
 
 setattr(Element, '_write', Element.write)
 setattr(Element, 'write', newWrite)
