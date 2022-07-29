@@ -40,6 +40,26 @@
                 </div>
             </div>
         </div>
+        <!-- Python POSTS-->
+        <div class="pt-6 my-8" id="Python-Pyscript">
+            <h1 class="text-3xl relative-anchor">Python / Pyscript</h1>
+            <p class="italic">Moments in time, works in progress or completed assemblies, on a variety of topics</p>
+            <div class="flex flex-wrap">
+                {{ $pythonPages := where .Site.Pages ".Params.tags" "intersect" (slice "python" "Python") }}
+                {{ range first 4 ((where .Site.Pages "Section" "post" ) | intersect $pythonPages ) }}
+                        {{ .Render "card"}}
+                {{ end }}
+                <div class= "w-full p-4 m-1 md:w-20-1 more-blog-posts">
+                    <a href="/tags/python" class="z-10 clickable-link-box"><span></span></a>
+                    <div class="align-center">
+                        <h2 class="text-2xl font-bold text-center text-gray-800 ">More Python / Pyscript</h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="block w-24 h-24 m-auto text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                          </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- BLOG POSTS-->
         <div class="pt-6 my-8" id="Blog Posts">
             <h1 class="text-3xl relative-anchor">Blog Posts</h1>
@@ -47,7 +67,7 @@
             <div class="flex flex-wrap">
                 {{ $cloudPages := where .Site.RegularPages ".Params.tags" "intersect" (slice "Cloud-Resume") }}
                 {{ $hiddenPages := where .Site.RegularPages ".Params.rss_ignore" true }}
-                {{ range first 5 ((where .Site.Pages "Section" "post" ) | complement $cloudPages | complement $hiddenPages ) }}
+                {{ range first 5 ((where .Site.Pages "Section" "post" ) | complement $cloudPages | complement $hiddenPages | complement $pythonPages) }}
                     {{ if .IsPage }}
                         {{ .Render "card"}}
                     {{ end }}
