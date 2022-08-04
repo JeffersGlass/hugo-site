@@ -1,0 +1,74 @@
+---
+title: "X Common Issues for New PyScript Developers"
+date: 2022-08-04T12:43:07-05:00
+draft: true
+tags:
+- python
+- pyscript
+description: "Common stumbling blocks for new Pyscript developers, with explanations and solutions"
+---
+<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
+<p class="post-h2">Intro</p>
+<p class="post-p">Eiusmod magna tempor aliqua deserunt ea incididunt in sunt laboris nulla aliqua.</p>
+<p class="post-h3">Networking works differently in the browser</p>
+<p class="post-p">Many parts of the Python standard library rely on native resources of the commputer that's running the Python interpretter. While implementation details of things like filesystem access, random number generation, creating new threads and processes etc. vary from system to system, the Python interpretter can (and does) rely on the host computer's ability to provide many specific pieces of functionality.</p>
+<p class="post-p">But PyScript doesn't run code <span class="italic">on a computer</span>. PyScript runs code <span class="italic">inside a browser window</span>. Which means not all of these system capabilities are available, and those that are may need to be adapted to fit the purposes.</p>
+<p class="post-p">This fundamental difference means a broad cross-section of popular network-based libraries won't work in Pyscript, including opening sockets and ports (including SSL), making direct web requests to servers (like the browser itself would), etc. Most popular network-based libraries - like <span class="font-bold">requests</span>, <span class="font-bold">ssl</span>, and <span class="font-bold">websockets</span> don't work in Pyscript - even </p>
+<ul class="post-ul">
+    <li class="post-li">requests</li>
+    <li class="post-li">ssl</li>
+    <li class="post-li">socket/websockets</li>
+</ul>
+<p class="post-p">There is a recognized limitation, both by the core developers of <a href="https://github.com/pyodide/pyodide/issues/398">Pyodide</a> and <a href="https://github.com/pyscript/pyscript/issues/633">Pyscript</a>, and there are <a href="https://github.com/pyodide/pyodide/issues/398#issuecomment-725503012">workarounds</a> provided for some of the more commons tasks. For example, pyodide provides the <code>pyfetch</code> function, which uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">browser Fetch API</a> to retrieve data asyncronously:</p>
+
+{{< showandrun file="post\pyscript-gotchas\pyfetchdemo.py" direction="flip">}}
+<p class="mt-8 post-h3">Your Browser can't see files on your harddisk</p>
+<p class="post-p">What </p>
+
+
+
+<p class="post-h3">Files in the Virtual File System are copies</p>
+<p class="post-p"></p>
+<div>
+    <p class="code-title">localfiledemo.html</p>
+{{< highlight html >}}
+<py-env>
+    - paths:
+        - info.txt
+</py-env>
+<py-script>
+{{< /highlight >}}
+{{< highlight python3 "linenostart=6">}}
+    with open('info.txt', r') as fp:
+        print(fp.read())
+        
+    with open('info.txt', 'w') as fp:
+        fp.write("Will this overwrite my local file?")
+{{< /highlight >}}
+{{< highlight html "linenostart=11">}}
+</py-script>
+{{< /highlight >}}
+</div>
+
+<p class="post-h3">Pyscript versions are evolving <span class="italic">fast</span></p>
+<p class="post-p"></p>
+
+<p class="post-h3">Pyscript API is evolving <span class="italic">fast</span></p>
+
+<p class="post-h3">CORS policy</p>
+
+<p class="post-h3">Everything imported in &lt;py-env&gt; is imported flat (no module folder upload)</p>
+
+<p class="post-h3">Can only load the include packages and pure-python wheels</p>
+
+<p class="post-h3">input() works weird</p>
+
+Not Included on Purpose:
+<p class="post-h3">I can't print html tags to the screen</p>
+
+Possibly:
+Py-env is in toml
+<br>Javascript specifically:
+<p class="post-h3"></p>
+<p class="post-h3">No 'new' keyword in Python</p>
+<p class="post-h3">Pyodide turns 'dict' to 'Map', not 'Object'</p>
