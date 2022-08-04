@@ -9,6 +9,11 @@ description: "Common stumbling blocks for new Pyscript developers, with explanat
 ---
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
 <p class="post-h2">Intro</p>
+
+<p class="mt-8 post-h3">Your Browser can't see files on your harddisk</p>
+<p class="post-p">This is by far the most common issue that shows up on the discussion groups. You clone the <a href="https://github.com/pyscript/pyscript">PyScript GitHub repo</a>, double click on some of the html files in the examples folder... and while some work, others (notoriosly <a href="https://github.com/pyscript/pyscript/blob/main/examples/simple_clock.html">simple_clock.html</a>) fail with the error <code class="code">ModuleNotFoundError: No module named 'utils'</code>. You might even see a messge at the top of the page saying <span class="font-semibold"> PyScript: Access to local files (using "Paths:" in &lt;py-env&gt;) is not available when directly opening a HTML file.</span> What gives?</p>
+<p class="post-p">Being the crafty programmer you are, you notice</p>
+
 <p class="post-p">Eiusmod magna tempor aliqua deserunt ea incididunt in sunt laboris nulla aliqua.</p>
 <p class="post-h3">Networking works differently in the browser</p>
 <p class="post-p">Many parts of the Python standard library rely on native resources of the commputer that's running the Python interpretter. While implementation details of things like filesystem access, random number generation, creating new threads and processes etc. vary from system to system, the Python interpretter can (and does) rely on the host computer's ability to provide many specific pieces of functionality.</p>
@@ -20,12 +25,8 @@ description: "Common stumbling blocks for new Pyscript developers, with explanat
     <li class="post-li">socket/websockets</li>
 </ul>
 <p class="post-p">There is a recognized limitation, both by the core developers of <a href="https://github.com/pyodide/pyodide/issues/398">Pyodide</a> and <a href="https://github.com/pyscript/pyscript/issues/633">Pyscript</a>, and there are <a href="https://github.com/pyodide/pyodide/issues/398#issuecomment-725503012">workarounds</a> provided for some of the more commons tasks. For example, pyodide provides the <code>pyfetch</code> function, which uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">browser Fetch API</a> to retrieve data asyncronously:</p>
-
 {{< showandrun file="post\pyscript-gotchas\pyfetchdemo.py" direction="flip">}}
-<p class="mt-8 post-h3">Your Browser can't see files on your harddisk</p>
-<p class="post-p">What </p>
-
-
+<p class="post-p">Exactly how to work around this is a complicated issue - see the <a href="https://github.com/pyodide/pyodide/issues/398#issuecomment-725503012">pages </a> <a href="https://community.anaconda.cloud/t/the-requests-module/20494">and</a> <a href="https://github.com/pyscript/pyscript/pull/151">pages</a> of disucssion on just shimming the <code class="code">requests</code> module. Just know that if you're running into these issues, you're not alone!</p>
 
 <p class="post-h3">Files in the Virtual File System are copies</p>
 <p class="post-p"></p>
