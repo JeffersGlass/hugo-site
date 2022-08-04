@@ -1,0 +1,21 @@
+<div class="flex flex-col space-x-2 {{ if (.Get "direction") }} {{ if eq (.Get "direction") "flip" }} md:flex-row-reverse md:space-x-reverse {{ end }} {{ else }} md:flex-row {{ end }}">
+
+    <div class="w-full md:w-1/2">
+        <div class="w-full italic h-7">Live PyScript Results:</div>
+        <div class="w-full overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-96">
+            <py-script class="px-2" src="{{ path.Base (.Get "file") }}"></py-script>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2">
+        <p class="code-title">{{ path.Base (.Get "file") }}</p>
+        {{ $lines :=  len (split (os.ReadFile (.Get "file")) "\n") }}
+        {{ if ge $lines 21 }}
+        <div class="overflow-y-scroll h-124">
+        {{ end }}
+        {{ highlight (os.ReadFile (.Get "file") | htmlUnescape | safeHTML) "python3" "" }}
+        {{ if ge $lines 21 }}
+        </div>
+        <p class="post-img-caption">Scroll to see complete code</p>
+        {{ end }}
+    </div>
+</div>
