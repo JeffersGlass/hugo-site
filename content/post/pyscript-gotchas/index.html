@@ -5,16 +5,18 @@ draft: true
 tags:
 - python
 - pyscript
-description: "Common stumbling blocks for new Pyscript developers, with explanations and solutions"
+description: "Common stumbling blocks for new Pyscript developers, with explailocanations and solutions"
 ---
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
 <p class="post-h2">Intro</p>
+<p class="post-p">Adipisicing deserunt est quis occaecat qui labore veniam cupidatat ex duis qui sunt. Aute cupidatat amet id veniam incididunt. Magna Lorem duis aliqua cupidatat laborum anim excepteur et mollit in.Et aliqua in qui consequat esse occaecat veniam et. Anim sint anim ipsum reprehenderit. Ex in cillum veniam commodo eiusmod ad. Deserunt irure ut minim ipsum minim proident sit non labore occaecat culpa sint.</p>
+<p class="post-p">Amet nisi commodo ea pariatur sit laboris est qui et. Ad incididunt irure reprehenderit adipisicing minim. Fugiat do eiusmod incididunt sint labore sunt voluptate. Lorem consectetur nisi sit labore excepteur eu id ut culpa commodo et aliqua non mollit. Minim ut aliqua consequat deserunt in qui cillum. Laboris pariatur ad aliqua sint nisi officia nisi amet eiusmod ad anim ullamco.Ea eiusmod pariatur esse quis qui minim cillum exercitation qui consequat sit tempor. Officia cupidatat laborum sint adipisicing adipisicing Lorem dolor fugiat. Cupidatat ad ipsum elit non. Deserunt reprehenderit aliqua non nulla esse voluptate aliqua cupidatat dolore.</p>
 
-<p class="mt-8 post-h3">Your Browser can't see files on your harddisk</p>
-<p class="post-p">This is by far the most common issue that shows up on the discussion groups. You clone the <a href="https://github.com/pyscript/pyscript">PyScript GitHub repo</a>, double click on some of the html files in the examples folder... and while some work, others (notoriosly <a href="https://github.com/pyscript/pyscript/blob/main/examples/simple_clock.html">simple_clock.html</a>) fail with the error <code class="code">ModuleNotFoundError: No module named 'utils'</code>. You might even see a messge at the top of the page saying <span class="font-semibold"> PyScript: Access to local files (using "Paths:" in &lt;py-env&gt;) is not available when directly opening a HTML file.</span> What gives?</p>
-<p class="post-p">Being the crafty programmer you are, you notice</p>
-
-<p class="post-p">Eiusmod magna tempor aliqua deserunt ea incididunt in sunt laboris nulla aliqua.</p>
+<p class="mt-8 post-h3">Where are my files?</p>
+<p class="post-p">This is by far the most common issue that shows up on the discussion groups. You clone the <a href="https://github.com/pyscript/pyscript">PyScript GitHub repo</a>, double click on some of the html files in the examples folder... and while some work, others (notoriosly <a href="https://github.com/pyscript/pyscript/blob/main/examples/simple_clock.html">simple_clock.html</a>) fail with the error <code class="code">ModuleNotFoundError: No module named ...</code>. You might even see a messge at the top of the page saying <span class="font-semibold"> PyScript: Access to local files (using "Paths:" in &lt;py-env&gt;) is not available when directly opening a HTML file.</span></p>
+<img src="utilserror.jpg" alt="" class="w-128 post-img">
+<p class="post-p">Or mabye you've been working on your own PyScript project, and you decide to move your Python code into its own <code class="code">.py</code> file. So you change your PyScript tag to <code class="code">&lt;py-script src=&quot;my_code.py&quot;&gt;&lt;/py-script&gt;</code>, but even with <code class="code">my_code.py</code> in the same folder as your html file, it refusese to load! You might see the same error as above, a <span class="font-bold">cors-error</span>, or both.</p>
+<img src="corsfetcherror.jpg" alt="" class="post-img">
 <p class="post-h3">Networking works differently in the browser</p>
 <p class="post-p">Many parts of the Python standard library rely on native resources of the commputer that's running the Python interpretter. While implementation details of things like filesystem access, random number generation, creating new threads and processes etc. vary from system to system, the Python interpretter can (and does) rely on the host computer's ability to provide many specific pieces of functionality.</p>
 <p class="post-p">But PyScript doesn't run code <span class="italic">on a computer</span>. PyScript runs code <span class="italic">inside a browser window</span>. Which means not all of these system capabilities are available, and those that are may need to be adapted to fit the purposes.</p>
