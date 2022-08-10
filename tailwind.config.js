@@ -14,8 +14,11 @@ module.exports = {
       },
       height: {
         '124': '31rem',
-      }
-    },
+      },
+      maxHeight: {
+        '124': '31rem',
+      },
+    }
   },
   variants: {
     margin: ['first', 'responsive'],
