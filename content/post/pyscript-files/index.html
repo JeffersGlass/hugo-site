@@ -31,28 +31,28 @@ description: "How to use modules that generate and open binary files within Pysc
 {{< showandrun file="content\post\pyscript-files\loadpdf.py" direction="flip" >}}
 <p class="post-p">From here, we can do anything <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications">Javascript knows how to do</a> with a File object, but for today's purposes, let's look at how to download a file we've created.</p>
 <h4 class="post-h4">Downloading Files</h4>
+<p class="post-p">In HTML, you can make a link download a file by setting only a couple attributes. The <a href="https://www.w3schools.com/tags/att_a_download.asp">download attribute</a> tells the browser the file is to be downloaded, with the filename set as the value of this attribute. The file itself is specified with the <a href="https://www.w3schools.com/tags/att_a_href.asp">href attribute</a> like any link. But that means we'd need a URL for the PDF file, which at the moment only exists in memory. Thankfully, the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL">createObjectURL</a> function solves our problem: it creates a URL for File (or Blob) objects.</p>
 {{< showandrun file="content\post\pyscript-files\downloadpdf.py" direction="flip" >}}
-<br>
-<br>
-<p class="post-p">Thankfully, Python already has a way of create file-like objects in memory: the <a href="https://docs.python.org/3/library/io.html#io.BytesIO">io.BytesIO object</a>. Via inheritance from ,<a href="https://docs.python.org/3/library/io.html#io.IOBase">IOBase</a> and <a href="https://docs.python.org/3/library/io.html#io.BufferedIOBase">BuffersIOBase</a>, it implements all the operations we associate with file handles: <code>open()</code>, <code>close()</code>, <code>read()</code>, <code>readline()</code>, <code>write()</code>, etc. We can use it almost anywhere we can use a file, and lots of modules explicitly remind us of options like this. Take the start of the documention for matplotlib's <code class="code">pyplot.savefig()</code> </p>
+<p class="post-p">Notice that we haven't actually added this link to the page yet - it exists nowhere, unclickable by human hands.</p>
+<p class="post-p">But just because humans can't click it, doesn't mean Pyscript can't. Let's set up a py-button to do just that:</p>
+<div class="">
+    <p class="code-title">index.html <span class="italic">(partial)</span></p>
+    {{< highlight html >}}
+<py-button label="Download PDF">
+    def on_click(event):
+        hidden_link.click()
+</py-button>{{< /highlight >}}
+</div>
+<div class="flex flex-col items-center justify-center m-4">
+    <py-button class="" label="Download PDF">
+        def on_click(event):
+            hidden_link.click()
+    </py-button>
+    <span class="text-xs italic">Clicking will download a ~1kb PDF</span>
+</div>
+<p class="post-p">Of course, there's no reason the py-button has to solely click our hidden link. It could do other things. If we're generating contents of our PDF dynamically, we might want all of our previous logic to be executing only when the user clicks the "download" button. Separating the onscreen object triggering the action (the py-button, though it could be a link or other browser action) from the hidden link is very helpful here. It allows us to take whatever actions we wish to prepare the file, and only then to download it.</p>
 
-<!-- import matplotlib.pyplot as plt
-from io import BytesIO
+<h3 class="post-h3">Images</h3>
+<h3 class="post-h3">Matplotlib</h3>
 
-from js import document, File, Uint8Array, window
-
-#create plot
-plt.plot([1,2,3,4,10])
-
-#Save plot to BytesIO (file-like in-memory object)
-plot_file = BytesIO()
-plt.savefig('graph.png', bbox_inches='tight',pad_inches = .5)
-
-#Create File object JS knows how to work with, casting BytesIO to Uint8Array
-with open("graph.png", 'rb') as infile:
-    processed_file = File.new([Uint8Array.new(infile.read())], "graph.png", {type: "image/png"})
-
-#Create img tag, point it at new File, add to DOM:
-my_img = document.createElement("img")
-my_img.src = window.URL.createObjectURL(processed_file)
-destination = document.getElementById("graphlocation").appendChild(my_img); -->
+<!-- <p class="post-p">Thankfully, Python already has a way of create file-like objects in memory: the <a href="https://docs.python.org/3/library/io.html#io.BytesIO">io.BytesIO object</a>. Via inheritance from ,<a href="https://docs.python.org/3/library/io.html#io.IOBase">IOBase</a> and <a href="https://docs.python.org/3/library/io.html#io.BufferedIOBase">BuffersIOBase</a>, it implements all the operations we associate with file handles: <code>open()</code>, <code>close()</code>, <code>read()</code>, <code>readline()</code>, <code>write()</code>, etc. We can use it almost anywhere we can use a file, and lots of modules explicitly remind us of options like this. Take the start of the documention for matplotlib's <code class="code">pyplot.savefig()</code> </p> -->
