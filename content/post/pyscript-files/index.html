@@ -24,8 +24,16 @@ description: "How to use modules that generate and open binary files within Pysc
 <p class="post-p">If we want to double check that the files really are saved, we can take a look at the virtual filesystem using the <code class="code">os</code> module:</p>
 {{< showandrun file="content\post\pyscript-files\checkonfiles.py" direction="flip" >}}
 <p class="post-p">There are many strategies from this point; we'll work from the most generic (reading/writing raw bytes) to more specialized options for images and plots.</p>
-<p class="post-p">We'll start with the pdf, which we'd like for the user to be able to download.</p>
-
+<h3 class="post-h3">Generic Files</h2>
+<p class="post-p">We'll start with the pdf, which we'd like for the user to be able to download, and which for today's purposes is just a big bundle of bytes. We'll need to wrap up this object into some kind of form that Javascript knows how to work with.</p>
+<p class="post-p">That form is the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File interface</a>, a special kind of <a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a> on data that represents a file object. The File constructor takes an Iterable containing ArrayBuffers, TypeArrays, and other iterable Javascript objects as its data, as well as name and an optional dictionary of options.</p>
+<p class="post-p">So, we'll need to pass the File constructor the data from our file, a new name for it, and the appropraite <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MIME Type</a> for our file. For some reason, while pyodide is typically amazing about <a href="https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-pyproxy-to-js">automatically proxying objects from Python to Javascript</a> this is one situation where we'll need to manually proxy our data using <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.to_js">to_js</a>:</p>
+{{< showandrun file="content\post\pyscript-files\loadpdf.py" direction="flip" >}}
+<p class="post-p">From here, we can do anything <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications">Javascript knows how to do</a> with a File object, but for today's purposes, let's look at how to download a file we've created.</p>
+<h4 class="post-h4">Downloading Files</h4>
+{{< showandrun file="content\post\pyscript-files\downloadpdf.py" direction="flip" >}}
+<br>
+<br>
 <p class="post-p">Thankfully, Python already has a way of create file-like objects in memory: the <a href="https://docs.python.org/3/library/io.html#io.BytesIO">io.BytesIO object</a>. Via inheritance from ,<a href="https://docs.python.org/3/library/io.html#io.IOBase">IOBase</a> and <a href="https://docs.python.org/3/library/io.html#io.BufferedIOBase">BuffersIOBase</a>, it implements all the operations we associate with file handles: <code>open()</code>, <code>close()</code>, <code>read()</code>, <code>readline()</code>, <code>write()</code>, etc. We can use it almost anywhere we can use a file, and lots of modules explicitly remind us of options like this. Take the start of the documention for matplotlib's <code class="code">pyplot.savefig()</code> </p>
 
 <!-- import matplotlib.pyplot as plt
