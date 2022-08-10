@@ -1,0 +1,50 @@
+---
+title: "File I/O in Pyscript Files"
+date: 2022-08-09T19:16:21-05:00
+draft: true
+tags:
+- python
+- pyscript
+description: "How to use modules that generate and open binary files within Pyscript"
+---
+<py-env>
+    - matplotlib
+    - fpdf2
+    - Pillow
+</py-env>
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+<p class="post-p">Say you have some Python code running in Pyscript that outputs a file of an arbitrary type. How can you make that file accessible to browser in the way that other files are? E.g. how can we generate a plot image with matplotlib and use it as the <code class="code">src</code> of an <code class="code">&lt;img&gt;</code> tag? Or how can we generate a pdf with a library like <a href="https://pyfpdf.github.io/fpdf2/index.html">fpdf2</a> and make it available to download? </p>
+<p class="italic post-p">For more details on working with the browser's virtual file system, see <a href="https://www.jhanley.com/pyscript-files-and-file-systems-part-1/">John Hanley's extensive writeup</a>.</p>
+<div class="w-1/2 h-24 mx-auto bg-red-200">
+    <p class="">Inspiring image of pdfs and images in browser here? Gif?</p>
+</div>
+<p class="post-p">Let's take three useful Python modules - matplotlib, Pillow, and fpdf2 - and see how we can use their outputs in the browser. We'll start from the point where we've saved their contents to the virtual filesystem, just as if we were running a local python program.</p>
+{{< showandrun file="content\post\pyscript-files\savefiles.py" direction="flip" >}}
+<p class="post-p">If we want to double check that the files really are saved, we can take a look at the virtual filesystem using the <code class="code">os</code> module:</p>
+{{< showandrun file="content\post\pyscript-files\checkonfiles.py" direction="flip" >}}
+<p class="post-p">There are many strategies from this point; we'll work from the most generic (reading/writing raw bytes) to more specialized options for images and plots.</p>
+<p class="post-p">We'll start with the pdf, which we'd like for the user to be able to download.</p>
+
+<p class="post-p">Thankfully, Python already has a way of create file-like objects in memory: the <a href="https://docs.python.org/3/library/io.html#io.BytesIO">io.BytesIO object</a>. Via inheritance from ,<a href="https://docs.python.org/3/library/io.html#io.IOBase">IOBase</a> and <a href="https://docs.python.org/3/library/io.html#io.BufferedIOBase">BuffersIOBase</a>, it implements all the operations we associate with file handles: <code>open()</code>, <code>close()</code>, <code>read()</code>, <code>readline()</code>, <code>write()</code>, etc. We can use it almost anywhere we can use a file, and lots of modules explicitly remind us of options like this. Take the start of the documention for matplotlib's <code class="code">pyplot.savefig()</code> </p>
+
+<!-- import matplotlib.pyplot as plt
+from io import BytesIO
+
+from js import document, File, Uint8Array, window
+
+#create plot
+plt.plot([1,2,3,4,10])
+
+#Save plot to BytesIO (file-like in-memory object)
+plot_file = BytesIO()
+plt.savefig('graph.png', bbox_inches='tight',pad_inches = .5)
+
+#Create File object JS knows how to work with, casting BytesIO to Uint8Array
+with open("graph.png", 'rb') as infile:
+    processed_file = File.new([Uint8Array.new(infile.read())], "graph.png", {type: "image/png"})
+
+#Create img tag, point it at new File, add to DOM:
+my_img = document.createElement("img")
+my_img.src = window.URL.createObjectURL(processed_file)
+destination = document.getElementById("graphlocation").appendChild(my_img); -->
