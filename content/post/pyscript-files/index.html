@@ -53,6 +53,53 @@ description: "How to use modules that generate and open binary files within Pysc
 <p class="post-p">Of course, there's no reason the py-button has to solely click our hidden link. It could do other things. If we're generating contents of our PDF dynamically, we might want all of our previous logic to be executing only when the user clicks the "download" button. Separating the onscreen object triggering the action (the py-button, though it could be a link or other browser action) from the hidden link is very helpful here. It allows us to take whatever actions we wish to prepare the file, and only then to download it.</p>
 
 <h3 class="post-h3">Images</h3>
-<h3 class="post-h3">Matplotlib</h3>
 
-<!-- <p class="post-p">Thankfully, Python already has a way of create file-like objects in memory: the <a href="https://docs.python.org/3/library/io.html#io.BytesIO">io.BytesIO object</a>. Via inheritance from ,<a href="https://docs.python.org/3/library/io.html#io.IOBase">IOBase</a> and <a href="https://docs.python.org/3/library/io.html#io.BufferedIOBase">BuffersIOBase</a>, it implements all the operations we associate with file handles: <code>open()</code>, <code>close()</code>, <code>read()</code>, <code>readline()</code>, <code>write()</code>, etc. We can use it almost anywhere we can use a file, and lots of modules explicitly remind us of options like this. Take the start of the documention for matplotlib's <code class="code">pyplot.savefig()</code> </p> -->
+
+
+
+ <h3 class="post-h3">Matplotlib</h3>
+
+ <pre>
+import matplotlib.pyplot as plt
+from io import BytesIO
+
+from js import document, File, Uint8Array, window, Blob
+from pyodide import to_js
+
+#create plot
+plt.plot([1,2,3,4,10])
+
+#Save plot to BytesIO (file-like in-memory object)
+plot_file = BytesIO()
+plt.savefig('graph.png', bbox_inches='tight',pad_inches = .5)
+
+#Create File object JS knows how to work with, casting BytesIO to Uint8Array
+with open("graph.png", 'rb') as infile:
+    #processed_file = File.new([Uint8Array.new(infile.read())], "graph.png", {type: "image/png"})
+    data = infile.read()
+    #console.log(to_js(data))
+    processed_file = Blob.new([to_js(data)], {type: "image/png"})
+
+    #data = Uint8Array.new(infile.read())
+    #processed_file = Blob.new([data], "graph.png", {type: "image/png"})
+
+#Create img tag, point it at new File, add to DOM:
+my_img = document.createElement("img")
+my_img.src = window.URL.createObjectURL(processed_file)
+destination = document.getElementById("content").appendChild(my_img);
+</pre>
+
+<pre>
+import matplotlib.pyplot as plt
+from io import BytesIO
+
+from js import document, File, Uint8Array, window
+
+#create plot
+plt.plot([1,2,3,4,10])
+Element("graphlocation").write(plt)
+
+for d in vars(plt):
+    print(d)
+    
+</pre>
