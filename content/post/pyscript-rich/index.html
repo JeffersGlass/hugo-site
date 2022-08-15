@@ -36,9 +36,89 @@ slug_image: richlogo_square.svg
     <li>Overwrite the built-in <code class="code">print()</code> function to point to rich's print function, to get nicely formatted printing</li>
     <li>Point PyScript's <code class="code">Element.write()</code> method at a new method that hooks into Rich's __rich_console__ and <code class="code">__rich__</code> formatting methods.</li>
 </ul>
-<p class="post-p">Since we're intending to run this in a browser anyway, we could just set {{< highlight python "hl_inline=true" >}}x = 3{{< /highlight >}}</p>
-<p class="post-p">Add "_is_pyodide()" function, add "is_pyodide" attribute of Console</p>
-<p class="post-p">Add <code class="code">is_pyodide</code> check to _check_buffer to allow display from jupyter</p>
+<h2 class="post-h2">The Steps</h2>
+<p class="post-p">Since we're intending to run this in a browser anyway, we could just set <code class="code">console.is_jupyter = True</code>, but we'll be slightly nicer and redirect that property to a new function <code class="code">is_pyodide</code>. This just looks to see if 'pyodide' is in our available modules, <a href="https://pyodide.org/en/stable/usage/faq.html#how-to-detect-that-code-is-run-with-pyodide">as suggested by the pyodide FAQ</a>. This means that whenever our code is running in Pyodide, the Rich library will render as if it's going to be output to a Jupyter notebook.</p>
+{{< highlight python "linenostart=8" >}}
+#Per pyodide docs, determine if we're running inside pyodide at Runtime
+def is_pyodide() -> bool:
+    return "pyodide" in modules
+
+c = get_console()
+c.is_jupyter = is_pyodide #monkeypatch jupyter detection @propety
+{{< /highlight >}}
+<p class="post-p">Similarly, we'll point <code class="code">rich.jupyter.display</code> at a new function we'll write that gets the output that the Jupyter notebook would have received and send it to stdout. And, as noted above, we'll redirect the usual <code class="code">print</code> function to the rich print function, to get nicely formatted outputs whenever we use the standard print() syntax.</p>
+{{< highlight python "linenostart=15" >}}
+def display_pyscript(segments, text: str) -> None:
+    """Allow output of raw HTML within pyscript/pyodide"""
+    html = rich.jupyter._render_segments(segments)
+    stdout.write(html)
+
+#patch jupyter display method to write processed HTML to stdout
+rich.jupyter.display = display_pyscript 
+
+#Overwrite print with Rich Jupyter print function
+print = rich.jupyter.print
+{{< /highlight >}}
+<p class="post-p">Finally, we need to match some adjustments to PyScript's <code class="code">Element.write()</code> function, which is a utility method that allows PyScript users to send output to a specific DOM element directly. Since this bypasses the usual writing to stdout (and directly modifies the <span class="italic">innerHTML</span> attribute of the DOM element), we need to do a little legwork to get the formatting to work out.</p>
+<p class="post-p">This is the most work-in-progress part of this project, but by looking at whether the object we're trying to print has implement's Rich's <a href="https://rich.readthedocs.io/en/stable/protocol.html#console-customization">Console Protocol</a>, we can either:</p>
+<ul class="post-ul">
+    <li>Get the segments of the Rich object, use the <code class="code">jupyter._render_segments()</code> method to render them as HTML, and write those to the page</li>
+    <li>Write strings and excpetions directly to the page for debugging, or</li>
+    <li>Again hijack standard-out using a context manager, render its output using the <code class="code">console.print()</code>, then write that output to the appropriate element.</li>
+</ul>
+<p class="post-p">This last step is the most convoluted. I've implemented a rudementary <a href="https://docs.python.org/3/glossary.html#term-file-object">File-like object</a> called <code class="code">output_buffer</code> that simply saves anything written to it as a concatenated string. If this isn't the first thing in the buffer, we insert a <code class="code">&lt;br&gt;</code> tag to make it start on a new line. This is admittedly a hack.</p>
+<div class="h-64 overflow-y-scroll">
+{{< highlight python "linenostart=29" >}}
+class output_buffer():
+    def __init__(self):
+        self._internal_buffer = ''
+
+    def write(self, value, append=True):
+        if append:
+            if len(self._internal_buffer):
+                self.internal_buffer += '<br>'
+            self._internal_buffer += value
+        else:
+            self._internal_buffer = value
+
+    def read(self):
+        return self._internal_buffer
+
+from contextlib import contextmanager
+
+@contextmanager
+def stdout_to_buffer(el:Element):
+    global stdout #sys.stdout
+    _old_stdout = stdout
+    stdout = output_buffer()
+    try:
+        yield stdout
+    finally:
+        el._write(stdout.read(), append=True)
+        stdout = _old_stdout
+
+#Allow Element.write() to take an object from rich
+def newWrite(self, value, append=False):
+    if hasattr(value, '__rich_console__'):
+        console.warn(f"Using newWrite() __rich_console__ on {str(value)[:min(30, len(str(value)))]}...with type {type(value)}")
+        self._write(rich.jupyter._render_segments(value.__rich_console__(c, c.options)), append)
+        return
+    elif hasattr(value, '__rich__'):
+        console.warn(f"Using newWrite() __rich__ on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
+        self._write(rich.jupyter._render_segments(value.__rich__(c, c.options)), append)
+    elif isinstance(value, (str, Exception, JsException)):
+        console.warn(f"Using newWrite() as passthrough on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
+        self._write(value, append)
+    else:
+        console.warn(f"Using newWrite() with Pretty interpretted on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
+        with stdout_to_buffer(self):
+            c.print(value)
+
+Element._write = Element.write
+Element.write = newWrite
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
 
 <hr>
 <style>
@@ -58,7 +138,7 @@ slug_image: richlogo_square.svg
     - Faker
 </py-env>
 <a id="patch"></a>
-<h2 class="mb-6 post-h2" id="">The Patching Code</h2>
+<h2 class="mb-6 post-h2" id="">The Code</h2>
 <p class="post-p">To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using <code class="code">src="..."</code></p>
 <blockquote class="p-2 mx-6 mb-4 italic bg-yellow-200 border-l-4 border-gray-800">This code was written (and is running on this page on) <span class="font-semibold">PyScript Version 2022.06.1</span>. Since there's a big <a href="https://github.com/pyscript/pyscript/issues/622">big overhaul of how PyScript renders</a> coming very soon, I expect this to be broken in newer verions.</blockquote>
 <div class="w-full">{{< showcode "post/pyscript-rich/_richsetup.py">}}</div>
@@ -66,6 +146,7 @@ slug_image: richlogo_square.svg
 <a id="things-that-work"></a>
 <h2 class="post-h2" id="">Rich Elements that Work</h2>
 <p class="mb-6 post-p">After a bit of tinkering, these are the Rich output elements that I've gotten working so far. Note that several of them use <span class="italic">async-await</span>, and so their inclusion into other non-async code should be carefully considered.</p>
+<div class="bg-green-200" id="testme"></div>
 <div class="flex flex-col space-y-9">
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2">
@@ -74,11 +155,21 @@ slug_image: richlogo_square.svg
         </div>
         <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtext.py">}}</div>
     </div>
-
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full h-32 bg-gray-100 border-2 border-gray-400 xl:w-1/2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2">
+            <h3>PyScript's Element.write()</h3>
+            <div class="m-2 bg-blue-200 border-2 h-36">
+                <p class="italic center">&lt;div id=&quot;write-to-me&quot;&gt;&lt;/div&gt;</p>
+                <div class="" id="write-to-me"></div>
+            </div>
+            <py-script class="px-2" src="scripts/working/element-write.py"></py-script>
+        </div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/element-write.py">}}</div>
+    </div>
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full h-auto bg-gray-100 border-2 border-gray-400 xl:w-1/2">
         <h3>REPLs</h3>
-            <py-repl></py-repl>
+            <py-repl id="demo-repl" auto-generate="true"></py-repl>
         </div>
         <div class="w-full xl:w-1/2">
             <p class="code-title">index.html</p>
