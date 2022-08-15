@@ -1,6 +1,6 @@
 ---
 title: "Monkeypatching Rich for Beautiful Terminals in Pyscript"
-date: 2022-07-12T08:34:50-05:00
+date: 2022-08-15T08:34:50-05:00
 draft: true
 tags:
 - pyscript
@@ -9,6 +9,10 @@ tags:
 description: "Patching the Rich formattier to output to Pyscript"
 slug_image: richlogo_square.svg
 ---
+<py-env>
+    - rich
+    - Faker
+</py-env>
 <script src="https://pyscript.net/releases/2022.06.1/pyscript.js" defer></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
 <py-script src="./_richsetup.py"></py-script>
@@ -20,14 +24,25 @@ slug_image: richlogo_square.svg
     <p class="post-p"></py-script><py-repl id="top" root="top" auto-generate="true">from rich import inspect; inspect(int)</py-repl></p>
 </div>
 <hr>
-<p class="post-p">Though Pyscript is still in its infancy, the possibilities unlocked by running Python in a browser are already blossoming. As such, I'm seeing more and more users on the <a href="https://community.anaconda.cloud/c/tech-topics/pyscript/41">official forums</a>, the <a href="https://discord.com/invite/TynfPGRwda">unofficial Discord</a>, and the <a href="https://github.com/pyscript/pyscript">Github Issue Tracker</a> interested in working with their favorite libraries to the web. Let's look at the process of taking a package that <span class="italic">runs</span> but doesn't run <span class="italic">well</span>, and see how we can use monkeypatching to bring it to life using Pyscript.</p>
-<p class="post-p">Lots of packages work fine right out of the box - anything <a href="https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages">written in Pure Python stands a good chance of at least running</a>. But just because it runs, doesn't mean it'll look good or behave the way we expect objects to on a webpage. Interactive packages, like matplotlib or d3, or terminal-based packages like tqdm or colorama, may not be immediately interactable in the browser, because they've implemented their own methods for interpretting input/output that the browser doesn't play nicely with. Just because the Pyscript/Pyodide interpretter doesn't crash doesn't mean you can get useful info in and out of your program.</p>
-<p class="post-p">One such library is <a href="https://github.com/Textualize/rich">Rich</a>: "a Python library for rich text and beautiful formatting in the terminal" by Will McGugan. It allows for tasteful pretty-printing of most Python objects, syntax highlighting, color and layout control and more, all written in Pure Python.</p>
-<img src="rich-features.png" alt="A demo of the features of the rich library, including colors, styles, text, markup etc" class="w-full md:w-1/2 post-img">
-<p class="post-img-caption">The Demo image from the Rich GitHub page shows off its many features</p>
-<p class="post-p">Of course, Rich is intended to run in the terminal. Since the Display functionality from a web browser differs significantly from a terminal environment, there's no reason to expect it will work out of the box in PyScript. But since it exists as a Pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.</p>
-<p class="post-p">What follows is the result of a few hours of bashing things together over the weekend. If you want to skip the dev log, you can skip to <a href="patch">the code that runs to patch Rich on this page </a> or the <a href="#things-that-work">gallery of Rich samples</a>.</p>
+<h2 class="post-h2">Background</h2>
+<div class="flex flex-col lg:flex-row">
+    <div class="w-full lg:w-3/5">
+        <p class="post-p">Though PyScript is still in its infancy, the possibilities unlocked by running Python in a browser are already blossoming. As such, I'm seeing more and more users on the <a href="https://community.anaconda.cloud/c/tech-topics/pyscript/41">official forums</a>, the <a href="https://discord.com/invite/TynfPGRwda">unofficial Discord</a>, and the <a href="https://github.com/pyscript/pyscript">Github Issue Tracker</a> interested in working with their favorite libraries to the web. Let's look at the process of taking a package that <span class="italic">runs</span> but doesn't run <span class="italic">well</span>, and see how we can use patch it after import to bring it to life using Pyscript.</p>
+        <p class="post-p">Lots of packages work fine right out of the box - anything <a href="https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages">written in Pure Python stands a good chance of at least running</a>. But just because it runs, doesn't mean it'll look good or behave the way we expect objects to on a webpage. Interactive packages, like <a href="https://matplotlib.org/">matplotlib</a> or terminal-based packages like <a href="https://github.com/tqdm/tqdm">tqdm</a> or <a href="https://github.com/tartley/colorama">colorama</a>, may not be immediately interactable in the browser, because they've implemented their own methods for interpretting input/output that the browser doesn't play nicely with. Just because the PyScript/Pyodide interpretter doesn't crash doesn't mean you can get useful info in and out of an existing module.</p>
+        <p class="post-p">One such library is <a href="https://github.com/Textualize/rich">Rich</a>: "a Python library for rich text and beautiful formatting in the terminal" by Will McGugan. It allows for tasteful pretty-printing of most Python objects, syntax highlighting, color and layout control and more, all written in Pure Python. See the sample image to the side or the linked homepage for bountiful exmaples.</p>
+        <p class="post-p">Of course, Rich is intended to run in the terminal. Since the display functionality in a web browser differs significantly from a terminal environment, there's no reason to expect it will work out of the box in PyScript. But since it exists as a pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.</p>
+        <p class="post-p">What follows is the result of a few hours of bashing things together over the weekend. It's not meant to be production ready (thought it could turn into a module if there's interest). Rather, it's meant to demonstrate a patching strategy for modules that already integrate with web-Python environments like Jupyter and iPython.</p>
+        <p class="post-p">If you want to skip the dev log, you can skip to <a href="patch">the code that runs to patch Rich on this page </a> or the <a href="#examples">gallery of Rich-in-PyScript samples</a> below.</p>
+    </div>
+    <div class="items-center justify-center float-right mx-4 w-96">
+        <img src="rich-features.png" alt="A demo of the features of the rich library, including colors, styles, text, markup etc" class="mx-auto w-96">
+        <p class="italic">The demo image from the Rich GitHub page shows off its many features</p>
+    </div>
+</div>
 <h2 class="post-h2">The Groundwork</h2>
+<p class="post-p">The strategy we'll employ to get Rich working is called "Monkeypatching." <a href="https://web.archive.org/web/20120730014107/http://wiki.zope.org/zope2/MonkeyPatch">From the Zope Wiki</a>:</p>
+<p class="p-2 mx-6 mb-4 italic bg-gray-100 border-l-4 border-gray-800">A MonkeyPatch is a piece of Python code which extends or modifies other code at runtime (typically at startup)...The motivation for monkeypatching is typically that the developer needs to modify or extend behavior of a third-party product ... and does not wish to maintain a private copy of the source code.</p>
+<p class="post-p">So, we'll be loading/importing Rich <span class="italic">as-is</span>, modifying some of the attributes/methods/behaviors of its classes and functions and leaving others along. This will let us preserve the most of Rich's functionality untouched, while tweaking it just enough to work inside PyScript.</p>
 <p class="post-p">Almost all of the heavy lifting in terms of the formatting is handled by the fact Rich <a href="https://www.willmcgugan.com/blog/tech/post/rich-adds-support-for-jupyter-notebooks/">already supports Jupyter Notebooks</a>, so there's already translation in place to translate Rich's internal formatting syntax to HTML. All we have to do is:</p>
 <ul class="post-ul">
     <li>Import rich (which means it'll need to be present in our <code class="code">&lt;py-env&gt;</code>  </li>
@@ -37,8 +52,10 @@ slug_image: richlogo_square.svg
     <li>Point PyScript's <code class="code">Element.write()</code> method at a new method that hooks into Rich's __rich_console__ and <code class="code">__rich__</code> formatting methods.</li>
 </ul>
 <h2 class="post-h2">The Steps</h2>
-<p class="post-p">Since we're intending to run this in a browser anyway, we could just set <code class="code">console.is_jupyter = True</code>, but we'll be slightly nicer and redirect that property to a new function <code class="code">is_pyodide</code>. This just looks to see if 'pyodide' is in our available modules, <a href="https://pyodide.org/en/stable/usage/faq.html#how-to-detect-that-code-is-run-with-pyodide">as suggested by the pyodide FAQ</a>. This means that whenever our code is running in Pyodide, the Rich library will render as if it's going to be output to a Jupyter notebook.</p>
-{{< highlight python "linenostart=8" >}}
+<h4 class="post-h4">Making Rich Think We're in a Jupyter Notebook</h3>
+<p class="post-p">Since we're intending to run this in a browser anyway, we could just set <code class="code">console.is_jupyter = True</code> to force Rich to render HTML. But we'll be slightly nicer and redirect that property to a new function <code class="code">is_pyodide</code>. This just looks to see if 'pyodide' is in our available modules, <a href="https://pyodide.org/en/stable/usage/faq.html#how-to-detect-that-code-is-run-with-pyodide">as suggested by the pyodide FAQ</a>. This means that whenever our code is running in Pyodide, the Rich library will render as if it's going to be output to a Jupyter notebook.</p>
+<div class="mb-6 lg:mx-4">
+{{< highlight python "linenostart=9" >}}
 #Per pyodide docs, determine if we're running inside pyodide at Runtime
 def is_pyodide() -> bool:
     return "pyodide" in modules
@@ -46,9 +63,12 @@ def is_pyodide() -> bool:
 c = get_console()
 c.is_jupyter = is_pyodide #monkeypatch jupyter detection @propety
 {{< /highlight >}}
+</div>
+<h4 class="post-h4">Replacing Rich's Display Function with our Own</h4>
 <p class="post-p">Similarly, we'll point <code class="code">rich.jupyter.display</code> at a new function we'll write that gets the output that the Jupyter notebook would have received and send it to stdout. And, as noted above, we'll redirect the usual <code class="code">print</code> function to the rich print function, to get nicely formatted outputs whenever we use the standard print() syntax.</p>
-{{< highlight python "linenostart=15" >}}
-def display_pyscript(segments, text: str) -> None:
+<div class="mb-6 lg:mx-4">
+{{< highlight python "linenostart=16" >}}
+def display_pyscript(segments: Iterable[Segment], text: str) -> None:
     """Allow output of raw HTML within pyscript/pyodide"""
     html = rich.jupyter._render_segments(segments)
     stdout.write(html)
@@ -59,6 +79,8 @@ rich.jupyter.display = display_pyscript
 #Overwrite print with Rich Jupyter print function
 print = rich.jupyter.print
 {{< /highlight >}}
+</div>
+<h4 class="post-h4">Fixing <span class="italic">Element.write()</span></h4>
 <p class="post-p">Finally, we need to match some adjustments to PyScript's <code class="code">Element.write()</code> function, which is a utility method that allows PyScript users to send output to a specific DOM element directly. Since this bypasses the usual writing to stdout (and directly modifies the <span class="italic">innerHTML</span> attribute of the DOM element), we need to do a little legwork to get the formatting to work out.</p>
 <p class="post-p">This is the most work-in-progress part of this project, but by looking at whether the object we're trying to print has implement's Rich's <a href="https://rich.readthedocs.io/en/stable/protocol.html#console-customization">Console Protocol</a>, we can either:</p>
 <ul class="post-ul">
@@ -66,20 +88,18 @@ print = rich.jupyter.print
     <li>Write strings and excpetions directly to the page for debugging, or</li>
     <li>Again hijack standard-out using a context manager, render its output using the <code class="code">console.print()</code>, then write that output to the appropriate element.</li>
 </ul>
-<p class="post-p">This last step is the most convoluted. I've implemented a rudementary <a href="https://docs.python.org/3/glossary.html#term-file-object">File-like object</a> called <code class="code">output_buffer</code> that simply saves anything written to it as a concatenated string. If this isn't the first thing in the buffer, we insert a <code class="code">&lt;br&gt;</code> tag to make it start on a new line. This is admittedly a hack.</p>
-<div class="h-64 overflow-y-scroll">
-{{< highlight python "linenostart=29" >}}
+<p class="post-p">This last step is the most convoluted. I've implemented a rudementary <a href="https://docs.python.org/3/glossary.html#term-file-object">File-like object</a> called <code class="code">output_buffer</code> that simply saves anything written to it as a concatenated string. If this isn't the first thing in the buffer, we insert a <code class="code">&lt;br&gt;</code> tag to make it start on a new line. This is admittedly a hack, but it largely gives the right appearance.</p>
+<div class="mb-6 overflow-y-scroll h-76 lg:mx-4">
+{{< highlight python "linenostart=27" >}}
 class output_buffer():
+    """ A (inefficient) buffer to capture stdout to a string """
     def __init__(self):
         self._internal_buffer = ''
 
-    def write(self, value, append=True):
-        if append:
-            if len(self._internal_buffer):
-                self.internal_buffer += '<br>'
-            self._internal_buffer += value
-        else:
-            self._internal_buffer = value
+    def write(self, value: any):
+        if len(self._internal_buffer):
+            self.internal_buffer += '<br>'
+        self._internal_buffer += value
 
     def read(self):
         return self._internal_buffer
@@ -88,6 +108,7 @@ from contextlib import contextmanager
 
 @contextmanager
 def stdout_to_buffer(el:Element):
+    """ A context manager to manage an output_buffer, writes to an Element on closure"""
     global stdout #sys.stdout
     _old_stdout = stdout
     stdout = output_buffer()
@@ -95,10 +116,11 @@ def stdout_to_buffer(el:Element):
         yield stdout
     finally:
         el._write(stdout.read(), append=True)
-        stdout = _old_stdout
+        stdout = _old_stdout 
 
 #Allow Element.write() to take an object from rich
-def newWrite(self, value, append=False):
+def newWrite(self, value, append=False) -> None:
+    """ A Monkeypatched version of Pyscript's Element.write(), auto-transforming Rich objects and rendering standard objects. """
     if hasattr(value, '__rich_console__'):
         console.warn(f"Using newWrite() __rich_console__ on {str(value)[:min(30, len(str(value)))]}...with type {type(value)}")
         self._write(rich.jupyter._render_segments(value.__rich_console__(c, c.options)), append)
@@ -119,8 +141,12 @@ Element.write = newWrite
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
-
-<hr>
+<p class="post-p">With all these pieces put together, now most writes to standard out should be formatted using Rich's format rules.</p>
+<h2 class="post-h2">What Works and What Doesn't</h2>
+<p class="italic post-p">See the <a href="#examples">demos below</a> for working (and non-working) examples.</p>
+<p class="post-p">Out of the box, this allows for formatting of most static Rich objects: Text, Lists and Dicts, JSON objets, etc. The various formatting objects that rely on them - Panels, Columsn, Layouts etc - also work.</p>
+<p class="post-p">What breaks, however, is anything that uses threading under the hood to operate: live-updating displays, progress bars, that sort of thing. Since <a href="https://github.com/pyodide/pyodide/issues/237">threading isn't currently supported in Pyodide</a>, there's not much of a direct solution here, but some workarounds can be had by using <span class="italic">async-await</span> to concurrently update the state of these objects. Check out the <a href="#progress-bar">progress-bar demo</a> below for an example.</p>
+<p class="post-p">Emoji are also (somewhat) broken, though that's mostly through me running out of time to look at their implementation in depth. A brief glance at the <a href="https://github.com/Textualize/rich/blob/master/rich/emoji.py">Emoji.py source</a> makes it look like perhaps what I'm doing for output is clobbering the unicode characters that should be output as Emoji? Or perhaps how they're being rendered - the TL;DR example at the top of the page shows (for me) a successful "hand-pointing-down" but a non-colored "play button".</p>
 <style>
     h3 {
         font-size: 1.5rem/* 24px */;
@@ -132,18 +158,14 @@ Element.write = newWrite
         padding-left: 0.25rem;
     }
 </style>
-
-<py-env>
-    - rich
-    - Faker
-</py-env>
 <a id="patch"></a>
 <h2 class="mb-6 post-h2" id="">The Code</h2>
-<p class="post-p">To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using <code class="code">src="..."</code></p>
+<p class="post-p">Here's all of the code above compiled into a single .py file. To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using <code class="code">src="..."</code>.</p>
+<p class="post-p">Note that you'll need to have the Rich module in your environment - the easiest way to do this is using <code class="code">&lt;py-env&gt; - rich &lt;/py-env&gt;</code></p>
 <blockquote class="p-2 mx-6 mb-4 italic bg-yellow-200 border-l-4 border-gray-800">This code was written (and is running on this page on) <span class="font-semibold">PyScript Version 2022.06.1</span>. Since there's a big <a href="https://github.com/pyscript/pyscript/issues/622">big overhaul of how PyScript renders</a> coming very soon, I expect this to be broken in newer verions.</blockquote>
 <div class="w-full">{{< showcode "post/pyscript-rich/_richsetup.py">}}</div>
 
-<a id="things-that-work"></a>
+<a id="examples"></a>
 <h2 class="post-h2" id="">Rich Elements that Work</h2>
 <p class="mb-6 post-p">After a bit of tinkering, these are the Rich output elements that I've gotten working so far. Note that several of them use <span class="italic">async-await</span>, and so their inclusion into other non-async code should be carefully considered.</p>
 <div class="bg-green-200" id="testme"></div>
@@ -199,6 +221,7 @@ Element.write = newWrite
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Progress Bars</h3>
+            <a id="progress-bar"></a>
             <py-script class="px-2" src="scripts/working/richprogressbar.py"></py-script>
             <div id="progress_bar_div"></div>
     </div>
