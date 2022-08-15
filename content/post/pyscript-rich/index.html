@@ -9,10 +9,25 @@ tags:
 description: "Patching the Rich formattier to output to Pyscript"
 slug_image: richlogo_square.svg
 ---
-<p>Though Pyscript is still in its infancy, the possibilities unlocked by running Python in a browser are already blossoming. As such, I'm seeing more and more users on the <a href="https://community.anaconda.cloud/c/tech-topics/pyscript/41">official forums</a>, the <a href="https://discord.com/invite/TynfPGRwda">unofficial Discord</a>, and the <a href="https://github.com/pyscript/pyscript">Github Issue Tracker</a> interested in working with their favorite libraries to the web. Let's look at the process of taking a package that <span class="italic">runs</span> but doesn't run <span class="italic">well</span>, and see how we can use monkeypatching to bring it to life using Pyscript.</p>
-<p class="post-p">Lots of packages work fine right out of the box - anything <a href="https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages">written in Pure Python stands a good chance of at least running). But just because it runs, doesn't mean it'll look good or behave the way we expect objects to on a webpage. Interactive packages, like matplotlib or d3, or terminal-based packages like tqdm or colorama, may not be immediately interactable in the browser, because they've implemented their own methods for interpretting input/output that the browser doesn't play nicely with.</a> Just because the Pyscript/Pyodide interpretter doesn't crash doesn't mean you can get useful info in and out of your program.</p>
+<script src="https://pyscript.net/releases/2022.06.1/pyscript.js" defer></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
+<py-script src="./_richsetup.py"></py-script>
+<div class="p-4 mt-4 bg-gray-100 border-2">
+    <div class="grid items-center grid-cols-1 gap-y-2 xl:grid-cols-2">
+        <div><py-script src="./scripts/working/intro.py"></py-script></div>
+        <div>{{< showcode "post/pyscript-rich/scripts/working/intro.py">}}</div>
+    </div>
+    <p class="post-p"></py-script><py-repl id="top" root="top" auto-generate="true">from rich import inspect; inspect(int)</py-repl></p>
+</div>
+<hr>
+<p class="post-p">Though Pyscript is still in its infancy, the possibilities unlocked by running Python in a browser are already blossoming. As such, I'm seeing more and more users on the <a href="https://community.anaconda.cloud/c/tech-topics/pyscript/41">official forums</a>, the <a href="https://discord.com/invite/TynfPGRwda">unofficial Discord</a>, and the <a href="https://github.com/pyscript/pyscript">Github Issue Tracker</a> interested in working with their favorite libraries to the web. Let's look at the process of taking a package that <span class="italic">runs</span> but doesn't run <span class="italic">well</span>, and see how we can use monkeypatching to bring it to life using Pyscript.</p>
+<p class="post-p">Lots of packages work fine right out of the box - anything <a href="https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages">written in Pure Python stands a good chance of at least running</a>. But just because it runs, doesn't mean it'll look good or behave the way we expect objects to on a webpage. Interactive packages, like matplotlib or d3, or terminal-based packages like tqdm or colorama, may not be immediately interactable in the browser, because they've implemented their own methods for interpretting input/output that the browser doesn't play nicely with. Just because the Pyscript/Pyodide interpretter doesn't crash doesn't mean you can get useful info in and out of your program.</p>
+<p class="post-p">One such library is <a href="https://github.com/Textualize/rich">Rich</a>: "a Python library for rich text and beautiful formatting in the terminal" by Will McGugan. It allows for tasteful pretty-printing of most Python objects, syntax highlighting, color and layout control and more, all written in Pure Python.</p>
+<img src="rich-features.png" alt="A demo of the features of the rich library, including colors, styles, text, markup etc" class="w-full md:w-1/2 post-img">
+<p class="post-img-caption">The Demo image from the Rich GitHub page shows off its many features</p>
+<p class="post-p">Of course, Rich is intended to run in the terminal. Since the Display functionality from a web browser differs significantly from a terminal environment, there's no reason to expect it will work out of the box in PyScript. But since it exists as a Pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.</p>
+<p class="post-p">What follows is the result of a few hours of bashing things together over the weekend. If you want to skip the dev log, you can skip to <a href="patch">the code that runs to patch Rich on this page </a> or the <a href="#things-that-work">gallery of Rich samples</a>.</p>
 <p class="post-p"></p>
-<p class="post-p">
 <ul class="post-ul">
     <li>Fork the Rich repository</li>
     <li>Download locally</li>
@@ -42,8 +57,6 @@ slug_image: richlogo_square.svg
 <p class="post-p">Add <code class="code">is_pyodide</code> check to _check_buffer to allow display from jupyter</p>
 
 <hr>
-
-<script src="https://pyscript.net/releases/2022.06.1/pyscript.js" output="pyoutput" defer></script>
 <style>
     h3 {
         font-size: 1.5rem/* 24px */;
@@ -60,25 +73,30 @@ slug_image: richlogo_square.svg
     - rich
     - Faker
 </py-env>
-<py-script src="./_richsetup.py"></py-script>
+<a id="patch"></a>
+<h2 class="mb-6 post-h2" id="">The Patching Code</h2>
+<p class="post-p">To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using <code class="code">src="..."</code></p>
+<blockquote class="p-2 mx-6 mb-4 italic bg-yellow-200 border-l-4 border-gray-800">This code was written (and is running on this page on) <span class="font-semibold">PyScript Version 2022.06.1</span>. Since there's a big <a href="https://github.com/pyscript/pyscript/issues/622">big overhaul of how PyScript renders</a> coming very soon, I expect this to be broken in newer verions.</blockquote>
+<div class="w-full">{{< showcode "post/pyscript-rich/_richsetup.py">}}</div>
 
-<h2 class="mb-6 post-h2">Things that Work</h2>
+<a id="things-that-work"></a>
+<h2 class="post-h2" id="">Rich Elements that Work</h2>
+<p class="mb-6 post-p">After a bit of tinkering, these are the Rich output elements that I've gotten working so far. Note that several of them use <span class="italic">async-await</span>, and so their inclusion into other non-async code should be carefully considered.</p>
 <div class="flex flex-col space-y-9">
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2">
             <h3>Text Formatting (Mostly)</h3>
             <py-script class="px-2" src="scripts/working/richtext.py"></py-script>
-            <div id="bar_div"></div>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtext.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtext.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full h-32 bg-gray-100 border-2 border-gray-400 md:w-1/2">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full h-32 bg-gray-100 border-2 border-gray-400 xl:w-1/2">
         <h3>REPLs</h3>
             <py-repl></py-repl>
         </div>
-        <div class="w-full md:w-1/2">
+        <div class="w-full xl:w-1/2">
             <p class="code-title">index.html</p>
             {{< highlight html >}}
 <py-repl auto-generate="true"></py-repl>
@@ -86,96 +104,96 @@ slug_image: richlogo_square.svg
         </div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Panels</h3>
             <py-script class="px-2" src="scripts/working/richpanel.py"></py-script>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richpanel.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richpanel.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Bars</h3>
             <py-script class="px-2" src="scripts/working/richbar.py"></py-script>
             <div id="bar_div"></div>
     </div>
-    <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richbar.py">}}</div>
+    <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richbar.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Progress Bars</h3>
             <py-script class="px-2" src="scripts/working/richprogressbar.py"></py-script>
             <div id="progress_bar_div"></div>
     </div>
-    <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richprogressbar.py">}}</div>
+    <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richprogressbar.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>JSON</h3>
             <div class="overflow-y-scroll h-124">
                 <py-script class="px-2" src="scripts/working/richjson.py"></py-script>
     </div>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richjson.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richjson.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Columns:</h3>
             <py-script class="px-2" src="scripts/working/richcolumns.py"></py-script>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richcolumns.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richcolumns.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Layouts</h3>
             <py-script class="px-2" src="scripts/working/richlayout.py"></py-script>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlayout.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlayout.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Inspect()</h3>
             <div class="overflow-y-scroll h-124">
                 <py-script class="px-2" src="scripts/working/richinspect.py"></py-script>
             </div>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richinspect.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richinspect.py">}}</div>
     </div>
     
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Logging</h3>
             <div class="overflow-y-scroll h-124">
                 <py-script class="px-2" src="scripts/working/richlogging.py"></py-script>
             </div>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlogging.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlogging.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Traceback</h3>
             <div class="overflow-y-scroll h-124">
                 <py-script class="px-2" src="scripts/working/richtraceback.py"></py-script>
             </div>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtraceback.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtraceback.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 md:w-1/2 ">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Trees</h3>
             <div class="overflow-y-scroll h-124">
                 <py-script class="px-2" src="scripts/working/richtree.py"></py-script>
             </div>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtree.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtree.py">}}</div>
     </div>
 </div>
 <!-- <div>
@@ -184,33 +202,33 @@ slug_image: richlogo_square.svg
 <hr class="my-6">    
 <h2 class="post-h2">Things that Don't Work</h2>
 <div class="flex flex-col space-y-6">
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 md:w-1/2">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
         <h3>Some Text Formatting Options</h3>
             <py-script class="px-2" src="scripts/not_working/richnonformatted.py"></py-script>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richnonformatted.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richnonformatted.py">}}</div>
     </div>
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 md:w-1/2">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
         <h3>Emoji's (Ish)</h3>
             <py-script class="px-2" src="scripts/not_working/richemoji.py"></py-script>
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richemoji.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richemoji.py">}}</div>
     </div>
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 md:w-1/2">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
         <h3>Automatic Progress Bars</h3>
             <!-- <py-script class="px-2" src="scripts/not_working/richemoji.py"></py-script> -->
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richprogress.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richprogress.py">}}</div>
     </div>
-    <div class="flex flex-col space-x-2 md:flex-row">
-        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 md:w-1/2">
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
         <h3>Live Updates</h3>
             <!-- <py-script class="px-2" src="scripts/not_working/richemoji.py"></py-script> -->
         </div>
-        <div class="w-full md:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richlive.py">}}</div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richlive.py">}}</div>
     </div>
     
     
