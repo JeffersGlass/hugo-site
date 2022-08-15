@@ -27,7 +27,16 @@ slug_image: richlogo_square.svg
 <p class="post-img-caption">The Demo image from the Rich GitHub page shows off its many features</p>
 <p class="post-p">Of course, Rich is intended to run in the terminal. Since the Display functionality from a web browser differs significantly from a terminal environment, there's no reason to expect it will work out of the box in PyScript. But since it exists as a Pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.</p>
 <p class="post-p">What follows is the result of a few hours of bashing things together over the weekend. If you want to skip the dev log, you can skip to <a href="patch">the code that runs to patch Rich on this page </a> or the <a href="#things-that-work">gallery of Rich samples</a>.</p>
-<p class="post-p"></p>
+<h2 class="post-h2">The Groundwork</h2>
+<p class="post-p">Almost all of the heavy lifting in terms of the formatting is handled by the fact Rich <a href="https://www.willmcgugan.com/blog/tech/post/rich-adds-support-for-jupyter-notebooks/">already supports Jupyter Notebooks</a>, so there's already translation in place to translate Rich's internal formatting syntax to HTML. All we have to do is:</p>
+<ul class="post-ul">
+    <li>Import rich (which means it'll need to be present in our <code class="code">&lt;py-env&gt;</code>  </li>
+    <li>Hook into or replace the code that detects that we're running in a Notebook to instead tell that we're running insdie Pyodide.</li>
+    <li>Take the output that would be fed to the notebook and feed it to <code class="code">stdout</code>, where PyScript's context managers will get it to the right place</li>
+    <li>Overwrite the built-in <code class="code">print()</code> function to point to rich's print function, to get nicely formatted printing</li>
+    <li>Point PyScript's <code class="code">Element.write()</code> method at a new method that hooks into Rich's __rich_console__ and <code class="code">__rich__</code> formatting methods.</li>
+</ul>
+<p class="post-p">Since we're intending to run this in a browser anyway, we could just set {{< highlight python "hl_inline=true" >}}x = 3{{< /highlight >}}</p>
 <p class="post-p">Add "_is_pyodide()" function, add "is_pyodide" attribute of Console</p>
 <p class="post-p">Add <code class="code">is_pyodide</code> check to _check_buffer to allow display from jupyter</p>
 
