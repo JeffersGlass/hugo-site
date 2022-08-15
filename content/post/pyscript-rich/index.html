@@ -28,31 +28,6 @@ slug_image: richlogo_square.svg
 <p class="post-p">Of course, Rich is intended to run in the terminal. Since the Display functionality from a web browser differs significantly from a terminal environment, there's no reason to expect it will work out of the box in PyScript. But since it exists as a Pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.</p>
 <p class="post-p">What follows is the result of a few hours of bashing things together over the weekend. If you want to skip the dev log, you can skip to <a href="patch">the code that runs to patch Rich on this page </a> or the <a href="#things-that-work">gallery of Rich samples</a>.</p>
 <p class="post-p"></p>
-<ul class="post-ul">
-    <li>Fork the Rich repository</li>
-    <li>Download locally</li>
-    <li>Run tests using <code class="code"></code></li>
-    <li>Use <a href="https://code.visualstudio.com/updates/v1_23#_run-code-actions-on-save">VS Code Run on Save to build
-            wheel on Save</a></li>
-    <li>Use VS code live server to serve wheel locally</li>
-    <li>import into pyscript via py-env:</li>
-</ul>
-</p>
-<p class="post-p">
-<pre><code class="code">&lt;py-env&gt;
-- http://127.0.0.1:5500/dist/rich-12.5.1-py3-none-any.whl
-&lt;/py-env&gt;</code></pre>
-</p>
-<p class="post-p">
-<pre>Traceback (most recent call last):
-    • File "", line 5, in
-    • File "/lib/python3.10/site-packages/rich/jupyter.py", line 101, in print return console.print(*args, **kwargs)
-    • File "/lib/python3.10/site-packages/rich/console.py", line 1646, in print with self:
-    • File "/lib/python3.10/site-packages/rich/console.py", line 848, in __exit__ self._exit_buffer()
-    • File "/lib/python3.10/site-packages/rich/console.py", line 806, in _exit_buffer self._check_buffer()
-    • File "/lib/python3.10/site-packages/rich/console.py", line 2021, in _check_buffer self.file.flush()
-    • AttributeError: 'OutputCtxManager' object has no attribute 'flush'</pre>
-</p>
 <p class="post-p">Add "_is_pyodide()" function, add "is_pyodide" attribute of Console</p>
 <p class="post-p">Add <code class="code">is_pyodide</code> check to _check_buffer to allow display from jupyter</p>
 
