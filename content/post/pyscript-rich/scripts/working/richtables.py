@@ -1,14 +1,18 @@
 from rich.table import Table
+from faker import Faker
 
-table = Table(title="Star Wars Movies")
+fake = Faker()
 
-table.add_column("Released", justify="right", style="cyan", no_wrap=True)
-table.add_column("Title", style="magenta")
-table.add_column("Box Office", justify="right", style="green")
+table = Table(title="Places")
 
-table.add_row("Dec 20, 2019", "Star Wars: The Rise of Skywalker", "$952,110,690")
-table.add_row("May 25, 2018", "Solo: A Star Wars Story", "$393,151,347")
-table.add_row("Dec 15, 2017", "Star Wars Ep. V111: The Last Jedi", "$1,332,539,889")
-table.add_row("Dec 16, 2016", "Rogue One: A Star Wars Story", "$1,332,439,889")
+table.add_column("Place", justify="left", style="bold", no_wrap=True)
+table.add_column("Country Code", justify="left", style="", no_wrap=True)
+table.add_column("Lat", justify="left", style="", no_wrap=True, width=7)
+table.add_column("Lon", justify="left", style="", no_wrap=True, width=7)
+table.add_column("Timezone", justify="left", style="", no_wrap=True)
+
+for _ in range(5):
+    lat, lon, place, country, tz = fake.location_on_land()
+    table.add_row(place, country, lat, lon, tz)
 
 print(table)
