@@ -71,101 +71,101 @@ async def beat(length: int = 1) -> None:
         await asyncio.sleep(length * BEAT_TIME)
 
 
-table = Table(show_footer=False)
-table_centered = Align.center(table)
+movie_table = Table(show_footer=False)
+table_centered = Align.center(movie_table)
 
-with Live(table_centered, "live-div", refresh_per_second=20):
+with Live(table_centered, "movie-div", refresh_per_second=20):
     async with beat(10):
-        table.add_column("Release Date", no_wrap=True)
-
-    async with beat(10):
-        table.add_column("Title", Text.from_markup("[b]Total", justify="right"))
+        movie_table.add_column("Release Date", no_wrap=True)
 
     async with beat(10):
-        table.add_column("Budget", "[u]$412,000,000", no_wrap=True)
+        movie_table.add_column("Title", Text.from_markup("[b]Total", justify="right"))
 
     async with beat(10):
-        table.add_column("Opening Weekend", "[u]$577,703,455", no_wrap=True)
+        movie_table.add_column("Budget", "[u]$412,000,000", no_wrap=True)
 
     async with beat(10):
-        table.add_column("Box Office", "[u]$4,331,212,357", no_wrap=True)
+        movie_table.add_column("Opening Weekend", "[u]$577,703,455", no_wrap=True)
 
     async with beat(10):
-        table.title = "Star Wars Box Office"
+        movie_table.add_column("Box Office", "[u]$4,331,212,357", no_wrap=True)
 
     async with beat(10):
-        table.title = (
+        movie_table.title = "Star Wars Box Office"
+
+    async with beat(10):
+        movie_table.title = (
             "[not italic]:popcorn:[/] Star Wars Box Office [not italic]:popcorn:[/]"
         )
 
     async with beat(10):
-        table.caption = "Made with Rich"
+        movie_table.caption = "Made with Rich"
 
     async with beat(10):
-        table.caption = "Made with [b]Rich[/b]"
+        movie_table.caption = "Made with [b]Rich[/b]"
 
     async with beat(10):
-        table.caption = "Made with [b magenta not dim]Rich[/]"
+        movie_table.caption = "Made with [b magenta not dim]Rich[/]"
 
     for row in TABLE_DATA:
         async with beat(10):
-            table.add_row(*row)
+            movie_table.add_row(*row)
 
     async with beat(10):
-        table.show_footer = True
+        movie_table.show_footer = True
 
-    table_width = c.measure(table).maximum
-
-    async with beat(10):
-        table.columns[2].justify = "right"
+    table_width = c.measure(movie_table).maximum
 
     async with beat(10):
-        table.columns[3].justify = "right"
+        movie_table.columns[2].justify = "right"
 
     async with beat(10):
-        table.columns[4].justify = "right"
+        movie_table.columns[3].justify = "right"
 
     async with beat(10):
-        table.columns[2].header_style = "bold red"
+        movie_table.columns[4].justify = "right"
 
     async with beat(10):
-        table.columns[3].header_style = "bold green"
+        movie_table.columns[2].header_style = "bold red"
 
     async with beat(10):
-        table.columns[4].header_style = "bold blue"
+        movie_table.columns[3].header_style = "bold green"
 
     async with beat(10):
-        table.columns[2].style = "red"
+        movie_table.columns[4].header_style = "bold blue"
 
     async with beat(10):
-        table.columns[3].style = "green"
+        movie_table.columns[2].style = "red"
 
     async with beat(10):
-        table.columns[4].style = "blue"
+        movie_table.columns[3].style = "green"
 
     async with beat(10):
-        table.columns[0].style = "cyan"
-        table.columns[0].header_style = "bold cyan"
+        movie_table.columns[4].style = "blue"
 
     async with beat(10):
-        table.columns[1].style = "magenta"
-        table.columns[1].header_style = "bold magenta"
+        movie_table.columns[0].style = "cyan"
+        movie_table.columns[0].header_style = "bold cyan"
 
     async with beat(10):
-        table.columns[2].footer_style = "bright_red"
+        movie_table.columns[1].style = "magenta"
+        movie_table.columns[1].header_style = "bold magenta"
 
     async with beat(10):
-        table.columns[3].footer_style = "bright_green"
+        movie_table.columns[2].footer_style = "bright_red"
 
     async with beat(10):
-        table.columns[4].footer_style = "bright_blue"
+        movie_table.columns[3].footer_style = "bright_green"
 
     async with beat(10):
-        table.row_styles = ["none", "dim"]
+        movie_table.columns[4].footer_style = "bright_blue"
+
+    async with beat(10):
+        movie_table.row_styles = ["none", "dim"]
 
     async with beat(10):
         #table.border_style = "bright_yellow"
-        table.border_style = "yellow"
+        movie_table.border_style = "yellow"
 
     for box_style in [
         box.SQUARE,
@@ -174,31 +174,31 @@ with Live(table_centered, "live-div", refresh_per_second=20):
         box.SIMPLE_HEAD,
     ]:
         async with beat(10):
-            table.box = box_style
+            movie_table.box = box_style
 
     async with beat(10):
-        table.pad_edge = False
+        movie_table.pad_edge = False
 
-    original_width = c.measure(table).maximum
+    original_width = c.measure(movie_table).maximum
 
     for width in range(original_width, c.width, 2):
         async with beat(10):
-            table.width = width
+            movie_table.width = width
 
     for width in range(c.width, original_width, -2):
         async with beat(10):
-            table.width = width
+            movie_table.width = width
 
     for width in range(original_width, 90, -2):
         async with beat(10):
-            table.width = width
+            movie_table.width = width
 
     for width in range(90, original_width + 1, 2):
         async with beat(10):
-            table.width = width
+            movie_table.width = width
 
     async with beat(20):
-        table.width = None
+        movie_table.width = None
 
 from rich.panel import Panel
 
