@@ -12,6 +12,8 @@ slug_image: richlogo_square.svg
 <py-env>
     - rich
     - Faker
+    - paths:
+        - _richsetup.py
 </py-env>
 <script src="https://pyscript.net/releases/2022.06.1/pyscript.js" defer></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
@@ -144,7 +146,7 @@ Element.write = newWrite
 <p class="post-p">With all these pieces put together, now most writes to standard out should be formatted using Rich's format rules.</p>
 <h2 class="post-h2">What Works and What Doesn't</h2>
 <p class="italic post-p">See the <a href="#examples">demos below</a> for working (and non-working) examples.</p>
-<p class="post-p">Out of the box, this allows for formatting of most static Rich objects: Text, Lists and Dicts, JSON objets, etc. The various formatting objects that rely on them - Panels, Columsn, Layouts etc - also work.</p>
+<p class="post-p">Out of the box, this allows for formatting of most static Rich objects: Text, Lists and Dicts, JSON objets, etc. The various formatting objects that rely on them - Panels, Columns, Layouts etc - also work.</p>
 <p class="post-p">What breaks, however, is anything that uses threading under the hood to operate: live-updating displays, progress bars, that sort of thing. Since <a href="https://github.com/pyodide/pyodide/issues/237">threading isn't currently supported in Pyodide</a>, there's not much of a direct solution here, but some workarounds can be had by using <span class="italic">async-await</span> to concurrently update the state of these objects. Check out the <a href="#progress-bar">progress-bar demo</a> below for an example.</p>
 <p class="post-p">Emoji are also (somewhat) broken, though that's mostly through me running out of time to look at their implementation in depth. A brief glance at the <a href="https://github.com/Textualize/rich/blob/master/rich/emoji.py">Emoji.py source</a> makes it look like perhaps what I'm doing for output is clobbering the unicode characters that should be output as Emoji? Or perhaps how they're being rendered - the TL;DR example at the top of the page shows (for me) a successful "hand-pointing-down" but a non-colored "play button".</p>
 <style>
@@ -203,7 +205,7 @@ Element.write = newWrite
 
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Panels</h3>
+            <h3>Panels and Layouts</h3>
             <py-script class="px-2" src="scripts/working/richpanel.py"></py-script>
         </div>
         <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richpanel.py">}}</div>
@@ -230,6 +232,16 @@ Element.write = newWrite
 
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
+            <h3>Syntax Highlighting</h3>
+            <div class="overflow-y-scroll h-124">
+                <py-script class="px-2" src="scripts/working/richsyntax.py"></py-script>
+    </div>
+        </div>
+        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richsyntax.py">}}</div>
+    </div>
+
+    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>JSON</h3>
             <div class="overflow-y-scroll h-124">
                 <py-script class="px-2" src="scripts/working/richjson.py"></py-script>
@@ -246,13 +258,13 @@ Element.write = newWrite
         <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richcolumns.py">}}</div>
     </div>
 
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+<!--     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
             <h3>Layouts</h3>
             <py-script class="px-2" src="scripts/working/richlayout.py"></py-script>
         </div>
         <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlayout.py">}}</div>
-    </div>
+    </div> -->
 
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
