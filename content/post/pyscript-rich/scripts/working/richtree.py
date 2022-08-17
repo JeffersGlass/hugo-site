@@ -12,10 +12,14 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
-
-def walk_directory(directory: pathlib.Path, tree: Tree) -> None:
+#Adapted from rich/examples/tree.py
+#Added max_steps paramters to limit tree depth
+def walk_directory(directory: pathlib.Path, tree: Tree, max_depth = -1) -> None:
     """Recursively build a Tree with directory contents."""
     # Sort dirs first then by filename
+    if max_depth == 0:
+        tree.add("...")
+        return
     paths = sorted(
         pathlib.Path(directory).iterdir(),
         key=lambda path: (path.is_file(), path.name.lower()),
@@ -31,7 +35,7 @@ def walk_directory(directory: pathlib.Path, tree: Tree) -> None:
                 style=style,
                 guide_style=style,
             )
-            walk_directory(path, branch)
+            walk_directory(path, branch, max_depth-1)
         else:
             text_filename = Text(path.name, "green")
             text_filename.highlight_regex(r"\..*$", "bold red")
@@ -41,13 +45,11 @@ def walk_directory(directory: pathlib.Path, tree: Tree) -> None:
             icon = "🐍 " if path.suffix == ".py" else "📄 "
             tree.add(Text(icon) + text_filename)
 
-print(os.listdir('/'))
-
-directory = '/lib'
+directory = '/lib/python3.10'
 
 tree = Tree(
     f"{directory}",
     guide_style="bold bright_blue",
 )
-walk_directory(pathlib.Path(directory), tree)
+walk_directory(pathlib.Path(directory), tree, max_depth = 3)
 print(tree)
