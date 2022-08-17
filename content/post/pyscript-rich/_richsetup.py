@@ -31,13 +31,7 @@ def display_pyscript(segments: Iterable[Segment], text: str) -> None:
 #patch jupyter display method to write processed HTML to stdout
 rich.jupyter.display = display_pyscript 
 
-##--- Redefine print() method---
-
-def new_print(*args, **kwargs):
-    c = get_console()
-    c.print(*args, **kwargs)
-
-print = new_print
+print = get_console().print
 
 # PyScripts OutputCTXManager is used for stdout but does not implement
 # full fill interface; this prevents a warning each time console tries
@@ -58,14 +52,17 @@ class output_buffer():
     def read(self):
         return self._internal_buffer
 
+    def flush(self):
+        pass
+
 @contextmanager
 def stdout_to_buffer(el:Element, append: bool) -> None:
     """ A context manager to manage an output_buffer, writes to an Element on closure"""
-    global stdout #sys.stdout
+    global stdout #Usually Pyscript OutputCTXManager at this pont
     _old_stdout = stdout
     stdout = output_buffer()
     try:
-        yield stdout
+        yield
     finally:
         el._write(stdout.read(), append)
         stdout = _old_stdout 
@@ -75,12 +72,10 @@ Element._write = Element.write
 #Allow Element.write() to take an object from rich
 def newWrite(self, value, append: bool =False) -> None:
     """ A Monkeypatched version of Pyscript's Element.write(), auto-transforming Rich objects and rendering standard objects. """
-    c = get_console()
-    
     if isinstance(value, (str, Exception, JsException)):
         self._write(value, append)
     else:
         with stdout_to_buffer(self, append):
-            c.print(value)
+            get_console().print(value)
 
 Element.write = newWrite
