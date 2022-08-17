@@ -1,5 +1,6 @@
 from typing import Iterable
 from rich import get_console
+from rich.console import Console
 from rich.segment import Segment
 import rich.jupyter
 from pyodide import JsException
@@ -23,7 +24,20 @@ def display_pyscript(segments: Iterable[Segment], text: str) -> None:
 rich.jupyter.display = display_pyscript 
 
 #Overwrite print with Rich Jupyter print function
-print = rich.jupyter.print
+#print = rich.jupyter.print
+
+from html import escape
+
+stdout.flush = lambda: None
+
+def new_print(*args, **kwargs):
+    c = Console(record=True, force_jupyter=True)
+    c.print(*args, **kwargs)
+    result = c.export_html()
+    #console.log(escape(result))
+    #stdout.write(result)
+
+print = new_print
 
 class output_buffer():
     """ A (inefficient) buffer to capture stdout to a string """
@@ -41,7 +55,7 @@ class output_buffer():
 from contextlib import contextmanager
 
 @contextmanager
-def stdout_to_buffer(el:Element):
+def stdout_to_buffer(el:Element, append):
     """ A context manager to manage an output_buffer, writes to an Element on closure"""
     global stdout #sys.stdout
     _old_stdout = stdout
@@ -49,26 +63,21 @@ def stdout_to_buffer(el:Element):
     try:
         yield stdout
     finally:
-        el._write(stdout.read(), append=True)
+        el._write(stdout.read(), append)
         stdout = _old_stdout 
+
+Element._write = Element.write
 
 #Allow Element.write() to take an object from rich
 def newWrite(self, value, append=False) -> None:
+    con = get_console()
     """ A Monkeypatched version of Pyscript's Element.write(), auto-transforming Rich objects and rendering standard objects. """
-    if hasattr(value, '__rich_console__'):
-        console.warn(f"Using newWrite() __rich_console__ on {str(value)[:min(30, len(str(value)))]}...with type {type(value)}")
-        self._write(rich.jupyter._render_segments(value.__rich_console__(c, c.options)), append)
-        return
-    elif hasattr(value, '__rich__'):
-        console.warn(f"Using newWrite() __rich__ on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
-        self._write(rich.jupyter._render_segments(value.__rich__(c, c.options)), append)
-    elif isinstance(value, (str, Exception, JsException)):
+    if isinstance(value, (str, Exception, JsException)):
         console.warn(f"Using newWrite() as passthrough on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
         self._write(value, append)
     else:
         console.warn(f"Using newWrite() with Pretty interpretted on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
-        with stdout_to_buffer(self):
-            c.print(value)
+        with stdout_to_buffer(self, append):
+            con.print(value)
 
-Element._write = Element.write
 Element.write = newWrite
