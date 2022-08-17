@@ -1,20 +1,28 @@
 from typing import Iterable
+from sys import stdout, modules
+from contextlib import contextmanager
+
 from rich import get_console
-from rich.console import Console
+from rich.console import _is_jupyter
 from rich.segment import Segment
 import rich.jupyter
-from pyodide import JsException
-from sys import stdout, modules
 
+from pyodide import JsException
 from js import console
 
-#Per pyodide docs, determine if we're running inside pyodide at Runtime
+# Per pyodide docs, determine if we're running inside pyodide at Runtime
 def is_pyodide() -> bool:
     return "pyodide" in modules
-
+ 
+# Patch jupyter detection of the global _console object to detect pyodide
 c = get_console()
 c.is_jupyter = is_pyodide #monkeypatch jupyter detection @propety
 
+# patch function so if user creates any additional Consoles they behave correctly
+# While the global _console us
+_is_jupyter = is_pyodide
+
+# Jupyter display method renders html and writes to stdout
 def display_pyscript(segments: Iterable[Segment], text: str) -> None:
     """Allow output of raw HTML within pyscript/pyodide"""
     html = rich.jupyter._render_segments(segments)
@@ -23,22 +31,20 @@ def display_pyscript(segments: Iterable[Segment], text: str) -> None:
 #patch jupyter display method to write processed HTML to stdout
 rich.jupyter.display = display_pyscript 
 
-#Overwrite print with Rich Jupyter print function
-#print = rich.jupyter.print
-
-from html import escape
-
-stdout.flush = lambda: None
+##--- Redefine print() method---
 
 def new_print(*args, **kwargs):
-    c = Console(record=True, force_jupyter=True)
+    c = get_console()
     c.print(*args, **kwargs)
-    result = c.export_html()
-    #console.log(escape(result))
-    #stdout.write(result)
 
 print = new_print
 
+# PyScripts OutputCTXManager is used for stdout but does not implement
+# full fill interface; this prevents a warning each time console tries
+# to print
+stdout.flush = lambda: None
+
+##---- Redefine Pyscript.write()---
 class output_buffer():
     """ A (inefficient) buffer to capture stdout to a string """
     def __init__(self):
@@ -52,10 +58,8 @@ class output_buffer():
     def read(self):
         return self._internal_buffer
 
-from contextlib import contextmanager
-
 @contextmanager
-def stdout_to_buffer(el:Element, append):
+def stdout_to_buffer(el:Element, append: bool) -> None:
     """ A context manager to manage an output_buffer, writes to an Element on closure"""
     global stdout #sys.stdout
     _old_stdout = stdout
@@ -69,15 +73,14 @@ def stdout_to_buffer(el:Element, append):
 Element._write = Element.write
 
 #Allow Element.write() to take an object from rich
-def newWrite(self, value, append=False) -> None:
-    con = get_console()
+def newWrite(self, value, append: bool =False) -> None:
     """ A Monkeypatched version of Pyscript's Element.write(), auto-transforming Rich objects and rendering standard objects. """
+    c = get_console()
+    
     if isinstance(value, (str, Exception, JsException)):
-        console.warn(f"Using newWrite() as passthrough on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
         self._write(value, append)
     else:
-        console.warn(f"Using newWrite() with Pretty interpretted on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
         with stdout_to_buffer(self, append):
-            con.print(value)
+            c.print(value)
 
 Element.write = newWrite
