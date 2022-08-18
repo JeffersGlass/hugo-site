@@ -1,0 +1,108 @@
+---
+title: "Pyscript/Pyodide and JS Object Passing"
+date: 2022-08-18T07:38:14-05:00
+draft: true
+tags:
+- Python
+- PyScript
+- Pyodide
+- Javascript
+description: "How to Pass Objects"
+---
+<h1 class="text-xl font-semibold post-p">How do you pass objects back and forth between JavaScript and PyScript/Pyodide?</h1>
+<p class="post-p">Having seen this question come up a lot recently, here's a brief summary of the current state of events. This is all as of <span class="font-semibold underline">PyScript Version 2022.06.1</span> and <span class="font-semibold underline">Pyodide v21</span>, so it's likely to change in the future.</p>
+<p class="post-p">Note that in both Python and Javascript, functions are <a href="https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function">first-class objects</a>, - the term 'object' here is anything that can be bound to a variable (a number, string, object, function, etc). Also, recall that the <code class="code">import js ...</code> or <code class="code">from js import ...</code> <a href="https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py">in Pyodide gets objects</a> from the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis">JavaScript globalThis scope</a>, so keep the <a href="https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/">rules of JavaScript variable scoping</a> in mind.</p>
+<p class="post-p">Currently, you <span class="font-bold">can</span>:
+    <ul class="">
+        <li>✅ Pass objects from JavaScript to Python running in PyScript</li>
+        <li>✅ Pass objects from JavaScript Python running in Pyodide</li>
+        <li>✅ Pass objects from Python running in Pyodide to JavaScript</li>
+    </ul>
+</p>
+<p class="post-p">But for implementation reasons, you <span class="font-bold">cannot</span> (yet):</p>
+<ul>
+    <li>❌ Pass objects from Python running in PyScript to JavaScript. However, since <a href="https://github.com/pyscript/pyscript/issues/494">PyScript doesn't export its instance of Pyodide</a> and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags.</li>
+</ul>
+<h2 class="text-xl font-semibold post-p">Code Examples</h2>
+<h3 class="code-title">Javascript to Python (PyScript)</h3>
+<div class="mb-6">
+{{< highlight html >}}
+<script>
+    name = "Jeff" //A JS variable
+    // Define a JS Function
+    function addTwoNumbers(x, y){
+        return x + y;
+    }
+</script>
+<py-script>
+{{< /highlight >}}
+{{< highlight python "linenostart=8" >}}
+    # Import and use JS function in Python
+    from js import addTwoNumbers, console
+    console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
+{{< /highlight >}}
+{{< highlight html "linenostart=11">}}
+</py-script>
+{{< /highlight >}}
+</div>
+
+<h3 class="code-title">Javascript to Python (Pyodide)</h3>
+<div class="mb-6">
+{{< highlight html >}}
+<script>
+    // Define a JS Function
+    function addTwoNumbers(x, y){
+        return x + y;
+    }
+
+    async function main() {
+        let pyodide = await loadPyodide();
+        result = pyodide.runPython(`
+            # Import and use JS function in Python
+            from js import addTwoNumbers, console
+            console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
+        `);
+    }
+    main();
+</script>
+{{< /highlight >}}
+</div>
+
+<h3 class="code-title">Python (Pyodide) to JavaScript</h3>
+<div class="mb-6">
+{{< highlight html >}}
+<script type="module">
+    const pyodideRuntime = await loadPyodide();
+    pyodideRuntime.runPython(`
+        name = "Jeff" # A Python variable
+        # Define a Python function
+        def multiplyTwoNumbers(x, y):
+            return (x * y)
+    `);
+    // Access and call it in JavaScript
+    let mult = pyodideRuntime.globals.get('multiplyTwoNumbers');
+    console.log("Multiplying 2 and 3 in Python: " + mult(2,3));
+    console.log("You're welcome, " + pyodideRuntime.globals.get('name'))
+</script>
+{{< /highlight >}}
+</div>
+
+<!-- <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script> -->
+<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
+<script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
+
+<script type="module">
+    const pyodideRuntime = await loadPyodide();
+    pyodideRuntime.runPython(`
+        # A Python variable
+        name = "Jeff" 
+
+        # Define a Python function
+        def multiplyTwoNumbers(x, y):
+            return (x * y)
+    `);
+    // Access and call it in JavaScript
+    let mult = pyodideRuntime.globals.get('multiplyTwoNumbers');
+    console.log("Multiplying 2 and 3 in Python: " + mult(2,3));
+    console.log("You're welcome, " + pyodideRuntime.globals.get('name'))
+</script>
