@@ -39,24 +39,7 @@ slug_image: featured_pillow.png
     {{< /highlight >}}
     <p class="post-p">The Pyscript portion of this example is only slightly more involved. We use <code class="code">addEventListener()</code> to trigger a function when the selected file in the input field changes. Then we get the file targetted by that input, and create a temporary URL for it using <code class="code">window.URL.createObjectURL()</code>. Finally, we create a new <code class="code">&lt;img&gt;</code> tag and stick it inside our output div.</p>
     <p class="post-p">If desired, this functionality could be trigged by submitting a form, clicking a separate "Process Image" button, or any other event. This demo just slaps the image up as soon as its chosen, for brevity of example.</p>
-    <p class="code-title">image_upload.py</p>
-{{< highlight python3 >}}
-from js import document, console, window
-from pyodide import create_proxy
-import asyncio
-
-def _upload_file_and_show(e):
-    console.log("Attempted file upload: " + e.target.value)
-    file_list = e.target.files
-    first_item = file_list.item(0)
-
-    new_image = document.createElement('img')
-    new_image.src = window.URL.createObjectURL(first_item)
-    document.getElementById("output_upload").appendChild(new_image)
-
-upload_file = create_proxy(_upload_file_and_show)
-document.getElementById("file-upload").addEventListener("change", upload_file)
-{{< /highlight >}}
+    {{< showcode "post/pyscript-image-upload/image_upload.py" >}}
 
 <h2 class="mt-8 post-h2">Image Processing with PILLOW</h2>
 <p class="post-p">Things get slightly more involved if we want to use the Python Image Library (or its kinder wrapper, PILLOW) to work with the images. The HTML looks almost identical, but we do need to add Pillow to a new <code class="code">&lt;py-env&gt;</code> tag so that micropip will install Pillow into our environment for us.</p>
@@ -67,8 +50,7 @@ document.getElementById("file-upload").addEventListener("change", upload_file)
 </py-env>
 <label for="Upload a PNG image"></label><input type="file" id="file-upload-pillow">
 <div id="output_upload_pillow"></div>
-<py-script src="./image_upload_pillow.py"></py-script>
-        {{< /highlight >}}
+<py-script src="./image_upload_pillow.py"></py-script>{{< /highlight >}}
         <p class="post-p">However, the Pyscript in this case is somewhat more involved, getting the bytes back and forth from Pyscript and the browser in formats they like. Full caveat - through testing, I <span class="italic">think</span> all of these castings and conversions are necessary for this to work, but if anyone finds a shorter way, <a href="https://twitter.com/jeffersglass">please let me know!</a></p>
         <p class="post-p">That said, to load the image data into Pillow, we:</p>
         <ul class="post-ul">
@@ -84,53 +66,7 @@ document.getElementById("file-upload").addEventListener("change", upload_file)
             <li>Create an URL we can use for this File using <code class="code">indow.URL.createObjectURL()</code></li>
             <li>Use that URL as the src of a new img tag (made with <code class="code">document.createElement()</code>) and append that as a child of our div.</li>
         </ul>
-    <p class="code-title">image_upload_pillow.py</p>
     <div class="overflow-y-scroll h-124">
-    {{< highlight python3 >}}
-from js import document, console, Uint8Array, window, File
-from pyodide import create_proxy
-import asyncio
-import io
-
-from PIL import Image, ImageFilter
-
-async def _upload_change_and_show(e):
-    #Get the first file from upload
-    file_list = e.target.files
-    first_item = file_list.item(0)
-
-    #Get the data from the files arrayBuffer as an array of unsigned bytes
-    array_buf = Uint8Array.new(await first_item.arrayBuffer())
-
-    #BytesIO wants a bytes-like object, so convert to bytearray first
-    bytes_list = bytearray(array_buf)
-    my_bytes = io.BytesIO(bytes_list)
-
-    #Create PIL image from Bytes
-    my_image = Image.open(my_bytes)
-
-    #Log some of the image data for testing
-    console.log(f"{my_image.format= } {my_image.width= } {my_image.height= }")
-
-    # Now that we have the image loaded with Pillow, we can use all the tools it makes available.
-    # "Emboss" the image, rotate 45 degrees, fill with dark green, resize to 300x300
-    my_image = my_image.filter(ImageFilter.EMBOSS).rotate(45, expand=True, fillcolor=(0,100,50)).resize((300,300))
-
-    #Convert Pillow object back into File type that createObjectURL will take
-    my_stream = io.BytesIO()
-    my_image.save(my_stream, format="PNG")
-
-    #Create a JS File object with our data and the proper mime type
-    image_file = File.new([Uint8Array.new(my_stream.getvalue())], "new_image_file.png", {"type": "image/png"})
-
-    #Create new tag and insert into page
-    new_image = document.createElement('img')
-    new_image.src = window.URL.createObjectURL(image_file)
-    document.getElementById("output").appendChild(new_image)
-
-# Run image processing code above whenever file is uploaded
-upload_file = create_proxy(_upload_change_and_show)
-document.getElementById("file-upload").addEventListener("change", upload_file)
-{{< /highlight >}}
+        {{< showcode "post/pyscript-image-upload/image_upload_pillow.py" >}}
     </div>
     <p class="post-img-caption">Scroll to see complete code</p>
