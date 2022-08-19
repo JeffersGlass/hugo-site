@@ -90,16 +90,61 @@ description: "How to Pass Objects"
 <!-- <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script> -->
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
 <script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
+<!-- <script>
+    function createObject(x, variableName){
+        let execString = variableName + " = x"
+        console.log("Running `" + execString + "`");
+        eval(variableName + " = x")
+    }
+</script>
+<py-script>
+    import js
+    from pyodide import create_proxy, to_js
+
+    names = ["Jeff Glass"]
+    js.createObject(create_proxy(names), "names")
+
+    multiplier = lambda z: z * 2
+    js.createObject(create_proxy(multiplier), "multiplier")
+    
+    console.log(to_js(js.names))
+    console.log(js.multiplier(5))
+</py-script>
+<py-script>
+    names.append("John Hanley")
+    console.log(to_js(js.names))
+
+    multiplier = lambda z: z * 100000
+    console.log(js.multiplier(5))
+</py-script> -->
+<script>
+    function createObject(x, variableName){
+        let execString = variableName + " = x"
+        console.log("Running `" + execString + "`");
+        eval(variableName + " = x")
+    }
+</script>
 
 <script type="module">
     const pyodideRuntime = await loadPyodide();
     pyodideRuntime.runPython(`
-        # A Python variable
-        name = "Jeff" 
+        import js
+        from pyodide import create_proxy, to_js
 
-        # Define a Python function
-        def multiplyTwoNumbers(x, y):
-            return (x * y)
+        names = ["Jeff Glass"]
+        js.createObject(create_proxy(names), "names")
+
+        multiplier = lambda z: z * 2
+        js.createObject(create_proxy(multiplier), "multiplier")
+        
+        js.console.log(to_js(js.names))
+        js.console.log(js.multiplier(5))
+
+        names.append("John Hanley")
+        js.console.log(to_js(js.names))
+
+        multiplier = lambda z: z * 100000
+        js.console.log(js.multiplier(5))
     `);
     // Access and call it in JavaScript
     let mult = pyodideRuntime.globals.get('multiplyTwoNumbers');
