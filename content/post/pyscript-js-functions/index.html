@@ -37,19 +37,20 @@ slug_image: pyjs_featured.jpg
 {{< /highlight >}}
 {{< highlight python "linenostart=8" >}}
     # Import and use JS function in Python
-    from js import addTwoNumbers, console
-    console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
+    from js import name, addTwoNumbers, console
+    console.log("Hello " + name + ".Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
 {{< /highlight >}}
 {{< highlight html "linenostart=11">}}
 </py-script>
 {{< /highlight >}}
 </div>
 <h2 class="text-xl font-semibold post-p">JavaScript to Python (Pyodide)</h2>
-<p class="post-p">We can use the simple <code class="code">from js import ...</code> to import JavaScript objects directly into Python in Pyodide. The syntax is identical to the PyScript example above - the py-script tag essentially just calls the <code class="code">runPython</code> function for us.</p>
+<p class="post-p">We can also use <code class="code">from js import ...</code> to import JavaScript objects directly into Python in Pyodide. The syntax is identical to the PyScript example above - the &lt;py-script&gt; calls the <code class="code">runPython</code> function for us (among other things).</p>
 <h3 class="code-title">Javascript to Python (Pyodide)</h3>
 <div class="mb-6">
 {{< highlight html >}}
 <script>
+    name = "Jeff" //A JS variable
     // Define a JS Function
     function addTwoNumbers(x, y){
         return x + y;
@@ -59,8 +60,8 @@ slug_image: pyjs_featured.jpg
         let pyodide = await loadPyodide();
         result = pyodide.runPython(`
             # Import and use JS function in Python
-            from js import addTwoNumbers, console
-            console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
+            from js import name, addTwoNumbers, console
+            console.log("Hello " + name + ".Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
         `);
     }
     main();
@@ -91,7 +92,7 @@ slug_image: pyjs_featured.jpg
 <a id="commentary"></a>
 <p class="post-p">Since <a href="https://github.com/pyscript/pyscript/issues/494">PyScript doesn't export its instance of Pyodide</a> and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags <span class="italic">"directly"</span>.</p>
 <p class="post-p">However, I've found a workaround using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval">JavaScript's eval() function</a>, which executes a string as code much like <a href="https://docs.python.org/3/library/functions.html#eval">Python's eval()</a>. First, we create a JS function <code class="code">createObject</code> which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.</p>
-<p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly ('names' and 'names_js', 'mutliplier' and 'multiplier_js') for readability.</p>
+<p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly (<code>'names'</code> and <code>'names_js'</code>, <code>'mutliplier'</code> and <code>'multiplier_js'</code>) for readability.</p>
 <span class="code-title">Python (PyScript) to JavaScript</span>
 {{< highlight html >}}
 <script>
@@ -111,9 +112,9 @@ slug_image: pyjs_featured.jpg
 {{< highlight html "linenostart=19">}}
 </py-script>
 {{< /highlight >}}
-<p class="post-p">The code above binds the JavaScript variable <code class="code">names</code> to a PyProxy of the Python list <code class="code">names</code>, and the JavaScript variables <code class="code">multiplier</code> to a PyProxy for the Python lambda function <code class="code">multiplier</code>.</p>
+<p class="post-p">The code above binds the JavaScript variable <code class="code">names_js</code> to a PyProxy of the Python list <code class="code">names</code>, and the JavaScript variables <code class="code">multiplier_js</code> to a PyProxy for the Python lambda function <code class="code">multiplier</code>.</p>
 <p class="post-p">Of course, this means we have to use the createObject function to "export" the objects from Python before we can use them in JavaScript, which isn't ideal. But it's something.</p>
-<p class="post-p">With those objects created, we can refer to/call them like any other JS objects. To see this, let's add two buttons: one that references our function an object in JavaScript ("use-python-objects"), and one that adds some names to our list so we can see it change ("add-name").</p>
+<p class="post-p">With those objects created, we can refer to/call them like any other JS objects. To see this, let's add two buttons: one that references our function and list from within JavaScript ("use-python-objects"), and one that adds some names to our list so we can see it change ("add-name").</p>
 {{< highlight html "linenostart=20">}}<py-env>
     - faker
 </py-env>
@@ -122,10 +123,10 @@ slug_image: pyjs_featured.jpg
 {{< highlight python "linenostart=25">}}
 {{< loadcode "content/post/pyscript-js-functions/nameButton.py" >}}
 {{< /highlight >}}
-{{< highlight html "linenostart=35">}}</py-script>
+{{< highlight html "linenostart=36">}}</py-script>
  
 {{< /highlight >}}
-{{< highlight-js-tag usePythonButton.js 37>}}
+{{< highlight-js-tag usePythonButton.js 38>}}
 <h3 class="mt-6 text-lg font-semibold">Python (PyScript) to JavaScript live Demo</h3>
 <p class="post-p">The code in the preceding section is running live on this page. Click "Add Name to List" to append a new name (provided by the Faker library) to the list <code class="code">names</code>; click "Use Python Objects" to reference that list (and the <code class="code">multiplier</code> function) and display the results in the green box. Open your browser's development console to see additional output.</p>
 <a id="demo"></a>
@@ -136,7 +137,7 @@ slug_image: pyjs_featured.jpg
     </div>
     <div class="w-full h-auto bg-green-100 border-2 border-green-600">
         <p class="text-sm italic text-green-700">#output:</p>
-        <div id="output"><br></div>
+        <div  class="p-1" id="output"><br></div>
     </div>
 </div>
 
