@@ -1,0 +1,8 @@
+<div class="overflow-x-auto">
+{{ $linestart :=  (int (.Get 1))}}
+{{ $content := (.Page.Resources.GetMatch (.Get 0)).Content}}
+{{ $codelength :=  len (split $content "\n") }}
+{{ highlight "<script>" "html" (printf "linenostart=%v" $linestart)}}
+{{ highlight $content "js" (printf "linenostart=%v" (add $linestart 1))}}
+{{ highlight "<script>" "html" (printf "linenostart=%v" (add (add $linestart $codelength) 1))}}
+</div>
