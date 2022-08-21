@@ -151,3 +151,20 @@ slug_image: pyjs_featured.jpg
 <py-script src="registerJsObjects.py"></py-script>
 <py-script src="nameButton.py"></py-script>
 <script src="usePythonButton.js"></script>
+<h3 class="text-lg font-semibold">Exporting <code>globals()?</code></h3>
+<p class="post-p">Of course you might think, once we can 'export' JavaScript proxies of Python objects... why not just export the global dictionary itself?</p>
+{{< showcode "post/pyscript-js-functions/exportGlobals.py" >}}
+<!-- <p class="post-p">While this does give us a snapshot of the current global namespace, we sadly don't get a reference to it, just a copy of it. So variables created after we run this new code aren't visible in JavaScript.</p>
+<p class="post-p">It does feel like perhaps there's some way around this... possibly more development to come in this area.</p> -->
+<p class="post-p">Now, let's add a button that tells JavaScript to print the value of our new globals object. And again so we can see it really changing, let's add a button that creates new Python objects:</p>
+<p class="code-title">displayGlobals.js</p>
+{{< highlight-js-tag showGlobalsButton.js 1 >}}
+<div class="my-3">{{< showcode "post/pyscript-js-functions/makeNewObjects.py" >}}</div>
+<div class="grid grid-cols-4 m-2 space-x-2">
+    <input type="button" value="Make Python Object" id="makeObject" class="col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md">
+    <input type="button" value="Print Globals:" id="printGlobals" class="col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md">
+    <div id="globals" class="col-span-2 bg-blue-200">hello</div>
+</div>
+<py-script src="exportGlobals.py"></py-script>
+<py-script src="makeNewObjects.py"></py-script>
+<script src="showGlobalsButton.js"></script>
