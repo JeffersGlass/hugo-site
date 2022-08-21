@@ -1,29 +1,28 @@
 ---
 title: "Pyscript/Pyodide and JS Object Passing"
-date: 2022-08-18T07:38:14-05:00
+date: 2022-08-21T07:38:14-05:00
 draft: true
 tags:
 - Python
 - PyScript
 - Pyodide
 - Javascript
-description: "How to Pass Objects"
+description: "How to Pass Objects from Python to JavaScript and Back"
+slug_image: pyjs_featured.jpg
 ---
-<h1 class="text-xl font-semibold post-p">How do you pass objects back and forth between JavaScript and PyScript/Pyodide?</h1>
-<p class="post-p">Having seen this question come up a lot recently, here's a brief summary of the current state of events. This is all as of <span class="font-semibold underline">PyScript Version 2022.06.1</span> and <span class="font-semibold underline">Pyodide v21</span>, so it's likely to change in the future.</p>
-<p class="post-p">Note that in both Python and Javascript, functions are <a href="https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function">first-class objects</a>, - the term 'object' here is anything that can be bound to a variable (a number, string, object, function, etc). Also, recall that the <code class="code">import js ...</code> or <code class="code">from js import ...</code> <a href="https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py">in Pyodide gets objects</a> from the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis">JavaScript globalThis scope</a>, so keep the <a href="https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/">rules of JavaScript variable scoping</a> in mind.</p>
-<p class="post-p">Currently, you <span class="font-bold">can</span>:
+<p class="post-p">A question I've been seeing quite a bit over in the <a href="https://discord.gg/RUYqNXRN">Unofficial PyScript Community Discord</a> is: <span class="italic font-semibold">How do you pass objects back and forth between JavaScript and PyScript/Pyodide?</span> So I've created recipies below for passing objects back and forth between JavaScript and Python; the specifics are somewhat different depending on whether we're working in PyScript or directly in Pyodide, so both options are illustrated below.</p>
+<p class="post-p">Currently, you can:
     <ul class="">
         <li>✅ Pass objects from JavaScript to Python running in PyScript</li>
         <li>✅ Pass objects from JavaScript Python running in Pyodide</li>
         <li>✅ Pass objects from Python running in Pyodide to JavaScript</li>
+        <l1>⚠️ Pass objects from Python running in PyScript to JavaScript... but it's a bit messy. See the <a href="#commentary">commentary</a> and <a href="#demo">live demo</a> with the code sample below.</l1>
     </ul>
 </p>
-<p class="post-p">But for implementation reasons, you <span class="font-bold">cannot</span> (yet):</p>
-<ul>
-    <li>❌ Pass objects from Python running in PyScript to JavaScript. However, since <a href="https://github.com/pyscript/pyscript/issues/494">PyScript doesn't export its instance of Pyodide</a> and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags.</li>
-</ul>
-<h2 class="text-xl font-semibold post-p">Code Examples</h2>
+<p class="post-p">For our purposes, an 'object' is anything that can be bound to a variable (a number, string, object, <a href="https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function">function</a>, etc). Also, recall that the <code class="code">import js</code> or <code class="code">from js import ...</code> <a href="https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py">in Pyodide</a> gets objects from the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis">JavaScript globalThis scope</a>, so keep the <a href="https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/">rules of JavaScript variable scoping</a> in mind.</p>
+<p class="italic post-p">(At time of writing, the most current versions are <span class="">PyScript Version 2022.06.1</span> and <span class="">Pyodide v21</span>. Both are changing fast, so if you're reading this in the far future, check the documentation and forums for new best procedures.)</p>
+<h2 class="text-xl font-semibold post-p">JavaScript to Python (PyScript)</h2>
+<p class="post-p">We can use the simple <code class="code">from js import ...</code> to import JavaScript objects directly into PyScript.</p>
 <h3 class="code-title">Javascript to Python (PyScript)</h3>
 <div class="mb-6">
 {{< highlight html >}}
@@ -45,7 +44,8 @@ description: "How to Pass Objects"
 </py-script>
 {{< /highlight >}}
 </div>
-
+<h2 class="text-xl font-semibold post-p">JavaScript to Python (Pyodide)</h2>
+<p class="post-p">We can use the simple <code class="code">from js import ...</code> to import JavaScript objects directly into Python in Pyodide. The syntax is identical to the PyScript example above - the py-script tag essentially just calls the <code class="code">runPython</code> function for us.</p>
 <h3 class="code-title">Javascript to Python (Pyodide)</h3>
 <div class="mb-6">
 {{< highlight html >}}
@@ -67,7 +67,8 @@ description: "How to Pass Objects"
 </script>
 {{< /highlight >}}
 </div>
-
+<h2 class="text-xl font-semibold post-p">Python (Pyodide) to JavaScript</h2>
+<p class="post-p">One we've initialized the Pyodide runtime, the JS object <code class="code">pyodide.globals</code> is a mapping that represents the global Python namespace. We can use the <code class="code">get()</code> method to retrieve an object from this mapping and make use of it in JavaScript.</p>
 <h3 class="code-title">Python (Pyodide) to JavaScript</h3>
 <div class="mb-6">
 {{< highlight html >}}
@@ -86,68 +87,66 @@ description: "How to Pass Objects"
 </script>
 {{< /highlight >}}
 </div>
-
-<!-- <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script> -->
-<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
-<script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
-<!-- <script>
-    function createObject(x, variableName){
-        let execString = variableName + " = x"
-        console.log("Running `" + execString + "`");
-        eval(variableName + " = x")
-    }
-</script>
-<py-script>
-    import js
-    from pyodide import create_proxy, to_js
-
-    names = ["Jeff Glass"]
-    js.createObject(create_proxy(names), "names")
-
-    multiplier = lambda z: z * 2
-    js.createObject(create_proxy(multiplier), "multiplier")
-    
-    console.log(to_js(js.names))
-    console.log(js.multiplier(5))
-</py-script>
-<py-script>
-    names.append("John Hanley")
-    console.log(to_js(js.names))
-
-    multiplier = lambda z: z * 100000
-    console.log(js.multiplier(5))
-</py-script> -->
+<h3 class="text-lg font-semibold">Python (PyScript) to JavaScript</h3>
+<a id="commentary"></a>
+<p class="post-p">Since <a href="https://github.com/pyscript/pyscript/issues/494">PyScript doesn't export its instance of Pyodide</a> and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags <span class="italic">"directly"</span>.</p>
+<p class="post-p">However, I've found a workaround using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval">JavaScript's eval() function</a>, which executes a string as code much like <a href="https://docs.python.org/3/library/functions.html#eval">Python's eval()</a>. First, we create a JS function <code class="code">createObject</code> which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.</p>
+<p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly ('names' and 'names_js', 'mutliplier' and 'multiplier_js') for readability.</p>
+<span class="code-title">Python (PyScript) to JavaScript</span>
+{{< highlight html >}}
 <script>
-    function createObject(x, variableName){
-        let execString = variableName + " = x"
+    function createObject(object, variableName){
+        //Bind a variable whose name is the string variableName
+        // to the object called 'object'
+        let execString = variableName + " = object"
         console.log("Running `" + execString + "`");
-        eval(variableName + " = x")
+        eval(execString)
     }
 </script>
+<py-script>
+{{< /highlight >}}
+{{< highlight python "linenostart=10">}}
+{{< loadcode "post/pyscript-js-functions/registerJsObjects.py" >}}
+{{< /highlight >}}
+{{< highlight html "linenostart=19">}}
+</py-script>
+{{< /highlight >}}
+<p class="post-p">The code above binds the JavaScript variable <code class="code">names</code> to a PyProxy of the Python list <code class="code">names</code>, and the JavaScript variables <code class="code">multiplier</code> to a PyProxy for the Python lambda function <code class="code">multiplier</code>.</p>
+<p class="post-p">Of course, this means we have to use the createObject function to "export" the objects from Python before we can use them in JavaScript, which isn't ideal. But it's something.</p>
+<p class="post-p">With those objects created, we can refer to/call them like any other JS objects. To see this, let's add two buttons: one that references our function an object in JavaScript ("use-python-objects"), and one that adds some names to our list so we can see it change ("add-name").</p>
+{{< highlight html "linenostart=20">}}<py-env>
+    - faker
+</py-env>
 
-<script type="module">
-    const pyodideRuntime = await loadPyodide();
-    pyodideRuntime.runPython(`
-        import js
-        from pyodide import create_proxy, to_js
+<py-script>{{< /highlight >}}
+{{< highlight python "linenostart=25">}}
+{{< loadcode "content/post/pyscript-js-functions/nameButton.py" >}}
+{{< /highlight >}}
+{{< highlight html "linenostart=35">}}</py-script>
+ 
+{{< /highlight >}}
+{{< highlight-js-tag usePythonButton.js 37>}}
+<h3 class="mt-6 text-lg font-semibold">Python (PyScript) to JavaScript live Demo</h3>
+<p class="post-p">The code in the preceding section is running live on this page. Click "Add Name to List" to append a new name (provided by the Faker library) to the list <code class="code">names</code>; click "Use Python Objects" to reference that list (and the <code class="code">multiplier</code> function) and display the results in the green box. Open your browser's development console to see additional output.</p>
+<a id="demo"></a>
+<div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="items-center justify-around">
+        <input type="button" value="Use Python Objects" id="use-python-objects" class="p-2 my-1 border-2 border-gray-700 rounded-md">
+        <input type="button" value="Add a Name" id="add-name" class="p-2 my-1 border-2 border-gray-700 rounded-md">
+    </div>
+    <div class="w-full h-auto bg-green-100 border-2 border-green-600">
+        <p class="text-sm italic text-green-700">#output:</p>
+        <div id="output"><br></div>
+    </div>
+</div>
 
-        names = ["Jeff Glass"]
-        js.createObject(create_proxy(names), "names")
+<py-env>
+    - faker
+</py-env>
+<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
 
-        multiplier = lambda z: z * 2
-        js.createObject(create_proxy(multiplier), "multiplier")
-        
-        js.console.log(to_js(js.names))
-        js.console.log(js.multiplier(5))
-
-        names.append("John Hanley")
-        js.console.log(to_js(js.names))
-
-        multiplier = lambda z: z * 100000
-        js.console.log(js.multiplier(5))
-    `);
-    // Access and call it in JavaScript
-    let mult = pyodideRuntime.globals.get('multiplyTwoNumbers');
-    console.log("Multiplying 2 and 3 in Python: " + mult(2,3));
-    console.log("You're welcome, " + pyodideRuntime.globals.get('name'))
-</script>
+<script src="createObject.js"></script>
+<py-script src="registerJsObjects.py"></py-script>
+<py-script src="nameButton.py"></py-script>
+<script src="usePythonButton.js"></script>
