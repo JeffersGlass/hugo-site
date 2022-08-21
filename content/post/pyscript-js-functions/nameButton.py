@@ -1,3 +1,4 @@
+from pyodide import create_proxy
 from faker import Faker
 
 fake = Faker()
