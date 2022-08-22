@@ -16,7 +16,7 @@ slug_image: pyjs_featured.jpg
         <li>✅ Pass objects from JavaScript to Python running in PyScript</li>
         <li>✅ Pass objects from JavaScript Python running in Pyodide</li>
         <li>✅ Pass objects from Python running in Pyodide to JavaScript</li>
-        <l1>⚠️ Pass objects from Python running in PyScript to JavaScript... but it's a bit messy. See the <a href="#commentary">commentary</a> and <a href="#demo">live demo</a> with the code sample below.</l1>
+        <l1>⚠️ Pass objects from Python running in PyScript to JavaScript, with a little extra work. See the <a href="#commentary">commentary</a> and <a href="#demo">live demo</a> with the code sample below.</l1>
     </ul>
 </p>
 <p class="post-p">For our purposes, an 'object' is anything that can be bound to a variable (a number, string, object, <a href="https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function">function</a>, etc). Also, recall that the <code class="code">import js</code> or <code class="code">from js import ...</code> <a href="https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py">in Pyodide</a> gets objects from the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis">JavaScript globalThis scope</a>, so keep the <a href="https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/">rules of JavaScript variable scoping</a> in mind.</p>
@@ -92,8 +92,6 @@ slug_image: pyjs_featured.jpg
 <a id="commentary"></a>
 <p class="post-p">Since <a href="https://github.com/pyscript/pyscript/issues/494">PyScript doesn't export its instance of Pyodide</a> and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags <span class="italic">"directly"</span>.</p>
 <p class="post-p">However, I've found a workaround using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval">JavaScript's eval() function</a>, which executes a string as code much like <a href="https://docs.python.org/3/library/functions.html#eval">Python's eval()</a>. First, we create a JS function <code class="code">createObject</code> which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.</p>
-<p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly (<code>'names'</code> and <code>'names_js'</code>, <code>'mutliplier'</code> and <code>'multiplier_js'</code>) for readability.</p>
-<span class="code-title">Python (PyScript) to JavaScript</span>
 {{< highlight html >}}
 <script>
     function createObject(object, variableName){
@@ -104,8 +102,37 @@ slug_image: pyjs_featured.jpg
         eval(execString)
     }
 </script>
-<py-script>
 {{< /highlight >}}
+<p class="post-p">This takes a Python Object and creates a variable pointing to it in the JavaScript global scope. So what if we made a JavaScript variable point at... the Python global namespace?</p>
+{{< showcode "post/pyscript-js-functions/exportGlobals.py" >}}
+<p class="post-p">This, amazingly, just works. All Python global variables are now accessible at in JavaScript with the syntax <code class="code">pyodideGlobals.get('myVariableName')</code></code></p>
+<p class="post-p">Let's see an example running live. The three buttons below print the values of the variables <code>x</code>, <code>y</code>, and <code>z</code> respectively, as looked up in the Python global namespace. Use the REPL to set the values of those variables, and see how JavaScript goes from seeing them as "undefined" to their value in PyScript.</p>
+<p class="post-p">I've pre-populated an example line in the REPL for you. Click the '<svg id="" class="inline" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>' or press <code>shift-enter</code> to run the current REPL line.</p>
+<a id="demo"></a>
+<script src="createObject.js"></script>
+<py-script src="exportGlobals.py"></py-script>
+<div class="grid grid-cols-1 md:grid-cols-2">
+    <div>
+        <py-repl auto-generate="true">x = "Hello, world!"</py-repl>
+    </div>
+    <div class="grid grid-cols-1">
+        <input type="button" id="x" value="print(x)" class="p-2 my-1 border-2 border-gray-700 rounded-md">
+        <input type="button" id="y" value="print(y)" class="p-2 my-1 border-2 border-gray-700 rounded-md">
+        <input type="button" id="z" value="print(z)" class="p-2 my-1 border-2 border-gray-700 rounded-md">
+    </div>
+</div>
+<div class="w-full text-yellow-700 bg-yellow-100 border-2 border-yellow-700">
+    <p class="text-sm italic">#button-output</p>
+    <div id="button-output"><br></div>
+</div>
+<script src="assignButtons.js"></script>
+<br>
+<p class="code-title">buttons.js</p>
+{{< highlight-js-tag assignButtons.js 1>}}
+<h3 class="mt-4 text-lg font-semibold">A Deeper Dive</h3>
+<p class="post-p">We don't have to export the entire Python global namespace as an object if we don't want to. The example below shows exporting a single list and a lambda function as JavaScript variables, using the same <code class="code">createObject</code> function above.</p>
+<p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly (<code>'names'</code> and <code>'names_js'</code>, <code>'mutliplier'</code> and <code>'multiplier_js'</code>) for readability.</p>
+<span class="code-title">Python (PyScript) to JavaScript</span>
 {{< highlight python "linenostart=10">}}
 {{< loadcode "post/pyscript-js-functions/registerJsObjects.py" >}}
 {{< /highlight >}}
@@ -113,7 +140,7 @@ slug_image: pyjs_featured.jpg
 </py-script>
 {{< /highlight >}}
 <p class="post-p">The code above binds the JavaScript variable <code class="code">names_js</code> to a PyProxy of the Python list <code class="code">names</code>, and the JavaScript variables <code class="code">multiplier_js</code> to a PyProxy for the Python lambda function <code class="code">multiplier</code>.</p>
-<p class="post-p">Of course, this means we have to use the createObject function to "export" the objects from Python before we can use them in JavaScript, which isn't ideal. But it's something.</p>
+<p class="post-p">Of course, this means we have to use the createObject function to "export" the objects from Python before we can use them in JavaScript. But this may be preferred for your use case.</p>
 <p class="post-p">With those objects created, we can refer to/call them like any other JS objects. To see this, let's add two buttons: one that references our function and list from within JavaScript ("use-python-objects"), and one that adds some names to our list so we can see it change ("add-name").</p>
 {{< highlight html "linenostart=20">}}<py-env>
     - faker
@@ -127,11 +154,10 @@ slug_image: pyjs_featured.jpg
  
 {{< /highlight >}}
 {{< highlight-js-tag usePythonButton.js 38>}}
-<h3 class="mt-6 text-lg font-semibold">Python (PyScript) to JavaScript live Demo</h3>
+<h3 class="mt-6 text-lg font-semibold">Python (PyScript) Individual Objects to JavaScript Demo</h3>
 <p class="post-p">The code in the preceding section is running live on this page. Click "Add Name to List" to append a new name (provided by the Faker library) to the list <code class="code">names</code>; click "Use Python Objects" to reference that list (and the <code class="code">multiplier</code> function) and display the results in the green box. Open your browser's development console to see additional output.</p>
-<a id="demo"></a>
-<div class="grid grid-cols-1 md:grid-cols-2">
-    <div class="items-center justify-around">
+<div class="grid grid-cols-1 space-x-1 space-y-2 md:grid-cols-2">
+    <div class="grid grid-cols-2 space-x-1">
         <input type="button" value="Use Python Objects" id="use-python-objects" class="p-2 my-1 border-2 border-gray-700 rounded-md">
         <input type="button" value="Add a Name" id="add-name" class="p-2 my-1 border-2 border-gray-700 rounded-md">
     </div>
@@ -151,20 +177,18 @@ slug_image: pyjs_featured.jpg
 <py-script src="registerJsObjects.py"></py-script>
 <py-script src="nameButton.py"></py-script>
 <script src="usePythonButton.js"></script>
-<h3 class="text-lg font-semibold">Exporting <code>globals()?</code></h3>
-<p class="post-p">Of course you might think, once we can 'export' JavaScript proxies of Python objects... why not just export the global dictionary itself?</p>
-{{< showcode "post/pyscript-js-functions/exportGlobals.py" >}}
-<!-- <p class="post-p">While this does give us a snapshot of the current global namespace, we sadly don't get a reference to it, just a copy of it. So variables created after we run this new code aren't visible in JavaScript.</p>
-<p class="post-p">It does feel like perhaps there's some way around this... possibly more development to come in this area.</p> -->
-<p class="post-p">Now, let's add a button that tells JavaScript to print the value of our new globals object. And again so we can see it really changing, let's add a button that creates new Python objects:</p>
-<p class="code-title">displayGlobals.js</p>
+<h3 class="mt-4 text-lg font-semibold">Viewing <code>globals()</code></h3>
+<p class="post-p">Since we have a reference to the PyScript global namespace, we can also just view its contents from JavaScript. And again so we can see it really changing, let's add a button that creates new Python objects with random names using <a href="https://docs.python.org/3/library/functions.html#exec">exec()</a>:</p><p class="code-title">displayGlobals.js</p>
 {{< highlight-js-tag showGlobalsButton.js 1 >}}
 <div class="my-3">{{< showcode "post/pyscript-js-functions/makeNewObjects.py" >}}</div>
-<div class="grid grid-cols-4 m-2 space-x-2">
-    <input type="button" value="Make Python Object" id="makeObject" class="col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md">
-    <input type="button" value="Print Globals:" id="printGlobals" class="col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md">
-    <div id="globals" class="col-span-2 bg-blue-200">hello</div>
+<p class="post-p">Click the Print Globals button to see the Python global objects visible from JavaScript; click the Make Python Variable to make a new Python variable with a 5-letter name (then click Print Globals again to see it). Since this shares a global namespace with the rest of the PyScript code on this page, you may also see variables like '<code>x</code>', '<code>y</code>', and '<code>z</code>' from the example above.</p>
+<div class="grid grid-cols-1 my-2 space-x-2 md:grid-cols-2">
+    <input type="button" value="Print Globals" id="printGlobals" class="col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md">
+    <input type="button" value="Make Python Variable" id="makeObject" class="col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md">
 </div>
-<py-script src="exportGlobals.py"></py-script>
+<div class="w-full col-span-2 bg-blue-200 border-2 border-blue-700">
+    <p class="text-sm italic text-blue-700">#globals:</p>
+    <div id="globals"></div>
+</div>
 <py-script src="makeNewObjects.py"></py-script>
 <script src="showGlobalsButton.js"></script>
