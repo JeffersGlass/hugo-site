@@ -19,7 +19,7 @@
         &lt;li&gt;✅ Pass objects from JavaScript to Python running in PyScript&lt;/li&gt;
         &lt;li&gt;✅ Pass objects from JavaScript Python running in Pyodide&lt;/li&gt;
         &lt;li&gt;✅ Pass objects from Python running in Pyodide to JavaScript&lt;/li&gt;
-        &lt;l1&gt;⚠️ Pass objects from Python running in PyScript to JavaScript... but it&#39;s a bit messy. See the &lt;a href=&#34;#commentary&#34;&gt;commentary&lt;/a&gt; and &lt;a href=&#34;#demo&#34;&gt;live demo&lt;/a&gt; with the code sample below.&lt;/l1&gt;
+        &lt;l1&gt;⚠️ Pass objects from Python running in PyScript to JavaScript, with a little extra work. See the &lt;a href=&#34;#commentary&#34;&gt;commentary&lt;/a&gt; and &lt;a href=&#34;#demo&#34;&gt;live demo&lt;/a&gt; with the code sample below.&lt;/l1&gt;
     &lt;/ul&gt;
 &lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;For our purposes, an &#39;object&#39; is anything that can be bound to a variable (a number, string, object, &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function&#34;&gt;function&lt;/a&gt;, etc). Also, recall that the &lt;code class=&#34;code&#34;&gt;import js&lt;/code&gt; or &lt;code class=&#34;code&#34;&gt;from js import ...&lt;/code&gt; &lt;a href=&#34;https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py&#34;&gt;in Pyodide&lt;/a&gt; gets objects from the &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis&#34;&gt;JavaScript globalThis scope&lt;/a&gt;, so keep the &lt;a href=&#34;https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/&#34;&gt;rules of JavaScript variable scoping&lt;/a&gt; in mind.&lt;/p&gt;
@@ -157,20 +157,17 @@
 &lt;a id=&#34;commentary&#34;&gt;&lt;/a&gt;
 &lt;p class=&#34;post-p&#34;&gt;Since &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/494&#34;&gt;PyScript doesn&#39;t export its instance of Pyodide&lt;/a&gt; and only one instance of Pyodide can be running in a browser window at a time, there isn&#39;t currently a way for Javascript to access Objects defined inside PyScript tags &lt;span class=&#34;italic&#34;&gt;&#34;directly&#34;&lt;/span&gt;.&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;However, I&#39;ve found a workaround using &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval&#34;&gt;JavaScript&#39;s eval() function&lt;/a&gt;, which executes a string as code much like &lt;a href=&#34;https://docs.python.org/3/library/functions.html#eval&#34;&gt;Python&#39;s eval()&lt;/a&gt;. First, we create a JS function &lt;code class=&#34;code&#34;&gt;createObject&lt;/code&gt; which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.&lt;/p&gt;
-&lt;p class=&#34;post-p&#34;&gt;Note that the names of the JavaScript variable and the Python variable don&#39;t have to be similar/identical/different - I&#39;ve named them similarly (&lt;code&gt;&#39;names&#39;&lt;/code&gt; and &lt;code&gt;&#39;names_js&#39;&lt;/code&gt;, &lt;code&gt;&#39;mutliplier&#39;&lt;/code&gt; and &lt;code&gt;&#39;multiplier_js&#39;&lt;/code&gt;) for readability.&lt;/p&gt;
-&lt;span class=&#34;code-title&#34;&gt;Python (PyScript) to JavaScript&lt;/span&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
-&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;
@@ -181,10 +178,108 @@
         &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Running `&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;execString&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;`&amp;#34;&lt;/span&gt;);
         eval(&lt;span style=&#34;color:#a6e22e&#34;&gt;execString&lt;/span&gt;)
     }
-&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;
-&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;This takes a Python Object and creates a variable pointing to it in the JavaScript global scope. So what if we made a JavaScript variable point at... the Python global namespace?&lt;/p&gt;
+&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;exportGlobals.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; js &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; createObject
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; create_proxy
+createObject(create_proxy(globals()), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;pyodideGlobals&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;This, amazingly, just works. All Python global variables are now accessible at in JavaScript with the syntax &lt;code class=&#34;code&#34;&gt;pyodideGlobals.get(&#39;myVariableName&#39;)&lt;/code&gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Let&#39;s see an example running live. The three buttons below print the values of the variables &lt;code&gt;x&lt;/code&gt;, &lt;code&gt;y&lt;/code&gt;, and &lt;code&gt;z&lt;/code&gt; respectively, as looked up in the Python global namespace. Use the REPL to set the values of those variables, and see how JavaScript goes from seeing them as &#34;undefined&#34; to their value in PyScript.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I&#39;ve pre-populated an example line in the REPL for you. Click the &#39;&lt;svg id=&#34;&#34; class=&#34;inline&#34; style=&#34;height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green&#34; viewBox=&#34;0 0 384 512&#34; aria-hidden=&#34;true&#34; role=&#34;img&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;&lt;g transform=&#34;translate(192 256)&#34; transform-origin=&#34;96 0&#34;&gt;&lt;g transform=&#34;translate(0,0) scale(1,1)&#34;&gt;&lt;path d=&#34;M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z&#34; fill=&#34;currentColor&#34; transform=&#34;translate(-192 -256)&#34;&gt;&lt;/path&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;&#39; or press &lt;code&gt;shift-enter&lt;/code&gt; to run the current REPL line.&lt;/p&gt;
+&lt;a id=&#34;demo&#34;&gt;&lt;/a&gt;
+&lt;script src=&#34;createObject.js&#34;&gt;&lt;/script&gt;
+&lt;py-script src=&#34;exportGlobals.py&#34;&gt;&lt;/py-script&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2&#34;&gt;
+    &lt;div&gt;
+        &lt;py-repl auto-generate=&#34;true&#34;&gt;x = &#34;Hello, world!&#34;&lt;/py-repl&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;grid grid-cols-1&#34;&gt;
+        &lt;input type=&#34;button&#34; id=&#34;x&#34; value=&#34;print(x)&#34; class=&#34;p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
+        &lt;input type=&#34;button&#34; id=&#34;y&#34; value=&#34;print(y)&#34; class=&#34;p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
+        &lt;input type=&#34;button&#34; id=&#34;z&#34; value=&#34;print(z)&#34; class=&#34;p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;w-full text-yellow-700 bg-yellow-100 border-2 border-yellow-700&#34;&gt;
+    &lt;p class=&#34;text-sm italic&#34;&gt;#button-output&lt;/p&gt;
+    &lt;div id=&#34;button-output&#34;&gt;&lt;br&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script src=&#34;assignButtons.js&#34;&gt;&lt;/script&gt;
+&lt;br&gt;
+&lt;p class=&#34;code-title&#34;&gt;buttons.js&lt;/p&gt;
+&lt;div class=&#34;overflow-x-auto&#34;&gt;
+
+
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;buttonOutput&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; document.&lt;span style=&#34;color:#a6e22e&#34;&gt;getElementById&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;button-output&amp;#34;&lt;/span&gt;)
+
+document.&lt;span style=&#34;color:#a6e22e&#34;&gt;getElementById&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;x&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#a6e22e&#34;&gt;addEventListener&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, () =&amp;gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;buttonOutput&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;innerHTML&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;pyodideGlobals&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;x&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;lt;br&amp;gt;&amp;#34;&lt;/span&gt;
+});
+
+document.&lt;span style=&#34;color:#a6e22e&#34;&gt;getElementById&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#a6e22e&#34;&gt;addEventListener&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, () =&amp;gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;buttonOutput&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;innerHTML&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;pyodideGlobals&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;y&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;lt;br&amp;gt;&amp;#34;&lt;/span&gt;
+});
+
+document.&lt;span style=&#34;color:#a6e22e&#34;&gt;getElementById&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;z&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#a6e22e&#34;&gt;addEventListener&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, () =&amp;gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;buttonOutput&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;innerHTML&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;pyodideGlobals&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;z&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;lt;br&amp;gt;&amp;#34;&lt;/span&gt;
+});&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 class=&#34;mt-4 text-lg font-semibold&#34;&gt;A Deeper Dive&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;We don&#39;t have to export the entire Python global namespace as an object if we don&#39;t want to. The example below shows exporting a single list and a lambda function as JavaScript variables, using the same &lt;code class=&#34;code&#34;&gt;createObject&lt;/code&gt; function above.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Note that the names of the JavaScript variable and the Python variable don&#39;t have to be similar/identical/different - I&#39;ve named them similarly (&lt;code&gt;&#39;names&#39;&lt;/code&gt; and &lt;code&gt;&#39;names_js&#39;&lt;/code&gt;, &lt;code&gt;&#39;mutliplier&#39;&lt;/code&gt; and &lt;code&gt;&#39;multiplier_js&#39;&lt;/code&gt;) for readability.&lt;/p&gt;
+&lt;span class=&#34;code-title&#34;&gt;Python (PyScript) to JavaScript&lt;/span&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
@@ -216,7 +311,7 @@ js&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;createObject(create_pr
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p class=&#34;post-p&#34;&gt;The code above binds the JavaScript variable &lt;code class=&#34;code&#34;&gt;names_js&lt;/code&gt; to a PyProxy of the Python list &lt;code class=&#34;code&#34;&gt;names&lt;/code&gt;, and the JavaScript variables &lt;code class=&#34;code&#34;&gt;multiplier_js&lt;/code&gt; to a PyProxy for the Python lambda function &lt;code class=&#34;code&#34;&gt;multiplier&lt;/code&gt;.&lt;/p&gt;
-&lt;p class=&#34;post-p&#34;&gt;Of course, this means we have to use the createObject function to &#34;export&#34; the objects from Python before we can use them in JavaScript, which isn&#39;t ideal. But it&#39;s something.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, this means we have to use the createObject function to &#34;export&#34; the objects from Python before we can use them in JavaScript. But this may be preferred for your use case.&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;With those objects created, we can refer to/call them like any other JS objects. To see this, let&#39;s add two buttons: one that references our function and list from within JavaScript (&#34;use-python-objects&#34;), and one that adds some names to our list so we can see it change (&#34;add-name&#34;).&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
@@ -319,11 +414,10 @@ Element(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;add-name&amp;#34;&lt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3 class=&#34;mt-6 text-lg font-semibold&#34;&gt;Python (PyScript) to JavaScript live Demo&lt;/h3&gt;
+&lt;h3 class=&#34;mt-6 text-lg font-semibold&#34;&gt;Python (PyScript) Individual Objects to JavaScript Demo&lt;/h3&gt;
 &lt;p class=&#34;post-p&#34;&gt;The code in the preceding section is running live on this page. Click &#34;Add Name to List&#34; to append a new name (provided by the Faker library) to the list &lt;code class=&#34;code&#34;&gt;names&lt;/code&gt;; click &#34;Use Python Objects&#34; to reference that list (and the &lt;code class=&#34;code&#34;&gt;multiplier&lt;/code&gt; function) and display the results in the green box. Open your browser&#39;s development console to see additional output.&lt;/p&gt;
-&lt;a id=&#34;demo&#34;&gt;&lt;/a&gt;
-&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2&#34;&gt;
-    &lt;div class=&#34;items-center justify-around&#34;&gt;
+&lt;div class=&#34;grid grid-cols-1 space-x-1 space-y-2 md:grid-cols-2&#34;&gt;
+    &lt;div class=&#34;grid grid-cols-2 space-x-1&#34;&gt;
         &lt;input type=&#34;button&#34; value=&#34;Use Python Objects&#34; id=&#34;use-python-objects&#34; class=&#34;p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
         &lt;input type=&#34;button&#34; value=&#34;Add a Name&#34; id=&#34;add-name&#34; class=&#34;p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
     &lt;/div&gt;
@@ -342,7 +436,91 @@ Element(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;add-name&amp;#34;&lt;
 &lt;script src=&#34;createObject.js&#34;&gt;&lt;/script&gt;
 &lt;py-script src=&#34;registerJsObjects.py&#34;&gt;&lt;/py-script&gt;
 &lt;py-script src=&#34;nameButton.py&#34;&gt;&lt;/py-script&gt;
-&lt;script src=&#34;usePythonButton.js&#34;&gt;&lt;/script&gt;</description>
+&lt;script src=&#34;usePythonButton.js&#34;&gt;&lt;/script&gt;
+&lt;h3 class=&#34;mt-4 text-lg font-semibold&#34;&gt;Viewing &lt;code&gt;globals()&lt;/code&gt;&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Since we have a reference to the PyScript global namespace, we can also just view its contents from JavaScript. And again so we can see it really changing, let&#39;s add a button that creates new Python objects with random names using &lt;a href=&#34;https://docs.python.org/3/library/functions.html#exec&#34;&gt;exec()&lt;/a&gt;:&lt;/p&gt;&lt;p class=&#34;code-title&#34;&gt;displayGlobals.js&lt;/p&gt;
+&lt;div class=&#34;overflow-x-auto&#34;&gt;
+
+
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;document.&lt;span style=&#34;color:#a6e22e&#34;&gt;getElementById&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;printGlobals&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#a6e22e&#34;&gt;addEventListener&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, () =&amp;gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;console&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;warn&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Clicked print globals&amp;#34;&lt;/span&gt;)
+    document.&lt;span style=&#34;color:#a6e22e&#34;&gt;getElementById&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;globals&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#a6e22e&#34;&gt;innerHTML&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;pyodideGlobals&lt;/span&gt;;
+});&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;my-3&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;makeNewObjects.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; random &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; choice, randint
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; string
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; js &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; document
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; create_proxy, to_js
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;makePythonObject&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;args, &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;kwargs):
+    name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join([choice(string&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ascii_lowercase) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; _ &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;)])
+    value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; randint(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)
+    exec_string &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;global &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; = &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;value&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+    exec(exec_string)
+
+document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;makeObject&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, create_proxy(makePythonObject))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Click the Print Globals button to see the Python global objects visible from JavaScript; click the Make Python Variable to make a new Python variable with a 5-letter name (then click Print Globals again to see it). Since this shares a global namespace with the rest of the PyScript code on this page, you may also see variables like &#39;&lt;code&gt;x&lt;/code&gt;&#39;, &#39;&lt;code&gt;y&lt;/code&gt;&#39;, and &#39;&lt;code&gt;z&lt;/code&gt;&#39; from the example above.&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-1 my-2 space-x-2 md:grid-cols-2&#34;&gt;
+    &lt;input type=&#34;button&#34; value=&#34;Print Globals&#34; id=&#34;printGlobals&#34; class=&#34;col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
+    &lt;input type=&#34;button&#34; value=&#34;Make Python Variable&#34; id=&#34;makeObject&#34; class=&#34;col-span-1 p-2 my-1 border-2 border-gray-700 rounded-md&#34;&gt;
+&lt;/div&gt;
+&lt;div class=&#34;w-full col-span-2 bg-blue-200 border-2 border-blue-700&#34;&gt;
+    &lt;p class=&#34;text-sm italic text-blue-700&#34;&gt;#globals:&lt;/p&gt;
+    &lt;div id=&#34;globals&#34;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;py-script src=&#34;makeNewObjects.py&#34;&gt;&lt;/py-script&gt;
+&lt;script src=&#34;showGlobalsButton.js&#34;&gt;&lt;/script&gt;</description>
       &lt;
     </item>
     
