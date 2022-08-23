@@ -1,7 +1,7 @@
 ---
 title: "Hugo Shortcodes for Coding Blogs"
 date: 2022-08-23T07:43:03-05:00
-draft: true
+draft: false
 slug_image: shortcodes_featured.PNG
 tags:
 - Cloud-Resume
@@ -13,7 +13,7 @@ description: "Useful Hugo Shortcodes for Programming Sites"
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.css"></script>
 <p class="post-p">As I've been <a href="tags/pyscript">diving deep into PyScript</a> the past couple months, I've developed a handful of shortcodes for Hugo that make it quicker and easier to display code snippets on the page in a nicely formatted way.</p>
-<p class="post-">Our demonstration code for today will be the following sample piece of Python code. The code below is displayed by simply wrapped it in a pair of <code>&lt;pre&gt;&lt;/pre&gt;</code> tags:</p>
+<p class="post-">We'll use the following Python code as the source to be formatted. The code below is displayed by simply wrapped it in a pair of <code>&lt;pre&gt;&lt;/pre&gt;</code> tags:</p>
 <div class="p-2 m-2 bg-gray-100 border-2 border-gray-500">
     <pre>
 class hello_sayer:
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     h.say_hello("Jeff")</pre>
 </div>
 <p class="post-p">This really isn't a bad place to start, but now let's make it better.</p>
-<p class="italic post-p">All of the following assumes the <a href="" hef="https://xyproto.github.io/splash/docs/monokai.html">monokai syntax highlighting theme</a> and use of the <a href="https://v2.tailwindcss.com/">tailwind</a> css framework.</p>
+<p class="italic post-p">All of the following assumes the <a href="" hef="https://xyproto.github.io/splash/docs/monokai.html">monokai syntax highlighting theme</a> and use of the <a href="https://v2.tailwindcss.com/">tailwind css framework</a>. The custom css-classes used on this page are included <a href="#css-classes">at the end</a>.</p>
 <h2 class="text-2xl">Built-in <code>{{&lt; highlight &gt;}}</code></h2>
 <p class="post-p">We can use Hugo's built-in <code>{{&lt; highlight &gt;}}</code> shortcode to highlight our code.  This works fairly-well for simple code examples that you're copying and pasting into the document - it's also the default behavior if you're relyingon Markdown code fences to do highlighting for you.</p>
 <div class="grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2">
@@ -130,5 +130,44 @@ if __name__ == "__main__":
         </div>
     </div>
 </div>
+<a id="css-classes"></a>
+<h2 class="mt-4 text-2xl">CSS Classes</h2>
+<p class="post-p">Many of the examples above make use of a couple of 'css-classes' in the tailwind style that I've defined for ease of use. Their definitions (in both tailwind classes and raw css) are:</p>
+<div class="pl-4 overflow-y-auto h-124" style="background-color:#f0f0f0">
+{{< highlight html "style=friendly,linenos=false">}}
+/* in tailwind styles: */
+.code-title {
+    @apply table-cell px-6 py-1 font-semibold leading-tight text-center text-white rounded-t-xl;
+    background-color: #272822;
+}
 
+/* in css: */
+.code-title {
+    display: table-cell;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    background-color: #272822;
+}
 
+/* in tailwind styles: */
+.post-img-caption {
+    @apply w-auto m-auto italic text-center;
+    }
+
+/* in css: */
+.post-img-caption {
+    font-style: italic;
+    text-align: center;
+    width: auto;
+}
+{{< /highlight >}}
+</div>
+<p class="post-img-caption">Scroll to see complete code</p>
