@@ -19,6 +19,9 @@ module.exports = {
       maxHeight: {
         '124': '31rem',
       },
+      backgroundColor: {
+        'pygray': '#2C2E34',
+      }
     }
   },
   variants: {
