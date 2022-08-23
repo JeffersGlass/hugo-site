@@ -6,7 +6,352 @@
     <description>Recent content in Cloud-Resume on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 13 Mar 2022 17:54:43 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/cloud-resume/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Aug 2022 07:43:03 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/cloud-resume/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo Shortcodes for Coding Blogs</title>
+      <link>https://jeff.glass/post/cloud-resume-challenge-shortcodes/</link>
+      <pubDate>Tue, 23 Aug 2022 07:43:03 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/cloud-resume-challenge-shortcodes/</guid>
+      <description>&lt;script defer src=&#34;https://pyscript.net/releases/2022.06.1/pyscript.js&#34;&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2022.06.1/pyscript.css&#34; /&gt;
+&lt;script defer src=&#34;https://pyscript.net/releases/2022.06.1/pyscript.css&#34;&gt;&lt;/script&gt;
+&lt;p class=&#34;post-p&#34;&gt;As I&#39;ve been &lt;a href=&#34;tags/pyscript&#34;&gt;diving deep into PyScript&lt;/a&gt; the past couple months, I&#39;ve developed a handful of shortcodes for Hugo that make it quicker and easier to display code snippets on the page in a nicely formatted way.&lt;/p&gt;
+&lt;p class=&#34;post-&#34;&gt;We&#39;ll use the following Python code as the source to be formatted. The code below is displayed by simply wrapped it in a pair of &lt;code&gt;&amp;lt;pre&amp;gt;&amp;lt;/pre&amp;gt;&lt;/code&gt; tags:&lt;/p&gt;
+&lt;div class=&#34;p-2 m-2 bg-gray-100 border-2 border-gray-500&#34;&gt;
+    &lt;pre&gt;
+class hello_sayer:
+    def __init__(self, greeting = &#34;Hello&#34;):
+        self.greeting = greeting
+    def say_hello(self, name):
+        print(f&#34;{self.greeting}, {name}!&#34;)
+
+if __name__ == &#34;__main__&#34;:
+    h = hello_sayer(&#34;Good morning&#34;)
+    h.say_hello(&#34;Jeff&#34;)&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;This really isn&#39;t a bad place to start, but now let&#39;s make it better.&lt;/p&gt;
+&lt;p class=&#34;italic post-p&#34;&gt;All of the following assumes the &lt;a href=&#34;&#34; hef=&#34;https://xyproto.github.io/splash/docs/monokai.html&#34;&gt;monokai syntax highlighting theme&lt;/a&gt; and use of the &lt;a href=&#34;https://v2.tailwindcss.com/&#34;&gt;tailwind css framework&lt;/a&gt;. The custom css-classes used on this page are included &lt;a href=&#34;#css-classes&#34;&gt;at the end&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 class=&#34;text-2xl&#34;&gt;Built-in &lt;code&gt;{{&amp;lt; highlight &amp;gt;}}&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;We can use Hugo&#39;s built-in &lt;code&gt;{{&amp;lt; highlight &amp;gt;}}&lt;/code&gt; shortcode to highlight our code.  This works fairly-well for simple code examples that you&#39;re copying and pasting into the document - it&#39;s also the default behavior if you&#39;re relyingon Markdown code fences to do highlighting for you.&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2&#34;&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-gray-500&#34;&gt;Code&lt;/p&gt;
+        &lt;pre class=&#34;bg-gray-100 border-2 border-gray-500&#34;&gt;
+{{ highlight python }}
+    class hello_sayer:
+        def __init__(self, greeting = &#34;Hello&#34;):
+            self.greeting = greeting
+        def say_hello(self, name):
+            print(f&#34;{self.greeting}, {name}!&#34;)
+
+    if __name__ == &#34;__main__&#34;:
+        h = hello_sayer(&#34;Good morning&#34;)
+        h.say_hello(&#34;Jeff&#34;)
+{{ /highlight }}&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-green-500&#34;&gt;Result&lt;/p&gt;
+        &lt;div class=&#34;p-1 border-2 border-green-500&#34;&gt;
+            &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hello_sayer&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self, greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; greeting
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;say_hello&lt;/span&gt;(self, name):
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;, &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;!&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    h &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; hello_sayer(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Good morning&amp;#34;&lt;/span&gt;)
+    h&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;say_hello(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Jeff&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;mt-4 text-2xl&#34;&gt;Import Code with &lt;code&gt;loadcode&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;The first and simplest shortcode I wrote I call &lt;code&gt;loadcode&lt;/code&gt;, which simply takes the contents of an external file and drops it into the current file. The source is:&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;layouts/shortcodes/loadcode.html&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;{{ os.ReadFile (.Get 0) | htmlUnescape | safeHTML}}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;If we move our &#34;hello_saver&#34; code into a separate file called &lt;code&gt;hellosayer.py&lt;/code&gt;, we can use &lt;code&gt;loadcode&lt;/code&gt; to dynamically load the text into our page. This allows for using an external code editor to work on the code itself (with autocompletion, linting etc) while keeping the display correct on the page.&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2&#34;&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-gray-500&#34;&gt;Code&lt;/p&gt;
+        &lt;pre class=&#34;bg-gray-100 border-2 border-gray-500&#34;&gt;
+&lt;pre&gt;{{&amp;lt; highlight python &amp;gt;}}
+{{&amp;lt; loadcode &amp;quot;post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py&amp;quot; &amp;gt;}}
+{{&amp;lt; /highlight &amp;gt;}}&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-green-500&#34;&gt;Result&lt;/p&gt;
+        &lt;div class=&#34;p-1 border-2 border-green-500&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hello_sayer&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self, greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; greeting
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;say_hello&lt;/span&gt;(self, name):
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;, &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;!&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    h &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; hello_sayer(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Good morning&amp;#34;&lt;/span&gt;)
+    h&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;say_hello(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Jeff&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;mt-4 text-2xl&#34;&gt;Pleasing Code Displays with &lt;code&gt;{{&amp;lt; showcode &amp;gt;}}&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course when writing about code, it&#39;s nice for me to have a fairly standard format that code blocks are displayed in, including the title of the included file. The &lt;code&gt;showcode&lt;/code&gt; shortcode accomplishes this: it adds a nicely beveled header tag to the top of the code block, and ensures that if the code is over 20 lines, we prevent it from getting any longer and add a scrollbar. The second and third arguments to &lt;code&gt;showcode&lt;/code&gt; are the langauge to try to highlight and the highlight options:&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;layouts/shortcodes/showcode.html&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;code-title&amp;#34;&lt;/span&gt;&amp;gt;{{ path.Base (.Get 0) }}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+    {{ $lines :=  len (split (os.ReadFile (.Get 0)) &amp;#34;\n&amp;#34;) }}
+    {{ if ge $lines 21 }}
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;overflow-y-scroll h-124&amp;#34;&lt;/span&gt;&amp;gt;
+    {{ end }}
+    {{ highlight (os.ReadFile (.Get 0) | htmlUnescape | safeHTML) (.Get 1) (.Get 2) }}
+    {{ if ge $lines 21 }}
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;post-img-caption&amp;#34;&lt;/span&gt;&amp;gt;Scroll to see complete code&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+    {{ end }}
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Applying this to our &lt;code&gt;hellosayer.py&lt;/code&gt; example, we get:&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2&#34;&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-gray-500&#34;&gt;Code&lt;/p&gt;
+        &lt;pre class=&#34;bg-gray-100 border-2 border-gray-500&#34;&gt;
+&lt;pre&gt;{{&amp;lt; showcode &amp;quot;post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py&amp;quot; &amp;quot;python&amp;quot; &amp;gt;}}&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-green-500&#34;&gt;Result&lt;/p&gt;
+        &lt;div class=&#34;p-1 border-2 border-green-500&#34;&gt;
+            &lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;hellosayer.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hello_sayer&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self, greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; greeting
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;say_hello&lt;/span&gt;(self, name):
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;, &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;!&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    h &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; hello_sayer(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Good morning&amp;#34;&lt;/span&gt;)
+    h&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;say_hello(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Jeff&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;mt-4 text-2xl&#34;&gt;Displaying and Running PyScript Code with &lt;code&gt;{{&amp;lt; showandrun &amp;gt;}}&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;For an upcoming post about integrating the &lt;a href=&#34;https://rich.readthedocs.io/en/stable/&#34;&gt;Rich&lt;/a&gt; terminal formatting library with PyScript, I&#39;d like to be able to run a piece of Python code in PyScript on the page &lt;span class=&#34;italic&#34;&gt;and&lt;/span&gt; display its source code adjacent to it. For this, I use the &lt;code&gt;showandrun&lt;/code&gt; shortcode:&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;code&gt;showandrun&lt;/code&gt; creates a div which displays the source much like &lt;code&gt;showcode&lt;/code&gt; does; however, for my purposes, since it&#39;s intended specifically to run Python code and be formatted a specific way, the language is hardcoded to &#34;python3&#34; and the options are not passed from the shortcode.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The lengthy &lt;a href=&#34;https://v2.tailwindcss.com/&#34;&gt;tailwind&lt;/a&gt; class list in the first div ensures that the code and results live side-by-side on large screens, but get stacked one-over-the-other on smaller/mobile screens. We also accept a &#34;flip&#34; parameter which swaps the placement of the code and results, if desired.&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;layouts/shortcodes/shownadrun.html&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;flex items-stretch flex-col-reverse space-y-2 {{ if (.Get &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;direction&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;)&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;eq&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;(.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;Get&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;direction&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;)&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;flip&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;md:flex-row-reverse&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;md:space-x-2&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;md:space-x-reverse&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;end&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;md:flex-row&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;md:space-x-2&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;{{&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;end&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&amp;#34;&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;flex flex-col items-stretch w-full md:w-1/2&amp;#34;&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;flex-none w-full italic h-7&amp;#34;&lt;/span&gt;&amp;gt;Live PyScript Results:&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124&amp;#34;&lt;/span&gt;&amp;gt;
+            &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;px-2&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{{ path.Base (.Get &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;file&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;)&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}}&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt;&amp;gt;
+        &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;w-full md:w-1/2&amp;#34;&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;code-title&amp;#34;&lt;/span&gt;&amp;gt;{{ path.Base (.Get &amp;#34;file&amp;#34;) }}&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+        {{ $lines :=  len (split (os.ReadFile (.Get &amp;#34;file&amp;#34;)) &amp;#34;\n&amp;#34;) }}
+        {{ if ge $lines 21 }}
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;overflow-y-scroll h-124&amp;#34;&lt;/span&gt;&amp;gt;
+        {{ end }}
+        {{ highlight (os.ReadFile (.Get &amp;#34;file&amp;#34;) | htmlUnescape | safeHTML) &amp;#34;python3&amp;#34; &amp;#34;&amp;#34; }}
+        {{ if ge $lines 21 }}
+        &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+        &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;post-img-caption&amp;#34;&lt;/span&gt;&amp;gt;Scroll to see complete code&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;
+        {{ end }}
+    &amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;div&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The result, when applied to &lt;code&gt;hellosayer.py&lt;/code&gt;, is:&lt;/p&gt;
+
+&lt;div class=&#34;grid grid-cols-1 space-y-2&#34;&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-gray-500&#34;&gt;Code&lt;/p&gt;
+        &lt;pre class=&#34;bg-gray-100 border-2 border-gray-500&#34;&gt;
+&lt;pre&gt;{{&amp;lt; showandrun file=&amp;quot;post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py&amp;quot; direction=&amp;quot;flip&amp;quot; &amp;gt;}}&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;&#34;&gt;
+        &lt;p class=&#34;text-sm italic text-green-500&#34;&gt;Result&lt;/p&gt;
+        &lt;div class=&#34;p-1 border-2 border-green-500&#34;&gt;
+            &lt;div class=&#34;flex items-stretch flex-col-reverse space-y-2   md:flex-row-reverse md:space-x-2 md:space-x-reverse  &#34;&gt;
+    &lt;div class=&#34;flex flex-col items-stretch w-full md:w-1/2&#34;&gt;
+        &lt;div class=&#34;flex-none w-full italic h-7&#34;&gt;Live PyScript Results:&lt;/div&gt;
+        &lt;div class=&#34;flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124&#34;&gt;
+            &lt;py-script class=&#34;px-2&#34; src=&#34;hellosayer.py&#34;&gt;&lt;/py-script&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:w-1/2&#34;&gt;
+        &lt;p class=&#34;code-title&#34;&gt;hellosayer.py&lt;/p&gt;
+        
+        
+        &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hello_sayer&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self, greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; greeting
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;say_hello&lt;/span&gt;(self, name):
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;greeting&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;, &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;!&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    h &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; hello_sayer(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Good morning&amp;#34;&lt;/span&gt;)
+    h&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;say_hello(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Jeff&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;a id=&#34;css-classes&#34;&gt;&lt;/a&gt;
+&lt;h2 class=&#34;mt-4 text-2xl&#34;&gt;CSS Classes&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Many of the examples above make use of a couple of &#39;css-classes&#39; in the tailwind style that I&#39;ve defined for ease of use. Their definitions (in both tailwind classes and raw css) are:&lt;/p&gt;
+&lt;div class=&#34;pl-4 overflow-y-auto h-124&#34; style=&#34;background-color:#f0f0f0&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;/* in tailwind styles: */
+.code-title {
+    @apply table-cell px-6 py-1 font-semibold leading-tight text-center text-white rounded-t-xl;
+    background-color: #272822;
+}
+
+/* in css: */
+.code-title {
+    display: table-cell;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    background-color: #272822;
+}
+
+/* in tailwind styles: */
+.post-img-caption {
+    @apply w-auto m-auto italic text-center;
+    }
+
+/* in css: */
+.post-img-caption {
+    font-style: italic;
+    text-align: center;
+    width: auto;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Improving Website Experience with AWS Cloudfront Stats</title>
       <link>https://jeff.glass/post/cloud-resume-challenge-improving-hits/</link>
