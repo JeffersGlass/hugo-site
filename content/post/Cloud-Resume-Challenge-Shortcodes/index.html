@@ -1,0 +1,127 @@
+---
+title: "Cloud Resume Challenge Shortcodes"
+date: 2022-08-23T07:43:03-05:00
+draft: true
+static_slug: cloudfrontlogo.png
+tags:
+- Cloud-Resume
+- PyScript
+- Python
+description: "Useful Hugo Shortcodes for Programming Sites"
+---
+<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
+<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.css"></script>
+<p class="post-p">As I've been <a href="tags/pyscript">diving deep into PyScript</a> the past couple months, I've developed a handful of shortcodes for Hugo that make it quicker and easier to display code snippets on the page in a nicely formatted way.</p>
+<p class="post-">Our demonstration code for today will be the following sample piece of Python code. The code below is displayed by simply wrapped it in a pair of <code>&lt;pre&gt;&lt;/pre&gt;</code> tags:</p>
+<div class="p-2 m-2 bg-gray-100 border-2 border-gray-500">
+    <pre>
+class hello_sayer:
+    def __init__(self, greeting = "Hello"):
+        self.greetinggreeting
+    def say_hello(self, name):
+        print(f"{self.greeting}, {name}!")
+
+if __name__ == "__main__":
+    h = hello_sayer("Good morning")
+    h.say_hello("Jeff")</pre>
+</div>
+<p class="post-p">This really isn't a bad place to start, but now let's make it better</p>
+<h2 class="text-2xl">Built-in <code>{{&lt; highlight &gt;}}</code></h2>
+<p class="post-p">We can use Hugo's built-in <code>{{&lt; highlight &gt;}}</code> shortcode to highlight our code.  This works fairly-well for simple code examples that you're copying and pasting into the document - it's also the default behavior if you're relyingon Markdown code fences to do highlighting for you.</p>
+<div class="grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2">
+    <div class="">
+        <p class="text-sm italic text-gray-500">Code</p>
+        <pre class="bg-gray-100 border-2 border-gray-500">
+{{ highlight python }}
+    class hello_sayer:
+        def __init__(self, greeting = "Hello"):
+            self.greetinggreeting
+        def say_hello(self, name):
+            print(f"{self.greeting}, {name}!")
+
+    if __name__ == "__main__":
+        h = hello_sayer("Good morning")
+        h.say_hello("Jeff")
+{{ /highlight }}</pre>
+    </div>
+    <div class="">
+        <p class="text-sm italic text-green-500">Result</p>
+        <div class="p-1 border-2 border-green-500">
+            {{< highlight python >}}
+class hello_sayer:
+    def __init__(self, greeting = "Hello"):
+        self.greetinggreeting
+    def say_hello(self, name):
+        print(f"{self.greeting}, {name}!")
+
+if __name__ == "__main__":
+    h = hello_sayer("Good morning")
+    h.say_hello("Jeff")
+{{< /highlight >}}
+        </div>
+    </div>
+</div>
+<h2 class="mt-4 text-2xl">Import Code with <code>loadcode</code></h2>
+<p class="post-p">The first and simplest shortcode I wrote I call <code>loadcode</code>, which simply takes the contents of an external file and drops it into the current file. The source is:</p>
+<p class="code-title">layouts/shortcodes/loadcode.html</p>
+{{< highlight html >}}
+{{ os.ReadFile (.Get 0) | htmlUnescape | safeHTML}}
+{{< /highlight >}}
+<p class="post-p">If we move our "hello_saver" code into a separate file called <pre>hellosayer.py</pre>, we can use <pre>loadcode</pre> to dynamically load the text into our page. This allows for using an external code editor to work on the code itself (with autocompletion, linting etc) while keeping the display correct on the page.</p>
+<div class="grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2">
+    <div class="">
+        <p class="text-sm italic text-gray-500">Code</p>
+        <pre class="bg-gray-100 border-2 border-gray-500">
+<pre>{{&lt; highlight python &gt;}}
+{{&lt; loadcode &quot;post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py&quot; &gt;}}
+{{&lt; /highlight &gt;}}</pre>
+    </div>
+    <div class="">
+        <p class="text-sm italic text-green-500">Result</p>
+        <div class="p-1 border-2 border-green-500">
+{{< highlight python >}}
+{{< loadcode "post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py" >}}
+{{< /highlight >}}
+        </div>
+    </div>
+</div>
+<h2 class="mt-4 text-2xl">Pleasing Code Displays with <code>{{&lt; showcode &gt;}}</code></h2>
+<p class="post-p">Of course when writing about code, it's nice for me to have a fairly standard format that code blocks are displayed in, including the title of the included file. The <code>showcode</code> shortcode accomplishes this: it adds a nicely beveled header tag to the top of the code block, and ensures that if the code is over 20 lines, we prevent it from getting any longer and add a scrollbar. The second and third arguments to <code>showcode</code> are the langauge to try to highlight and the highlight options:</p>
+{{< showcode "layouts/shortcodes/showcode.html" "html" >}}
+<p class="post-p">Applying this to our <code>hellosayer.py</code> example, we get:</p>
+<div class="grid grid-cols-1 space-y-2 lg:space-x-2 lg:space-y-0 lg:grid-cols-2">
+    <div class="">
+        <p class="text-sm italic text-gray-500">Code</p>
+        <pre class="bg-gray-100 border-2 border-gray-500">
+<pre>{{&lt; showcode &quot;post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py&quot; &quot;python&quot; &gt;}}</pre>
+    </div>
+    <div class="">
+        <p class="text-sm italic text-green-500">Result</p>
+        <div class="p-1 border-2 border-green-500">
+            {{< showcode "post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py" "python" >}}
+        </div>
+    </div>
+</div>
+<h2 class="mt-4 text-2xl">Displaying and Running PyScript Code with <code>{{&lt; showandrun &gt;}}</code></h2>
+<p class="post-p">For an upcoming post about integrating the <a href="https://rich.readthedocs.io/en/stable/">Rich</a> terminal formatting library with PyScript, I'd like to be able to run a piece of Python code in PyScript on the page <span class="italic">and</span> display its source code adjacent to it. For this, I use the <code>showandrun</code> shortcode:</p>
+<p class="post-p"><code>showandrun</code> creates a div which displays the source much like <code>showcode</code> does; however, for my purposes, since it's intended specifically to run Python code and be formatted a specific way, the language is hardcoded to "python3" and the options are not passed from the shortcode.</p>
+<p class="post-p">The lengthy <a href="https://v2.tailwindcss.com/">tailwind</a> class list in the first div ensures that the code and results live side-by-side on large screens, but get stacked one-over-the-other on smaller/mobile screens. We also accept a "flip" parameter which swaps the placement of the code and results, if desired.</p>
+{{< showcode "layouts/shortcodes/showandrun.html" "html" >}}
+<p class="post-p">The result, when applied to <code>hellosayer.py</code>, is:</p>
+
+<div class="grid grid-cols-1 space-y-2">
+    <div class="">
+        <p class="text-sm italic text-gray-500">Code</p>
+        <pre class="bg-gray-100 border-2 border-gray-500">
+<pre>{{&lt; showandrun file=&quot;post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py&quot; direction=&quot;flip&quot; &gt;}}</pre>
+    </div>
+    <div class="">
+        <p class="text-sm italic text-green-500">Result</p>
+        <div class="p-1 border-2 border-green-500">
+            {{< showandrun file="content/post/Cloud-Resume-Challenge-Shortcodes/hellosayer.py" direction="flip" >}}
+        </div>
+    </div>
+</div>
+
+
