@@ -1,0 +1,113 @@
+---
+title: "Pyscript Object View"
+date: 2022-09-07T14:43:41-05:00
+draft: true
+tags:
+- Python
+- PyScript
+- Pyodide
+- Javascript
+description: "Description Here"
+---
+<py-env>
+    - faker
+</py-env>
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+<div class="flex-auto px-6 py-2 border-2 border-gray-600">
+    <p class="mx-2 mt-4 italic text-justify">Use the REPL below - as you do, global objects will appear in the Global Objects box. Click the <svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block transition-transform duration-150"><path d="M5.56 14L5 13.587V2.393L5.54 2 11 7.627v.827L5.56 14z"/></svg> next to objects with member attributes to reveal them.</p>
+    <div class="grid grid-cols-1 my-4 md:grid-cols-5">
+        <div class="col-span-2">
+            <py-repl id="my-repl" auto-generate="true"></py-repl>
+        </div>
+        <div class="order-first col-span-3 mx-8 md:mx-2 md:order-last">
+            <div id="" class="mt-2 text-center border-2 border-blue-700 bg-blue-50">
+                <div class="text-xs text-gray-700">Global Objects:</div>
+                <div id="" class="grid grid-cols-4 mb-1 underline">
+                    <div>Variable</div>
+                    <div>Type</div>
+                    <div>Value</div>
+                    <div>ID</div>
+                </div>
+                <div id="global-object-output" class="grid grid-cols-4"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .rotated {
+      transform: rotate(90deg);
+    };
+</style>
+<py-script src="pysobjects.py"></py-script>
+<p class="post-p">One of the nifty things that PyScript allows is marrying the ease of writing Python with the visual styling of the browser, CSS, and JavaScript. The demo examines the objects in the Python global scope whenver a REPL is evaluated, and formats all "interesting" objects for display. In this case, interesting means objects that the user created in the REPL, not those created by PyScript itself or that are used to bootstrap this display.</p>
+<p class="post-p">Some nifty code samples you might try:</p>
+<div class="flex flex-wrap w-auto gap-2">
+    <div style="background-color:#f0f0f0" class="flex-auto px-6 py-2">
+{{< highlight python "linenos=false,style=friendly">}}
+x, y = 1, "Hello World!"{{< /highlight >}}</div>
+<div style="background-color:#f0f0f0" class="flex-auto px-6 py-2">
+{{< highlight python "linenos=false,style=friendly">}}
+import json
+j = json.loads('{"a":2, "b":3}'){{< /highlight >}}</div>
+<div style="background-color:#f0f0f0" class="flex-auto px-6 py-2">
+{{< highlight python "linenos=false,style=friendly">}}
+from dataclasses import dataclass
+@dataclass
+class item:
+    name: str
+    price: float
+
+ball = item("bouncy ball", 100){{< /highlight >}}
+    </div>
+<div style="background-color:#f0f0f0" class="flex-auto px-6 py-2">
+{{< highlight python "linenos=false,style=friendly">}}
+import asyncio
+x = 0
+print("Ints are immutable - notice the ID of 'x' changing")
+for i in range(20):
+    x += i
+    _displayObjects()
+    await asyncio.sleep(.5){{< /highlight >}}
+</div>
+<div style="background-color:#f0f0f0" class="flex-auto px-6 py-2">
+{{< highlight python "linenos=false,style=friendly">}}
+import asyncio
+from faker import Faker
+
+fake = Faker()
+names = list()
+
+"Lists are mutable - notice the ID of 'names' does not change"
+for _ in range(20):
+    names.append(fake.first_name_nonbinary())
+    _displayObjects() #forces refresh of global objects display
+    await asyncio.sleep(.5){{< /highlight >}}
+</div>
+</div>
+<p class="post-p">This is meant to be a fun demo and not a full-fleshed-out project, but for those interested in the source, it is included below. The HTML show has had most of its tailwindcss utility classes stripped out for clarity.</p>
+{{< showcode "post/pyscript-object-view/pysobjects.py" "python3">}}
+<p class="code-title">thispage.html</p>
+{{< highlight html >}}
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+
+<py-repl id="my-repl" auto-generate="true"></py-repl>
+
+<div class="mt-2 text-center border-2 border-blue-700 bg-blue-50">
+    <div>Global Objects:</div>
+    <div class="grid grid-cols-4 mb-1 underline">
+        <div>Variable</div>
+        <div>Type</div>
+        <div>Value</div>
+        <div>ID</div>
+    </div>
+    <div id="global-object-output" class="grid grid-cols-4"></div>
+</div>
+
+<style>
+    .rotated {
+      transform: rotate(90deg);
+    };
+</style>
+{{< /highlight >}}
