@@ -33,10 +33,10 @@ slug_image: richlogo_square.svg
         <p class="post-p">Lots of packages work fine right out of the box - anything <a href="https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages">written in Pure Python stands a good chance of at least running</a>. But just because it runs, doesn't mean it'll look good or behave the way we expect objects to on a webpage. Interactive packages, like <a href="https://matplotlib.org/">matplotlib</a> or terminal-based packages like <a href="https://github.com/tqdm/tqdm">tqdm</a> or <a href="https://github.com/tartley/colorama">colorama</a>, may not be immediately interactable in the browser, because they've implemented their own methods for interpretting input/output that the browser doesn't play nicely with. Just because the PyScript/Pyodide interpretter doesn't crash doesn't mean you can get useful info in and out of an existing module.</p>
         <p class="post-p">One such library is <a href="https://github.com/Textualize/rich">Rich</a>: "a Python library for rich text and beautiful formatting in the terminal" by Will McGugan. It allows for tasteful pretty-printing of most Python objects, syntax highlighting, color and layout control and more, all written in Pure Python. See the sample image to the side or the linked homepage for bountiful exmaples.</p>
         <p class="post-p">Of course, Rich is intended to run in the terminal. Since the display functionality in a web browser differs significantly from a terminal environment, there's no reason to expect it will work out of the box in PyScript. But since it exists as a pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.</p>
-        <p class="post-p">What follows is the result of a few hours of bashing things together over the weekend. It's not meant to be production ready (thought it could turn into a module if there's interest). Rather, it's meant to demonstrate a patching strategy for modules that already integrate with web-Python environments like Jupyter and iPython.</p>
+        <p class="post-p">What follows is the result of a few hours of bashing things together. It's not meant to be production ready (thought it could turn into a module if there's interest). Rather, it's meant to demonstrate a patching strategy for modules that already integrate with web-Python environments like Jupyter and iPython.</p>
         <p class="post-p">If you want to skip the dev log, you can skip to <a href="patch">the code that runs to patch Rich on this page </a> or the <a href="#examples">gallery of Rich-in-PyScript samples</a> below.</p>
     </div>
-    <div class="items-center justify-center float-right mx-4 w-96">
+    <div class="items-center justify-center w-auto mx-4 md:float-right md:w-96">
         <img src="rich-features.png" alt="A demo of the features of the rich library, including colors, styles, text, markup etc" class="mx-auto w-96">
         <p class="italic">The demo image from the Rich GitHub page shows off its many features</p>
     </div>
@@ -58,18 +58,24 @@ slug_image: richlogo_square.svg
 <p class="post-p">Since we're intending to run this in a browser anyway, we could just set <code class="code">console.is_jupyter = True</code> to force Rich to render HTML. But we'll be slightly nicer and redirect that property to a new function <code class="code">is_pyodide</code>. This just looks to see if 'pyodide' is in our available modules, <a href="https://pyodide.org/en/stable/usage/faq.html#how-to-detect-that-code-is-run-with-pyodide">as suggested by the pyodide FAQ</a>. This means that whenever our code is running in Pyodide, the Rich library will render as if it's going to be output to a Jupyter notebook.</p>
 <div class="mb-6 lg:mx-4">
 {{< highlight python "linenostart=9" >}}
-#Per pyodide docs, determine if we're running inside pyodide at Runtime
+# Per pyodide docs, determine if we're running inside pyodide at Runtime
 def is_pyodide() -> bool:
     return "pyodide" in modules
-
+ 
+# Patch jupyter detection of the global _console object to detect pyodide
 c = get_console()
 c.is_jupyter = is_pyodide #monkeypatch jupyter detection @propety
+
+# patch function so if user creates any additional Consoles they behave correctly
+# While the global _console us
+_is_jupyter = is_pyodide
 {{< /highlight >}}
 </div>
 <h4 class="post-h4">Replacing Rich's Display Function with our Own</h4>
 <p class="post-p">Similarly, we'll point <code class="code">rich.jupyter.display</code> at a new function we'll write that gets the output that the Jupyter notebook would have received and send it to stdout. And, as noted above, we'll redirect the usual <code class="code">print</code> function to the rich print function, to get nicely formatted outputs whenever we use the standard print() syntax.</p>
 <div class="mb-6 lg:mx-4">
 {{< highlight python "linenostart=16" >}}
+# Jupyter display method renders html and writes to stdout
 def display_pyscript(segments: Iterable[Segment], text: str) -> None:
     """Allow output of raw HTML within pyscript/pyodide"""
     html = rich.jupyter._render_segments(segments)
@@ -78,21 +84,27 @@ def display_pyscript(segments: Iterable[Segment], text: str) -> None:
 #patch jupyter display method to write processed HTML to stdout
 rich.jupyter.display = display_pyscript 
 
-#Overwrite print with Rich Jupyter print function
-print = rich.jupyter.print
+print = get_console().print
 {{< /highlight >}}
 </div>
 <h4 class="post-h4">Fixing <span class="italic">Element.write()</span></h4>
-<p class="post-p">Finally, we need to match some adjustments to PyScript's <code class="code">Element.write()</code> function, which is a utility method that allows PyScript users to send output to a specific DOM element directly. Since this bypasses the usual writing to stdout (and directly modifies the <span class="italic">innerHTML</span> attribute of the DOM element), we need to do a little legwork to get the formatting to work out.</p>
-<p class="post-p">This is the most work-in-progress part of this project, but by looking at whether the object we're trying to print has implement's Rich's <a href="https://rich.readthedocs.io/en/stable/protocol.html#console-customization">Console Protocol</a>, we can either:</p>
-<ul class="post-ul">
-    <li>Get the segments of the Rich object, use the <code class="code">jupyter._render_segments()</code> method to render them as HTML, and write those to the page</li>
-    <li>Write strings and excpetions directly to the page for debugging, or</li>
-    <li>Again hijack standard-out using a context manager, render its output using the <code class="code">console.print()</code>, then write that output to the appropriate element.</li>
-</ul>
-<p class="post-p">This last step is the most convoluted. I've implemented a rudementary <a href="https://docs.python.org/3/glossary.html#term-file-object">File-like object</a> called <code class="code">output_buffer</code> that simply saves anything written to it as a concatenated string. If this isn't the first thing in the buffer, we insert a <code class="code">&lt;br&gt;</code> tag to make it start on a new line. This is admittedly a hack, but it largely gives the right appearance.</p>
+<p class="post-p">Finally, we need to match some adjustments to PyScript's <code class="code">Element.write()</code> function, which is a utility method that allows PyScript users to send output to a specific DOM element directly. Since this bypasses the usual writing to stdout (and directly modifies the <span class="italic">innerHTML</span> attribute of the DOM element), we need to do a little legwork to get the formatting to work.</p>
+<p class="post-p">In a nutshell, we'll solve this issue in 3 steps:
+    <ul class="post-ul">
+        <li>When the user's code calls to <code class="code">Element.write()</code>, if the object written is a plain <code>str</code>, <code>Exception</code>, or <code>JsException</code>, we'll pass it though to <code class="code">Element.write()</code> unchanged. This preserves some of the functionality around how PyScript currrently does error handling and presentation.</li>
+        <li>Otherwise, we'll use a context manager to temporarily redirect <code>stdout</code> to a buffer, feed the object to <code class="code">rich.console.print()</code>, and capture that output in the buffer.</li>
+        <li>When the context manager closes, it writes its contents to the appropriate element using the original <code class="code">Element.write()</code> functionality.</li>
+    </ul>
+</p>
+<p class="post-p"> I've implemented a rudementary <a href="https://docs.python.org/3/glossary.html#term-file-object">File-like object</a> called <code class="code">output_buffer</code> that simply saves anything written to it as a concatenated string. If this isn't the first thing in the buffer, we insert a <code class="code">&lt;br&gt;</code> tag to make it start on a new line. This is admittedly a hack, but it largely gives the right appearance.</p>
 <div class="mb-6 overflow-y-scroll h-76 lg:mx-4">
 {{< highlight python "linenostart=27" >}}
+# PyScripts OutputCTXManager is used for stdout but does not implement
+# full fill interface; this prevents a warning each time console tries
+# to print
+stdout.flush = lambda: None
+
+##---- Redefine Pyscript.write()---
 class output_buffer():
     """ A (inefficient) buffer to capture stdout to a string """
     def __init__(self):
@@ -106,43 +118,43 @@ class output_buffer():
     def read(self):
         return self._internal_buffer
 
-from contextlib import contextmanager
+    def flush(self):
+        pass
 
 @contextmanager
-def stdout_to_buffer(el:Element):
+def stdout_to_buffer(el:Element, append: bool) -> None:
     """ A context manager to manage an output_buffer, writes to an Element on closure"""
-    global stdout #sys.stdout
+    global stdout #Usually Pyscript OutputCTXManager at this pont
     _old_stdout = stdout
     stdout = output_buffer()
     try:
-        yield stdout
+        yield
     finally:
-        el._write(stdout.read(), append=True)
+        el._write(stdout.read(), append)
         stdout = _old_stdout 
 
+Element._write = Element.write
+
 #Allow Element.write() to take an object from rich
-def newWrite(self, value, append=False) -> None:
+def newWrite(self, value, append: bool =False) -> None:
     """ A Monkeypatched version of Pyscript's Element.write(), auto-transforming Rich objects and rendering standard objects. """
-    if hasattr(value, '__rich_console__'):
-        console.warn(f"Using newWrite() __rich_console__ on {str(value)[:min(30, len(str(value)))]}...with type {type(value)}")
-        self._write(rich.jupyter._render_segments(value.__rich_console__(c, c.options)), append)
-        return
-    elif hasattr(value, '__rich__'):
-        console.warn(f"Using newWrite() __rich__ on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
-        self._write(rich.jupyter._render_segments(value.__rich__(c, c.options)), append)
-    elif isinstance(value, (str, Exception, JsException)):
-        console.warn(f"Using newWrite() as passthrough on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
+    if isinstance(value, (str, Exception, JsException)):
         self._write(value, append)
     else:
-        console.warn(f"Using newWrite() with Pretty interpretted on {str(value)[:min(30, len(str(value)))]}... with type {type(value)}")
-        with stdout_to_buffer(self):
-            c.print(value)
+        with stdout_to_buffer(self, append):
+            get_console().print(value)
 
-Element._write = Element.write
 Element.write = newWrite
 {{< /highlight >}}
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
+<h2 class="post-h2">What About ...</h2>
+<p class="post-p">Those who are familiar with the various ways Rich already provides to capture its own output, as well as exporting it as HTML, may have some reasonable questions here. It's surely possible I've missed something in Rich's expansive API, but I didn't find a solution that did everything I want without implementing my own context manager. That said, it does feel like there shuold be a simpler way...</p>
+<ul class="post-ul">
+    <li>I wanted to make the default console returned by <code class="code">get_console()</code> have the desired behavior, as well as any consoles the user created in the future. Hence the reason for overriding the _is_jupyter method instead of just making the default console <code class="code">force_jupyter=True</code></li>
+    <li>Using <code class="code">Console.capture()</code> captures the entire contents of the console, from which it can be exported (or saved as a file) to HTML, but there isn't a direct way to save just the use-input-turned-into-HTML as far as I know.</li>
+    <li>Because <a href="https://github.com/Textualize/rich/blob/8e2da1afab8743d8e3c55b8191492cc5f9905b7f/rich/jupyter.py#L84-L95">Rich's jupyter.display() method</a> tries specifically to write to an iPython display, I needed to override this method to render the objects to HTML and just write those to std.</li>
+</ul>
 <p class="post-p">With all these pieces put together, now most writes to standard out should be formatted using Rich's format rules.</p>
 <h2 class="post-h2">What Works and What Doesn't</h2>
 <p class="italic post-p">See the <a href="#examples">demos below</a> for working (and non-working) examples.</p>
