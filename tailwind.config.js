@@ -27,10 +27,11 @@ module.exports = {
   variants: {
     margin: ['first', 'responsive'],
     borderRadius: ['responsive', 'hover', 'focus'],
-    scale: ['responsive', 'hover', 'focus'],
     transform: ['responsive', 'hover', 'focus'],
     extend: {
       backgroundColor: ['odd', 'even'],
+      fontWeight: ['responsive', 'hover'],
+      scale: ['responsive', 'hover', 'focus'],
     },
   },
   plugins: [],
