@@ -1,5 +1,5 @@
 ---
-title: "Richdemo"
+title: "Rich Demo"
 date: 2022-09-10T13:50:24-05:00
 draft: true
 tags:
@@ -11,19 +11,22 @@ description: "Description Here"
 aliases: /richdemo
 ---
 <script src="//unpkg.com/alpinejs" defer></script>
-<!-- <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script> -->
+<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css">
-<div class="grid grid-cols-1 m-2 border-2 border-green-800" x-data>
+<py-env>
+    - rich
+</py-env>
+<py-script src="scripts/_richsetup.py"></py-script>
+<div class="grid grid-cols-1" x-data>
     <div id="title" class="my-2 text-3xl text-center">Rich Demo</div>
     <div id="controls" class="flex justify-center w-auto gap-x-2 gap-y-1">
-        {{< richbutton "Hello" "scripts/test1.py">}}
-        {{< richbutton "Goodbye" "scripts/test2.py">}}
+        {{< richbutton "Text" "scripts/richtext.py">}}
     </div>
-    <div id="userpane" class="grid grid-cols-1 divide-x-2 md:grid-cols-2">
+    <div id="userpane" class="grid grid-cols-1 md:grid-cols-2">
         <div id="repl-container">
-            <py-repl id="repl"></py-repl>
+            <py-repl id="repl">print("HELLO")</py-repl>
         </div>
-        <div id="output-container" class = "m-2">
+        <div id="output-container" class = "p-1 m-2 bg-gray-100">
             output
         </div>
     </div>
@@ -34,11 +37,14 @@ aliases: /richdemo
         const result = await fetch(filename)
         const code = await result.text()
 
-        document.getElementById("repl").remove
+        document.getElementById("repl").remove()
         const new_repl = document.createElement("py-repl")
         new_repl.textContent = code
+        new_repl.id = "repl"
+        new_repl.setAttribute("std-out", "output-container")
 
         document.getElementById("repl-container").appendChild(new_repl)
+        document.getElementById("btnRun").click()
         
 
         
