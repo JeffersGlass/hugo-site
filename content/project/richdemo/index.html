@@ -17,16 +17,27 @@ aliases: /richdemo
     - rich
 </py-env>
 <py-script src="scripts/_richsetup.py"></py-script>
-<div class="grid grid-cols-1" x-data>
+<py-script>
+    #click Text button to start
+    from js import document
+    document.getElementById("button1").click()
+</py-script>
+<div class="grid grid-cols-1" x-data ="{ scripts: [
+    {id: 1, name: 'Text',   src: 'scripts/richtext.py' },
+    {id: 2, name: 'Test 1', src: 'scripts/test1.py' },
+    {id: 3, name: 'Test 2', src: 'scripts/test2.py' },
+]}, jeff = 'Glass' ">
     <div id="title" class="my-2 text-3xl text-center">Rich Demo</div>
     <div id="controls" class="flex justify-center w-auto gap-x-2 gap-y-1">
-        {{< richbutton "Text" "scripts/richtext.py">}}
+        <template x-for="my_script in scripts" :key="my_script.name">
+            <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src)"></p>
+        </template>
     </div>
     <div id="userpane" class="grid grid-cols-1 md:grid-cols-2">
         <div id="repl-container">
             <py-repl id="repl">print("HELLO")</py-repl>
         </div>
-        <div id="output-container" class = "p-1 m-2 bg-gray-100">
+        <div id="output-container" class = "p-2 m-2 bg-gray-200">
             output
         </div>
     </div>
@@ -45,10 +56,5 @@ aliases: /richdemo
 
         document.getElementById("repl-container").appendChild(new_repl)
         document.getElementById("btnRun").click()
-        
-
-        
-
-        
     }
 </script>
