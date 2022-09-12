@@ -2,7 +2,7 @@ from rich.bar import Bar
 from rich.jupyter import _render_segments
 from asyncio import sleep
 
-bar_div = Element("bar_div")
+bar_div = Element("output-container")
 
 progress = 0.0
 
