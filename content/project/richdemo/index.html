@@ -29,33 +29,32 @@ aliases: /richdemo
 </py-script>
 <!-- <div id="title" class="text-3xl font-semibold text-center">Rich Demo</div> -->
 <div class="grid grid-cols-1 gap-y-2 lg:flex lg:flex-row" x-data ="{ scripts: [
-    {id:  1, name: 'Text'            , src: 'scripts/richtext.py', note: 'This is a test note'},
-    {id:  3, name: 'Logging'         , src: 'scripts/richlogging.py' },
-    {id:  4, name: 'Exception'       , src: 'scripts/richexception.py' },
-    {id:  5, name: 'Traceback'       , src: 'scripts/richtraceback.py' },
-    {id:  6, name: 'Columns'         , src: 'scripts/richcolumns.py' },
-    {id:  7, name: 'Markdown'         , src: 'scripts/richmarkdown.py' },
-    {id:  8, name: 'Panel'           , src: 'scripts/richpanel.py' },
-    {id:  9, name: 'Bar'             , src: 'scripts/richbar.py' },
-    {id: 10, name: 'Progress Bar'    , src: 'scripts/richprogressbar.py' },
-    {id: 11, name: 'Syntax'          , src: 'scripts/richsyntax.py' },
-    {id: 12, name: 'Tables'          , src: 'scripts/richtables.py' },
-    {id: 13, name: 'Tree'            , src: 'scripts/richtree.py' },
-    {id: 14, name: 'Live'            , src: 'scripts/liverunner.py' },
-    {id: 15, name: 'Layout'          , src: 'scripts/richlayout.py' },
-    {id: 16, name: 'Inspect'          , src: 'scripts/richinspect.py' },
-    ],
-    demos: [
-        {id:  18, name: 'table_movie'                  , src: 'scripts/table_movie.py' },
-        {id:  19, name: 'dynamic_progress'             , src: 'scripts/dynamic_progress.py'},
-        {id:  50, name: 'PyScript`s Element.Write'     , src: 'scripts/element-write.py' },
+    {id:  1, name: 'Text'            , src: 'scripts/richtext.py'           , type: 'script'},
+    {id:  3, name: 'Logging'         , src: 'scripts/richlogging.py'        , type: 'script'},
+    {id:  4, name: 'Exception'       , src: 'scripts/richexception.py'      , type: 'script'},
+    {id:  5, name: 'Traceback'       , src: 'scripts/richtraceback.py'      , type: 'script'},
+    {id:  6, name: 'Columns'         , src: 'scripts/richcolumns.py'        , type: 'script'},
+    {id:  7, name: 'Markdown'         , src: 'scripts/richmarkdown.py'      , type: 'script'},
+    {id:  8, name: 'Panel'           , src: 'scripts/richpanel.py'          , type: 'script'},
+    {id:  9, name: 'Bar'             , src: 'scripts/richbar.py'            , type: 'script'},
+    {id: 10, name: 'Progress Bar'    , src: 'scripts/richprogressbar.py'    , type: 'script'},
+    {id: 11, name: 'Syntax'          , src: 'scripts/richsyntax.py'         , type: 'script'},
+    {id: 12, name: 'Tables'          , src: 'scripts/richtables.py'         , type: 'script'},
+    {id: 13, name: 'Tree'            , src: 'scripts/richtree.py'           , type: 'script'},
+    {id: 14, name: 'Live'            , src: 'scripts/liverunner.py'         , type: 'script'},
+    {id: 15, name: 'Layout'          , src: 'scripts/richlayout.py'         , type: 'script'},
+    {id: 16, name: 'Inspect'          , src: 'scripts/richinspect.py'       , type: 'script'},
+
+    {id:  18, name: 'table_movie'                  , src: 'scripts/table_movie.py'      , type: 'demo', note: 'This demo is adapted from the table_movie.py demo included with Rich'},
+    {id:  19, name: 'dynamic_progress'             , src: 'scripts/dynamic_progress.py' , type: 'demo', note: 'This demo is adapted from the dynamic_progress.py demo included with Rich'},
+    {id:  50, name: 'PyScript`s Element.Write'     , src: 'scripts/element-write.py'    , type: 'demo'},
     ],
     current_id: 0} ">
     <div class="lg:hidden" id="mobile-controls">
         <div class="grid grid-cols-1 py-2 bg-blue-50" id="classes-panel">
             <div class="italic text-center text-blue-700">Classes</div>
             <div id="rich-element-buttons" class="flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1">
-                <template x-for="my_script in scripts" :key="my_script.id">
+                <template x-for="my_script in scripts.filter(obj => {return obj.type === 'script'})" :key="my_script.id">
                     <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src); current_id = my_script.id;" :class="my_script.id === current_id && 'bg-blue-600 text-white font-semibold'"></p>
                 </template>
             </div>
@@ -63,7 +62,7 @@ aliases: /richdemo
         <div class="grid grid-cols-1 py-2 bg-green-50" id="demos-panel">
             <div class="italic text-center text-green-700">Demos</div>
             <div id="rich-demo-buttons" class="flex justify-center w-auto gap-x-2 gap-y-1">
-                <template x-for="my_demo in demos" :key="my_demo.id">
+                <template x-for="my_demo in scripts.filter(obj => {return obj.type === 'demo'})" :key="my_demo.id">
                     <button class="richbutton" :id="'demo' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src); current_id = my_demo.id;" :class="my_demo.id === current_id && 'bg-green-600 text-white font-semibold'"></p>
                 </template>
             </div>
@@ -71,16 +70,17 @@ aliases: /richdemo
     </div>
     <div id="desktop-controls" class="flex-none hidden pl-1 pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block">
         <p class="text-lg font-semibold text-gray-600">Rich Objects</p>
-        <template x-for="my_script in scripts" :key="my_script.id">
+        <template x-for="my_script in scripts.filter(obj => {return obj.type === 'script'})" :key="my_script.id">
             <p><button :id="'scriptlink' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src); current_id = my_script.id;" class="ml-2" :class="my_script.id === current_id && 'font-bold'"></p>
         </template>
         <p class="mt-6 text-lg font-semibold text-gray-600">Rich Demos</p>
-        <template x-for="my_demo in demos" :key="my_demo.id">
+        <template x-for="my_demo in scripts.filter(obj => {return obj.type === 'demo'})" :key="my_demo.id">
             <p><button :id="'demolink' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src); current_id = my_demo.id;" class="ml-2" :class="my_demo.id === current_id && 'font-bold'"></p>
         </template>
     </div>
     <div id="userpane" class="grid flex-auto grid-cols-1 ml-2 xl:grid-cols-2">
         <div class="px-4 py-2 m-2 bg-gray-200 xl:order-last">
+        <div class="px-4 py-2 mx-2 bg-gray-200 xl:order-last">
             <p class="italic text-center text-gray-600">Output</p>
             <div id="output-container"></div>
         </div>
