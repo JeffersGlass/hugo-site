@@ -32,6 +32,8 @@ module.exports = {
       backgroundColor: ['odd', 'even'],
       fontWeight: ['responsive', 'hover'],
       scale: ['responsive', 'hover', 'focus'],
+      borderWidth: ['responsive', 'hover'],
+      borderColor: ['responsive', 'hover']
     },
   },
   plugins: [],
