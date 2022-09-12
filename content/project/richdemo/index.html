@@ -29,9 +29,10 @@ aliases: /richdemo
 </py-script>
 <!-- <div id="title" class="text-3xl font-semibold text-center">Rich Demo</div> -->
 <div class="grid grid-cols-1 gap-y-2 lg:flex lg:flex-row" x-data ="{ scripts: [
-    {id:  1, name: 'Text'            , src: 'scripts/richtext.py' },
+    {id:  1, name: 'Text'            , src: 'scripts/richtext.py', note: 'This is a test note'},
     {id:  3, name: 'Logging'         , src: 'scripts/richlogging.py' },
     {id:  4, name: 'Exception'       , src: 'scripts/richexception.py' },
+    {id:  5, name: 'Traceback'       , src: 'scripts/richtraceback.py' },
     {id:  6, name: 'Columns'         , src: 'scripts/richcolumns.py' },
     {id:  7, name: 'Markdown'         , src: 'scripts/richmarkdown.py' },
     {id:  8, name: 'Panel'           , src: 'scripts/richpanel.py' },
@@ -48,13 +49,14 @@ aliases: /richdemo
         {id:  18, name: 'table_movie'                  , src: 'scripts/table_movie.py' },
         {id:  19, name: 'dynamic_progress'             , src: 'scripts/dynamic_progress.py'},
         {id:  50, name: 'PyScript`s Element.Write'     , src: 'scripts/element-write.py' },
-    ]} ">
+    ],
+    current_id: 0} ">
     <div class="lg:hidden" id="mobile-controls">
         <div class="grid grid-cols-1 py-2 bg-blue-50" id="classes-panel">
             <div class="italic text-center text-blue-700">Classes</div>
             <div id="rich-element-buttons" class="flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1">
                 <template x-for="my_script in scripts" :key="my_script.id">
-                    <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src)"></p>
+                    <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src); current_id = my_script.id;" :class="my_script.id === current_id && 'bg-blue-600 text-white font-semibold'"></p>
                 </template>
             </div>
         </div>
@@ -62,19 +64,19 @@ aliases: /richdemo
             <div class="italic text-center text-green-700">Demos</div>
             <div id="rich-demo-buttons" class="flex justify-center w-auto gap-x-2 gap-y-1">
                 <template x-for="my_demo in demos" :key="my_demo.id">
-                    <button class="richbutton" :id="'demo' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src)"></p>
+                    <button class="richbutton" :id="'demo' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src); current_id = my_demo.id;" :class="my_demo.id === current_id && 'bg-green-600 text-white font-semibold'"></p>
                 </template>
             </div>
         </div>
     </div>
-    <div id="desktop-controls" class="flex-none hidden pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block">
-        <p class="font-semibold text-gray-600">Rich Objects</p>
+    <div id="desktop-controls" class="flex-none hidden pl-1 pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block">
+        <p class="text-lg font-semibold text-gray-600">Rich Objects</p>
         <template x-for="my_script in scripts" :key="my_script.id">
-            <p><button :id="'scriptlink' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src)" class="ml-2"></p>
+            <p><button :id="'scriptlink' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src); current_id = my_script.id;" class="ml-2" :class="my_script.id === current_id && 'font-bold'"></p>
         </template>
-        <p class="mt-6 font-semibold text-gray-600">Rich Demos</p>
+        <p class="mt-6 text-lg font-semibold text-gray-600">Rich Demos</p>
         <template x-for="my_demo in demos" :key="my_demo.id">
-            <p><button :id="'demolink' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src)" class="ml-2"></p>
+            <p><button :id="'demolink' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src); current_id = my_demo.id;" class="ml-2" :class="my_demo.id === current_id && 'font-bold'"></p>
         </template>
     </div>
     <div id="userpane" class="grid flex-auto grid-cols-1 ml-2 xl:grid-cols-2">
@@ -87,6 +89,7 @@ aliases: /richdemo
             <div id="repl-container" class="">
                 <py-repl id="repl"></py-repl>
             </div>
+            <div id="repl-note"></div>
         </div>
     </div>
 </div>
