@@ -79,3 +79,5 @@ def newWrite(self, value, append: bool =False) -> None:
             get_console().print(value)
 
 Element.write = newWrite
+
+c.width = 70
