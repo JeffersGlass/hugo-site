@@ -29,7 +29,6 @@ aliases: /richdemo
 </py-script>
 <div class="grid grid-cols-1 gap-y-2" x-data ="{ scripts: [
     {id:  1, name: 'Text'            , src: 'scripts/richtext.py' },
-    // 2 - Highlighting
     {id:  3, name: 'Logging'         , src: 'scripts/richlogging.py' },
     {id:  4, name: 'Traceback'       , src: 'scripts/richtraceback.py' },
     {id:  5, name: 'Columns'         , src: 'scripts/richcolumns.py' },
@@ -39,31 +38,36 @@ aliases: /richdemo
     {id: 10, name: 'Syntax'          , src: 'scripts/richsyntax.py' },
     {id: 11, name: 'Tables'          , src: 'scripts/richtables.py' },
     {id: 12, name: 'Tree'            , src: 'scripts/richtree.py' },
-    // 13 - Live
+    {id:  13, name: 'Live'         , src: 'scripts/liverunner.py' },
     {id: 14, name: 'Layout'            , src: 'scripts/richlayout.py' },
     ],
     demos: [
         {id:  1, name: 'PyScript`s Element.Write'     , src: 'scripts/element-write.py' },
-        {id:  2, name: 'Liverunnner'                  , src: 'scripts/liverunner.py' },
-        {id:  3, name: 'table_movie'                  , src: 'scripts/table_movie.py' },
+        {id:  2, name: 'table_movie'                  , src: 'scripts/table_movie.py' },
     ]} ">
     <div id="title" class="text-3xl text-center">Rich Demo</div>
-    <div id="rich-element-buttons" class="flex justify-center w-auto gap-x-2 gap-y-1">
-        <template x-for="my_script in scripts" :key="my_script.id">
-            <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src)"></p>
-        </template>
+    <div class="grid grid-cols-1 py-2 bg-blue-50">
+        <div class="italic text-center text-blue-700">Classes</div>
+        <div id="rich-element-buttons" class="flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1">
+            <template x-for="my_script in scripts" :key="my_script.id">
+                <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src)"></p>
+            </template>
+        </div>
     </div>
-    <div id="rich-demo-buttons" class="flex justify-center w-auto gap-x-2 gap-y-1">
-        <template x-for="my_demo in demos" :key="my_demo.id">
-            <button class="richbutton" :id="'button' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src)"></p>
-        </template>
+    <div class="grid grid-cols-1 py-2 bg-green-50">
+        <div class="italic text-center text-green-700">Demos</div>
+        <div id="rich-demo-buttons" class="flex justify-center w-auto gap-x-2 gap-y-1">
+            <template x-for="my_demo in demos" :key="my_demo.id">
+                <button class="richbutton" :id="'button' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src)"></p>
+            </template>
+        </div>
     </div>
     <div id="userpane" class="grid grid-cols-1 lg:grid-cols-2">
+        <div id="output-container" class = "p-2 m-2 bg-gray-200 lg:order-last">
+            output
+        </div>
         <div id="repl-container">
             <py-repl id="repl">print("HELLO")</py-repl>
-        </div>
-        <div id="output-container" class = "p-2 m-2 bg-gray-200">
-            output
         </div>
     </div>
 </div>
