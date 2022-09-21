@@ -8,13 +8,15 @@ tags:
 description: "Adding Your Own Callback Functions to Pyscript"
 slug_image: pyscript_future_featured.png
 ---
-
+<py-env>
+    - trio
+</py-env>
 <p class="post-p">Another interesting question popped up on the <a href="https://discord.com/invite/TynfPGRwda">PyScript Discord</a> this week:</p>
 <blockquote class="post-blockquote">I've got a question regarding network requests. How to do I call an API without blocking the UI thread? Like in JS you can just give fetch a callback function to call when the backend responds. Is there an equivalent for pyscript?</blockquote>
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
 <p class="post-p">This is a very reasonable question for someone used to the callback-oriented style of modern Javascript programming. Let's put together a practical example of cooperative multitasking with callbacks in Pyscript.</p>
 <blockquote class="p-2 mx-6 my-4 italic text-green-800 bg-green-100">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts truly asynchronously in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</blockquote>
-<p class="post-p">One thing to note is that, by default, Pyscript/Pyodide execute each script tag as its own coroutine, so <code class="code">await</code>ing in one script block will automatically allow other script blocks to continue execution. Consider the following two (nearly identical) snippets, which with no further work independently count upward:</p>
+<p class="post-p">One thing to note is that, by default, Pyscript/Pyodide execute each script tag as its own coroutine, so <code class="code">await</code>ing in one script block will automatically allow other script blocks to continue <execution class="a" href="#note1">[1]</execution> Consider the following two (nearly identical) snippets, which with no further work independently count upward:</p>
 <div class="flex flex-col gap-2">
     {{< showcode "post/pyscript-futures/sleep_1.py"  "python3" >}}
     {{< showcode "post/pyscript-futures/sleep_2.py"  "python3" >}}
@@ -37,6 +39,7 @@ slug_image: pyscript_future_featured.png
 </div>
 <p class="post-p">So, with no particular care on our part, we have a certain amount of cooperative multitasking between scripts. But the question asker was specifically asking about callback functions, like Javascripts <code class="code">.then()</code> construct. For that, we'll need to dive a little deeper.</p>
 <hr>
+<h2 class="post-h2">Writing Nonblocking Code</h2>
 <p class="post-p">To make it easier to see when our code is blocking, we'll need some kind of system process or web call that takes awhile to return a result. We'll make use of the delightfully named <a href="https://deelay.me/">Deelay.me API</a> to cause a (roughly) 7 second delay in our API call. The call itself will be to <a href="https://jsonplaceholder.typicode.com/">JSON Placeholder</a>, a mocked-up API service for exactly this kind of testing. So our endpoint will look like:</p>
 <div class="my-4">
 {{< highlight python3 "linenos=false">}}
@@ -77,3 +80,61 @@ delay_api = f"https://deelay.me/{ms_delay}/{endpoint}"
         <li>Breaking your code into additional coroutines may have some impacts on <a href="https://pyodide.org/en/stable/usage/keyboard-interrupts.html?highlight=thread">how Pyodide handles preemptive interrupts</a> - see the documentation if your use-case requires this.</li>
     </ul>
 </p>
+<!-- <h2 class="post-h2">Async Frameworks</h2>
+<p class="post-p">Since Pyodide handles <code>await</code> just fine, frameworks that rely on await should also work out of the box... right? Well, not exactly. Some popular async libraries like <a href="https://trio.readthedocs.io/en/stable/index.html">Trio</a> use system specific features for I/O, requiring you to do some hijinks to get them working PyScript:</p>
+{{< showandrun file="content/post/pyscript-futures/trio_demo.py" direction="flip" >}}
+<hr> -->
+<h2 class="post-h2">Footnotes</h2>
+<h3 id="note1" class="post-h3">[1] When does Pyodide Await?</h3>
+<p class="post-p">GitHub User Sumahadevan <a href="https://github.com/pyscript/pyscript/issues/751#issuecomment-1248375502">noticed some interesting behavior</a> - Pyodide may not actually even wait for <code class="code">await</code> to suspend execution! For example, following code produces the output <code>"B0 A0 B1 A1 B2 A2"</code>, as if the exeuction of the "A" loop is being suspending as soon as <code>asyncCallLoop1</code> is called:</p>
+{{< highlight python >}}
+<py-script>
+    import js
+    import asyncio
+
+    async def asyncCallLoop1():
+        for i in range(3):
+            js.console.log('A', i)
+            await asyncio.sleep(2)
+
+    asyncCallLoop1()
+</py-script>
+<py-script>
+    import js
+    import asyncio
+
+    for i in range(3):
+        js.console.log('B', i)
+        await asyncio.sleep(2)
+  </py-script>
+{{< /highlight >}}
+<p class="post-p">The behavior is the same if we run the same code in Pyodide (0.21.2) using <code class="code">runPythonAsync</code>. The output is <code>B0 A0 B1 A1 B2 A2</code>:</p>
+{{< highlight js >}}
+//Tested with Pyodide 0.21.2
+async function main() {
+    var pyodide = await loadPyodide();
+
+    pyodide.runPythonAsync(`
+        import js
+        import asyncio
+
+        async def asyncCallLoop1():
+            for i in range(3):
+                js.console.log('A', i)
+                await asyncio.sleep(2)
+
+        asyncCallLoop1()
+        `);
+
+    pyodide.runPythonAsync(`
+        import js
+        import asyncio
+
+        for i in range(3):
+            js.console.log('B', i)
+            await asyncio.sleep(2)
+        `);
+    
+    };
+main();
+{{< /highlight >}}
