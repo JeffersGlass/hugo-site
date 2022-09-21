@@ -20,8 +20,18 @@ aliases: /richdemo
         - ./_richsetup.py
         - ./scripts/liverunner.py
 </py-env>
+<script>
+    function createJSObject(object, variableName){
+        //Bind a variable whose name is the string variableName
+        // to the object called 'object'
+        let execString = variableName + " = object"
+        console.log("Running `" + execString + "`");
+        eval(execString)
+    }
+</script>
 <py-script src="_richsetup.py"></py-script>
 <py-script src="livepatch.py"></py-script>
+<py-script src="cancel_tasks.py"></py-script>
 <py-script>
     #click Text button to start
     from js import document
@@ -104,6 +114,11 @@ aliases: /richdemo
 
 <script>
     async function setReplCode(filename){
+        if (typeof cancelTasks != "undefined"){
+            console.log("Cancelling async tasks");
+            cancelTasks();
+        }
+
         console.log("Loading code from " + filename);
         const result = await fetch(filename)
         const code = await result.text()
