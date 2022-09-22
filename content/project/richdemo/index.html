@@ -10,6 +10,7 @@ tags:
 description: "Description Here"
 aliases: /richdemo
 ---
+<link rel="stylesheet" href="tooltips.css">
 <script src="//unpkg.com/alpinejs" defer></script>
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css">
@@ -32,30 +33,34 @@ aliases: /richdemo
 <py-script src="_richsetup.py"></py-script>
 <py-script src="livepatch.py"></py-script>
 <py-script src="cancel_tasks.py"></py-script>
+<py-script src="show_docstring.py"></py-script>
 <py-script>
     #click Text button to start
     from js import document
     document.getElementById("button1").click()
 </py-script>
-<!-- <div id="title" class="text-3xl font-semibold text-center">Rich Demo</div> -->
+<div id="mobile-intro" class = "block mb-1 text-sm">
+    <p class="mb-1"><a href="https://rich.readthedocs.io/en/stable/introduction.html">Rich</a> is a Python library for writing rich text (with color and style) to the terminal, and for displaying advanced content such as tables, markdown, and syntax highlighted code. The page illustrates the core classes and concepts of the Rich library, runninng live in the browser via <a href="https://github.com/pyscript/pyscript">PyScript</a>. </p>
+    <p>Select any of the classes below to load a live code sample using that class. Select any of the demos to see them run in realtime. See the accompanying blog post for more info on how this site was built and how the Live examlpes differ from pure Rich syntax.</p>
+</div>
 <div class="grid grid-cols-1 gap-y-2 lg:flex lg:flex-row" x-data ="{ scripts: [
-    {id:  1, name: 'Text'            , src: 'scripts/richtext.py'            , type: 'script'},
-    {id:  3, name: 'Logging'         , src: 'scripts/richlogging.py'         , type: 'script'},
-    {id:  4, name: 'Exception'       , src: 'scripts/richexception.py'       , type: 'script'},
-    {id:  5, name: 'Traceback'       , src: 'scripts/richtraceback.py'       , type: 'script'},
-    {id:  6, name: 'Columns'         , src: 'scripts/richcolumns.py'         , type: 'script'},
-    {id:  8, name: 'Group'         , src: 'scripts/richgroup.py'             , type: 'script'},
-    {id:  10, name: 'Markdown'         , src: 'scripts/richmarkdown.py'      , type: 'script'},
-    {id:  11, name: 'Highlighter'      , src: 'scripts/richhighlighter.py'   , type: 'script', note: 'This demo is adapted from the highlighter.py demo included with Rich'},
-    {id:  13, name: 'Panel'           , src: 'scripts/richpanel.py'          , type: 'script'},
-    {id:  14, name: 'Bar'             , src: 'scripts/richbar.py'            , type: 'script'},
-    {id: 16, name: 'Progress Bar'    , src: 'scripts/richprogressbar.py'     , type: 'script'},
-    {id: 18, name: 'Syntax'          , src: 'scripts/richsyntax.py'          , type: 'script'},
-    {id: 20, name: 'Tables'          , src: 'scripts/richtables.py'          , type: 'script'},
-    {id: 22, name: 'Tree'            , src: 'scripts/richtree.py'            , type: 'script'},
-    {id: 24, name: 'Live'            , src: 'scripts/liverunner.py'          , type: 'script'},
-    {id: 26, name: 'Layout'          , src: 'scripts/richlayout.py'          , type: 'script'},
-    {id: 28, name: 'Inspect'          , src: 'scripts/richinspect.py'        , type: 'script'},
+    {id:  1, name: 'Text'            , src: 'scripts/richtext.py'            , type: 'script', referenceImports: 'from rich.text import Text', referenceObject: 'Text', apiLink: 'https://rich.readthedocs.io/en/stable/text.html'},
+    {id:  3, name: 'Logging'         , src: 'scripts/richlogging.py'         , type: 'script', referenceImports: 'from rich.logging import RichHandler', referenceObject: 'RichHandler', apiLink: 'https://rich.readthedocs.io/en/stable/logging.html'},
+    {id:  4, name: 'Exception'       , src: 'scripts/richexception.py'       , type: 'script', referenceImports: 'from rich.console import Console', referenceObject: 'Console().print_exception'},
+    {id:  5, name: 'Traceback'       , src: 'scripts/richtraceback.py'       , type: 'script', referenceImports: 'from rich.traceback import install', referenceObject: 'install'},
+    {id:  6, name: 'Columns'         , src: 'scripts/richcolumns.py'         , type: 'script', referenceImports: 'from rich.columns import Columns', referenceObject: 'Columns'},
+    {id:  8, name: 'Group'         , src: 'scripts/richgroup.py'             , type: 'script', referenceImports: 'from rich.console import Group', referenceObject: 'Group'},
+    {id:  10, name: 'Markdown'         , src: 'scripts/richmarkdown.py'      , type: 'script', referenceImports: 'from rich.markdown import Markdown', referenceObject: 'Markdown'},
+    {id:  11, name: 'Highlighter'      , src: 'scripts/richhighlighter.py'   , type: 'script', referenceImports: 'from rich.highlighter import RegexHighlighter', referenceObject: 'regexHighlighter', note: 'This demo is adapted from the highlighter.py demo included with Rich'},
+    {id:  13, name: 'Panel'           , src: 'scripts/richpanel.py'          , type: 'script', referenceImports: '', referenceObject: ''},
+    {id:  14, name: 'Bar'             , src: 'scripts/richbar.py'            , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 16, name: 'Progress Bar'    , src: 'scripts/richprogressbar.py'     , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 18, name: 'Syntax'          , src: 'scripts/richsyntax.py'          , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 20, name: 'Tables'          , src: 'scripts/richtables.py'          , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 22, name: 'Tree'            , src: 'scripts/richtree.py'            , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 24, name: 'Live'            , src: 'scripts/liverunner.py'          , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 26, name: 'Layout'          , src: 'scripts/richlayout.py'          , type: 'script', referenceImports: '', referenceObject: ''},
+    {id: 28, name: 'Inspect'          , src: 'scripts/richinspect.py'        , type: 'script', referenceImports: '', referenceObject: ''},
 
     //{id:  30, name: 'Jobs'                         , src: 'scripts/jobs.py'  , type: 'demo', note: 'This demo is adapted from the jobs.py demo included with Rich'},
     {id:  31, name: 'Rainbow                '      , src: 'scripts/richrainbow.py'   , type: 'script', note: 'This demo is adapted from the rainbow.py demo included with Rich'},
@@ -70,7 +75,7 @@ aliases: /richdemo
             <div class="italic text-center text-blue-700">Classes</div>
             <div id="rich-element-buttons" class="flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1">
                 <template x-for="my_script in scripts.filter(obj => {return obj.type === 'script'})" :key="my_script.id">
-                    <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src); current_id = my_script.id;" :class="my_script.id === current_id && 'bg-blue-600 text-white font-semibold'"></p>
+                    <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click=" current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)" :class="my_script.id === current_id && 'bg-blue-600 text-white font-semibold'"></p>
                 </template>
             </div>
         </div>
@@ -86,7 +91,7 @@ aliases: /richdemo
     <div id="desktop-controls" class="flex-none hidden pl-1 pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block">
         <p class="text-lg font-semibold text-gray-600">Rich Objects</p>
         <template x-for="my_script in scripts.filter(obj => {return obj.type === 'script'})" :key="my_script.id">
-            <p><button :id="'scriptlink' + my_script.id" x-text="my_script.name" @click="setReplCode(my_script.src); current_id = my_script.id;" class="ml-2" :class="my_script.id === current_id && 'font-bold'"></p>
+            <p><button :id="'scriptlink' + my_script.id" x-text="my_script.name" @click="current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)" class="ml-2" :class="my_script.id === current_id && 'font-bold'"></p>
         </template>
         <p class="mt-6 text-lg font-semibold text-gray-600">Rich Demos</p>
         <template x-for="my_demo in scripts.filter(obj => {return obj.type === 'demo'})" :key="my_demo.id">
@@ -94,7 +99,29 @@ aliases: /richdemo
         </template>
     </div>
     <div id="userpane" class="grid flex-auto grid-cols-1 ml-2 xl:grid-cols-2">
-        <h2 class="hidden my-2 ml-8 text-3xl font-semibold text-gray-600 lg:block xl:col-span-2" x-text="scripts.find(obj => {return obj.id === current_id}).name">TEST</h2>
+        <div class="hidden my-2 ml-8 text-gray-600 lg:block xl:col-span-2">
+            <h2 class="">
+                <span class="text-3xl font-semibold" x-text="scripts.find(obj => {return obj.id === current_id}).name">
+                    Text
+                </span><span id="api-link" class="ml-2"></span>
+                <div id="docs" class="1">
+                    <div>
+                        <meta charset="UTF-8">
+                        <style>
+                        .r1 {color: #800080; text-decoration-color: #800080}
+                        body {
+                            color: #000000;
+                            background-color: #ffffff;
+                        }
+                        </style>
+                        <code>
+                            <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Text with color <span class="r1">/</span> style.
+                            </pre>
+                        </code>                  
+                    </div>
+                </div>
+            </h2>
+        </div>
         <div class="px-4 py-2 mx-2 bg-gray-200 xl:order-last">
             <p class="italic text-center text-gray-600">Output</p>
             <div id="output-container"></div>
@@ -111,7 +138,6 @@ aliases: /richdemo
         </div>
     </div>
 </div>
-
 <script>
     async function setReplCode(filename){
         if (typeof cancelTasks != "undefined"){
@@ -132,4 +158,25 @@ aliases: /richdemo
         document.getElementById("repl-container").appendChild(new_repl)
         document.getElementById("btnRun").click()
     }
+
+    async function setInfo(object, imports, apiLink){
+        console.warn(`setInfo on ${object}`)
+        if (typeof get_object_info_html != "undefined"){
+            get_object_info_html(object, imports, apiLink);
+        }
+
+        else {
+            clear_object_info();
+        }
+    }
+
+   /*  document.getElementById("docs-link").addEventListener('click', () => {
+        let apiTooltip = document.getElementById("docs")
+        if (apiTooltip.style.visibility == 'hidden'){
+            apiTooltip.style.visibility = 'visible';
+        }
+        else {
+            apiTooltip.style.visibility = 'hidden';
+        }
+    }); */
 </script>
