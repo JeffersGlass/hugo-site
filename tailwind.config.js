@@ -15,9 +15,11 @@ module.exports = {
       height: {
         '124': '31rem',
         '76': '19rem',
+        '160': '40rem',
       },
       maxHeight: {
         '124': '31rem',
+        '160': '40rem',
       },
       backgroundColor: {
         'pygray': '#2C2E34',
