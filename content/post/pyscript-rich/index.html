@@ -14,6 +14,7 @@ slug_image: richlogo_square.svg
     - Faker
     - paths:
         - _richsetup.py
+        - scripts/working/livetable.py
 </py-env>
 <script src="https://pyscript.net/releases/2022.06.1/pyscript.js" defer></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
@@ -26,6 +27,11 @@ slug_image: richlogo_square.svg
     <p class="post-p"></py-script><py-repl id="top" root="top" auto-generate="true">from rich import inspect; inspect(int)</py-repl></p>
 </div>
 <hr>
+<h2 class="post-h2">TL;DR: How to Use Rich in PyScript</h2>
+<p class="post-p">To use Rich for the output of all your PyScript tags, add the following to a new PyScript take at the top of the page's <code>body</code>:</p>
+{{< showcode-short "post/pyscript-rich/_richsetup.py" "python3" >}}
+<p class="post-p">Live updates work a little differently in PyScript than they do in the terminal - see the <a href="#live-updates">Live Updates</a> section for details.</p>
+<blockquote class="p-2 mx-6 mb-4 italic bg-yellow-200 border-l-4 border-gray-800">This code was written (and is running on this page on) <span class="font-semibold">PyScript Version 2022.06.1</span>. Since there's a big <a href="https://github.com/pyscript/pyscript/issues/622">big overhaul of how PyScript renders</a> coming very soon, I expect this to be broken in newer verions.</blockquote>
 <h2 class="post-h2">Background</h2>
 <div class="flex flex-col lg:flex-row">
     <div class="w-full lg:w-3/5">
@@ -156,186 +162,33 @@ Element.write = newWrite
     <li>Because <a href="https://github.com/Textualize/rich/blob/8e2da1afab8743d8e3c55b8191492cc5f9905b7f/rich/jupyter.py#L84-L95">Rich's jupyter.display() method</a> tries specifically to write to an iPython display, I needed to override this method to render the objects to HTML and just write those to std.</li>
 </ul>
 <p class="post-p">With all these pieces put together, now most writes to standard out should be formatted using Rich's format rules.</p>
-<h2 class="post-h2">What Works and What Doesn't</h2>
-<p class="italic post-p">See the <a href="#examples">demos below</a> for working (and non-working) examples.</p>
-<p class="post-p">Out of the box, this allows for formatting of most static Rich objects: Text, Lists and Dicts, JSON objets, etc. The various formatting objects that rely on them - Panels, Columns, Layouts etc - also work.</p>
-<p class="line-through post-p">What breaks, however, is anything that uses threading under the hood to operate: live-updating displays, progress bars, that sort of thing. Since <a href="https://github.com/pyodide/pyodide/issues/237">threading isn't currently supported in Pyodide</a>, there's not much of a direct solution here, but some workarounds can be had by using <span class="italic">async-await</span> to concurrently update the state of these objects. Check out the <a href="#progress-bar">progress-bar demo</a> below for an example.</p>
-<p class="px-2 mx-4 bg-gray-200 border-l-4 border-gray-800 post-p">Since writing the above, I've (almost) completed work on implementing a version of the <a href="https://rich.readthedocs.io/en/stable/live.html">Rich Live class</a> using pyodide's event loop and async/await instead of threads. That work is detailed in a separate post (coming soon), but there are some previews on twitter in the meantime: <a target="_blank" href="https://twitter.com/JeffersGlass/status/1559634350513299456?s=20&t=qHo-w2VcStd_-fWLtSdotQ">[1]</a> <a target="_blank" href="https://twitter.com/JeffersGlass/status/1559671709250342917?s=20&t=qHo-w2VcStd_-fWLtSdotQ">[2]</a> <a target="_blank" href="https://twitter.com/JeffersGlass/status/1559682257312423937?s=20&t=qHo-w2VcStd_-fWLtSdotQ">[3]</a>. I've left the examples below that using async/await directly as an example of what you might do if you want to manage updates more manually.</p>
-<p class="post-p">Emoji are also (somewhat) broken, though that's mostly through me running out of time to look at their implementation in depth. A brief glance at the <a href="https://github.com/Textualize/rich/blob/master/rich/emoji.py">Emoji.py source</a> makes it look like perhaps what I'm doing for output is clobbering the unicode characters that should be output as Emoji? Or perhaps how they're being rendered - the TL;DR example at the top of the page shows (for me) a successful "hand-pointing-down" but a non-colored "play button".</p>
-<style>
-    h3 {
-        font-size: 1.5rem/* 24px */;
-        line-height: 2rem/* 32px */;
-        padding-bottom: 0.5rem;
-        width: 100%;
-        --tw-bg-opacity: 1;
-        background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
-        padding-left: 0.25rem;
-    }
-</style>
-<a id="patch"></a>
-<h2 class="mb-6 post-h2" id="">The Code</h2>
-<p class="post-p">Here's all of the code above compiled into a single .py file. To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using <code class="code">src="..."</code>.</p>
-<p class="post-p">Note that you'll need to have the Rich module in your environment - the easiest way to do this is using <code class="code">&lt;py-env&gt; - rich &lt;/py-env&gt;</code></p>
-<blockquote class="p-2 mx-6 mb-4 italic bg-yellow-200 border-l-4 border-gray-800">This code was written (and is running on this page on) <span class="font-semibold">PyScript Version 2022.06.1</span>. Since there's a big <a href="https://github.com/pyscript/pyscript/issues/622">big overhaul of how PyScript renders</a> coming very soon, I expect this to be broken in newer verions.</blockquote>
-<div class="w-full">{{< showcode "post/pyscript-rich/_richsetup.py" "python3" >}}</div>
-
-<a id="examples"></a>
-<h2 class="post-h2" id="">Rich Elements that Work</h2>
-<p class="mb-6 post-p">After a bit of tinkering, these are the Rich output elements that I've gotten working so far. Note that several of them use <span class="italic">async-await</span>, and so their inclusion into other non-async code should be carefully considered.</p>
-<div class="bg-green-200" id="testme"></div>
-<div class="flex flex-col space-y-9">
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2">
-            <h3>Text Formatting (Mostly)</h3>
-            <py-script class="px-2" src="scripts/working/richtext.py"></py-script>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtext.py" "python3" >}}</div>
+<h2 class="post-h2" id="live-updates">Live Updates</h2>
+<p class="post-p">While there are lots of things that make running Python inside a browser window different from running in a terminal/desktop environment, one of the most striking is that we only have one event loop and we can't block it. Ever. Even a simple <code class="code">time.sleep(1)</code> irrevocably blocks the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop">JavaScript event loop</a>.</p>
+<p class="post-p">This is where asyncio comes to the rescue. The Pyodide runtime has a custom event loop ("<a href="https://pyodide.org/en/stable/usage/api/python-api/webloop.html#module-pyodide.webloop">Webloop</a>") that hooks to the asyncio webloop, allowing nonblock asynchronous operations. For example, we can use <code class="code">asyncio.sleep()</code> instead of <code>time.sleep()</code>, <code class="code">asynccontextmanager</code>s instead of <code>context managers</code>, and so on.</p>
+<p class="post-p">Hooking this deep into Rich's functionality requires some significant rewriting of the <a href="https://rich.readthedocs.io/en/stable/live.html">Live class</a>, as well as an additional helper class that constantly refreshes the live display by adding new callouts to the event loop every quarter second. The full results are below.</p>
+<p class="post-p">If you want to use the Live update element in your PyScript page, you'll want to:</p>
+<ul class="post-ul">
+    <li>Add the following code to a PyScript tag near the top of your page.</li>
+    <li>Use the included <code>Live</code> class instead of importing from <code>Rich.live</code></li>
+    <li>Avoid using any blocking io calls, instead substituting with their async versions. For an example of how to use the new Live class <a href="https://rich.readthedocs.io/en/stable/live.html">in the same way Rich does</a> (i.e. as a context manager), see the live examples on the <a href="../../project/richdemo">Rich Demo</a> page.</li>
+</ul>
+{{< showcode-short "post/pyscript-rich/_livepatch.py" "python3" >}}
+<py-script src="_livepatch.py"></py-script>
+<h3 class="post-h3">Live Table Demo</h3>
+<div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
+    <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
+        <py-script class="px-2" src="scripts/working/livetable.py"></py-script>
+        <div id="live-table-output" class="h-56 overflow-y-auto"></div>
     </div>
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2">
-            <h3>PyScript's Element.write()</h3>
-            <div class="m-2 bg-blue-200 border-2 h-36">
-                <p class="italic center">&lt;div id=&quot;write-to-me&quot;&gt;&lt;/div&gt;</p>
-                <div class="" id="write-to-me"></div>
-            </div>
-            <py-script class="px-2" src="scripts/working/element-write.py"></py-script>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/element-write.py" "python3" >}}</div>
-    </div>
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full h-auto bg-gray-100 border-2 border-gray-400 xl:w-1/2">
-            <h3>REPLs</h3>
-            <div class="my-2">
-                <py-repl id="demo-repl" auto-generate="true"></py-repl>
-            </div>
-        </div>
-        <div class="w-full xl:w-1/2">
-            <p class="code-title">index.html</p>
-            {{< highlight html >}}
-<py-repl auto-generate="true"></py-repl>
-            {{< /highlight >}}
-        </div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Panels and Layouts</h3>
-            <py-script class="px-2" src="scripts/working/richpanel.py"></py-script>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richpanel.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Bars</h3>
-            <py-script class="px-2" src="scripts/working/richbar.py"></py-script>
-            <div id="bar_div"></div>
-    </div>
-    <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richbar.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Progress Bars</h3>
-            <a id="progress-bar"></a>
-            <py-script class="px-2" src="scripts/working/richprogressbar.py"></py-script>
-            <div id="progress_bar_div"></div>
-    </div>
-    <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richprogressbar.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Syntax Highlighting</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richsyntax.py"></py-script>
-    </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richsyntax.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Tables</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richtables.py"></py-script>
-        </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtables.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>JSON</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richjson.py"></py-script>
-    </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richjson.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Columns:</h3>
-            <py-script class="px-2" src="scripts/working/richcolumns.py"></py-script>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richcolumns.py" "python3" >}}</div>
-    </div>
-
-<!--     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Layouts</h3>
-            <py-script class="px-2" src="scripts/working/richlayout.py"></py-script>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlayout.py" "python3" >}}</div>
-    </div> -->
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Inspect()</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richinspect.py"></py-script>
-            </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richinspect.py" "python3" >}}</div>
-    </div>
-    
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Logging</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richlogging.py"></py-script>
-            </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richlogging.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Traceback</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richtraceback.py"></py-script>
-            </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtraceback.py" "python3" >}}</div>
-    </div>
-
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 ">
-            <h3>Trees</h3>
-            <div class="overflow-y-scroll h-124">
-                <py-script class="px-2" src="scripts/working/richtree.py"></py-script>
-            </div>
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/working/richtree.py" "python3" >}}</div>
-    </div>
+    <div class="w-full xl:w-1/2">{{< showcode-short "post/pyscript-rich/scripts/working/livetable.py" "python3" >}}</div>
 </div>
-<!-- <div>
-    <py-script src="scripts/working/bigexample.py"></py-script>
-</div> -->
+<h2 class="post-h2">What Works and What Doesn't</h2>
+<p class="italic post-p">See the <a href="../../project/richdemo">demo page</a> for working examples.</p>
+<p class="post-p">Out of the box, this allows for formatting of most static Rich objects: Text, Lists and Dicts, JSON objets, etc. The various formatting objects that rely on them - Panels, Columns, Layouts etc - also work.</p>
+<p class="post-p">Some specific formatting tags are broken - though personally, I"m not too sad that <code>&lt;blink&gt;</code> doesn't work.</p>
+<p class="post-p">Emoji are also (somewhat) broken, though that's mostly through me running out of time to look at their implementation in depth. A brief glance at the <a href="https://github.com/Textualize/rich/blob/master/rich/emoji.py">Emoji.py source</a> makes it look like perhaps what I'm doing for output is clobbering the unicode characters that should be output as Emoji? Or perhaps how they're being rendered - the TL;DR example at the top of the page shows (for me) a successful "hand-pointing-down" but a non-colored "play button".</p>
 <hr class="my-6">    
-<h2 class="post-h2">Things that Don't Work</h2>
+<h2 class="post-h3">Things that Don't Work</h2>
 <div class="flex flex-col space-y-6">
     <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
         <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
@@ -351,20 +204,27 @@ Element.write = newWrite
         </div>
         <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richemoji.py" "python3" >}}</div>
     </div>
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
-        <h3>Automatic Progress Bars</h3>
-            <!-- <py-script class="px-2" src="scripts/not_working/richemoji.py"></py-script> -->
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richprogress.py" "python3" >}}</div>
-    </div>
-    <div class="flex flex-col space-x-2 xl:flex-row gap-y-2">
-        <div class="w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2">
-        <h3>Live Updates</h3>
-            <!-- <py-script class="px-2" src="scripts/not_working/richemoji.py"></py-script> -->
-        </div>
-        <div class="w-full xl:w-1/2">{{< showcode "post/pyscript-rich/scripts/not_working/richlive.py" "python3" >}}</div>
-    </div>
-    
+
+
+<!-- <p class="line-through post-p">What breaks, however, is anything that uses threading under the hood to operate: live-updating displays, progress bars, that sort of thing. Since <a href="https://github.com/pyodide/pyodide/issues/237">threading isn't currently supported in Pyodide</a>, there's not much of a direct solution here, but some workarounds can be had by using <span class="italic">async-await</span> to concurrently update the state of these objects. Check out the <a href="#progress-bar">progress-bar demo</a> below for an example.</p>
+<p class="px-2 mx-4 bg-gray-200 border-l-4 border-gray-800 post-p">Since writing the above, I've (almost) completed work on implementing a version of the <a href="https://rich.readthedocs.io/en/stable/live.html">Rich Live class</a> using pyodide's event loop and async/await instead of threads. That work is detailed in a separate post (coming soon), but there are some previews on twitter in the meantime: <a target="_blank" href="https://twitter.com/JeffersGlass/status/1559634350513299456?s=20&t=qHo-w2VcStd_-fWLtSdotQ">[1]</a> <a target="_blank" href="https://twitter.com/JeffersGlass/status/1559671709250342917?s=20&t=qHo-w2VcStd_-fWLtSdotQ">[2]</a> <a target="_blank" href="https://twitter.com/JeffersGlass/status/1559682257312423937?s=20&t=qHo-w2VcStd_-fWLtSdotQ">[3]</a>. I've left the examples below that using async/await directly as an example of what you might do if you want to manage updates more manually.</p> -->
+
+<!-- <style>
+    h3 {
+        font-size: 1.5rem/* 24px */;
+        line-height: 2rem/* 32px */;
+        padding-bottom: 0.5rem;
+        width: 100%;
+        --tw-bg-opacity: 1;
+        background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
+        padding-left: 0.25rem;
+    }
+</style>
+
+<a id="patch"></a>
+<h2 class="mb-6 post-h2" id="">The Code</h2>
+<p class="post-p">Here's all of the code above compiled into a single .py file. To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using <code class="code">src="..."</code>.</p>
+<p class="post-p">Note that you'll need to have the Rich module in your environment - the easiest way to do this is using <code class="code">&lt;py-env&gt; - rich &lt;/py-env&gt;</code></p> -->
+
     
 </div>
