@@ -6,7 +6,191 @@
     <description>Recent content in project on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 20 Mar 2020 10:29:33 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/project/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 10 Sep 2022 13:50:24 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/project/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rich on PyScript</title>
+      <link>https://jeff.glass/project/richdemo/</link>
+      <pubDate>Sat, 10 Sep 2022 13:50:24 -0500</pubDate>
+      
+      <guid>https://jeff.glass/project/richdemo/</guid>
+      <description>&lt;link rel=&#34;stylesheet&#34; href=&#34;tooltips.css&#34;&gt;
+&lt;script src=&#34;//unpkg.com/alpinejs&#34; defer&gt;&lt;/script&gt;
+&lt;script defer src=&#34;https://pyscript.net/releases/2022.06.1/pyscript.js&#34;&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2022.06.1/pyscript.css&#34;&gt;
+&lt;py-env&gt;
+    - rich
+    - faker
+    - paths:
+        - ./_richsetup.py
+        - ./scripts/liverunner.py
+&lt;/py-env&gt;
+&lt;script&gt;
+    function createJSObject(object, variableName){
+        //Bind a variable whose name is the string variableName
+        // to the object called &#39;object&#39;
+        let execString = variableName + &#34; = object&#34;
+        console.log(&#34;Running `&#34; + execString + &#34;`&#34;);
+        eval(execString)
+    }
+&lt;/script&gt;
+&lt;py-script src=&#34;_richsetup.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;livepatch.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;cancel_tasks.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;show_docstring.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script&gt;
+    #click Text button to start
+    from js import document
+    document.getElementById(&#34;button1&#34;).click()
+&lt;/py-script&gt;
+&lt;div id=&#34;intro&#34; class = &#34;block mb-1 text-sm&#34;&gt;
+    &lt;p class=&#34;mb-1&#34;&gt;&lt;a href=&#34;https://rich.readthedocs.io/en/stable/introduction.html&#34;&gt;Rich&lt;/a&gt; is a Python library for writing rich text (with color and style) to the terminal, and for displaying advanced content such as tables, markdown, and syntax highlighted code. The page illustrates the core classes and concepts of the Rich library, runninng live in the browser via &lt;a href=&#34;https://github.com/pyscript/pyscript&#34;&gt;PyScript&lt;/a&gt; (v2022.06.1). &lt;/p&gt;
+    &lt;p&gt;Select any of the classes below to load a live code sample using that class. Select any of the demos to see them run in realtime. Try changing the code in the REPL to see the results! See the accompanying blog post for notes on &lt;a href=&#34;../../post/pyscript-rich/&#34;&gt;How to use Rich in PyScript&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;grid grid-cols-1 gap-y-2 lg:flex lg:flex-row&#34; x-data =&#34;{ scripts: [
+    {id:  1, name: &#39;Text&#39;            , src: &#39;scripts/richtext.py&#39;            , type: &#39;script&#39;, referenceImports: &#39;from rich.text import Text&#39;, referenceObject: &#39;Text&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/text.html&#39;},
+    {id:  2, name: &#39;Bar&#39;             , src: &#39;scripts/richbar.py&#39;            , type: &#39;script&#39;, referenceImports: &#39;from rich.bar import Bar&#39;, referenceObject: &#39;Bar&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/bar.html&#39;},
+    {id:  3, name: &#39;Columns&#39;         , src: &#39;scripts/richcolumns.py&#39;         , type: &#39;script&#39;, referenceImports: &#39;from rich.columns import Columns&#39;, referenceObject: &#39;Columns&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/columns.html&#39;},
+    {id:  4, name: &#39;Exception&#39;       , src: &#39;scripts/richexception.py&#39;       , type: &#39;script&#39;, referenceImports: &#39;from rich.console import Console&#39;, referenceObject: &#39;Console().print_exception&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/console.html?highlight=print_exception#rich.console.Console.print_exception&#39;},
+    {id:  5, name: &#39;Group&#39;         , src: &#39;scripts/richgroup.py&#39;             , type: &#39;script&#39;, referenceImports: &#39;from rich.console import Group&#39;, referenceObject: &#39;Group&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/console.html?highlight=group#rich.console.Group&#39;},
+    {id:  6, name: &#39;Highlighter&#39;      , src: &#39;scripts/richhighlighter.py&#39;   , type: &#39;script&#39;, referenceImports: &#39;from rich.highlighter import RegexHighlighter&#39;, referenceObject: &#39;regexHighlighter&#39;, note: &#39;This demo is adapted from the highlighter.py demo included with Rich&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/highlighter.html&#39;},
+    {id:  7, name: &#39;Inspect&#39;          , src: &#39;scripts/richinspect.py&#39;        , type: &#39;script&#39;, referenceImports: &#39;from rich import inspect&#39;, referenceObject: &#39;inspect&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/init.html?highlight=inspect#rich.inspect&#39;},
+    {id:  8, name: &#39;Layout&#39;          , src: &#39;scripts/richlayout.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.layout import Layout&#39;, referenceObject: &#39;Layout&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/layout.html&#39;},
+    {id:  9, name: &#39;Live&#39;            , src: &#39;scripts/liverunner.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;&#39;, referenceObject: &#39;&#39;, apiLink: &#39;http://localhost:1313/post/pyscript-rich#live-updates&#39;},
+    {id:  10, name: &#39;Logging&#39;         , src: &#39;scripts/richlogging.py&#39;         , type: &#39;script&#39;, referenceImports: &#39;from rich.logging import RichHandler&#39;, referenceObject: &#39;RichHandler&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/logging.html&#39;},
+    {id:  11, name: &#39;Markdown&#39;         , src: &#39;scripts/richmarkdown.py&#39;      , type: &#39;script&#39;, referenceImports: &#39;from rich.markdown import Markdown&#39;, referenceObject: &#39;Markdown&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/markdown.html&#39;},
+    {id:  12, name: &#39;Panel&#39;           , src: &#39;scripts/richpanel.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.panel import Panel&#39;, referenceObject: &#39;Panel&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/panel.html&#39;},
+    {id:  13, name: &#39;Progress Bar&#39;    , src: &#39;scripts/richprogressbar.py&#39;     , type: &#39;script&#39;, referenceImports: &#39;from rich.progress_bar import ProgressBar&#39;, referenceObject: &#39;ProgressBar&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/progress_bar.html&#39;},
+    {id:  14, name: &#39;Syntax&#39;          , src: &#39;scripts/richsyntax.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.syntax import Syntax&#39;, referenceObject: &#39;Syntax&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/syntax.html&#39;},
+    {id:  15, name: &#39;Table&#39;          , src: &#39;scripts/richtables.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.table import Table&#39;, referenceObject: &#39;Table&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/table.html&#39;},
+    {id:  16, name: &#39;Traceback&#39;       , src: &#39;scripts/richtraceback.py&#39;       , type: &#39;script&#39;, referenceImports: &#39;from rich.traceback import install&#39;, referenceObject: &#39;install&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/traceback.html&#39;},
+    {id:  17, name: &#39;Tree&#39;            , src: &#39;scripts/richtree.py&#39;            , type: &#39;script&#39;, referenceImports: &#39;from rich.tree import Tree&#39;, referenceObject: &#39;Tree&#39;, note: &#39;This code has been borrowed/adapted from the Rich documentation.&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/tree.html&#39;},
+    
+
+    //{id:  29, name: &#39;Jobs&#39;                         , src: &#39;scripts/jobs.py&#39;  , type: &#39;demo&#39;, note: &#39;This demo is adapted from the jobs.py demo included with Rich&#39;}
+    {id:  30, name: &#39;REPL&#39;                          ,src: &#39;scripts/repl.py&#39;,     type: &#39;demo&#39;, note: &#39;Output from this live REPL will be formatted with Rich&#39;},
+    {id:  34, name: &#39;Rainbow                &#39;      , src: &#39;scripts/richrainbow.py&#39;   , type: &#39;demo&#39;, note: &#39;This demo is adapted from the rainbow.py demo included with Rich&#39;},
+    {id:  32, name: &#39;print_calendar&#39;                  , src: &#39;scripts/print_calendar.py&#39;      , type: &#39;demo&#39;, note: &#39;This demo is adapted from the print_calendar.py demo included with Rich&#39;},
+    {id:  33, name: &#39;table_movie&#39;                  , src: &#39;scripts/table_movie.py&#39;      , type: &#39;demo&#39;, note: &#39;This demo is adapted from the table_movie.py demo included with Rich&#39;},
+    {id:  31, name: &#39;dynamic_progress&#39;             , src: &#39;scripts/dynamic_progress.py&#39; , type: &#39;demo&#39;, note: &#39;This demo is adapted from the dynamic_progress.py demo included with Rich&#39;},
+    {id:  50, name: &#39;PyScript`s Element.Write&#39;     , src: &#39;scripts/element-write.py&#39;    , type: &#39;demo&#39;},
+    ],
+    current_id: 0} &#34;&gt;
+    &lt;div class=&#34;lg:hidden&#34; id=&#34;mobile-controls&#34;&gt;
+        &lt;div class=&#34;grid grid-cols-1 px-2 py-2 bg-blue-50&#34; id=&#34;classes-panel&#34;&gt;
+            &lt;div class=&#34;italic text-center text-blue-700&#34;&gt;Classes&lt;/div&gt;
+            &lt;div id=&#34;rich-element-buttons&#34; class=&#34;flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1&#34;&gt;
+                &lt;template x-for=&#34;my_script in scripts.filter(obj =&gt; {return obj.type === &#39;script&#39;})&#34; :key=&#34;my_script.id&#34;&gt;
+                    &lt;button class=&#34;richbutton&#34; :id=&#34;&#39;button&#39; + my_script.id&#34; x-text=&#34;my_script.name&#34; @click=&#34; current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)&#34; :class=&#34;my_script.id === current_id &amp;&amp; &#39;bg-blue-600 text-white font-semibold&#39;&#34;&gt;&lt;/p&gt;
+                &lt;/template&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;grid grid-cols-1 px-2 py-2 bg-green-50&#34; id=&#34;demos-panel&#34;&gt;
+            &lt;div class=&#34;italic text-center text-green-700&#34;&gt;Demos&lt;/div&gt;
+            &lt;div id=&#34;rich-demo-buttons&#34; class=&#34;flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1&#34;&gt;
+                &lt;template x-for=&#34;my_demo in scripts.filter(obj =&gt; {return obj.type === &#39;demo&#39;})&#34; :key=&#34;my_demo.id&#34;&gt;
+                    &lt;button class=&#34;richbutton&#34; :id=&#34;&#39;demo&#39; + my_demo.id&#34; x-text=&#34;my_demo.name&#34; @click=&#34;setReplCode(my_demo.src); current_id = my_demo.id;&#34; :class=&#34;my_demo.id === current_id &amp;&amp; &#39;bg-green-600 text-white font-semibold&#39;&#34;&gt;&lt;/p&gt;
+                &lt;/template&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id=&#34;desktop-controls&#34; class=&#34;flex-none hidden pl-1 pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block&#34;&gt;
+        &lt;p class=&#34;text-lg font-semibold text-gray-600&#34;&gt;Rich Objects&lt;/p&gt;
+        &lt;template x-for=&#34;my_script in scripts.filter(obj =&gt; {return obj.type === &#39;script&#39;})&#34; :key=&#34;my_script.id&#34;&gt;
+            &lt;p&gt;&lt;button :id=&#34;&#39;scriptlink&#39; + my_script.id&#34; x-text=&#34;my_script.name&#34; @click=&#34;current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)&#34; class=&#34;ml-2&#34; :class=&#34;my_script.id === current_id &amp;&amp; &#39;font-bold&#39;&#34;&gt;&lt;/p&gt;
+        &lt;/template&gt;
+        &lt;p class=&#34;mt-6 text-lg font-semibold text-gray-600&#34;&gt;Rich Demos&lt;/p&gt;
+        &lt;template x-for=&#34;my_demo in scripts.filter(obj =&gt; {return obj.type === &#39;demo&#39;})&#34; :key=&#34;my_demo.id&#34;&gt;
+            &lt;p&gt;&lt;button :id=&#34;&#39;demolink&#39; + my_demo.id&#34; x-text=&#34;my_demo.name&#34; @click=&#34;setReplCode(my_demo.src); current_id = my_demo.id;&#34; class=&#34;ml-2&#34; :class=&#34;my_demo.id === current_id &amp;&amp; &#39;font-bold&#39;&#34;&gt;&lt;/p&gt;
+        &lt;/template&gt;
+    &lt;/div&gt;
+    &lt;div id=&#34;userpane&#34; class=&#34;grid flex-auto grid-cols-1 ml-2 xl:grid-cols-2&#34;&gt;
+        &lt;div class=&#34;hidden my-2 ml-8 text-gray-600 lg:block xl:col-span-2&#34;&gt;
+            &lt;h2 class=&#34;&#34;&gt;
+                &lt;span class=&#34;text-3xl font-semibold&#34; x-text=&#34;scripts.find(obj =&gt; {return obj.id === current_id}).name&#34;&gt;
+                    Text
+                &lt;/span&gt;&lt;span id=&#34;api-link&#34; class=&#34;ml-2&#34;&gt;&lt;/span&gt;
+                &lt;div id=&#34;docs&#34; class=&#34;1&#34;&gt;
+                    &lt;div&gt;
+                        &lt;meta charset=&#34;UTF-8&#34;&gt;
+                        &lt;style&gt;
+                        .r1 {color: #800080; text-decoration-color: #800080}
+                        body {
+                            color: #000000;
+                            background-color: #ffffff;
+                        }
+                        &lt;/style&gt;
+                        &lt;code&gt;
+                            &lt;pre style=&#34;font-family:Menlo,&#39;DejaVu Sans Mono&#39;,consolas,&#39;Courier New&#39;,monospace&#34;&gt;Text with color &lt;span class=&#34;r1&#34;&gt;/&lt;/span&gt; style.
+                            &lt;/pre&gt;
+                        &lt;/code&gt;                  
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;px-4 py-2 mx-2 overflow-y-scroll bg-gray-200 xl:order-last max-h-160&#34;&gt;
+            &lt;p class=&#34;italic text-center text-gray-600&#34;&gt;Output&lt;/p&gt;
+            &lt;div id=&#34;output-container&#34;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;py-2&#34; id=&#34;repl-box&#34;&gt;
+            &lt;p class=&#34;italic text-center text-gray-600&#34;&gt;REPL&lt;/p&gt;
+            &lt;div id=&#34;repl-container&#34; class=&#34;&#34;&gt;
+                &lt;py-repl id=&#34;repl&#34;&gt;&lt;/py-repl&gt;
+            &lt;/div&gt;
+            &lt;div id=&#34;repl-note&#34; x-show=&#34;scripts.find(obj =&gt; {return obj.id === current_id}) != undefined &amp;&amp; scripts.find(obj =&gt; {return obj.id === current_id}).hasOwnProperty(&#39;note&#39;)&#34; 
+                x-text=&#34;(scripts.find(obj =&gt; {return obj.id === current_id}) != undefined &amp;&amp; scripts.find(obj =&gt; {return obj.id === current_id}).hasOwnProperty(&#39;note&#39;)) ? scripts.find(obj =&gt; {return obj.id === current_id}).note : &#39;&#39;&#34;
+                class=&#34;italic text-center text-gray-600&#34;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+    async function setReplCode(filename){
+        if (typeof cancelTasks != &#34;undefined&#34;){
+            console.log(&#34;Cancelling async tasks&#34;);
+            cancelTasks();
+        }
+
+        console.log(&#34;Loading code from &#34; + filename);
+        const result = await fetch(filename)
+        const code = await result.text()
+
+        document.getElementById(&#34;repl&#34;).remove()
+        const new_repl = document.createElement(&#34;py-repl&#34;)
+        new_repl.textContent = code
+        new_repl.id = &#34;repl&#34;
+        if (filename.includes(&#39;repl&#39;)) {
+            new_repl.setAttribute(&#34;auto-generate&#34;, &#34;true&#34;)
+        }
+        new_repl.setAttribute(&#34;std-out&#34;, &#34;output-container&#34;)
+
+        document.getElementById(&#34;repl-container&#34;).appendChild(new_repl)
+        document.getElementById(&#34;btnRun&#34;).click()
+    }
+
+    async function setInfo(object, imports, apiLink){
+        console.warn(`setInfo on ${object}`)
+        if (typeof get_object_info_html != &#34;undefined&#34; &amp;&amp; object != undefined){
+            get_object_info_html(object, imports, apiLink);
+        }
+
+        else {
+            clear_object_info();
+        }
+    }
+
+   /*  document.getElementById(&#34;docs-link&#34;).addEventListener(&#39;click&#39;, () =&gt; {
+        let apiTooltip = document.getElementById(&#34;docs&#34;)
+        if (apiTooltip.style.visibility == &#39;hidden&#39;){
+            apiTooltip.style.visibility = &#39;visible&#39;;
+        }
+        else {
+            apiTooltip.style.visibility = &#39;hidden&#39;;
+        }
+    }); */
+&lt;/script&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Electronics Bash</title>
       <link>https://jeff.glass/project/electronics-bash/</link>
