@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Rich on PyScript</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/project/richdemo/richlogo_py_wide_featured.jpg"/>
+<meta name="twitter:title" content="Rich on PyScript"/>
+<meta name="twitter:description" content="The Rich terminal formatting library, running in the browser with PyScript"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-8 pt-4 pb-4 m-auto md:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Project: Rich on PyScript</h1>
+				
+				<div class="flex flex-row text-sm">
+						Tags: 
+						
+						<a href="../../tags/project" class="px-1">project</a>
+						
+						<a href="../../tags/rich" class="px-1">rich</a>
+						
+						<a href="../../tags/python" class="px-1">python</a>
+						
+						<a href="../../tags/pyscript" class="px-1">pyscript</a>
+						
+				</div>
+				
+				<hr class="py-2">
+				<div>
+					<link rel="stylesheet" href="tooltips.css">
+<script src="//unpkg.com/alpinejs" defer></script>
+<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css">
+<py-env>
+    - rich
+    - faker
+    - paths:
+        - ./_richsetup.py
+        - ./scripts/liverunner.py
+</py-env>
+<script>
+    function createJSObject(object, variableName){
+        //Bind a variable whose name is the string variableName
+        // to the object called 'object'
+        let execString = variableName + " = object"
+        console.log("Running `" + execString + "`");
+        eval(execString)
+    }
+</script>
+<py-script src="_richsetup.py"></py-script>
+<py-script src="livepatch.py"></py-script>
+<py-script src="cancel_tasks.py"></py-script>
+<py-script src="show_docstring.py"></py-script>
+<py-script>
+    #click Text button to start
+    from js import document
+    document.getElementById("button1").click()
+</py-script>
+<div id="intro" class = "block mb-1 text-sm">
+    <p class="mb-1"><a href="https://rich.readthedocs.io/en/stable/introduction.html">Rich</a> is a Python library for writing rich text (with color and style) to the terminal, and for displaying advanced content such as tables, markdown, and syntax highlighted code. The page illustrates the core classes and concepts of the Rich library, runninng live in the browser via <a href="https://github.com/pyscript/pyscript">PyScript</a> (v2022.06.1). </p>
+    <p>Select any of the classes below to load a live code sample using that class. Select any of the demos to see them run in realtime. Try changing the code in the REPL to see the results! See the accompanying blog post for notes on <a href="../../post/pyscript-rich/">How to use Rich in PyScript</a>.</p>
+</div>
+<div class="grid grid-cols-1 gap-y-2 lg:flex lg:flex-row" x-data ="{ scripts: [
+    {id:  1, name: 'Text'            , src: 'scripts/richtext.py'            , type: 'script', referenceImports: 'from rich.text import Text', referenceObject: 'Text', apiLink: 'https://rich.readthedocs.io/en/stable/text.html'},
+    {id:  2, name: 'Bar'             , src: 'scripts/richbar.py'            , type: 'script', referenceImports: 'from rich.bar import Bar', referenceObject: 'Bar', apiLink: 'https://rich.readthedocs.io/en/stable/reference/bar.html'},
+    {id:  3, name: 'Columns'         , src: 'scripts/richcolumns.py'         , type: 'script', referenceImports: 'from rich.columns import Columns', referenceObject: 'Columns', apiLink: 'https://rich.readthedocs.io/en/stable/reference/columns.html'},
+    {id:  4, name: 'Exception'       , src: 'scripts/richexception.py'       , type: 'script', referenceImports: 'from rich.console import Console', referenceObject: 'Console().print_exception', apiLink: 'https://rich.readthedocs.io/en/stable/reference/console.html?highlight=print_exception#rich.console.Console.print_exception'},
+    {id:  5, name: 'Group'         , src: 'scripts/richgroup.py'             , type: 'script', referenceImports: 'from rich.console import Group', referenceObject: 'Group', apiLink: 'https://rich.readthedocs.io/en/stable/reference/console.html?highlight=group#rich.console.Group'},
+    {id:  6, name: 'Highlighter'      , src: 'scripts/richhighlighter.py'   , type: 'script', referenceImports: 'from rich.highlighter import RegexHighlighter', referenceObject: 'regexHighlighter', note: 'This demo is adapted from the highlighter.py demo included with Rich', apiLink: 'https://rich.readthedocs.io/en/stable/reference/highlighter.html'},
+    {id:  7, name: 'Inspect'          , src: 'scripts/richinspect.py'        , type: 'script', referenceImports: 'from rich import inspect', referenceObject: 'inspect', apiLink: 'https://rich.readthedocs.io/en/stable/reference/init.html?highlight=inspect#rich.inspect'},
+    {id:  8, name: 'Layout'          , src: 'scripts/richlayout.py'          , type: 'script', referenceImports: 'from rich.layout import Layout', referenceObject: 'Layout', apiLink: 'https://rich.readthedocs.io/en/stable/reference/layout.html'},
+    {id:  9, name: 'Live'            , src: 'scripts/liverunner.py'          , type: 'script', referenceImports: '', referenceObject: '', apiLink: 'http://localhost:1313/post/pyscript-rich#live-updates'},
+    {id:  10, name: 'Logging'         , src: 'scripts/richlogging.py'         , type: 'script', referenceImports: 'from rich.logging import RichHandler', referenceObject: 'RichHandler', apiLink: 'https://rich.readthedocs.io/en/stable/logging.html'},
+    {id:  11, name: 'Markdown'         , src: 'scripts/richmarkdown.py'      , type: 'script', referenceImports: 'from rich.markdown import Markdown', referenceObject: 'Markdown', apiLink: 'https://rich.readthedocs.io/en/stable/reference/markdown.html'},
+    {id:  12, name: 'Panel'           , src: 'scripts/richpanel.py'          , type: 'script', referenceImports: 'from rich.panel import Panel', referenceObject: 'Panel', apiLink: 'https://rich.readthedocs.io/en/stable/reference/panel.html'},
+    {id:  13, name: 'Progress Bar'    , src: 'scripts/richprogressbar.py'     , type: 'script', referenceImports: 'from rich.progress_bar import ProgressBar', referenceObject: 'ProgressBar', apiLink: 'https://rich.readthedocs.io/en/stable/reference/progress_bar.html'},
+    {id:  14, name: 'Syntax'          , src: 'scripts/richsyntax.py'          , type: 'script', referenceImports: 'from rich.syntax import Syntax', referenceObject: 'Syntax', apiLink: 'https://rich.readthedocs.io/en/stable/reference/syntax.html'},
+    {id:  15, name: 'Table'          , src: 'scripts/richtables.py'          , type: 'script', referenceImports: 'from rich.table import Table', referenceObject: 'Table', apiLink: 'https://rich.readthedocs.io/en/stable/reference/table.html'},
+    {id:  16, name: 'Traceback'       , src: 'scripts/richtraceback.py'       , type: 'script', referenceImports: 'from rich.traceback import install', referenceObject: 'install', apiLink: 'https://rich.readthedocs.io/en/stable/reference/traceback.html'},
+    {id:  17, name: 'Tree'            , src: 'scripts/richtree.py'            , type: 'script', referenceImports: 'from rich.tree import Tree', referenceObject: 'Tree', note: 'This code has been borrowed/adapted from the Rich documentation.', apiLink: 'https://rich.readthedocs.io/en/stable/reference/tree.html'},
+    
+
+    //{id:  29, name: 'Jobs'                         , src: 'scripts/jobs.py'  , type: 'demo', note: 'This demo is adapted from the jobs.py demo included with Rich'}
+    {id:  30, name: 'REPL'                          ,src: 'scripts/repl.py',     type: 'demo', note: 'Output from this live REPL will be formatted with Rich'},
+    {id:  34, name: 'Rainbow                '      , src: 'scripts/richrainbow.py'   , type: 'demo', note: 'This demo is adapted from the rainbow.py demo included with Rich'},
+    {id:  32, name: 'print_calendar'                  , src: 'scripts/print_calendar.py'      , type: 'demo', note: 'This demo is adapted from the print_calendar.py demo included with Rich'},
+    {id:  33, name: 'table_movie'                  , src: 'scripts/table_movie.py'      , type: 'demo', note: 'This demo is adapted from the table_movie.py demo included with Rich'},
+    {id:  31, name: 'dynamic_progress'             , src: 'scripts/dynamic_progress.py' , type: 'demo', note: 'This demo is adapted from the dynamic_progress.py demo included with Rich'},
+    {id:  50, name: 'PyScript`s Element.Write'     , src: 'scripts/element-write.py'    , type: 'demo'},
+    ],
+    current_id: 0} ">
+    <div class="lg:hidden" id="mobile-controls">
+        <div class="grid grid-cols-1 px-2 py-2 bg-blue-50" id="classes-panel">
+            <div class="italic text-center text-blue-700">Classes</div>
+            <div id="rich-element-buttons" class="flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1">
+                <template x-for="my_script in scripts.filter(obj => {return obj.type === 'script'})" :key="my_script.id">
+                    <button class="richbutton" :id="'button' + my_script.id" x-text="my_script.name" @click=" current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)" :class="my_script.id === current_id && 'bg-blue-600 text-white font-semibold'"></p>
+                </template>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 px-2 py-2 bg-green-50" id="demos-panel">
+            <div class="italic text-center text-green-700">Demos</div>
+            <div id="rich-demo-buttons" class="flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1">
+                <template x-for="my_demo in scripts.filter(obj => {return obj.type === 'demo'})" :key="my_demo.id">
+                    <button class="richbutton" :id="'demo' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src); current_id = my_demo.id;" :class="my_demo.id === current_id && 'bg-green-600 text-white font-semibold'"></p>
+                </template>
+            </div>
+        </div>
+    </div>
+    <div id="desktop-controls" class="flex-none hidden pl-1 pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block">
+        <p class="text-lg font-semibold text-gray-600">Rich Objects</p>
+        <template x-for="my_script in scripts.filter(obj => {return obj.type === 'script'})" :key="my_script.id">
+            <p><button :id="'scriptlink' + my_script.id" x-text="my_script.name" @click="current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)" class="ml-2" :class="my_script.id === current_id && 'font-bold'"></p>
+        </template>
+        <p class="mt-6 text-lg font-semibold text-gray-600">Rich Demos</p>
+        <template x-for="my_demo in scripts.filter(obj => {return obj.type === 'demo'})" :key="my_demo.id">
+            <p><button :id="'demolink' + my_demo.id" x-text="my_demo.name" @click="setReplCode(my_demo.src); current_id = my_demo.id;" class="ml-2" :class="my_demo.id === current_id && 'font-bold'"></p>
+        </template>
+    </div>
+    <div id="userpane" class="grid flex-auto grid-cols-1 ml-2 xl:grid-cols-2">
+        <div class="hidden my-2 ml-8 text-gray-600 lg:block xl:col-span-2">
+            <h2 class="">
+                <span class="text-3xl font-semibold" x-text="scripts.find(obj => {return obj.id === current_id}).name">
+                    Text
+                </span><span id="api-link" class="ml-2"></span>
+                <div id="docs" class="1">
+                    <div>
+                        <meta charset="UTF-8">
+                        <style>
+                        .r1 {color: #800080; text-decoration-color: #800080}
+                        body {
+                            color: #000000;
+                            background-color: #ffffff;
+                        }
+                        </style>
+                        <code>
+                            <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Text with color <span class="r1">/</span> style.
+                            </pre>
+                        </code>                  
+                    </div>
+                </div>
+            </h2>
+        </div>
+        <div class="px-4 py-2 mx-2 overflow-y-scroll bg-gray-200 xl:order-last max-h-160">
+            <p class="italic text-center text-gray-600">Output</p>
+            <div id="output-container"></div>
+        </div>
+        <div class="py-2" id="repl-box">
+            <p class="italic text-center text-gray-600">REPL</p>
+            <div id="repl-container" class="">
+                <py-repl id="repl"></py-repl>
+            </div>
+            <div id="repl-note" x-show="scripts.find(obj => {return obj.id === current_id}) != undefined && scripts.find(obj => {return obj.id === current_id}).hasOwnProperty('note')" 
+                x-text="(scripts.find(obj => {return obj.id === current_id}) != undefined && scripts.find(obj => {return obj.id === current_id}).hasOwnProperty('note')) ? scripts.find(obj => {return obj.id === current_id}).note : ''"
+                class="italic text-center text-gray-600">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    async function setReplCode(filename){
+        if (typeof cancelTasks != "undefined"){
+            console.log("Cancelling async tasks");
+            cancelTasks();
+        }
+
+        console.log("Loading code from " + filename);
+        const result = await fetch(filename)
+        const code = await result.text()
+
+        document.getElementById("repl").remove()
+        const new_repl = document.createElement("py-repl")
+        new_repl.textContent = code
+        new_repl.id = "repl"
+        if (filename.includes('repl')) {
+            new_repl.setAttribute("auto-generate", "true")
+        }
+        new_repl.setAttribute("std-out", "output-container")
+
+        document.getElementById("repl-container").appendChild(new_repl)
+        document.getElementById("btnRun").click()
+    }
+
+    async function setInfo(object, imports, apiLink){
+        console.warn(`setInfo on ${object}`)
+        if (typeof get_object_info_html != "undefined" && object != undefined){
+            get_object_info_html(object, imports, apiLink);
+        }
+
+        else {
+            clear_object_info();
+        }
+    }
+
+   /*  document.getElementById("docs-link").addEventListener('click', () => {
+        let apiTooltip = document.getElementById("docs")
+        if (apiTooltip.style.visibility == 'hidden'){
+            apiTooltip.style.visibility = 'visible';
+        }
+        else {
+            apiTooltip.style.visibility = 'hidden';
+        }
+    }); */
+</script>
+				</div>
+				
+			</article>
+		</div>
+	</main>
+<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+	<script>
+		lightbox.option({
+			'fadeDuration': 200,
+			'resizeDuration': 200
+		})
+	</script>
+</body>
+</html>

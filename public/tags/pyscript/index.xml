@@ -6,7 +6,1161 @@
     <description>Recent content in PyScript on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Aug 2022 07:43:03 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 27 Sep 2022 10:34:50 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Monkeypatching Rich for Beautiful Terminals in Pyscript</title>
+      <link>https://jeff.glass/post/pyscript-rich/</link>
+      <pubDate>Tue, 27 Sep 2022 10:34:50 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/pyscript-rich/</guid>
+      <description>&lt;py-env&gt;
+    - rich
+    - Faker
+    - paths:
+        - _richsetup.py
+        - scripts/working/livetable.py
+&lt;/py-env&gt;
+&lt;script src=&#34;https://pyscript.net/releases/2022.06.1/pyscript.js&#34; defer&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2022.06.1/pyscript.css&#34; /&gt;
+&lt;py-script src=&#34;./_richsetup.py&#34;&gt;&lt;/py-script&gt;
+&lt;div class=&#34;p-4 mt-4 bg-gray-100 border-2&#34;&gt;
+    &lt;div class=&#34;grid items-center grid-cols-1 gap-y-2 xl:grid-cols-2&#34;&gt;
+        &lt;div&gt;&lt;py-script src=&#34;./scripts/working/intro.py&#34;&gt;&lt;/py-script&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;intro.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[bold]This text[/bold] is being [b]formatted[/b] by the [link https://github.com/Textualize/rich]Rich Console Formatting Library[/]&amp;#34;&lt;/span&gt;)
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;and output with [yellow1 on grey15]&amp;lt;PyScript&amp;gt;[/]. There&amp;#39;s a [b link ../../project/richdemo]whole page of examples :link:[/]&amp;#34;&lt;/span&gt;)
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The REPL below is automatically formatted with RICH;&amp;#34;&lt;/span&gt;)
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Press [italic]shift+enter[/] or click :play_button: to execute the REPL:&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;p class=&#34;post-p&#34;&gt;&lt;/py-script&gt;&lt;py-repl id=&#34;top&#34; root=&#34;top&#34; auto-generate=&#34;true&#34;&gt;from rich import inspect; inspect(int)&lt;/py-repl&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;TL;DR: How to Use Rich in PyScript&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;To use Rich for the output of all your PyScript tags, add the following to a new PyScript take at the top of the page&#39;s &lt;code&gt;body&lt;/code&gt;:&lt;/p&gt;
+&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;_richsetup.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;overflow-y-scroll h-52&#34;&gt;
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;81
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; typing &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Iterable
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sys &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; stdout, modules
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; contextlib &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; contextmanager
+
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; get_console
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich.console &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; _is_jupyter
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich.segment &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Segment
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; rich.jupyter
+
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; JsException
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; js &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; console
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Per pyodide docs, determine if we&amp;#39;re running inside pyodide at Runtime&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is_pyodide&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; bool:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;pyodide&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; modules
+ 
+&lt;span style=&#34;color:#75715e&#34;&gt;# Patch jupyter detection of the global _console object to detect pyodide&lt;/span&gt;
+c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_console()
+c&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;is_jupyter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; is_pyodide &lt;span style=&#34;color:#75715e&#34;&gt;#monkeypatch jupyter detection @propety&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# patch function so if user creates any additional Consoles they behave correctly&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# While the global _console us&lt;/span&gt;
+_is_jupyter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; is_pyodide
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Jupyter display method renders html and writes to stdout&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;display_pyscript&lt;/span&gt;(segments: Iterable[Segment], text: str) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Allow output of raw HTML within pyscript/pyodide&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    html &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rich&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;jupyter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_render_segments(segments)
+    stdout&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write(html)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#patch jupyter display method to write processed HTML to stdout&lt;/span&gt;
+rich&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;jupyter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;display &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; display_pyscript 
+
+print &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_console()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;print
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# PyScripts OutputCTXManager is used for stdout but does not implement&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# full fill interface; this prevents a warning each time console tries&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# to print&lt;/span&gt;
+stdout&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;flush &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;lambda&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;##---- Redefine Pyscript.write()---&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;output_buffer&lt;/span&gt;():
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34; A (inefficient) buffer to capture stdout to a string &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;write&lt;/span&gt;(self, value: any):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer):
+            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;internal_buffer &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;lt;br&amp;gt;&amp;#39;&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; value
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;read&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;flush&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;pass&lt;/span&gt;
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;@contextmanager&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;stdout_to_buffer&lt;/span&gt;(el:Element, append: bool) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34; A context manager to manage an output_buffer, writes to an Element on closure&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; stdout &lt;span style=&#34;color:#75715e&#34;&gt;#Usually Pyscript OutputCTXManager at this pont&lt;/span&gt;
+    _old_stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; stdout
+    stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; output_buffer()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;yield&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;finally&lt;/span&gt;:
+        el&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_write(stdout&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;read(), append)
+        stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; _old_stdout 
+
+Element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_write &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#Allow Element.write() to take an object from rich&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;newWrite&lt;/span&gt;(self, value, append: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34; A Monkeypatched version of Pyscript&amp;#39;s Element.write(), auto-transforming Rich objects and rendering standard objects. &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; isinstance(value, (str, &lt;span style=&#34;color:#a6e22e&#34;&gt;Exception&lt;/span&gt;, JsException)):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_write(value, append)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; stdout_to_buffer(self, append):
+            get_console()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;print(value)
+
+Element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; newWrite&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+    &lt;/div&gt;
+    &lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+    
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Live updates work a little differently in PyScript than they do in the terminal - see the &lt;a href=&#34;#live-updates&#34;&gt;Live Updates&lt;/a&gt; section for details.&lt;/p&gt;
+&lt;blockquote class=&#34;p-2 mx-6 mb-4 italic bg-yellow-200 border-l-4 border-gray-800&#34;&gt;This code was written (and is running on this page on) &lt;span class=&#34;font-semibold&#34;&gt;PyScript Version 2022.06.1&lt;/span&gt;. Since there&#39;s an &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/622&#34;&gt; overhaul of how PyScript renders&lt;/a&gt; coming very soon, check the documentation for updates.&lt;/blockquote&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;Background&lt;/h2&gt;
+&lt;div class=&#34;flex flex-col lg:flex-row&#34;&gt;
+    &lt;div class=&#34;w-full lg:w-3/5&#34;&gt;
+        &lt;p class=&#34;post-p&#34;&gt;Though PyScript is still in its infancy, the possibilities unlocked by running Python in a browser are already blossoming. As such, I&#39;m seeing more and more users on the &lt;a href=&#34;https://community.anaconda.cloud/c/tech-topics/pyscript/41&#34;&gt;official forums&lt;/a&gt;, the &lt;a href=&#34;https://discord.com/invite/TynfPGRwda&#34;&gt;unofficial Discord&lt;/a&gt;, and the &lt;a href=&#34;https://github.com/pyscript/pyscript&#34;&gt;Github Issue Tracker&lt;/a&gt; interested in working with their favorite libraries to the web. Let&#39;s look at the process of taking a package that &lt;span class=&#34;italic&#34;&gt;runs&lt;/span&gt; but doesn&#39;t run &lt;span class=&#34;italic&#34;&gt;well&lt;/span&gt;, and see how we can use patch it after import to bring it to life using Pyscript.&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;Lots of packages work fine right out of the box - anything &lt;a href=&#34;https://pyodide.org/en/stable/usage/loading-packages.html#loading-packages&#34;&gt;written in Pure Python stands a good chance of at least running&lt;/a&gt;. But just because it runs, doesn&#39;t mean it&#39;ll look good or behave the way we expect objects to on a webpage. Interactive packages, like &lt;a href=&#34;https://matplotlib.org/&#34;&gt;matplotlib&lt;/a&gt; or terminal-based packages like &lt;a href=&#34;https://github.com/tqdm/tqdm&#34;&gt;tqdm&lt;/a&gt; or &lt;a href=&#34;https://github.com/tartley/colorama&#34;&gt;colorama&lt;/a&gt;, may not be immediately interactable in the browser, because they&#39;ve implemented their own methods for interpretting input/output that the browser doesn&#39;t play nicely with. Just because the PyScript/Pyodide interpretter doesn&#39;t crash doesn&#39;t mean you can get useful info in and out of an existing module.&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;One such library is &lt;a href=&#34;https://github.com/Textualize/rich&#34;&gt;Rich&lt;/a&gt;: &#34;a Python library for rich text and beautiful formatting in the terminal&#34; by Will McGugan. It allows for tasteful pretty-printing of most Python objects, syntax highlighting, color and layout control and more, all written in Pure Python. See the sample image to the side or the linked homepage for bountiful exmaples.&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;Of course, Rich is intended to run in the terminal. Since the display functionality in a web browser differs significantly from a terminal environment, there&#39;s no reason to expect it will work out of the box in PyScript. But since it exists as a pure Python wheel and is importable by Pyodide, I wanted to see what it would take to get it working.&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;What follows is the result of a few hours of bashing things together. It&#39;s not meant to be production ready (thought it could turn into a module if there&#39;s interest). Rather, it&#39;s meant to demonstrate a patching strategy for modules that already integrate with web-Python environments like Jupyter and iPython.&lt;/p&gt;
+        &lt;p class=&#34;post-p&#34;&gt;If you want to skip the dev log, you can skip to &lt;a href=&#34;patch&#34;&gt;the code that runs to patch Rich on this page &lt;/a&gt; or the &lt;a href=&#34;#examples&#34;&gt;gallery of Rich-in-PyScript samples&lt;/a&gt; below.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;items-center justify-center w-auto mx-4 md:float-right md:w-96&#34;&gt;
+        &lt;img src=&#34;rich-features.png&#34; alt=&#34;A demo of the features of the rich library, including colors, styles, text, markup etc&#34; class=&#34;mx-auto w-96&#34;&gt;
+        &lt;p class=&#34;italic&#34;&gt;The demo image from the Rich GitHub page shows off its many features&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;The Groundwork&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;The strategy we&#39;ll employ to get Rich working is called &#34;Monkeypatching.&#34; &lt;a href=&#34;https://web.archive.org/web/20120730014107/http://wiki.zope.org/zope2/MonkeyPatch&#34;&gt;From the Zope Wiki&lt;/a&gt;:&lt;/p&gt;
+&lt;p class=&#34;p-2 mx-6 mb-4 italic bg-gray-100 border-l-4 border-gray-800&#34;&gt;A MonkeyPatch is a piece of Python code which extends or modifies other code at runtime (typically at startup)...The motivation for monkeypatching is typically that the developer needs to modify or extend behavior of a third-party product ... and does not wish to maintain a private copy of the source code.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So, we&#39;ll be loading/importing Rich &lt;span class=&#34;italic&#34;&gt;as-is&lt;/span&gt;, modifying some of the attributes/methods/behaviors of its classes and functions and leaving others along. This will let us preserve the most of Rich&#39;s functionality untouched, while tweaking it just enough to work inside PyScript.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Almost all of the heavy lifting in terms of the formatting is handled by the fact Rich &lt;a href=&#34;https://www.willmcgugan.com/blog/tech/post/rich-adds-support-for-jupyter-notebooks/&#34;&gt;already supports Jupyter Notebooks&lt;/a&gt;, so there&#39;s already translation in place to translate Rich&#39;s internal formatting syntax to HTML. All we have to do is:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Import rich (which means it&#39;ll need to be present in our &lt;code class=&#34;code&#34;&gt;&amp;lt;py-env&amp;gt;&lt;/code&gt;  &lt;/li&gt;
+    &lt;li&gt;Hook into or replace the code that detects that we&#39;re running in a Notebook to instead tell that we&#39;re running inside Pyodide.&lt;/li&gt;
+    &lt;li&gt;Take the output that would be fed to the notebook and feed it to &lt;code class=&#34;code&#34;&gt;stdout&lt;/code&gt;, where PyScript&#39;s context managers will get it to the right place&lt;/li&gt;
+    &lt;li&gt;Overwrite the built-in &lt;code class=&#34;code&#34;&gt;print()&lt;/code&gt; function to point to rich&#39;s print function, to get nicely formatted printing&lt;/li&gt;
+    &lt;li&gt;Point PyScript&#39;s &lt;code class=&#34;code&#34;&gt;Element.write()&lt;/code&gt; method at a new method that hooks into Rich&#39;s __rich_console__ and &lt;code class=&#34;code&#34;&gt;__rich__&lt;/code&gt; formatting methods.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;The Steps&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Making Rich Think We&#39;re in a Jupyter Notebook&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Since we&#39;re intending to run this in a browser anyway, we could just set &lt;code class=&#34;code&#34;&gt;console.is_jupyter = True&lt;/code&gt; to force Rich to render HTML. But we&#39;ll be slightly nicer and redirect that property to a new function &lt;code class=&#34;code&#34;&gt;is_pyodide&lt;/code&gt;. This just looks to see if &#39;pyodide&#39; is in our available modules, &lt;a href=&#34;https://pyodide.org/en/stable/usage/faq.html#how-to-detect-that-code-is-run-with-pyodide&#34;&gt;as suggested by the pyodide FAQ&lt;/a&gt;. This means that whenever our code is running in Pyodide, the Rich library will render as if it&#39;s going to be output to a Jupyter notebook.&lt;/p&gt;
+&lt;div class=&#34;mb-6 lg:mx-4&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Per pyodide docs, determine if we&amp;#39;re running inside pyodide at Runtime&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is_pyodide&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; bool:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;pyodide&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; modules
+ 
+&lt;span style=&#34;color:#75715e&#34;&gt;# Patch jupyter detection of the global _console object to detect pyodide&lt;/span&gt;
+c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_console()
+c&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;is_jupyter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; is_pyodide &lt;span style=&#34;color:#75715e&#34;&gt;#monkeypatch jupyter detection @propety&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# patch function so if user creates any additional Consoles they behave correctly&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# While the global _console us&lt;/span&gt;
+_is_jupyter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; is_pyodide&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Replacing Rich&#39;s Display Function with our Own&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Similarly, we&#39;ll point &lt;code class=&#34;code&#34;&gt;rich.jupyter.display&lt;/code&gt; at a new function we&#39;ll write that gets the output that the Jupyter notebook would have received and send it to stdout. And, as noted above, we&#39;ll redirect the usual &lt;code class=&#34;code&#34;&gt;print&lt;/code&gt; function to the rich print function, to get nicely formatted outputs whenever we use the standard print() syntax.&lt;/p&gt;
+&lt;div class=&#34;mb-6 lg:mx-4&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Jupyter display method renders html and writes to stdout&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;display_pyscript&lt;/span&gt;(segments: Iterable[Segment], text: str) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Allow output of raw HTML within pyscript/pyodide&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    html &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rich&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;jupyter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_render_segments(segments)
+    stdout&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write(html)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#patch jupyter display method to write processed HTML to stdout&lt;/span&gt;
+rich&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;jupyter&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;display &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; display_pyscript 
+
+print &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_console()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;print&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Fixing &lt;span class=&#34;italic&#34;&gt;Element.write()&lt;/span&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Finally, we need to match some adjustments to PyScript&#39;s &lt;code class=&#34;code&#34;&gt;Element.write()&lt;/code&gt; function, which is a utility method that allows PyScript users to send output to a specific DOM element directly. Since this bypasses the usual writing to stdout (and directly modifies the &lt;span class=&#34;italic&#34;&gt;innerHTML&lt;/span&gt; attribute of the DOM element), we need to do a little legwork to get the formatting to work.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In a nutshell, we&#39;ll solve this issue in 3 steps:
+    &lt;ul class=&#34;post-ul&#34;&gt;
+        &lt;li&gt;When the user&#39;s code calls to &lt;code class=&#34;code&#34;&gt;Element.write()&lt;/code&gt;, if the object written is a plain &lt;code&gt;str&lt;/code&gt;, &lt;code&gt;Exception&lt;/code&gt;, or &lt;code&gt;JsException&lt;/code&gt;, we&#39;ll pass it though to &lt;code class=&#34;code&#34;&gt;Element.write()&lt;/code&gt; unchanged. This preserves some of the functionality around how PyScript currrently does error handling and presentation.&lt;/li&gt;
+        &lt;li&gt;Otherwise, we&#39;ll use a context manager to temporarily redirect &lt;code&gt;stdout&lt;/code&gt; to a buffer, feed the object to &lt;code class=&#34;code&#34;&gt;rich.console.print()&lt;/code&gt;, and capture that output in the buffer.&lt;/li&gt;
+        &lt;li&gt;When the context manager closes, it writes its contents to the appropriate element using the original &lt;code class=&#34;code&#34;&gt;Element.write()&lt;/code&gt; functionality.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt; I&#39;ve implemented a rudementary &lt;a href=&#34;https://docs.python.org/3/glossary.html#term-file-object&#34;&gt;File-like object&lt;/a&gt; called &lt;code class=&#34;code&#34;&gt;output_buffer&lt;/code&gt; that simply saves anything written to it as a concatenated string. If this isn&#39;t the first thing in the buffer, we insert a &lt;code class=&#34;code&#34;&gt;&amp;lt;br&amp;gt;&lt;/code&gt; tag to make it start on a new line. This is admittedly a hack, but it largely gives the right appearance.&lt;/p&gt;
+&lt;div class=&#34;mb-6 overflow-y-scroll h-76 lg:mx-4&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# PyScripts OutputCTXManager is used for stdout but does not implement&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# full fill interface; this prevents a warning each time console tries&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# to print&lt;/span&gt;
+stdout&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;flush &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;lambda&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;##---- Redefine Pyscript.write()---&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;output_buffer&lt;/span&gt;():
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34; A (inefficient) buffer to capture stdout to a string &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(self):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;write&lt;/span&gt;(self, value: any):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer):
+            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;internal_buffer &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;lt;br&amp;gt;&amp;#39;&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; value
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;read&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_internal_buffer
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;flush&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;pass&lt;/span&gt;
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;@contextmanager&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;stdout_to_buffer&lt;/span&gt;(el:Element, append: bool) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34; A context manager to manage an output_buffer, writes to an Element on closure&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; stdout &lt;span style=&#34;color:#75715e&#34;&gt;#Usually Pyscript OutputCTXManager at this pont&lt;/span&gt;
+    _old_stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; stdout
+    stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; output_buffer()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;yield&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;finally&lt;/span&gt;:
+        el&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_write(stdout&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;read(), append)
+        stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; _old_stdout 
+
+Element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_write &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#Allow Element.write() to take an object from rich&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;newWrite&lt;/span&gt;(self, value, append: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34; A Monkeypatched version of Pyscript&amp;#39;s Element.write(), auto-transforming Rich objects and rendering standard objects. &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; isinstance(value, (str, &lt;span style=&#34;color:#a6e22e&#34;&gt;Exception&lt;/span&gt;, JsException)):
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_write(value, append)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; stdout_to_buffer(self, append):
+            get_console()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;print(value)
+
+Element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; newWrite&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;What About ...&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Those who are familiar with the various ways Rich already provides to capture its own output, as well as exporting it as HTML, may have some reasonable questions here. It&#39;s surely possible I&#39;ve missed something in Rich&#39;s expansive API, but I didn&#39;t find a solution that did everything I want without implementing my own context manager. That said, it does feel like there shuold be a simpler way...&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;I wanted to make the default console returned by &lt;code class=&#34;code&#34;&gt;get_console()&lt;/code&gt; have the desired behavior, as well as any consoles the user created in the future. Hence the reason for overriding the _is_jupyter method instead of just making the default console &lt;code class=&#34;code&#34;&gt;force_jupyter=True&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Using &lt;code class=&#34;code&#34;&gt;Console.capture()&lt;/code&gt; captures the entire contents of the console, from which it can be exported (or saved as a file) to HTML, but there isn&#39;t a direct way to save just the user-input-turned-into-HTML as far as I know.&lt;/li&gt;
+    &lt;li&gt;Because &lt;a href=&#34;https://github.com/Textualize/rich/blob/8e2da1afab8743d8e3c55b8191492cc5f9905b7f/rich/jupyter.py#L84-L95&#34;&gt;Rich&#39;s jupyter.display() method&lt;/a&gt; tries specifically to write to an iPython display, I needed to override this method to render the objects to HTML and just write those to std.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;With all these pieces put together, now most writes to stdout should be formatted using Rich&#39;s format rules.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;live-updates&#34;&gt;Live Updates&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;While there are lots of things that make running Python inside a browser window different from running in a terminal/desktop environment, one of the most striking is that we only have one event loop and we can&#39;t block it. Ever. Even a simple &lt;code class=&#34;code&#34;&gt;time.sleep(1)&lt;/code&gt; irrevocably blocks the &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop&#34;&gt;JavaScript event loop&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is where asyncio comes to the rescue. The Pyodide runtime has a custom event loop (&#34;&lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/webloop.html#module-pyodide.webloop&#34;&gt;Webloop&lt;/a&gt;&#34;) that hooks to the asyncio webloop, allowing nonblock asynchronous operations. For example, we can use &lt;code class=&#34;code&#34;&gt;asyncio.sleep()&lt;/code&gt; instead of &lt;code&gt;time.sleep()&lt;/code&gt;, &lt;code class=&#34;code&#34;&gt;asynccontextmanager&lt;/code&gt;s instead of &lt;code&gt;context managers&lt;/code&gt;, and so on.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Hooking this deep into Rich&#39;s functionality requires some significant rewriting of the &lt;a href=&#34;https://rich.readthedocs.io/en/stable/live.html&#34;&gt;Live class&lt;/a&gt;, as well as an additional helper class that constantly refreshes the live display by adding new callouts to the event loop every quarter second. The full results are below.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;If you want to use the Live update element in your PyScript page, you&#39;ll want to:
+    &lt;ul class=&#34;mb-6 post-ul&#34;&gt;
+        &lt;li&gt;Add the following code to a PyScript tag near the top of your page.&lt;/li&gt;
+        &lt;li&gt;Use the included &lt;code&gt;Live&lt;/code&gt; class instead of importing from &lt;code&gt;Rich.live&lt;/code&gt;. It has the same interface as Rich.live, though not all features are implemented yet.&lt;/li&gt;
+        &lt;li&gt;Avoid using any blocking io calls, instead substituting with their async versions. For an example of how to use the new Live class &lt;a href=&#34;https://rich.readthedocs.io/en/stable/live.html&#34;&gt;in the same way Rich does&lt;/a&gt; (i.e. as a context manager), see the live examples on the &lt;a href=&#34;../../project/richdemo&#34;&gt;Rich Demo&lt;/a&gt; page.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;
+&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;_livepatch.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;overflow-y-scroll h-52&#34;&gt;
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 87
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 88
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 89
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 90
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 91
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 92
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 93
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 94
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 95
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 96
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 97
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 98
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 99
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;100
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;101
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;102
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;103
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;104
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;105
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;106
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;107
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;108
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;109
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;110
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;111
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;112
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;113
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;114
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;115
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;116
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;117
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;118
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;119
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;120
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;121
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;122
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;123
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;124
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;125
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;126
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;127
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;128
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;129
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;130
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;131
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;132
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;133
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;134
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;135
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;136
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;137
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;138
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;139
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;140
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;141
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;142
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;143
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;144
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;145
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;146
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;147
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;148
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;149
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;150
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;151
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;152
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;153
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;154
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;155
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;156
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;157
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;158
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;159
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;160
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;161
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;162
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;163
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;164
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;165
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;166
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;167
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;168
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;169
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;170
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;171
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; asyncio
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; get_console
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich.console &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Console, RenderableType, ConsoleRenderable
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; typing &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Type, Optional, Callable, IO, List
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; types &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; TracebackType
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich.live_render &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; VerticalOverflowMethod
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PyscriptRefresher&lt;/span&gt;():
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(
+        self,
+        renderable: RenderableType,
+        element: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Element&amp;#39;&lt;/span&gt;,
+        live: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Live&amp;#39;&lt;/span&gt;,
+        refresh_per_second: float &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;,
+    ) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; renderable
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;live &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; live
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;element &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; element
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;refresh_per_second &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; refresh_per_second
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;done &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;update_live&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting update live function&amp;#34;&lt;/span&gt;)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;:
+            console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;About to write &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;await&lt;/span&gt; asyncio&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;refresh_per_second)
+
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;run&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; bool:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Starts the refresh coroutine if it is not already running
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        Returns:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            True if the coroutine was successfully created and started
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            False if the coroutine was already running, or not successfully created
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;
+        loop &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pyscript&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;loop
+        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;About to start running refresh task&amp;#34;&lt;/span&gt;)
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; loop&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;create_task(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;update_live())
+        &lt;span style=&#34;color:#75715e&#34;&gt;#loop.run_until_complete(self._refresh_task)&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;stop&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Stops the refresh coroutine if it is running&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;cancel()
+            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Live&lt;/span&gt;():
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Renders an auto-updating live display of any given renderable.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    Mirrors the API of rich.live.LIVE
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    Args:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        renderable (RenderableType, optional): The renderable to live display. Defaults to displaying nothing.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        console (Console, optional): Optional Console instance. Default will an internal Console instance writing to stdout. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        auto_refresh (bool, optional): Enable auto refresh. If disabled, you will need to call `refresh()` or `update()` with refresh flag. Defaults to True &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        refresh_per_second (float, optional): Number of times per second to refresh the live display. Defaults to 4. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        transient (bool, optional): Clear the renderable on exit (has no effect when screen=True). Defaults to False. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        redirect_stdout (bool, optional): Enable redirection of stdout, so ``print`` may be used. Defaults to True. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        redirect_stderr (bool, optional): Enable redirection of stderr. Defaults to True. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        vertical_overflow (VerticalOverflowMethod, optional): How to handle renderable when it is too tall for the console. Defaults to &amp;#34;ellipsis&amp;#34;. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        get_renderable (Callable[[], RenderableType], optional): Optional callable to get renderable. Defaults to None. &amp;gt;&amp;gt;&amp;gt; NOT IMPLEMENTED
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        element_id (str): The id of a DOM element (often a div) that the live element will be written to
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        The screen parameters of rich.live.Live is not used
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __init__(
+        self,
+        renderable: Optional[RenderableType] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;,
+        element_id: str &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;,
+        &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;,
+        rich_console: Optional[Console] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;,
+        &lt;span style=&#34;color:#75715e&#34;&gt;#screen: bool attribute not used&lt;/span&gt;
+        auto_refresh: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;,
+        refresh_per_second: float &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;,
+        transient: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;,
+        redirect_stdout: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;,
+        redirect_stderr: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;,
+        vertical_overflow: VerticalOverflowMethod &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ellipsis&amp;#34;&lt;/span&gt;,
+        get_renderable: Optional[Callable[[], RenderableType]] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;,
+        &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;kwargs
+    ) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;assert&lt;/span&gt; refresh_per_second &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;refresh_per_second must be &amp;gt; 0&amp;#34;&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; renderable
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;console &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rich_console &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; rich_console &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; get_console()
+        &lt;span style=&#34;color:#75715e&#34;&gt;#self._screen = screen&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_alt_screen &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;
+
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_redirect_stdout &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; redirect_stdout
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_redirect_stderr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; redirect_stderr
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_restore_stdout: Optional[IO[str]] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_restore_stderr: Optional[IO[str]] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+
+        &lt;span style=&#34;color:#75715e&#34;&gt;#self._lock = RLock()&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;auto_refresh &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; auto_refresh
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;transient &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; transient
+
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;vertical_overflow &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; vertical_overflow
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_get_renderable &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_renderable
+
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;assert&lt;/span&gt; element_id &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;element &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Element(element_id)
+
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;refresh_per_second &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; refresh_per_second
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_thread &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; PyscriptRefresher(renderable &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable, element &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;element, live&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;self, refresh_per_second &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;refresh_per_second)
+        
+
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;@property&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;is_started&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; bool:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Check if live display has been started.&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_thread&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_task &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get_renderable&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; RenderableType:
+        renderable &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (
+            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_get_renderable()
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_get_renderable &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable
+        )
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; renderable &lt;span style=&#34;color:#f92672&#34;&gt;or&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;start&lt;/span&gt;(self, refresh: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Start live rendering display.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        Args:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            refresh (bool, optional): Also refresh. Defaults to False.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; refresh: self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;element&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable)
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_thread&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;run()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;stop&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Stop live rendering display.&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_refresh_thread&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;stop()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __enter__(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Live&amp;#39;&lt;/span&gt;:
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;start(refresh&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; __exit__(
+        self,
+        exc_type: Optional[Type[&lt;span style=&#34;color:#a6e22e&#34;&gt;BaseException&lt;/span&gt;]],
+        exc_val: Optional[&lt;span style=&#34;color:#a6e22e&#34;&gt;BaseException&lt;/span&gt;],
+        exc_tb: Optional[TracebackType],
+    ) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;stop()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;renderable&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;_renderable
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;update&lt;/span&gt;(self, renderable: RenderableType, &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;, refresh: bool &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Update the renderable that is being displayed
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        Args:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            renderable (RenderableType): New renderable to use.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            refresh (bool, optional): Refresh the display. Defaults to False.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;pass&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#Not implemented&lt;/span&gt;
+    
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;refresh&lt;/span&gt;(self) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Update the display of the Live Render.&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;pass&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#not implemented&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;process_renderables&lt;/span&gt;(
+        self, renderables: List[ConsoleRenderable]
+    ) &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; List[ConsoleRenderable]:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;pass&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#not implemented&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+    &lt;/div&gt;
+    &lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+    
+&lt;/div&gt;
+&lt;py-script src=&#34;_livepatch.py&#34;&gt;&lt;/py-script&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;Live Table Demo&lt;/h3&gt;
+&lt;div class=&#34;flex flex-col space-x-2 xl:flex-row gap-y-2&#34;&gt;
+    &lt;div class=&#34;w-full bg-gray-200 border-2 border-gray-400 xl:w-1/2 &#34;&gt;
+        &lt;py-script class=&#34;px-2&#34; src=&#34;scripts/working/livetable.py&#34;&gt;&lt;/py-script&gt;
+        &lt;div id=&#34;live-table-output&#34; class=&#34;h-56 overflow-y-auto&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full xl:w-1/2&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;livetable.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;overflow-y-scroll h-52&#34;&gt;
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; asyncio
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; collections &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; deque
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; random &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; random, choice, randint
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich.table &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Table
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; rich.emoji &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Emoji
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; datetime &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; datetime
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; faker &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Faker
+&lt;span style=&#34;color:#75715e&#34;&gt;#from livepatch import Live&lt;/span&gt;
+
+fake &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Faker()
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;):
+    table &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Table(width &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;)
+    table&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;add_column(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Time&amp;#34;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;)
+    table&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;add_column(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Source&amp;#34;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;)
+    table&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;add_column(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Destination&amp;#34;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;)
+
+    max_rows &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; randint(&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+    num_rows &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; num_rows &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; max_rows:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; Live(table, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;live-table-output&amp;#34;&lt;/span&gt;):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;await&lt;/span&gt; asyncio&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;.3&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; random() &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;.6&lt;/span&gt;)
+            num_rows &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+
+            time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; datetime&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;now()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;strftime(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%S.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+            time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time[:min(len(time), &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;)]
+            source, dest &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; fake&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ipv4(), fake&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ipv4()
+
+            &lt;span style=&#34;color:#75715e&#34;&gt;#data added here is automatically visible in the Table&lt;/span&gt;
+            table&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;add_row(time, source, dest)         &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+    &lt;/div&gt;
+    &lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;What Works and What Doesn&#39;t&lt;/h2&gt;
+&lt;p class=&#34;italic post-p&#34;&gt;See the &lt;a href=&#34;../../project/richdemo&#34;&gt;demo page&lt;/a&gt; for working examples.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Out of the box, this allows for formatting of most static Rich objects: Text, Lists and Dicts, JSON objets, etc. The various formatting objects that rely on them - Panels, Columns, Layouts etc - also work.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Some specific formatting tags are broken - though personally, I&#34;m not too sad that &lt;code&gt;&amp;lt;blink&amp;gt;&lt;/code&gt; doesn&#39;t work.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Emoji are also (somewhat) broken, though that&#39;s mostly through me running out of time to look at their implementation in depth. A brief glance at the &lt;a href=&#34;https://github.com/Textualize/rich/blob/master/rich/emoji.py&#34;&gt;Emoji.py source&lt;/a&gt; makes it look like perhaps what I&#39;m doing for output is clobbering the unicode characters that should be output as Emoji? Or perhaps how they&#39;re being rendered - the TL;DR example at the top of the page shows (for me) a successful &#34;hand-pointing-down&#34; but a non-colored &#34;play button&#34;.&lt;/p&gt;
+&lt;hr class=&#34;my-6&#34;&gt;    
+&lt;h2 class=&#34;post-h3&#34;&gt;Things that Don&#39;t Work&lt;/h2&gt;
+&lt;div class=&#34;flex flex-col space-y-6&#34;&gt;
+    &lt;div class=&#34;flex flex-col space-x-2 xl:flex-row gap-y-2&#34;&gt;
+        &lt;div class=&#34;w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2&#34;&gt;
+        &lt;h3&gt;Some Text Formatting Options&lt;/h3&gt;
+            &lt;py-script class=&#34;px-2&#34; src=&#34;scripts/not_working/richnonformatted.py&#34;&gt;&lt;/py-script&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;w-full xl:w-1/2&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;richnonformatted.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[blink]Blinking Text[/blink]&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;flex flex-col space-x-2 xl:flex-row gap-y-2&#34;&gt;
+        &lt;div class=&#34;w-full h-32 bg-red-100 border-2 border-gray-400 xl:w-1/2&#34;&gt;
+        &lt;h3&gt;Emoji&#39;s (Ish)&lt;/h3&gt;
+            &lt;py-script class=&#34;px-2&#34; src=&#34;scripts/not_working/richemoji.py&#34;&gt;&lt;/py-script&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;w-full xl:w-1/2&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;richemoji.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;:red_heart-emoji:&amp;#34;&lt;/span&gt;)
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;:red_heart-text:&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+
+&lt;!-- &lt;p class=&#34;line-through post-p&#34;&gt;What breaks, however, is anything that uses threading under the hood to operate: live-updating displays, progress bars, that sort of thing. Since &lt;a href=&#34;https://github.com/pyodide/pyodide/issues/237&#34;&gt;threading isn&#39;t currently supported in Pyodide&lt;/a&gt;, there&#39;s not much of a direct solution here, but some workarounds can be had by using &lt;span class=&#34;italic&#34;&gt;async-await&lt;/span&gt; to concurrently update the state of these objects. Check out the &lt;a href=&#34;#progress-bar&#34;&gt;progress-bar demo&lt;/a&gt; below for an example.&lt;/p&gt;
+&lt;p class=&#34;px-2 mx-4 bg-gray-200 border-l-4 border-gray-800 post-p&#34;&gt;Since writing the above, I&#39;ve (almost) completed work on implementing a version of the &lt;a href=&#34;https://rich.readthedocs.io/en/stable/live.html&#34;&gt;Rich Live class&lt;/a&gt; using pyodide&#39;s event loop and async/await instead of threads. That work is detailed in a separate post (coming soon), but there are some previews on twitter in the meantime: &lt;a target=&#34;_blank&#34; href=&#34;https://twitter.com/JeffersGlass/status/1559634350513299456?s=20&amp;t=qHo-w2VcStd_-fWLtSdotQ&#34;&gt;[1]&lt;/a&gt; &lt;a target=&#34;_blank&#34; href=&#34;https://twitter.com/JeffersGlass/status/1559671709250342917?s=20&amp;t=qHo-w2VcStd_-fWLtSdotQ&#34;&gt;[2]&lt;/a&gt; &lt;a target=&#34;_blank&#34; href=&#34;https://twitter.com/JeffersGlass/status/1559682257312423937?s=20&amp;t=qHo-w2VcStd_-fWLtSdotQ&#34;&gt;[3]&lt;/a&gt;. I&#39;ve left the examples below that using async/await directly as an example of what you might do if you want to manage updates more manually.&lt;/p&gt; --&gt;
+
+&lt;!-- &lt;style&gt;
+    h3 {
+        font-size: 1.5rem/* 24px */;
+        line-height: 2rem/* 32px */;
+        padding-bottom: 0.5rem;
+        width: 100%;
+        --tw-bg-opacity: 1;
+        background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
+        padding-left: 0.25rem;
+    }
+&lt;/style&gt;
+
+&lt;a id=&#34;patch&#34;&gt;&lt;/a&gt;
+&lt;h2 class=&#34;mb-6 post-h2&#34; id=&#34;&#34;&gt;The Code&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Here&#39;s all of the code above compiled into a single .py file. To get Rich output on your own PyScript page, include the following code before any of your outputs, or as a separate file using &lt;code class=&#34;code&#34;&gt;src=&#34;...&#34;&lt;/code&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Note that you&#39;ll need to have the Rich module in your environment - the easiest way to do this is using &lt;code class=&#34;code&#34;&gt;&amp;lt;py-env&amp;gt; - rich &amp;lt;/py-env&amp;gt;&lt;/code&gt;&lt;/p&gt; --&gt;
+
+    
+&lt;/div&gt;</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Rich on PyScript</title>
+      <link>https://jeff.glass/project/richdemo/</link>
+      <pubDate>Sat, 10 Sep 2022 13:50:24 -0500</pubDate>
+      
+      <guid>https://jeff.glass/project/richdemo/</guid>
+      <description>&lt;link rel=&#34;stylesheet&#34; href=&#34;tooltips.css&#34;&gt;
+&lt;script src=&#34;//unpkg.com/alpinejs&#34; defer&gt;&lt;/script&gt;
+&lt;script defer src=&#34;https://pyscript.net/releases/2022.06.1/pyscript.js&#34;&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2022.06.1/pyscript.css&#34;&gt;
+&lt;py-env&gt;
+    - rich
+    - faker
+    - paths:
+        - ./_richsetup.py
+        - ./scripts/liverunner.py
+&lt;/py-env&gt;
+&lt;script&gt;
+    function createJSObject(object, variableName){
+        //Bind a variable whose name is the string variableName
+        // to the object called &#39;object&#39;
+        let execString = variableName + &#34; = object&#34;
+        console.log(&#34;Running `&#34; + execString + &#34;`&#34;);
+        eval(execString)
+    }
+&lt;/script&gt;
+&lt;py-script src=&#34;_richsetup.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;livepatch.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;cancel_tasks.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;show_docstring.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script&gt;
+    #click Text button to start
+    from js import document
+    document.getElementById(&#34;button1&#34;).click()
+&lt;/py-script&gt;
+&lt;div id=&#34;intro&#34; class = &#34;block mb-1 text-sm&#34;&gt;
+    &lt;p class=&#34;mb-1&#34;&gt;&lt;a href=&#34;https://rich.readthedocs.io/en/stable/introduction.html&#34;&gt;Rich&lt;/a&gt; is a Python library for writing rich text (with color and style) to the terminal, and for displaying advanced content such as tables, markdown, and syntax highlighted code. The page illustrates the core classes and concepts of the Rich library, runninng live in the browser via &lt;a href=&#34;https://github.com/pyscript/pyscript&#34;&gt;PyScript&lt;/a&gt; (v2022.06.1). &lt;/p&gt;
+    &lt;p&gt;Select any of the classes below to load a live code sample using that class. Select any of the demos to see them run in realtime. Try changing the code in the REPL to see the results! See the accompanying blog post for notes on &lt;a href=&#34;../../post/pyscript-rich/&#34;&gt;How to use Rich in PyScript&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;grid grid-cols-1 gap-y-2 lg:flex lg:flex-row&#34; x-data =&#34;{ scripts: [
+    {id:  1, name: &#39;Text&#39;            , src: &#39;scripts/richtext.py&#39;            , type: &#39;script&#39;, referenceImports: &#39;from rich.text import Text&#39;, referenceObject: &#39;Text&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/text.html&#39;},
+    {id:  2, name: &#39;Bar&#39;             , src: &#39;scripts/richbar.py&#39;            , type: &#39;script&#39;, referenceImports: &#39;from rich.bar import Bar&#39;, referenceObject: &#39;Bar&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/bar.html&#39;},
+    {id:  3, name: &#39;Columns&#39;         , src: &#39;scripts/richcolumns.py&#39;         , type: &#39;script&#39;, referenceImports: &#39;from rich.columns import Columns&#39;, referenceObject: &#39;Columns&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/columns.html&#39;},
+    {id:  4, name: &#39;Exception&#39;       , src: &#39;scripts/richexception.py&#39;       , type: &#39;script&#39;, referenceImports: &#39;from rich.console import Console&#39;, referenceObject: &#39;Console().print_exception&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/console.html?highlight=print_exception#rich.console.Console.print_exception&#39;},
+    {id:  5, name: &#39;Group&#39;         , src: &#39;scripts/richgroup.py&#39;             , type: &#39;script&#39;, referenceImports: &#39;from rich.console import Group&#39;, referenceObject: &#39;Group&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/console.html?highlight=group#rich.console.Group&#39;},
+    {id:  6, name: &#39;Highlighter&#39;      , src: &#39;scripts/richhighlighter.py&#39;   , type: &#39;script&#39;, referenceImports: &#39;from rich.highlighter import RegexHighlighter&#39;, referenceObject: &#39;regexHighlighter&#39;, note: &#39;This demo is adapted from the highlighter.py demo included with Rich&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/highlighter.html&#39;},
+    {id:  7, name: &#39;Inspect&#39;          , src: &#39;scripts/richinspect.py&#39;        , type: &#39;script&#39;, referenceImports: &#39;from rich import inspect&#39;, referenceObject: &#39;inspect&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/init.html?highlight=inspect#rich.inspect&#39;},
+    {id:  8, name: &#39;Layout&#39;          , src: &#39;scripts/richlayout.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.layout import Layout&#39;, referenceObject: &#39;Layout&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/layout.html&#39;},
+    {id:  9, name: &#39;Live&#39;            , src: &#39;scripts/liverunner.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;&#39;, referenceObject: &#39;&#39;, apiLink: &#39;http://localhost:1313/post/pyscript-rich#live-updates&#39;},
+    {id:  10, name: &#39;Logging&#39;         , src: &#39;scripts/richlogging.py&#39;         , type: &#39;script&#39;, referenceImports: &#39;from rich.logging import RichHandler&#39;, referenceObject: &#39;RichHandler&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/logging.html&#39;},
+    {id:  11, name: &#39;Markdown&#39;         , src: &#39;scripts/richmarkdown.py&#39;      , type: &#39;script&#39;, referenceImports: &#39;from rich.markdown import Markdown&#39;, referenceObject: &#39;Markdown&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/markdown.html&#39;},
+    {id:  12, name: &#39;Panel&#39;           , src: &#39;scripts/richpanel.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.panel import Panel&#39;, referenceObject: &#39;Panel&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/panel.html&#39;},
+    {id:  13, name: &#39;Progress Bar&#39;    , src: &#39;scripts/richprogressbar.py&#39;     , type: &#39;script&#39;, referenceImports: &#39;from rich.progress_bar import ProgressBar&#39;, referenceObject: &#39;ProgressBar&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/progress_bar.html&#39;},
+    {id:  14, name: &#39;Syntax&#39;          , src: &#39;scripts/richsyntax.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.syntax import Syntax&#39;, referenceObject: &#39;Syntax&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/syntax.html&#39;},
+    {id:  15, name: &#39;Table&#39;          , src: &#39;scripts/richtables.py&#39;          , type: &#39;script&#39;, referenceImports: &#39;from rich.table import Table&#39;, referenceObject: &#39;Table&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/table.html&#39;},
+    {id:  16, name: &#39;Traceback&#39;       , src: &#39;scripts/richtraceback.py&#39;       , type: &#39;script&#39;, referenceImports: &#39;from rich.traceback import install&#39;, referenceObject: &#39;install&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/traceback.html&#39;},
+    {id:  17, name: &#39;Tree&#39;            , src: &#39;scripts/richtree.py&#39;            , type: &#39;script&#39;, referenceImports: &#39;from rich.tree import Tree&#39;, referenceObject: &#39;Tree&#39;, note: &#39;This code has been borrowed/adapted from the Rich documentation.&#39;, apiLink: &#39;https://rich.readthedocs.io/en/stable/reference/tree.html&#39;},
+    
+
+    //{id:  29, name: &#39;Jobs&#39;                         , src: &#39;scripts/jobs.py&#39;  , type: &#39;demo&#39;, note: &#39;This demo is adapted from the jobs.py demo included with Rich&#39;}
+    {id:  30, name: &#39;REPL&#39;                          ,src: &#39;scripts/repl.py&#39;,     type: &#39;demo&#39;, note: &#39;Output from this live REPL will be formatted with Rich&#39;},
+    {id:  34, name: &#39;Rainbow                &#39;      , src: &#39;scripts/richrainbow.py&#39;   , type: &#39;demo&#39;, note: &#39;This demo is adapted from the rainbow.py demo included with Rich&#39;},
+    {id:  32, name: &#39;print_calendar&#39;                  , src: &#39;scripts/print_calendar.py&#39;      , type: &#39;demo&#39;, note: &#39;This demo is adapted from the print_calendar.py demo included with Rich&#39;},
+    {id:  33, name: &#39;table_movie&#39;                  , src: &#39;scripts/table_movie.py&#39;      , type: &#39;demo&#39;, note: &#39;This demo is adapted from the table_movie.py demo included with Rich&#39;},
+    {id:  31, name: &#39;dynamic_progress&#39;             , src: &#39;scripts/dynamic_progress.py&#39; , type: &#39;demo&#39;, note: &#39;This demo is adapted from the dynamic_progress.py demo included with Rich&#39;},
+    {id:  50, name: &#39;PyScript`s Element.Write&#39;     , src: &#39;scripts/element-write.py&#39;    , type: &#39;demo&#39;},
+    ],
+    current_id: 0} &#34;&gt;
+    &lt;div class=&#34;lg:hidden&#34; id=&#34;mobile-controls&#34;&gt;
+        &lt;div class=&#34;grid grid-cols-1 px-2 py-2 bg-blue-50&#34; id=&#34;classes-panel&#34;&gt;
+            &lt;div class=&#34;italic text-center text-blue-700&#34;&gt;Classes&lt;/div&gt;
+            &lt;div id=&#34;rich-element-buttons&#34; class=&#34;flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1&#34;&gt;
+                &lt;template x-for=&#34;my_script in scripts.filter(obj =&gt; {return obj.type === &#39;script&#39;})&#34; :key=&#34;my_script.id&#34;&gt;
+                    &lt;button class=&#34;richbutton&#34; :id=&#34;&#39;button&#39; + my_script.id&#34; x-text=&#34;my_script.name&#34; @click=&#34; current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)&#34; :class=&#34;my_script.id === current_id &amp;&amp; &#39;bg-blue-600 text-white font-semibold&#39;&#34;&gt;&lt;/p&gt;
+                &lt;/template&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;grid grid-cols-1 px-2 py-2 bg-green-50&#34; id=&#34;demos-panel&#34;&gt;
+            &lt;div class=&#34;italic text-center text-green-700&#34;&gt;Demos&lt;/div&gt;
+            &lt;div id=&#34;rich-demo-buttons&#34; class=&#34;flex flex-row flex-wrap justify-center w-auto gap-x-2 gap-y-1&#34;&gt;
+                &lt;template x-for=&#34;my_demo in scripts.filter(obj =&gt; {return obj.type === &#39;demo&#39;})&#34; :key=&#34;my_demo.id&#34;&gt;
+                    &lt;button class=&#34;richbutton&#34; :id=&#34;&#39;demo&#39; + my_demo.id&#34; x-text=&#34;my_demo.name&#34; @click=&#34;setReplCode(my_demo.src); current_id = my_demo.id;&#34; :class=&#34;my_demo.id === current_id &amp;&amp; &#39;bg-green-600 text-white font-semibold&#39;&#34;&gt;&lt;/p&gt;
+                &lt;/template&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id=&#34;desktop-controls&#34; class=&#34;flex-none hidden pl-1 pr-3 mt-2 bg-gray-100 border-r-2 border-gray-600 lg:block&#34;&gt;
+        &lt;p class=&#34;text-lg font-semibold text-gray-600&#34;&gt;Rich Objects&lt;/p&gt;
+        &lt;template x-for=&#34;my_script in scripts.filter(obj =&gt; {return obj.type === &#39;script&#39;})&#34; :key=&#34;my_script.id&#34;&gt;
+            &lt;p&gt;&lt;button :id=&#34;&#39;scriptlink&#39; + my_script.id&#34; x-text=&#34;my_script.name&#34; @click=&#34;current_id = my_script.id; setReplCode(my_script.src); if (my_script.referenceObject != undefined) setInfo(my_script.referenceObject, my_script.referenceImports, my_script.apiLink)&#34; class=&#34;ml-2&#34; :class=&#34;my_script.id === current_id &amp;&amp; &#39;font-bold&#39;&#34;&gt;&lt;/p&gt;
+        &lt;/template&gt;
+        &lt;p class=&#34;mt-6 text-lg font-semibold text-gray-600&#34;&gt;Rich Demos&lt;/p&gt;
+        &lt;template x-for=&#34;my_demo in scripts.filter(obj =&gt; {return obj.type === &#39;demo&#39;})&#34; :key=&#34;my_demo.id&#34;&gt;
+            &lt;p&gt;&lt;button :id=&#34;&#39;demolink&#39; + my_demo.id&#34; x-text=&#34;my_demo.name&#34; @click=&#34;setReplCode(my_demo.src); current_id = my_demo.id;&#34; class=&#34;ml-2&#34; :class=&#34;my_demo.id === current_id &amp;&amp; &#39;font-bold&#39;&#34;&gt;&lt;/p&gt;
+        &lt;/template&gt;
+    &lt;/div&gt;
+    &lt;div id=&#34;userpane&#34; class=&#34;grid flex-auto grid-cols-1 ml-2 xl:grid-cols-2&#34;&gt;
+        &lt;div class=&#34;hidden my-2 ml-8 text-gray-600 lg:block xl:col-span-2&#34;&gt;
+            &lt;h2 class=&#34;&#34;&gt;
+                &lt;span class=&#34;text-3xl font-semibold&#34; x-text=&#34;scripts.find(obj =&gt; {return obj.id === current_id}).name&#34;&gt;
+                    Text
+                &lt;/span&gt;&lt;span id=&#34;api-link&#34; class=&#34;ml-2&#34;&gt;&lt;/span&gt;
+                &lt;div id=&#34;docs&#34; class=&#34;1&#34;&gt;
+                    &lt;div&gt;
+                        &lt;meta charset=&#34;UTF-8&#34;&gt;
+                        &lt;style&gt;
+                        .r1 {color: #800080; text-decoration-color: #800080}
+                        body {
+                            color: #000000;
+                            background-color: #ffffff;
+                        }
+                        &lt;/style&gt;
+                        &lt;code&gt;
+                            &lt;pre style=&#34;font-family:Menlo,&#39;DejaVu Sans Mono&#39;,consolas,&#39;Courier New&#39;,monospace&#34;&gt;Text with color &lt;span class=&#34;r1&#34;&gt;/&lt;/span&gt; style.
+                            &lt;/pre&gt;
+                        &lt;/code&gt;                  
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;px-4 py-2 mx-2 overflow-y-scroll bg-gray-200 xl:order-last max-h-160&#34;&gt;
+            &lt;p class=&#34;italic text-center text-gray-600&#34;&gt;Output&lt;/p&gt;
+            &lt;div id=&#34;output-container&#34;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;py-2&#34; id=&#34;repl-box&#34;&gt;
+            &lt;p class=&#34;italic text-center text-gray-600&#34;&gt;REPL&lt;/p&gt;
+            &lt;div id=&#34;repl-container&#34; class=&#34;&#34;&gt;
+                &lt;py-repl id=&#34;repl&#34;&gt;&lt;/py-repl&gt;
+            &lt;/div&gt;
+            &lt;div id=&#34;repl-note&#34; x-show=&#34;scripts.find(obj =&gt; {return obj.id === current_id}) != undefined &amp;&amp; scripts.find(obj =&gt; {return obj.id === current_id}).hasOwnProperty(&#39;note&#39;)&#34; 
+                x-text=&#34;(scripts.find(obj =&gt; {return obj.id === current_id}) != undefined &amp;&amp; scripts.find(obj =&gt; {return obj.id === current_id}).hasOwnProperty(&#39;note&#39;)) ? scripts.find(obj =&gt; {return obj.id === current_id}).note : &#39;&#39;&#34;
+                class=&#34;italic text-center text-gray-600&#34;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+    async function setReplCode(filename){
+        if (typeof cancelTasks != &#34;undefined&#34;){
+            console.log(&#34;Cancelling async tasks&#34;);
+            cancelTasks();
+        }
+
+        console.log(&#34;Loading code from &#34; + filename);
+        const result = await fetch(filename)
+        const code = await result.text()
+
+        document.getElementById(&#34;repl&#34;).remove()
+        const new_repl = document.createElement(&#34;py-repl&#34;)
+        new_repl.textContent = code
+        new_repl.id = &#34;repl&#34;
+        if (filename.includes(&#39;repl&#39;)) {
+            new_repl.setAttribute(&#34;auto-generate&#34;, &#34;true&#34;)
+        }
+        new_repl.setAttribute(&#34;std-out&#34;, &#34;output-container&#34;)
+
+        document.getElementById(&#34;repl-container&#34;).appendChild(new_repl)
+        document.getElementById(&#34;btnRun&#34;).click()
+    }
+
+    async function setInfo(object, imports, apiLink){
+        console.warn(`setInfo on ${object}`)
+        if (typeof get_object_info_html != &#34;undefined&#34; &amp;&amp; object != undefined){
+            get_object_info_html(object, imports, apiLink);
+        }
+
+        else {
+            clear_object_info();
+        }
+    }
+
+   /*  document.getElementById(&#34;docs-link&#34;).addEventListener(&#39;click&#39;, () =&gt; {
+        let apiTooltip = document.getElementById(&#34;docs&#34;)
+        if (apiTooltip.style.visibility == &#39;hidden&#39;){
+            apiTooltip.style.visibility = &#39;visible&#39;;
+        }
+        else {
+            apiTooltip.style.visibility = &#39;hidden&#39;;
+        }
+    }); */
+&lt;/script&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Hugo Shortcodes for Coding Blogs</title>
       <link>https://jeff.glass/post/cloud-resume-challenge-shortcodes/</link>
