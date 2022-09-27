@@ -1,0 +1,40 @@
+---
+title: "Pyscript Reactive Objects"
+date: 2022-09-08T14:43:41-05:00
+draft: true
+tags:
+- Python
+- PyScript
+- Pyodide
+- Javascript
+description: "Description Here"
+---
+<py-env>
+    - faker
+</py-env>
+
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+<script src="//unpkg.com/alpinejs" defer></script>
+<py-script src="pysreactive.py"></py-script>
+<button class="border-2 border-gray-700" onclick="console.log(window)">Log Globals</button>
+<py-repl></py-repl>
+<p>Data goes here</p>
+<div x-data="pythonGlobals = [1,2,3]">
+    <template x-for="obj in pythonGlobals">
+        <div x-text="obj"></div>
+    </template>
+</div>
+
+
+
+<script>
+    function createObject(object, variableName){
+        //Bind a variable whose name is the string variableName
+        // to the object called 'object'
+        let execString = variableName + " = object"
+        console.log("Running `" + execString + "`");
+        eval(execString)
+    }
+    
+</script>
