@@ -158,20 +158,21 @@ Element.write = newWrite
 <p class="post-p">Those who are familiar with the various ways Rich already provides to capture its own output, as well as exporting it as HTML, may have some reasonable questions here. It's surely possible I've missed something in Rich's expansive API, but I didn't find a solution that did everything I want without implementing my own context manager. That said, it does feel like there shuold be a simpler way...</p>
 <ul class="post-ul">
     <li>I wanted to make the default console returned by <code class="code">get_console()</code> have the desired behavior, as well as any consoles the user created in the future. Hence the reason for overriding the _is_jupyter method instead of just making the default console <code class="code">force_jupyter=True</code></li>
-    <li>Using <code class="code">Console.capture()</code> captures the entire contents of the console, from which it can be exported (or saved as a file) to HTML, but there isn't a direct way to save just the use-input-turned-into-HTML as far as I know.</li>
+    <li>Using <code class="code">Console.capture()</code> captures the entire contents of the console, from which it can be exported (or saved as a file) to HTML, but there isn't a direct way to save just the user-input-turned-into-HTML as far as I know.</li>
     <li>Because <a href="https://github.com/Textualize/rich/blob/8e2da1afab8743d8e3c55b8191492cc5f9905b7f/rich/jupyter.py#L84-L95">Rich's jupyter.display() method</a> tries specifically to write to an iPython display, I needed to override this method to render the objects to HTML and just write those to std.</li>
 </ul>
-<p class="post-p">With all these pieces put together, now most writes to standard out should be formatted using Rich's format rules.</p>
+<p class="post-p">With all these pieces put together, now most writes to stdout should be formatted using Rich's format rules.</p>
 <h2 class="post-h2" id="live-updates">Live Updates</h2>
 <p class="post-p">While there are lots of things that make running Python inside a browser window different from running in a terminal/desktop environment, one of the most striking is that we only have one event loop and we can't block it. Ever. Even a simple <code class="code">time.sleep(1)</code> irrevocably blocks the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop">JavaScript event loop</a>.</p>
 <p class="post-p">This is where asyncio comes to the rescue. The Pyodide runtime has a custom event loop ("<a href="https://pyodide.org/en/stable/usage/api/python-api/webloop.html#module-pyodide.webloop">Webloop</a>") that hooks to the asyncio webloop, allowing nonblock asynchronous operations. For example, we can use <code class="code">asyncio.sleep()</code> instead of <code>time.sleep()</code>, <code class="code">asynccontextmanager</code>s instead of <code>context managers</code>, and so on.</p>
 <p class="post-p">Hooking this deep into Rich's functionality requires some significant rewriting of the <a href="https://rich.readthedocs.io/en/stable/live.html">Live class</a>, as well as an additional helper class that constantly refreshes the live display by adding new callouts to the event loop every quarter second. The full results are below.</p>
-<p class="post-p">If you want to use the Live update element in your PyScript page, you'll want to:</p>
-<ul class="post-ul">
-    <li>Add the following code to a PyScript tag near the top of your page.</li>
-    <li>Use the included <code>Live</code> class instead of importing from <code>Rich.live</code></li>
-    <li>Avoid using any blocking io calls, instead substituting with their async versions. For an example of how to use the new Live class <a href="https://rich.readthedocs.io/en/stable/live.html">in the same way Rich does</a> (i.e. as a context manager), see the live examples on the <a href="../../project/richdemo">Rich Demo</a> page.</li>
-</ul>
+<p class="post-p">If you want to use the Live update element in your PyScript page, you'll want to:
+    <ul class="mb-6 post-ul">
+        <li>Add the following code to a PyScript tag near the top of your page.</li>
+        <li>Use the included <code>Live</code> class instead of importing from <code>Rich.live</code>. It has the same interface as Rich.live, though not all features are implemented yet.</li>
+        <li>Avoid using any blocking io calls, instead substituting with their async versions. For an example of how to use the new Live class <a href="https://rich.readthedocs.io/en/stable/live.html">in the same way Rich does</a> (i.e. as a context manager), see the live examples on the <a href="../../project/richdemo">Rich Demo</a> page.</li>
+    </ul>
+</p>
 {{< showcode-short "post/pyscript-rich/_livepatch.py" "python3" >}}
 <py-script src="_livepatch.py"></py-script>
 <h3 class="post-h3">Live Table Demo</h3>
