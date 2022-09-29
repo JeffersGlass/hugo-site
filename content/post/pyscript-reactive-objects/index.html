@@ -18,10 +18,12 @@ description: "Description Here"
 <script src="//unpkg.com/alpinejs" defer></script>
 <py-script src="pysreactive.py"></py-script>
 <button class="border-2 border-gray-700" onclick="console.log(window)">Log Globals</button>
-<py-repl></py-repl>
+<button class="border-2 border-gray-700" x-data @click="logStore()">Log Alpine Store</button>
+<py-repl auto-generate="true"></py-repl>
 <p>Data goes here</p>
-<div x-data="pythonGlobals = [1,2,3]">
-    <template x-for="obj in pythonGlobals">
+<div x-data>
+    <!-- <div x-text="$store.pythonGlobals"></div> -->
+    <template x-for="obj in $store.pythonGlobals">
         <div x-text="obj"></div>
     </template>
 </div>
@@ -36,5 +38,32 @@ description: "Description Here"
         console.log("Running `" + execString + "`");
         eval(execString)
     }
-    
+
+    function logStore(){
+        for (const obj of Alpine.store('pythonGlobals')) {console.log(obj)}
+    }
+</script>
+<script>
+    document.addEventListener('alpine:init', () =>{
+        tempGlobals = {
+            A: {id: 201},
+            B: {id: 202},
+            C: {id: 203},
+        }
+        tempGlobals.object_entries = () => {};
+        Alpine.store('pythonGlobals', tempGlobals)
+    })
+
+    document.addEventListener('pyscriptGlobalsReady', () =>{
+        Alpine.store('pythonGlobals', pythonGlobals)
+    })
+
+    /* document.addEventListener('pyscriptGlobalsReady', () =>{
+        Alpine.store('pythonGlobals', {
+            W: {id:  0},
+            X: {id: -1},
+            Y: {id: -2},
+            Z: {id: -3},
+        })
+    }) */
 </script>

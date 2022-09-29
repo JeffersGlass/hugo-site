@@ -2,17 +2,19 @@ import html
 from functools import partial
 from uuid import uuid4
 
-from js import document, console, createObject, Alpine
+from js import document, console, createObject, Alpine, Event
 from pyodide import create_proxy, to_js
 
-initial_globals = set(globals())
+initialGlobals = create_proxy(set(globals()))
 
-createObject(initial_globals, "initial_globals")
+createObject(initialGlobals, "initialGlobals")
 
-createObject(globals(), "pythonGlobals")
+g = create_proxy(globals())
 
-console.log("CREATED PYTHON GLOBALS")
+createObject(g, "pythonGlobals")
 
-from js import pythonGlobals
+#console.log(to_js(dir(g)))
 
-Alpine.data('pythonGlobals', pythonGlobals)
+ready = Event.new('pyscriptGlobalsReady')
+console.warn("Dispatching ready event")
+document.dispatchEvent(ready);
