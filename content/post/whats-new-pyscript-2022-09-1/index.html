@@ -1,60 +1,107 @@
 ---
-title: "Whats New Pyscript 2022 09 1"
+title: "Whats New in Pyscript 2022.09.1"
 date: 2022-08-25T10:25:33-05:00
 draft: true
 tags:
 - Python
 - PyScript
 - Pyodide
-- Javascript
+- JavaScript
 description: "The big changed in PyScript version 2022.09.1"
 ---
-<p class="post-p">PyScript version 2022.09.1 was just released, and just as we <a href="https://github.com/pyscript/pyscript/issues/337">lead dev Fabio Pliger said</a> in proposing the versioning scheme:</p>
+<style>
+    body {
+        scroll-margin-top: 8em;
+    }
+</style>
+<p class="post-p"><span class="font-semibold">PyScript Version 2022.09.1 was just released</span>, and just as <a href="https://github.com/pyscript/pyscript/issues/337">tech lead Fabio Pliger said</a> in proposing the versioning scheme:</p>
 <blockquote class="post-blockquote">"...An important aspect to keep in mind is that PyScript is still in its very early stages. So, we should highlight that the expectations should be that think can often break until we reach a level of maturity and stability."</blockquote>
-<p class="post-p">And wow, are there a lot of new things in this version of PyScript. What's more, the default Pyodide runtime has been upgraded to the recently-released <a href="https://pyodide.org/en/0.21.1/usage/quickstart.html">version 21.1</a>, which itself provides many new features and improved functionality to PyScript.</p>
+<p class="post-p">And wow, are there a lot of new things in this version of PyScript. What's more, the default Pyodide runtime has been upgraded to the recently-released <a href="https://pyodide.org/en/0.21.3/usage/quickstart.html">version 21.3</a>, which itself provides many new features and improved functionality to PyScript.</p>
 <p class="post-p">I want to specificically highlight new features, breaking changes, and neat behind-the-scenes work. The full details of what's changed are captured in the <a href="" class="bg-red-600">PyScript Release Notes</a></p>
-<h2 class="post-h2">PyScript</h2>
+<div id="TOC" class="p-1 bg-gray-200">
+    <p>Jump To:
+        <a href="#PyScript">PyScript</a> • 
+        <a href="#Documentation">Documentation</a> • 
+        <a href="#Pyodide">Pyodide</a> • 
+        <a href="#Emscripten">Emscripten</a> • 
+        <a href="#Infrastructure">Infrastructure</a> • 
+        <a href="#Testing">Testing</a>
+    </p>
+</div>
+<h2 class="post-h2 anchor" id="PyScript">PyScript</h2>
+<h4 class="post-h4">&lt;py-env&gt; Will Be Going Away</h4>
+<p class="post-p">Previously, the <code>&lt;py-env&gt;</code> tag was where one would specify additional libraries to download from PyPI, as well as URL's to load into the local filesystem. Now, those options are being <a href="https://github.com/pyscript/pyscript/blob/main/docs/tutorials/getting-started.md">folded into <code>&lt;py-config&gt;</code></a>, alongside other options like plugins and <a href="#runtimes">runtimes</a> and metadata like the pages name and version number. The use of <code>&lt;py-env&gt;</code> is deprecated and <a href="https://github.com/pyscript/pyscript/pull/775">will be removed in a future release</a>.</p>
+<p class="post-p">Additionally, <code>&lt;py-config&gt;</code> can now <a href="https://github.com/pyscript/pyscript/pull/783">accept configurations in JSON in addition to TOML</a>. Creators using build systems that strip out whitespace (which isn't very kind to TOML) may find this especially useful.</p>
+<h4 class="post-h4"><span class="px-1 font-mono bg-gray-200 inlien">py-*</span> Events</h4>
+<p class="post-p">The alpha and 2022.06.1 releases supported a couple of special attributes on HTML tags - <code class="code">pys-onClick</code> and <code class="code">pys-onKeyDown</code> - that PyScript hooked into to allow the running of Python code in response to a couple of common browser interactions.</p>
+<p class="post-p">Release 2022.09.1 <a href="https://github.com/pyscript/pyscript/pull/561">radically expands this capability</a> with <a href="https://github.com/lpliger/pyscript/blob/19491d80107f17d43633b224e231cd1cf2f657d5/pyscriptjs/src/components/pyscript.ts#L128-L220">many, many more browser events supported.</a> The <a href="https://github.com/pyscript/pyscript/pull/686">syntax has also changed</a> to more closely match JavaScripts <code class="code">onevent</code> syntax. The correct usage is now:</p>
+{{< highlight html >}}
+<py-script>
+    from pyodide.ffi import create_proxy
+    from js import console as jsconsole
+    def say_hi(name):
+        jsconsole.log("Hi, " + name)
+</py-script>
+<p class="post-p">Note that, unlike JavaScripts event syntax, the value of the <code>py-*</code> attribute can be any valid Python code, not just a single call.</p>
+<p id="my-paragraph" py-mouseover="say_hi('Jeff'); jsconsole.log('I did it!')">Mouse Over Me</p>
+{{< /highlight >}}
+<h4 class="post-h4">Better Input/Output Escaping</h4>
+<p class="post-p">Embedding something that looks like HTML inside of Python inside of HTML is... well, even just saying it is a mouthful, and it comes with its own pitfalls. Previously, PyScript tags like the following would fail in a couple of ways:</p>
+{{< highlight python3 >}}
+print("<b>A bold tag!</b>")
+tag_name = "i"
+print("I'm pretty sure 1 < 2 but 2 > 0")
+{{< /highlight >}}
+<p class="post-p">First, the Browser needs to be prevented from interpretting the <code>&lt;b&gt;</code> tag as internal HTML, and second, the output needs to recognize that the <code>&lt; &gt;</code> symbols are <i>not</i> an HTML tag. These issues have been solved by a <a href="https://github.com/pyscript/pyscript/pull/684">pair</a> of <a href="https://github.com/pyscript/pyscript/pull/481">changes</a>.</p>
+<h4 class="post-h4">Better Logging</h4>
+<img src="logging.PNG" alt="" class="float-right w-full m-2 border-2 border-gray-300 sm:w-80">
+<p class="post-p">Thanks to a <a href="https://github.com/pyscript/pyscript/pull/743">PR by Antonio Cuni</a>, the logging to the Developer Console that PyScript does is now much cleaner, and annotated by what file the log line is generated in. This makes it easier to see what's logged by the user's program and what's being logging by the PyScript mechanisms themselves.</p>
+<h4 class="post-h4" id="runtimes">Framework for Multiple Runtimes</h4>
+<p class="post-p">The use of a specific version of Pyodide is no longer hardcoded into a PyScript release - users may now opt to supply a URL and name for a 'runtime' in the <code>&lt;py-config&gt;</code> tag. If one is not supplied, the default is still to load the version of Pyodide that PyScript has been most recently tested against, which should be the right option for most users. But this does open the door to future improvements like:
 <ul class="post-ul">
-    <li>Multiple Runtimes Possible - type definition</li>
-    <li>Tailwind removed from build, CSS streamlined in PyScript.css</li>
-    <li>HTML tags are now escaped within PyScript tags</li>
-    <li>Improved error handling, including a fallback to error to the dev console if the error can't be displayed on the page.</li>
-    <li>Runtime API! Future support for additional runtimes! Currently only PyodideRuntime</li>
-</ul>
-<h2 class="post-h2">Pyodide</h2>
-<p class="post-p"><a href="https://blog.pyodide.org/posts/0.21-release/">Pyodide 21 Release Post</a> and <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-21-0">Change Log</a></p>
-<ul class="post-ul">
-    <li>Browser API wrappers for (<a href="https://github.com/pyodide/pyodide/pull/2456">#2456</a>) for <code>addEventListener</code> and <code>removeEventListener</code>. Should avoid the need for <code>create_proxy</code> in <code>addEventListener</code></li>
-    <li>Pyodide functions have been moved out of root pyodide package to individual modules (<a href="https://github.com/pyodide/pyodide/pull/2787">#2787</a>, <a href="https://github.com/pyodide/pyodide/pull/2790">#2790</a>) </li>
-    <li>Add <code>pyodide.code.run_js</code> to Python API. (#2426)</li>
-    <li>Implement slicing, <code>+=</code>, and <code>extend</code> for JsProxy objects (<a href="https://github.com/pyodide/pyodide/pull/2907">#2907</a>)</li>
-    <li>Better error messages for removed stdlib libraries (<a href="https://github.com/pyodide/pyodide/pull/2973">#2973</a>)</li>
-    <li>Correct handling of objects with null constructor (like modules) (<a href="https://github.com/pyodide/pyodide/pull/2520">#2520</a>)</li>
-    <li>Improved building of binary wheels (<a href="https://blog.pyodide.org/posts/0.21-release/#building-binary-wheels-for-pyodide">release notes</a>), including passing credentials, using pre-release and dev versions in micropip.install, installing Emscripten binary wheels.</li>
-    <li>Tons of new packages including <code>opencv-python</code>, <code>ffmpeg</code>, <code>svgwrite</code>, <code>sqlite3</code>, <code>python-magic</code>, and many more. (<a href="https://pyodide.org/en/stable/project/changelog.html#packages">Full list</a>)</li>
-</ul>
-<h2 class="post-h2">Emscripten </h2>
-<p class="post-p">Upgrading from v2.0.27 to v3.1.14</p>
-<p class="post-p">To be honest, I'm not well enough versed in EmScripten to be able to parse the <a href="https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md">changelog details</a> enough to highlight them</p>
-<h2 class="post-h2">Intrastructure</h2>
+    <li>Running <code>py-script</code> blocks in different versions of Pyodide</li>
+    <li>Running <code>py-script</code> blocks in runtimes that are <i>not</i> Pyodide (Micropython??)</li>
+    <li>Running <code>py-script</code> blocks in a self-built/custom build of Pyodide for experimentation or demonstrating new features</li>
+</ul></p>
+<h2 class="post-h2 anchor" id="Documentation">Documentation</h2>
+<h4 class="post-h4">Try PyScript</h4>
+<p class="post-p">A new <a href="https://github.com/pyscript/pyscript#try-pyscript">Try PyScript</a> section now leads the main ReadMe on the PyScript GitHub, to more quickly get new users up to speed on how to try out PyScript in their browser.</p>
+<h4 class="post-h4">Contributing</h4>
+<p class="post-p">The <a href="https://github.com/pyscript/pyscript/blob/main/CONTRIBUTING.md">CONTRIBUTING</a> guide has been fleshed out with more guidance on developing submitting useful issues, forking the repository for local building and setting up the a development environment, and more. Both Mariana Meireles and Fabio Rosado have contributed excellent information on <a href="https://github.com/pyscript/pyscript/commit/066ecbe02219e9c9ff5aff28a57d37e7baba8ace">how to build PyScript</a> and <a href="https://github.com/pyscript/pyscript/commit/d203b60f446c347fdb59b6c1350e6b3a2d9f7d66">how to create and submit a Pull Request</a> - every open source project should be so lucky!</p>
+<h4 class="post-h4">How Tos</h4>
+<p class="post-p">Two new How-To guides were added to the documentation. The first covers <a href="https://github.com/pyscript/pyscript/blob/main/docs/howtos/http-requests.md">how to make HTTP requests in pure Python</a> by using pyodide's <code class="code">pyfetch</code> method. The second illustrates the techniques for <a href="https://github.com/pyscript/pyscript/blob/main/docs/howtos/passing-objects.md">passing objects between JavaScript and Python (in PyScript)</a>, including some slightly-cursed uses of JavaScript's <code>eval()</code>.</p>
+<h4 class="post-h4">Getting Started</h4>
+<p class="post-p">The <a href="https://github.com/pyscript/pyscript/blob/main/docs/tutorials/getting-started.md">Getting Started</a> guide got a huge update to reflect the new <code>&lt;py-config&gt;</code> changes (see above).</p>
+<h2 class="post-h2 anchor" id="Pyodide">Pyodide</h2>
+<p class="post-p">It's no secret that the beating heart of the PyScript project is the <a href="https://pyodide.org/en/stable/">Pyodide project</a>, which makes it possible to run Python in the browser by compiling the CPython runtime to Web Assembly. (This is now <a href="https://github.com/pyscript/pyscript/pull/792">nicely highlighted at the top of the PyScript readme</a>.) Which means that improvements to Pyodide are big boons for PyScript!</p>
+<p class="post-p">While PyScript's Alpha and 2022.06.1 were designed around Pyodide 20, PyScript 2022.09.1 fully embraces Pyodide 21.2 and the many changes and improvements it brings. We'll only hit the highlights here; for more details, see the <a href="https://blog.pyodide.org/posts/0.21-release/">Pyodide 21 Release Post</a> and <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-21-0">Change Log</a></p>
+<h4 class="post-h4">API Changes</h4>
+<p class="post-p">This is probably the most visible change for the casual PyScriptian - the functionality of the Pyodide Python API has been <a href="https://github.com/pyodide/pyodide/pull/2787">divied</a> <a href="https://github.com/pyodide/pyodide/pull/2790">up</a> into <a href="https://pyodide.org/en/stable/usage/api/python-api.html">a number of individual packages</a> for clarity and namespace control. So now, rather than using <code class="code">from pyodide import create_proxy</code>, one would use <code class="code">from pyodide.ffi import create_proxy</code>, and so on.</p>
+<p class="post-p">The old locations of the functions are still present but deprecated in version 21, so this change alone won't break code written for Pyodide 20. But you will see a deprecation warning, and any new code should obey the new namespacing as the deprecation</p>
+<h4 class="post-h4">Python Wrappers for <code>addEventListener</code>, <code>setTimeout</code>, and more</h4>
+<p class="post-p">As part of the reorganization mentioned above, the Pyodide API <a href="https://github.com/pyodide/pyodide/pull/2456">added a bunch of Python utility functions</a> that handle common JS actions. Specifically, within the a[href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html"><code>pyodide.ffi.wrappers</code> namespace, we now have functions for <code class="code">add_event_listener</code>, <code class="code">remove_event_listener</code>, <code class="code">set_timeout</code>, <code class="code">clear_timeout</code>, <code class="code">set_interval</code>, and <code class="code">clear_interval</code>. This avoids the need import those JS functions directly from <code>js.document</code>, and since the Python functions automatically wrap passed functions with <code>create_proxy</code>, that can be left out as well.</p>
+<h4 class="post-h4">pyodide.code.run_js</h4>
+<p class="post-p">Yet another API addition is <code class="code">pyodide.code.run_js</code>, which <a href="https://github.com/pyodide/pyodide/pull/2426">evaluates the passed JavaScript code</a> and returns the result as a JSProxy object. This removes the need to, for example, import <code>eval</code> from JavaScript to execute JS within Python. A nice clean feature.</p>
+<h4 class="post-h4">New Packages</h4>
+<p class="post-p">A whole load of new packages have now been bundled with Pyodide, including <code>opencv-python</code>, <code>ffmpeg</code>, <code>svgwrite</code>, <code>sqlite3</code>, <code>python-magic</code>, and many more. See the <a href="https://pyodide.org/en/stable/project/changelog.html#packages">full list</a> to see if your favorite package is now included.</p>
+<h4 class="post-h4">Improved Build Process for Binary Wheels</h4>
+<p class="post-p">For those looking to integrate their own Python wheels into apps built with Pyodide, the process for building binary wheels for Pyodide has been significantly improved. See <a href="https://blog.pyodide.org/posts/0.21-release/#building-binary-wheels-for-pyodide">the Pyodide team's blog post on Binary Wheels</a> for more information.</p>
+<h4 class="post-h4">JavaScript Array Slicing</h4>
+<p class="post-p">There are lots of little edge cases and behaviors where JavaScript's and Python's behaviors are different, and the Pyodide team is constantly working on new ways to make that interface less painful. Recently, they've implemented <a href="https://github.com/pyodide/pyodide/pull/2907">slicing on JavaScript array objects</a> that obeys the same syntax as Python lists, which is a neat feature for those passing data from the browser into Python for processing.</p>
+<p class="post-p">There's been some <a href="https://github.com/pyodide/pyodide/pull/2938">additional work and corrections</a> to this process, and I'd imagine we'll continue to see it evolve and refine.</p>
+<h4 class="post-h4">Correct Handling of Objects with Null Constructor</h4>
+<p class="post-p">This is a <a href="https://github.com/pyodide/pyodide/pull/2520">small but necessary improvement</a> - previously, it was difficult (if not impossible) to import a javascript <span class="italic">module</span> into Python-in-Pyodide, since JS modules don't have constructors, but Python expects everything (including modules) to be an object, and so would try to "construct" them. Now, JavaScript module imports work as expected.</p>
+<h2 class="post-h2 anchor" id="Emscripten">Emscripten </h2>
+<p class="post-p">Just as PyScript uses Pyodide as its primary runtime to run Python in the browser, so Pyodide relies on Emscripten to compile CPython <span class="italic">for</span> the browser. Pyodide 21 now moves from using Emscripten version 2.0.27 to version 3.1.14</p>
+<p class="post-p">To be honest, I'm not well enough versed in EmScripten to be able to parse the <a href="https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md">changelog details</a> enough to highlight them. If you're more familiar with that program and its capabilities, leave me a comment below!</p>
+<h2 class="post-h2 anchor" id="Infrastructure">Infrastructure</h2>
 <ul class="post-ul">
     <li>Automatical build releases - releases pushed to tagged-release endpoint, every merge builds to unstable. Examples also rebuilt on </li>
     <li>Woxtu adding type anotations many places</li>
 </ul>
-<h2 class="post-h2">Testing</h2>
+<h2 class="post-h2 anchor" id="Testing">Testing</h2>
 <ul class="post-ul">
     <li>Playwright - loads HTML pages in the browser and checks that PyScript works as intended.</li>
     <li>Jest - Testing whether Py-Script elements load correctly via TS/jS</li>
     <li>PyTest - Test functionality in PyScript.py, Python things like Element, PyScript, ContextManager, etc. </li>
-</ul>
-
-<h2 class="post-h2">Docs</h2>
-<ul class="post-ul">
-    <li>"Trying before Installing" section</li>
-    <li>Diataxis framework defined</li>
-    <li>Improvements to <a href="https://github.com/pyscript/pyscript/blob/main/CONTRIBUTING.md">CONTRIBUTING</a> and <a href="https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md">TROUBLESHOOTING</a> docs.</li>
-</ul>
-<h2 class="post-h2">Minor</h2>
-<ul class="post-ul">
-    <li>Lots of formatting adjustments</li>
 </ul>
