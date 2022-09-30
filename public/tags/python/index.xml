@@ -6,7 +6,213 @@
     <description>Recent content in python on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 27 Sep 2022 10:34:50 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Sep 2022 12:05:33 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Whats New in Pyscript 2022.09.1</title>
+      <link>https://jeff.glass/post/whats-new-pyscript-2022-09-1/</link>
+      <pubDate>Fri, 30 Sep 2022 12:05:33 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/whats-new-pyscript-2022-09-1/</guid>
+      <description>&lt;style&gt;
+    body {
+        scroll-margin-top: 8em;
+    }
+&lt;/style&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;font-semibold&#34;&gt;PyScript Version 2022.09.1 was just released&lt;/span&gt;, and just as &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/337&#34;&gt;tech lead Fabio Pliger said&lt;/a&gt; in proposing the versioning scheme:&lt;/p&gt;
+&lt;blockquote class=&#34;post-blockquote&#34;&gt;&#34;...An important aspect to keep in mind is that PyScript is still in its very early stages. So, we should highlight that the expectations should be that think can often break until we reach a level of maturity and stability.&#34;&lt;/blockquote&gt;
+&lt;p class=&#34;post-p&#34;&gt;And wow, are there a lot of new things in this version of PyScript. What&#39;s more, the default Pyodide runtime has been upgraded to the recently-released &lt;a href=&#34;https://pyodide.org/en/0.21.2/usage/quickstart.html&#34;&gt;version 21.2&lt;/a&gt;, which itself provides many new features and improved functionality to PyScript.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I want to specificically highlight new features, breaking changes, and neat behind-the-scenes work. The full details of what&#39;s changed are captured in the &lt;a href=&#34;https://github.com/pyscript/pyscript/compare/2022.06.1...2022.09.1&#34; class=&#34;&#34;&gt;PyScript Release Changelog&lt;/a&gt;&lt;/p&gt;
+&lt;div id=&#34;TOC&#34; class=&#34;grid justify-center p-1 m-auto bg-gray-200&#34;&gt;
+        &lt;span&gt;Jump To: &lt;span&gt;
+        &lt;a href=&#34;#PyScript&#34;&gt;PyScript&lt;/a&gt; • 
+        &lt;a href=&#34;#Documentation&#34;&gt;Documentation&lt;/a&gt; • 
+        &lt;a href=&#34;#Pyodide&#34;&gt;Pyodide&lt;/a&gt; • 
+        &lt;a href=&#34;#Emscripten&#34;&gt;Emscripten&lt;/a&gt; • 
+        &lt;a href=&#34;#Testing&#34;&gt;Testing&lt;/a&gt; • 
+        &lt;a href=&#34;#Infrastructure&#34;&gt;Infrastructure&lt;/a&gt; • 
+        &lt;a href=&#34;#Next&#34;&gt;What&#39;s Next&lt;/a&gt;        
+&lt;/div&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;PyScript&#34;&gt;PyScript&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&amp;lt;py-env&amp;gt; Will Be Going Away&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Previously, the &lt;code&gt;&amp;lt;py-env&amp;gt;&lt;/code&gt; tag was where one would specify additional libraries to download from PyPI, as well as URL&#39;s to load into the local filesystem. Now, those options are being &lt;a href=&#34;https://github.com/pyscript/pyscript/blob/main/docs/tutorials/getting-started.md&#34;&gt;folded into &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt;&lt;/a&gt;, alongside other options like plugins and &lt;a href=&#34;#runtimes&#34;&gt;runtimes&lt;/a&gt; and metadata like the pages name and version number. The use of &lt;code&gt;&amp;lt;py-env&amp;gt;&lt;/code&gt; is deprecated and &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/775&#34;&gt;will be removed in a future release&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Additionally, &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; can now &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/783&#34;&gt;accept configurations in JSON in addition to TOML&lt;/a&gt;. Creators using build systems that strip out whitespace (which isn&#39;t very kind to TOML) may find this especially useful.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+  packages: [&amp;#34;rich&amp;#34;, &amp;#34;faker&amp;#34;]
+  paths: [&amp;#34;./data_file.txt&amp;#34;]
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;py-config&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;    
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;span class=&#34;px-1 font-mono bg-gray-200&#34;&gt;py-*&lt;/span&gt; Events&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The alpha and 2022.06.1 releases supported a couple of special attributes on HTML tags - &lt;code class=&#34;code&#34;&gt;pys-onClick&lt;/code&gt; and &lt;code class=&#34;code&#34;&gt;pys-onKeyDown&lt;/code&gt; - that PyScript hooked into to allow the running of Python code in response to a couple of common browser interactions.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Release 2022.09.1 &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/561&#34;&gt;radically expands this capability&lt;/a&gt; with &lt;a href=&#34;https://github.com/lpliger/pyscript/blob/19491d80107f17d43633b224e231cd1cf2f657d5/pyscriptjs/src/components/pyscript.ts#L128-L220&#34;&gt;many, many more browser events supported.&lt;/a&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/686&#34;&gt;syntax of py-* events has also changed&lt;/a&gt; to more closely match JavaScripts &lt;code class=&#34;code&#34;&gt;event&lt;/code&gt; syntax. Previously, you supplied a &lt;code&gt;Callable&lt;/code&gt; which was called with no arguments. Now you write a line of code (optionally broken up with &lt;code&gt;;&lt;/code&gt; symbols) which is run when the event triggers. The correct usage is now:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt;&amp;gt;
+    from js import console as jsconsole
+    def say_hi(name):
+        jsconsole.log(&amp;#34;Hi, &amp;#34; + name)
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;py-script&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;my-paragraph&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;py-mouseover&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;say_hi(&amp;#39;Jeff&amp;#39;); jsconsole.log(&amp;#39;I did it!&amp;#39;)&amp;#34;&lt;/span&gt;&amp;gt;Mouse Over Me&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Note that, unlike JavaScripts event syntax, the value of the &lt;code&gt;py-*&lt;/code&gt; attribute can be any valid Python code, not just a single function call.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Better Input/Output Escaping&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Embedding something that looks like HTML inside of Python inside of HTML is... well, even just saying it is a mouthful, and it comes with its own pitfalls. Previously, PyScript tags like the following would fail in a couple of ways:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;lt;b&amp;gt;A bold tag!&amp;lt;/b&amp;gt;&amp;#34;&lt;/span&gt;)
+tag_name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;i&amp;#34;&lt;/span&gt;
+print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;I&amp;#39;m pretty sure 1 &amp;lt; 2 but 2 &amp;gt; 0&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;First, the Browser needs to be prevented from interpretting the &lt;code&gt;&amp;lt;b&amp;gt;&lt;/code&gt; tag as internal HTML, and second, the output needs to recognize that the &lt;code&gt;&amp;lt; &amp;gt;&lt;/code&gt; symbols are &lt;i&gt;not&lt;/i&gt; an HTML tag. These issues have been solved by a &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/684&#34;&gt;pair&lt;/a&gt; of &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/481&#34;&gt;changes&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Better Logging&lt;/h4&gt;
+&lt;img src=&#34;logging.PNG&#34; alt=&#34;&#34; class=&#34;float-right w-full m-2 border-2 border-gray-300 sm:w-80&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;Logging to the Developer Console that PyScript does is now much cleaner, and annotated by what file the log line is generated in. This makes it easier to see what&#39;s logged by the user&#39;s program and what&#39;s being logging by the PyScript mechanisms themselves.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34; id=&#34;runtimes&#34;&gt;Framework for Multiple Runtimes&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The use of a specific version of Pyodide is no longer hardcoded into a PyScript release - users may now opt to supply a URL and name for a &#39;runtime&#39; in the &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; tag. If one is not supplied, the default is still to load the version of Pyodide that PyScript has been most recently tested against, which should be the right option for most users. But this does open the door to future improvements like:
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Running &lt;code&gt;py-script&lt;/code&gt; blocks in different versions of Pyodide&lt;/li&gt;
+    &lt;li&gt;Running &lt;code&gt;py-script&lt;/code&gt; blocks in runtimes that are &lt;i&gt;not&lt;/i&gt; Pyodide (Micropython??)&lt;/li&gt;
+    &lt;li&gt;Running &lt;code&gt;py-script&lt;/code&gt; blocks in a self-built/custom build of Pyodide for experimentation or demonstrating new features&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;Documentation&#34;&gt;Documentation&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Try PyScript&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;A new &lt;a href=&#34;https://github.com/pyscript/pyscript#try-pyscript&#34;&gt;Try PyScript&lt;/a&gt; section now leads the main ReadMe on the PyScript GitHub, to more quickly get new users up to speed on how to try out PyScript in their browser.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Contributing&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;a href=&#34;https://github.com/pyscript/pyscript/blob/main/CONTRIBUTING.md&#34;&gt;CONTRIBUTING&lt;/a&gt; guide has been fleshed out with more guidance on developing submitting useful issues, forking the repository for local building and setting up the a development environment, and more. Both Mariana Meireles and Fabio Rosado have contributed excellent information on &lt;a href=&#34;https://github.com/pyscript/pyscript/commit/066ecbe02219e9c9ff5aff28a57d37e7baba8ace&#34;&gt;how to build PyScript&lt;/a&gt; and &lt;a href=&#34;https://github.com/pyscript/pyscript/commit/d203b60f446c347fdb59b6c1350e6b3a2d9f7d66&#34;&gt;how to create and submit a Pull Request&lt;/a&gt; - every open source project should be so lucky!&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;How Tos&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Two new How-To guides were added to the documentation. The first covers &lt;a href=&#34;https://github.com/pyscript/pyscript/blob/main/docs/howtos/http-requests.md&#34;&gt;how to make HTTP requests in pure Python&lt;/a&gt; by using pyodide&#39;s &lt;code class=&#34;code&#34;&gt;pyfetch&lt;/code&gt; method. The second illustrates the techniques for &lt;a href=&#34;https://github.com/pyscript/pyscript/blob/main/docs/howtos/passing-objects.md&#34;&gt;passing objects between JavaScript and Python (in PyScript)&lt;/a&gt;, including some slightly-cursed uses of JavaScript&#39;s &lt;code&gt;eval()&lt;/code&gt;.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Getting Started&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;a href=&#34;https://github.com/pyscript/pyscript/blob/main/docs/tutorials/getting-started.md&#34;&gt;Getting Started&lt;/a&gt; guide got a huge update to reflect the new &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; changes (see above).&lt;/p&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;Pyodide&#34;&gt;Pyodide&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;It&#39;s no secret that the beating heart of the PyScript project is the &lt;a href=&#34;https://pyodide.org/en/stable/&#34;&gt;Pyodide project&lt;/a&gt;, which makes it possible to run Python in the browser by compiling the CPython runtime to Web Assembly. (This is now &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/792&#34;&gt;nicely highlighted at the top of the PyScript readme&lt;/a&gt;.) Which means that improvements to Pyodide are big boons for PyScript!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;While PyScript&#39;s Alpha and 2022.06.1 were designed around Pyodide 20, PyScript 2022.09.1 fully embraces Pyodide 21.2 and the many changes and improvements it brings. We&#39;ll only hit the highlights here; for more details, see the &lt;a href=&#34;https://blog.pyodide.org/posts/0.21-release/&#34;&gt;Pyodide 21 Release Post&lt;/a&gt; and &lt;a href=&#34;https://pyodide.org/en/stable/project/changelog.html#version-0-21-0&#34;&gt;Change Log&lt;/a&gt;&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;API Changes&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is probably the most visible change for the casual PyScriptian - the functionality of the Pyodide Python API has been &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/2787&#34;&gt;divied&lt;/a&gt; &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/2790&#34;&gt;up&lt;/a&gt; into &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api.html&#34;&gt;a number of individual packages&lt;/a&gt; for clarity and namespace control. So now, rather than using &lt;code class=&#34;code&#34;&gt;from pyodide import create_proxy&lt;/code&gt;, one would use &lt;code class=&#34;code&#34;&gt;from pyodide.ffi import create_proxy&lt;/code&gt;, and so on.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;py&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; create_proxy
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;say_hi&lt;/span&gt;(name):
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hi, &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/&lt;/span&gt;py&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;FutureWarning&lt;/span&gt;: pyodide&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;create_proxy has been moved to pyodide&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ffi&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;create_proxy Accessing it through the pyodide module &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; deprecated&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;  &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The old locations of the functions are still present but deprecated in version 21, so this change alone won&#39;t break code written for Pyodide 20. But you will see a deprecation warning, and any new code should obey the new namespacing as the deprecation&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Python Wrappers for &lt;code&gt;addEventListener&lt;/code&gt;, &lt;code&gt;setTimeout&lt;/code&gt;, and more&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;As part of the reorganization mentioned above, the Pyodide API &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/2456&#34;&gt;added a bunch of Python utility functions&lt;/a&gt; that handle common JS actions. Specifically, within the a[href=&#34;https://pyodide.org/en/stable/usage/api/python-api/ffi.html&#34;&gt;&lt;code&gt;pyodide.ffi.wrappers&lt;/code&gt; namespace, we now have functions for &lt;code class=&#34;code&#34;&gt;add_event_listener&lt;/code&gt;, &lt;code class=&#34;code&#34;&gt;remove_event_listener&lt;/code&gt;, &lt;code class=&#34;code&#34;&gt;set_timeout&lt;/code&gt;, &lt;code class=&#34;code&#34;&gt;clear_timeout&lt;/code&gt;, &lt;code class=&#34;code&#34;&gt;set_interval&lt;/code&gt;, and &lt;code class=&#34;code&#34;&gt;clear_interval&lt;/code&gt;. This avoids the need import those JS functions directly from &lt;code&gt;js.document&lt;/code&gt;, and since the Python functions automatically wrap passed functions with &lt;code&gt;create_proxy&lt;/code&gt;, that can be left out as well.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;py&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; js &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; document
+  
+    &lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; pyodide.ffi.wrappers &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; add_event_listener
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;say_bye&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;args):
+        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Goodbye!&amp;#34;&lt;/span&gt;)
+    
+    tag &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; document&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;my-div&amp;#34;&lt;/span&gt;)
+    add_event_listener(tag, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, say_bye)
+&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/&lt;/span&gt;py&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;   &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;pyodide.code.run_js&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Yet another API addition is &lt;code class=&#34;code&#34;&gt;pyodide.code.run_js&lt;/code&gt;, which &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/code.html#pyodide.code.run_js&#34;&gt;evaluates the passed JavaScript code&lt;/a&gt; and returns the result as a JSProxy object. This removes the need to, for example, import &lt;code&gt;eval&lt;/code&gt; from JavaScript to execute JS within Python. A nice clean feature.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;New Packages&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;A whole load of new packages have now been bundled with Pyodide, including &lt;code&gt;opencv-python&lt;/code&gt;, &lt;code&gt;ffmpeg&lt;/code&gt;, &lt;code&gt;svgwrite&lt;/code&gt;, &lt;code&gt;sqlite3&lt;/code&gt;, &lt;code&gt;python-magic&lt;/code&gt;, and many more. See the &lt;a href=&#34;https://pyodide.org/en/stable/project/changelog.html#packages&#34;&gt;full list&lt;/a&gt; to see if your favorite package is now included.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Improved Build Process for Binary Wheels&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;For those looking to integrate their own Python wheels into apps built with Pyodide, the process for building binary wheels for Pyodide has been significantly improved. See &lt;a href=&#34;https://blog.pyodide.org/posts/0.21-release/#building-binary-wheels-for-pyodide&#34;&gt;the Pyodide team&#39;s blog post on Binary Wheels&lt;/a&gt; for more information.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;JavaScript Array Slicing&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;There are lots of little edge cases and behaviors where JavaScript&#39;s and Python&#39;s behaviors are different, and the Pyodide team is constantly working on new ways to make that interface less painful. Recently, they&#39;ve implemented &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/2907&#34;&gt;slicing on JavaScript array objects&lt;/a&gt; that obeys the same syntax as Python lists, which is a neat feature for those passing data from the browser into Python for processing.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;There&#39;s been some &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/2938&#34;&gt;additional work and corrections&lt;/a&gt; to this process, and I&#39;d imagine we&#39;ll continue to see it evolve and refine.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Correct Handling of Objects with Null Constructor&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is a &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/2520&#34;&gt;small but necessary improvement&lt;/a&gt; - previously, it was difficult (if not impossible) to import a javascript &lt;span class=&#34;italic&#34;&gt;module&lt;/span&gt; into Python-in-Pyodide, since JS modules don&#39;t have constructors, but Python expects everything (including modules) to be an object, and so would try to &#34;construct&#34; them. Now, JavaScript module imports work as expected.&lt;/p&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;Emscripten&#34;&gt;Emscripten &lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Just as PyScript uses Pyodide as its primary runtime to run Python in the browser, so Pyodide relies on Emscripten to compile CPython &lt;span class=&#34;italic&#34;&gt;for&lt;/span&gt; the browser. Pyodide 21 now moves from using Emscripten version 2.0.27 to version 3.1.14&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To be honest, I&#39;m not well enough versed in EmScripten to be able to parse the &lt;a href=&#34;https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md&#34;&gt;changelog details&lt;/a&gt; enough to highlight them. If you&#39;re more familiar with that program and its capabilities, &lt;a href=&#34;https://twitter.com/JeffersGlass&#34;&gt;let me know!&lt;/a&gt;&lt;/p&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;Testing&#34;&gt;Testing&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;The last two categories of changes really shouldn&#39;t impact end-users of PyScript much, but they&#39;re already making a huge difference to the PyScript devs and maintainers. Prior to this release, there wasn&#39;t much of a testing regimin. Now there&#39;s multiple different means of testing the Python and TypeScript code that make up PyScript, as well as integration tests that test them &lt;span class=&#34;italic&#34;&gt;both&lt;/span&gt;, making it easier and faster to tell when something&#39;s going to break. The testing methods are:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;&lt;a href=&#34;https://github.com/pyscript/pyscript/tree/main/pyscriptjs/tests/integration&#34;&gt;Integration Tests&lt;/a&gt; with &lt;a href=&#34;https://playwright.dev/&#34;&gt;Playwright&lt;/a&gt; - loads HTML pages in the browser and checks that PyScript works as intended.&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;https://github.com/pyscript/pyscript/commit/8aba271a421ac9d22006fcaeb776efe686d3892c&#34;&gt;TypeScript Testing&lt;/a&gt; with &lt;a href=&#34;https://jestjs.io/&#34;&gt;Jest&lt;/a&gt; - Testing whether Py-Script elements load correctly via TS/jS&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;https://github.com/pyscript/pyscript/tree/main/pyscriptjs/tests/py-unit&#34;&gt;Python Tests&lt;/a&gt; with &lt;a href=&#34;https://docs.pytest.org/en/7.1.x/&#34;&gt;PyTest&lt;/a&gt; - Test functionality in PyScript.py, Python things like Element, PyScript, ContextManager, etc. &lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;Infrastructure&#34;&gt;Infrastructure&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Finally, there&#39;s the bounty of little improvements that make the codebase stronger and the dev process more repeatable.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Continuous Deployment&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The CI/CD pipeline continues to get refined and grow more resiliant - there have been some improvements to the CD process to ensure &lt;a href=&#34;https://github.com/pyscript/pyscript/commit/ebfed27630c1e41fb42f3a67ef5978df1c9a71c3&#34;&gt;PyScript is rebuilt with every commit and pushed to Unstable&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Type Annotations&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript is being developed in TypeScript, which has the nice property of allowing quick prototyping with loose typing and gradually refining the typing to make the Linter/compiler happier. Several users, especially contributor &lt;a href=&#34;https://github.com/woxtu&#34;&gt;Woxtu&lt;/a&gt; have been hard at work makign sure types line up, Promises are resolved, and type signatures are accurate.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Though end-users don&#39;t see the results directly, having thorough and consistant type signatures makes it easy to spot smelly code when adding new features. Does this function &lt;span class=&#34;italic&#34;&gt;really&lt;/span&gt; need to return two different types of thing, or should we be rethinking the code structure? Why is this &lt;code&gt;any&lt;/code&gt; necessary?&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;/h4&gt;
+&lt;h2 class=&#34;pb-1 border-b-2 border-gray-300 post-h2 anchor&#34; id=&#34;Next&#34;&gt;What&#39;s Next?&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;So what&#39;s coming down the pipe next for PyScript? Frankly, a ton, and that work is largely visible in the open PR&#39;s and issues on the PyScript GitHub.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;New Output and Rendering Design&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;One of the largest overhauls coming to a near-future version of PyScript is a total rethink of how PyScript renders to the browser window. &lt;code class=&#34;code&#34;&gt;print()&lt;/code&gt; is the right output method for a terminal, but it doesn&#39;t quite make sense in the context of a browser window, where the world of UI is much much larger.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To that end, there&#39;s a &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/622&#34;&gt;large project in the works&lt;/a&gt; that, among other things:
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Introduces a new &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/749&#34;&gt;display() function&lt;/a&gt;, which is the preferred way of outputting to the browser window&lt;/li&gt;
+    &lt;li&gt;Routes stdout to the developer console by default&lt;/li&gt;
+    &lt;li&gt;Improves escaping of HTML-like text included inside PyScript source&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The exact syntax and methodology of &lt;code&gt;display()&lt;/code&gt; is &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/769&#34;&gt;still being hashed out&lt;/a&gt;, but work is proceding a breakneck pace, and it&#39;ll be exciting to see where it ends up.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;PyScript Lifecycle Changes&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Antonio Cuni et. al. have &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/763&#34;&gt;laid the groundwork&lt;/a&gt; for a sweeping rethink of how PyScript manages the lifecylce of initializing, loading Pyodide, processing tags into custom elements, and more. It includes provisions for user-created plugins (to extend functionality) and widgets (essentially custom tags) on the page, in more-or-less a plug-and-play fashion.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This isn&#39;t the kind of dish that can be cooked up in 20 minutes - it&#39;ll touch almost every part of the PyScript codebase. But it&#39;s exciting to see the code moving in a direction that&#39;s more flexible and understandable, which will only make it more expansible.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Async Behavior&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;This one is near and dear to my heart. Exactly how asynchronous code should function in PyScript has been a hot topic for some of the maintainers, considering &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/751&#34;&gt;we broke it&lt;/a&gt; and &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/796&#34;&gt;had to fix it&lt;/a&gt; again.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Pyodide has a curious feature that allows you to run code with Top Level Await, since there&#39;s always an event loop running (the browser event loop). This is both handy and confusing, since it doesn&#39;t correspond to the experience of running Python in a terminal at all. So what&#39;s to be done? Perhaps we need to &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/751#issuecomment-1250991639&#34;&gt;further specify the execution order of async tags&lt;/a&gt;? Or &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/751#issuecomment-1260999684&#34;&gt;preclude top-level-await entirely&lt;/a&gt;? Do we even entirely understand how Pyodide is interacting with the browser event loop? What if an async task never terminates? Lots to be done here.&lt;/p&gt; 
+&lt;h4 class=&#34;post-h4&#34;&gt;And More&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;There&#39;s plenty more swirling around in the PyScript ecosystem - &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/808&#34;&gt;web workers&lt;/a&gt;, &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/804&#34;&gt;arrow functions&lt;/a&gt;, &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/756&#34;&gt;further documentation&lt;/a&gt;, a &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/558&#34;&gt;file API&lt;/a&gt;... &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, not all ideas become plans, and not all plans become reality, but there&#39;s no lack of great ideas to keep pushing PyScript forward.&lt;/p&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Monkeypatching Rich for Beautiful Terminals in Pyscript</title>
       <link>https://jeff.glass/post/pyscript-rich/</link>
