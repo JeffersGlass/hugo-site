@@ -16,18 +16,17 @@ description: "The big changed in PyScript version 2022.09.1"
 </style>
 <p class="post-p"><span class="font-semibold">PyScript Version 2022.09.1 was just released</span>, and just as <a href="https://github.com/pyscript/pyscript/issues/337">tech lead Fabio Pliger said</a> in proposing the versioning scheme:</p>
 <blockquote class="post-blockquote">"...An important aspect to keep in mind is that PyScript is still in its very early stages. So, we should highlight that the expectations should be that think can often break until we reach a level of maturity and stability."</blockquote>
-<p class="post-p">And wow, are there a lot of new things in this version of PyScript. What's more, the default Pyodide runtime has been upgraded to the recently-released <a href="https://pyodide.org/en/0.21.3/usage/quickstart.html">version 21.3</a>, which itself provides many new features and improved functionality to PyScript.</p>
+<p class="post-p">And wow, are there a lot of new things in this version of PyScript. What's more, the default Pyodide runtime has been upgraded to the recently-released <a href="https://pyodide.org/en/0.21.2/usage/quickstart.html">version 21.2</a>, which itself provides many new features and improved functionality to PyScript.</p>
 <p class="post-p">I want to specificically highlight new features, breaking changes, and neat behind-the-scenes work. The full details of what's changed are captured in the <a href="" class="bg-red-600">PyScript Release Notes</a></p>
-<div id="TOC" class="p-1 bg-gray-200">
-    <p>Jump To:
+<div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
+        <span>Jump To: <span>
         <a href="#PyScript">PyScript</a> • 
         <a href="#Documentation">Documentation</a> • 
         <a href="#Pyodide">Pyodide</a> • 
         <a href="#Emscripten">Emscripten</a> • 
         <a href="#Testing">Testing</a> • 
-        <a href="#Infrastructure">Infrastructure</a>
-        
-    </p>
+        <a href="#Infrastructure">Infrastructure</a> • 
+        <a href="#Next">What's Next</a>        
 </div>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="PyScript">PyScript</h2>
 <h4 class="post-h4">&lt;py-env&gt; Will Be Going Away</h4>
@@ -82,7 +81,7 @@ print("I'm pretty sure 1 < 2 but 2 > 0")
 <h4 class="post-h4">Python Wrappers for <code>addEventListener</code>, <code>setTimeout</code>, and more</h4>
 <p class="post-p">As part of the reorganization mentioned above, the Pyodide API <a href="https://github.com/pyodide/pyodide/pull/2456">added a bunch of Python utility functions</a> that handle common JS actions. Specifically, within the a[href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html"><code>pyodide.ffi.wrappers</code> namespace, we now have functions for <code class="code">add_event_listener</code>, <code class="code">remove_event_listener</code>, <code class="code">set_timeout</code>, <code class="code">clear_timeout</code>, <code class="code">set_interval</code>, and <code class="code">clear_interval</code>. This avoids the need import those JS functions directly from <code>js.document</code>, and since the Python functions automatically wrap passed functions with <code>create_proxy</code>, that can be left out as well.</p>
 <h4 class="post-h4">pyodide.code.run_js</h4>
-<p class="post-p">Yet another API addition is <code class="code">pyodide.code.run_js</code>, which <a href="https://github.com/pyodide/pyodide/pull/2426">evaluates the passed JavaScript code</a> and returns the result as a JSProxy object. This removes the need to, for example, import <code>eval</code> from JavaScript to execute JS within Python. A nice clean feature.</p>
+<p class="post-p">Yet another API addition is <code class="code">pyodide.code.run_js</code>, which <a href="https://pyodide.org/en/stable/usage/api/python-api/code.html#pyodide.code.run_js">evaluates the passed JavaScript code</a> and returns the result as a JSProxy object. This removes the need to, for example, import <code>eval</code> from JavaScript to execute JS within Python. A nice clean feature.</p>
 <h4 class="post-h4">New Packages</h4>
 <p class="post-p">A whole load of new packages have now been bundled with Pyodide, including <code>opencv-python</code>, <code>ffmpeg</code>, <code>svgwrite</code>, <code>sqlite3</code>, <code>python-magic</code>, and many more. See the <a href="https://pyodide.org/en/stable/project/changelog.html#packages">full list</a> to see if your favorite package is now included.</p>
 <h4 class="post-h4">Improved Build Process for Binary Wheels</h4>
@@ -94,7 +93,7 @@ print("I'm pretty sure 1 < 2 but 2 > 0")
 <p class="post-p">This is a <a href="https://github.com/pyodide/pyodide/pull/2520">small but necessary improvement</a> - previously, it was difficult (if not impossible) to import a javascript <span class="italic">module</span> into Python-in-Pyodide, since JS modules don't have constructors, but Python expects everything (including modules) to be an object, and so would try to "construct" them. Now, JavaScript module imports work as expected.</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Emscripten">Emscripten </h2>
 <p class="post-p">Just as PyScript uses Pyodide as its primary runtime to run Python in the browser, so Pyodide relies on Emscripten to compile CPython <span class="italic">for</span> the browser. Pyodide 21 now moves from using Emscripten version 2.0.27 to version 3.1.14</p>
-<p class="post-p">To be honest, I'm not well enough versed in EmScripten to be able to parse the <a href="https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md">changelog details</a> enough to highlight them. If you're more familiar with that program and its capabilities, leave me a comment below!</p>
+<p class="post-p">To be honest, I'm not well enough versed in EmScripten to be able to parse the <a href="https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md">changelog details</a> enough to highlight them. If you're more familiar with that program and its capabilities, <a href="https://twitter.com/JeffersGlass">let me know!</a></p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Testing">Testing</h2>
 <p class="post-p">The last two categories of changes really shouldn't impact end-users of PyScript much, but they're already making a huge difference to the PyScript devs and maintainers. Prior to this release, there wasn't much of a testing regimin. Now there's multiple different means of testing the Python and TypeScript code that make up PyScript, as well as integration tests that test them <span class="italic">both</span>, making it easier and faster to tell when something's going to break. The testing methods are:</p>
 <ul class="post-ul">
@@ -110,3 +109,23 @@ print("I'm pretty sure 1 < 2 but 2 > 0")
 <p class="post-p">PyScript is being developed in TypeScript, which has the nice property of allowing quick prototyping with loose typing and gradually refining the typing to make the Linter/compiler happier. Several users, especially contributor <a href="https://github.com/woxtu">Woxtu</a> have been hard at work makign sure types line up, Promises are resolved, and type signatures are accurate.</p>
 <p class="post-p">Though end-users don't see the results directly, having thorough and consistant type signatures makes it easy to spot smelly code when adding new features. Does this function <span class="italic">really</span> need to return two different types of thing, or should we be rethinking the code structure? Why is this <code>any</code> necessary?</p>
 <h4 class="post-h4"></h4>
+<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Next">What's Next?</h2>
+<p class="post-p">So what's coming down the pipe next for PyScript? Frankly, a ton, and that work is largely visible in the open PR's and issues on the PyScript GitHub.</p>
+<h4 class="post-h4">New Output and Rendering Design</h4>
+<p class="post-p">One of the largest overhauls coming to a near-future version of PyScript is a total rethink of how PyScript renders to the browser window. <code class="code">print()</code> is the right output method for a terminal, but it doesn't quite make sense in the context of a browser window, where the world of UI is much much larger.</p>
+<p class="post-p">To that end, there's a <a href="https://github.com/pyscript/pyscript/issues/622">large project in the works</a> that, among other things:
+<ul class="post-ul">
+    <li>Introduces a new <a href="https://github.com/pyscript/pyscript/pull/749">display() function</a>, which is the preferred way of outputting to the browser window</li>
+    <li>Routes stdout to the developer console by default</li>
+    <li>Improves escaping of HTML-like text included inside PyScript source</li>
+</ul></p>
+<p class="post-p">The exact syntax and methodology of <code>display()</code> is <a href="https://github.com/pyscript/pyscript/issues/769">still being hashed out</a>, but work is proceding a breakneck pace, and it'll be exciting to see where it ends up.</p>
+<h4 class="post-h4">PyScript Lifecycle Changes</h4>
+<p class="post-p">Antonio Cuni has <a href="https://github.com/pyscript/pyscript/issues/763">laid the groundwork</a> for a sweeping rethink of how PyScript manages the lifecylce of initializing, loading Pyodide, processing tags into custom elements, and more. It includes provisions for user-created plugins (to extend functionality) and widgets (essentially custom tags) on the page, in more-or-less a plug-and-play fashion.</p>
+<p class="post-p">This isn't the kind of dish that can be cooked up in 20 minutes - it'll touch almost every part of the PyScript codebase. But it's exciting to see the code moving in a direction that's more flexible and understandable, which will only make it more expansible.</p>
+<h4 class="post-h4">Async Behavior</h4>
+<p class="post-p">This one is near and dear to my heart. Exactly how asynchronous code should function in PyScript has been a hot topic for some of the maintainers, considering <a href="https://github.com/pyscript/pyscript/issues/751">we broke it</a> and <a href="https://github.com/pyscript/pyscript/pull/796">had to fix it</a> again.</p>
+<p class="post-p">Pyodide has a curious feature that allows you to run code with Top Level Await, since there's always an event loop running (the browser event loop). This is both handy and confusing, since it doesn't correspond to the experience of running Python in a terminal at all. So what's to be done? Perhaps we need to <a href="https://github.com/pyscript/pyscript/issues/751#issuecomment-1250991639">further specify the execution order of async tags</a>? Or <a href="https://github.com/pyscript/pyscript/issues/751#issuecomment-1260999684">preclude top-level-await entirely</a>? Do we even entirely understand how Pyodide is interacting with the browser event loop? What if an async task never terminates? Lots to be done here.</p> 
+<h4 class="post-h4">And More</h4>
+<p class="post-p">There's plenty more swirling around in the PyScript ecosystem - <a href="https://github.com/pyscript/pyscript/issues/808">web workers</a>, <a href="https://github.com/pyscript/pyscript/issues/804">arrow functions</a>, <a href="https://github.com/pyscript/pyscript/issues/756">further documentation</a>, a <a href="https://github.com/pyscript/pyscript/issues/558">file API</a>... </p>
+<p class="post-p">Of course, not all ideas become plans, and not all plans become reality, but there's no lack of great ideas to keep pushing PyScript forward.</p>
