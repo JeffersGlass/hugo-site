@@ -33,6 +33,12 @@ slug_image: py_2022_9_1_featured.png
 <h4 class="post-h4">&lt;py-env&gt; Will Be Going Away</h4>
 <p class="post-p">Previously, the <code>&lt;py-env&gt;</code> tag was where one would specify additional libraries to download from PyPI, as well as URL's to load into the local filesystem. Now, those options are being <a href="https://github.com/pyscript/pyscript/blob/main/docs/tutorials/getting-started.md">folded into <code>&lt;py-config&gt;</code></a>, alongside other options like plugins and <a href="#runtimes">runtimes</a> and metadata like the pages name and version number. The use of <code>&lt;py-env&gt;</code> is deprecated and <a href="https://github.com/pyscript/pyscript/pull/775">will be removed in a future release</a>.</p>
 <p class="post-p">Additionally, <code>&lt;py-config&gt;</code> can now <a href="https://github.com/pyscript/pyscript/pull/783">accept configurations in JSON in addition to TOML</a>. Creators using build systems that strip out whitespace (which isn't very kind to TOML) may find this especially useful.</p>
+{{< highlight html >}}
+<py-config>
+  packages: ["rich", "faker"]
+  paths: ["./data_file.txt"]
+</py-config>
+{{< /highlight >}}    
 <h4 class="post-h4"><span class="px-1 font-mono bg-gray-200">py-*</span> Events</h4>
 <p class="post-p">The alpha and 2022.06.1 releases supported a couple of special attributes on HTML tags - <code class="code">pys-onClick</code> and <code class="code">pys-onKeyDown</code> - that PyScript hooked into to allow the running of Python code in response to a couple of common browser interactions.</p>
 <p class="post-p">Release 2022.09.1 <a href="https://github.com/pyscript/pyscript/pull/561">radically expands this capability</a> with <a href="https://github.com/lpliger/pyscript/blob/19491d80107f17d43633b224e231cd1cf2f657d5/pyscriptjs/src/components/pyscript.ts#L128-L220">many, many more browser events supported.</a></p>
@@ -78,9 +84,30 @@ print("I'm pretty sure 1 < 2 but 2 > 0")
 <p class="post-p">While PyScript's Alpha and 2022.06.1 were designed around Pyodide 20, PyScript 2022.09.1 fully embraces Pyodide 21.2 and the many changes and improvements it brings. We'll only hit the highlights here; for more details, see the <a href="https://blog.pyodide.org/posts/0.21-release/">Pyodide 21 Release Post</a> and <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-21-0">Change Log</a></p>
 <h4 class="post-h4">API Changes</h4>
 <p class="post-p">This is probably the most visible change for the casual PyScriptian - the functionality of the Pyodide Python API has been <a href="https://github.com/pyodide/pyodide/pull/2787">divied</a> <a href="https://github.com/pyodide/pyodide/pull/2790">up</a> into <a href="https://pyodide.org/en/stable/usage/api/python-api.html">a number of individual packages</a> for clarity and namespace control. So now, rather than using <code class="code">from pyodide import create_proxy</code>, one would use <code class="code">from pyodide.ffi import create_proxy</code>, and so on.</p>
+{{< highlight python3 >}}
+<py-script>
+    from pyodide import create_proxy
+    def say_hi(name):
+        print(f"Hi, {name}")
+</py-script>
+
+>>> FutureWarning: pyodide.create_proxy has been moved to pyodide.ffi.create_proxy Accessing it through the pyodide module is deprecated.  
+{{< /highlight >}}
 <p class="post-p">The old locations of the functions are still present but deprecated in version 21, so this change alone won't break code written for Pyodide 20. But you will see a deprecation warning, and any new code should obey the new namespacing as the deprecation</p>
 <h4 class="post-h4">Python Wrappers for <code>addEventListener</code>, <code>setTimeout</code>, and more</h4>
 <p class="post-p">As part of the reorganization mentioned above, the Pyodide API <a href="https://github.com/pyodide/pyodide/pull/2456">added a bunch of Python utility functions</a> that handle common JS actions. Specifically, within the a[href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html"><code>pyodide.ffi.wrappers</code> namespace, we now have functions for <code class="code">add_event_listener</code>, <code class="code">remove_event_listener</code>, <code class="code">set_timeout</code>, <code class="code">clear_timeout</code>, <code class="code">set_interval</code>, and <code class="code">clear_interval</code>. This avoids the need import those JS functions directly from <code>js.document</code>, and since the Python functions automatically wrap passed functions with <code>create_proxy</code>, that can be left out as well.</p>
+{{< highlight python3 >}}
+<py-script>
+    from js import document
+  
+    from pyodide.ffi.wrappers import add_event_listener
+    def say_bye(*args):
+        print(f"Goodbye!")
+    
+    tag = document.getElementById("my-div")
+    add_event_listener(tag, "click", say_bye)
+</py-script>   
+{{< /highlight >}}
 <h4 class="post-h4">pyodide.code.run_js</h4>
 <p class="post-p">Yet another API addition is <code class="code">pyodide.code.run_js</code>, which <a href="https://pyodide.org/en/stable/usage/api/python-api/code.html#pyodide.code.run_js">evaluates the passed JavaScript code</a> and returns the result as a JSProxy object. This removes the need to, for example, import <code>eval</code> from JavaScript to execute JS within Python. A nice clean feature.</p>
 <h4 class="post-h4">New Packages</h4>
