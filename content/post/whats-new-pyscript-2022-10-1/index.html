@@ -10,13 +10,44 @@ tags:
 description: "The big changes in PyScript version 2022.10.1"
 slug_image: py_2022_10_1_featured.png
 ---
-<p class="post-p">Another month, another big release for PyScript! With a shorter release cycle, there's been lesstime for upstream projects (Pyodide, Emscripten) to move ahead, but there's still been loads of work done on PyScript in the past month.</p>
+<style>
+    code:not(.nocode){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+
+<p class="post-p">Another month, another big release for PyScript! With a shorter release cycle, there's been less time for upstream projects (Pyodide, Emscripten) to move ahead, but there's still been loads of work done on PyScript in the past month.</p>
 <div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
     <span>Jump To: <span>
+    <a href="#Display">display()</a> • 
     <a href="#PyScript">PyScript</a> • 
     <a href="#Team">The PyScript Team</a> • 
     <a href="#Community">Community</a> • 
 </div>
+<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="px-2 text-green-600 bg-gray-200 rounded-lg">display()</code></h2>
+<p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
+<p class="post-p">One key concept to know here is Python's <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish (perhaps to dump a buffer of data into it directly without the additonal processing that <code>print()</code> does), but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
+<p class="post-p">Prior to 2022.10.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibilty for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up great.</p>
+<p class="post-p">As of 2022.10.1, <span class="font-bold"><code>print()</code> goes to the developer console; <code>display()</code> is for outputting to the browser window</span>:</p>
+<div class="py-2 pl-2 m-0 ml-4 bg-green-100">
+    <h4 class="text-xl"><code class="nocode" >display(*values, target=None, append=True)</code></h4>
+    <div class="ml-4">
+        <p class="pt-1 text-justify"><span class="font-bold">*values</span> (<code>list</code>) - the list of objects to be displayed. Cna be any of the following MIME types:: "text/plain", "text/html", "image/png", "image/jpeg", "image/svg+xml", "application/json" or "application/javascript"</p>
+        <p class="pt-1 mt-2 text-justify"><span class="font-bold">target</span> (<code>str</code>)- the ID of the html tag to output to. If <code>none</code>, output to the current <code>&lt;py-script&gt;</code> tag.</p>
+        <p class="pt-1 mt-2 text-justify"><span class="font-bold">append</span> (<code>boolean</code>) if the output is going to be appended or not to the `target`ed element. It creates a <code>&lt;div&gt;</code> tag if <code>True</code> and a <code>&lt;py-script&gt;</code> tag with a random ID if <code>False</code></p>
+    </div>
+</div>
+<p class="post-p">So for example, in place of the usual <code>print("Hello, world")</code>, one could do one of these (they have slightly different behaviors - try them out!):</p>
+<div class="p-2 my-2 bg-gray-200">
+    <code>display("Hello World!")</code><br><br>
+    <code>display("Hello", "World!", append=True)</code><br><br>
+    <code>display("Hello")</code><br>
+    <code>display("World", append=True)</code>
+</div>
+<p class="post-p">So if <code>display()</code> is for writing to the screen, what does <code>print()</code> do? It writes to the <a href="https://support.monday.com/hc/en-us/articles/360002197259-How-to-open-the-developer-console">Developer Console</a>. This is the closest analog in the browser to a "dumb terminal", and so it makes a certain amount of sense for <code>stdout</code> to be routed there.</p>
+<p class="post-p">There are certain small differences, since of course the dev console <span class="italic">isn't</span> a terminal. For instance, we discovered just the other day that <code>console.log()</code> (which is used to write to the dev console) <a href="https://github.com/pyscript/pyscript/issues/472#issuecomment-1281228942">doesn't output unless it receives a newline</a>. So something like <code class="code">print("Hello world", end = "")</code> won't show up until you log something else with a newline in it!</p>
+<p class="post-p">If I were a betting man, I'd hedge that the API for <code>display()</code> is likely to continue to change and evolve. It's a brand-new and breaking feature, and I suspect its semantics are going to continue to get tweaked. If you find more issues or inconsistencies, be sure to <a href="https://github.com/pyscript/pyscript/issues">raise an issue on GitHub about it!</a></p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="PyScript">PyScript</h2>
 <h4 class="post-h4">Streamlined py-config</h4>
 <p class="post-p">The py-config system has been overhauled to simply its use internally - including simplifying how the default configuration options are merged with user-supplied options (<a href="https://github.com/pyscript/pyscript/pull/806">#806</a>), dealing with multiple <code>&lt;py-config&gt;</code>s on a page <a href="https://github.com/pyscript/pyscript/pull/826">#826</a>), and finally killing <code>&lt;py-env&gt;</code> altogether (<a href="https://github.com/pyscript/pyscript/pull/775">#775</a>).</p>
@@ -28,11 +59,25 @@ slug_image: py_2022_10_1_featured.png
 <p class="post-p">Just like <a href="https://blog.jupyter.org/accelerating-jupyterlab-68942bb8d602#2404">JupyterLab 6</a>, PyScript now uses the latest version of CodeMirror to power the in-browser <code>&lt;py-repl&gt;</code> component.</p>
 <h4 class="post-h4">TOML Parser</h4>
 <p class="post-p">&lt;py-config&gt; now accepts TOML, but there was an issue with the parser in that it would hang on misshapen TOML instead of exitting.</p>
+<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Community">Community</h2>
+<h4 class="post-h4">Community Call</h4>
+<p class="post-">The PyScript core team hosted its <a href="https://github.com/pyscript/pyscript/issues/836">first Community Call</a> on October 18th! About a dozen people attended, mostly from the PyScript core team and related contributors. We unfortunately forgot to hit 'record' on the call, but from my own sketchy notes on what was discused:
+<ul class="post-ul">
+    <li>The team is going to be shooting for about 1 release per month - maybe more maybe less, but that's a decent goal.</li>
+    <li>The lifecycle refactoring is well underway, with Antonio C leading the charge on removing global variables, streamining the loading, etc.</li>
+    <li>Plugins!
+        <ul class="post-ul">
+            <li>The team is excited about streamlining and <span class="italic">minimizing</span> the core details of what PyScript does. There's a feeling that when PyScript initializes, it should do a 'bare minimum' to get itself running, and delegate lots of core behaviors to plugins, to allow for customizability, extensibility, and futureproofing. An emphasis on PyScript being a 'platform' not a 'framework'</li>
+            <li>It is very early days for this idea, but there's lots of excitement around it.</li>
+        </ul>
+    </li>
+    <li>Web Workers are an awesome way to delegrate work, but there's going to be a significant amount of work integrating the message passing/isolation process with PyScript.</li>
+    <li>Cleaning up the PyScript API would be nice, in the sense of the Python objects in <a href="https://github.com/pyscript/pyscript/blob/main/pyscriptjs/src/python/pyscript.py#L1-L394">PyScript.py</a> are currently available by default when executing PyScript. Generally, there's agreement around this wanting to all be contained in a module, though there's some questions around what of that would want be <code>import</code>ed by default into a PyScript environement.</li>
+</ul></p>
+<h4 class="post-h4">Discord</h4>
+<p class="post-p">The <a href="https://discord.gg/CQU2Qyeb">PyScript Discord</a> is now the official communications hub for PyScript - both internally for the maintainers and the for the community to gather, ask questions, and get help. Come join us!</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Team">The PyScript Team</h2>
 <h4 class="post-h4">More Anaconda Contributors</h4>
 <p class="post-p">Anaconda Senior Tech Writer Katherine Kinnaman jumped into the Github project, creating issues for much-needed documentation.</p>
 <h4 class="post-h4">New Maintainers</h4>
 <p class="post-p"><a href="https://github.com/pauleveritt">Paul Everitt</a> and I are now maintainers on the PyScript project!</p>
-<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Community">Community</h2>
-<h4 class="post-h4">Discord</h4>
-<p class="post-p">Come <a href="https://discord.gg/CQU2Qyeb">join the Discord</a></p>
