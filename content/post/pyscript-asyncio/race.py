@@ -5,6 +5,7 @@ import random
 from pyodide.ffi.wrappers import add_event_listener
 from js import document
 
+#Our awaitable coroutine - we'll use asyncio.gather() to run lots of these
 async def racer(lane_element):
     speed = random.random() + .3
     lane_element.value = 0
@@ -20,16 +21,18 @@ NUM_RACERS = 5
 racers = []
 
 for n in range(NUM_RACERS):
+    #Create new progress bars as lanes for our "racers"
     new_lane = document.createElement("progress")
     new_lane.id = f"lane-{n}"
     new_lane.max = 100
-    new_lane.classList.add('border-4', 'border-yellow-500', 'm-2', 'h-6', 'w-full')
+    new_lane.classList.add('border-4', 'border-yellow-500', 'm-2', 'h-6', 'w-11/12')
     
-
+    #Label the labels
     new_lane_label = document.createElement("label")
     setattr(new_lane_label, "for", f"lane-{n}")
     new_lane_label.innerText = f"Lane {n}"
 
+    #Add the progress bars and labels to the document
     document.getElementById("race-output").appendChild(new_lane_label)
     document.getElementById("race-output").appendChild(new_lane)
 
