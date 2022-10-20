@@ -11,11 +11,13 @@ slug_image: pyscript_future_featured.png
 <py-env>
     - trio
 </py-env>
-<p class="post-p">Another interesting question popped up on the <a href="https://discord.com/invite/TynfPGRwda">PyScript Discord</a> this week:</p>
+<p class="post-p">Another interesting question popped up on the <a href="https://discord.com/invite/TynfPGRwda">PyScript Discord</a>:</p>
 <blockquote class="post-blockquote">I've got a question regarding network requests. How to do I call an API without blocking the UI thread? Like in JS you can just give fetch a callback function to call when the backend responds. Is there an equivalent for pyscript?</blockquote>
 <script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
 <p class="post-p">This is a very reasonable question for someone used to the callback-oriented style of modern Javascript programming. Let's put together a practical example of cooperative multitasking with callbacks in Pyscript.</p>
-<blockquote class="p-2 mx-6 my-4 italic text-green-800 bg-green-100">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts truly asynchronously in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</blockquote>
+<div class="info-banner">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts truly asynchronously in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</div>
+<div class="warning-banner">This post was originally written for PyScript 2022.06.1 and updated for PyScript 2022.09.1. <span class="font-semibold">It will almost certainly be broken by later releases.</span></div>
+
 <p class="post-p">One thing to note is that, by default, Pyscript/Pyodide execute each script tag as its own coroutine, so <code class="code">await</code>ing in one script block will automatically allow other script blocks to continue <execution class="a" href="#note1">[1]</execution> Consider the following two (nearly identical) snippets, which with no further work independently count upward:</p>
 <div class="flex flex-col gap-2">
     {{< showcode "post/pyscript-futures/sleep_1.py"  "python3" >}}
