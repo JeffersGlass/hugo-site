@@ -1,0 +1,154 @@
+---
+title: "Pyscript Asyncio"
+date: 2022-10-20T07:36:14-05:00
+draft: true
+tags:
+- pyscript
+- python
+description: "Working with concurrency in PyScript"
+slug_image: pyscript_future_featured.png
+---
+<style>
+    code:not(.nocode){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<script defer src="https://pyscript.net/releases/2022.09.1/pyscript.js"></script>
+<p class="post-p">When running Python in the Browser, you get one process and one thread. That's it. And it's <span class="italic">the same thread</span> that the browser window's event loop runs on. So we can't block - ever - or things fall apart.</p>
+<p class="post-p">So what if we want to do more than one thing at once? Concurrency to the rescue! In this post, we'll look at using <code>async/await/asyncio</code> in PyScript/Pyodide to write concurrent code.</p>
+<div class="info-banner">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts in parallel in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</div>
+<div class="warning-banner">This post was originally written for PyScript 2022.09.1. <span class="font-semibold">It will almost certainly be broken by later releases.</span></div>
+<h2 class="post-h2">Pyodide.Webloop</h2>
+<p class="post-p">The Pyodide runtime (which is the most common one used in PyScript at the moment) provides a custom wrapper for the asyncio event loop, that allows <code>async/await</code> to work with the browser event loop. Many of the methods will be familiar if you've worked with <code>asyncio</code>, but it's worth highlighting some useful ones, as well as broken ones:</p>
+<div class="grid grid-cols-1 px-2 py-2 mx-4 bg-green-100 divide-y-2 divide-green-800 md:gap-y-2 md:divide-y-0 divide-opacity-30">
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">create_task(coro: Coroutine)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L342-L363"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Schedules the Coroutine into the event loop, to run concurrently as a Task. Works like <code>asyncio.create_task()</code></code></div>
+    </div>
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_soon(callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L207-L221"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Schedules calling the Callable in the browser event loop using <code>setTimeout(callback, 0)</code></div>
+    </div>
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_soon_threadsafe(callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L223-L233"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Since we have no threads, everything is "thread safe". This really just exists for API compatibility, and calls <code>call_soon(callback, ...)</code></code></div>
+    </div>
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_later(delay: float, callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L235-L280"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Schedules <code>callback</code> to be called in (roughly) <code>delay</code> seconds, using <code>setTimeout(callback, delay)</code>. Returns a <code>Handle</code> object with a <code>cancel()</code> the call.</div>
+    </div>
+    <div class="px-2 bg-yellow-100 md:px-0 md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-yellow-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">run_until_complete(future)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L185-L201"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Since we can't block, this just ensures that the future is scheduled and returns the future. As the documentation notes, it's better to use <code>future.add_done_callback(do_something_with_result)</code></div>
+    </div>
+    <div class="px-2 bg-yellow-100 md:px-0 md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-yellow-800 md:divide-opacity-50">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold">run_forever()</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L176-L183"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Different from asyncio.loop.run_forever - this is a a no-op! Since we can't block, this method does nothing.</div>
+    </div>
+</div>
+<p class="post-p">We can access the Pyodide event loop at <code class="code">PyScript.loop</code>, so we could write, for example, <code class="code">PyScript.loop.create_task(my_async_function())</code></p>
+<h2 class="post-h2">Webloop Examples</h2>
+<div class="grid grid-cols-1 gap-y-4">
+    {{< showandrun file="content\post\pyscript-asyncio\clock.py" direction="flip" >}}
+    <div class="grid grid-cols-2">
+        <div>
+            {{< showcode "content\post\pyscript-asyncio\timer.py" "python" >}}
+            <py-script src="timer.py"></py-script>
+        </div>
+        <div class="flex flex-col items-stretch w-full">
+            <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+            <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
+                <div id="timer-output"></div>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-2">
+        <div>
+            {{< showcode "content\post\pyscript-asyncio\race.py" "python" >}}
+            <py-script src="race.py"></py-script>
+        </div>
+        <div class="flex flex-col items-stretch w-full">
+            <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+            <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
+                <button id="start-race">Restart Race</button>
+                <div id="race-output"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<h2 class="post-h2">Implicit Async</h2>
+<p class="post-p">Pyodide has an interesting quirk that allows an additional way of working with coroutines, that has to to with what's called <span class="italic">"Top-Level Await"</span>. If you've written async/await code before, you might be familiar with Python yelling at you for trying to use 'await' outside of a coroutine, like so:</p>
+<div class="m-2 overflow-x-auto">
+    {{< highlight python "linenos=false,style=perldoc">}}
+    import asyncio
+    print("One plus two is... wait for it...")
+    await asyncio.sleep(1)
+    print(1+2)
+    ----
+    >>> await asyncio.sleep(1)
+    >>> ^
+    >>> SyntaxError: 'await' outside function{{< /highlight >}}
+</div>
+<div class="m-2 overflow-x-auto">
+    {{< highlight python "linenos=false,style=perldoc">}}
+    import asyncio
+    async def add_slowly():
+        print("One plus two is... wait for it...")
+        await asyncio.sleep(1)
+        print(1+2)
+    
+    await add_slowly()
+    ----
+    >>> await asyncio.sleep(1)
+    >>> ^
+    >>> SyntaxError: 'await' outside async function{{< /highlight >}}
+</div>
+<p class="post-p">However, if you run those same pieces of code in PyScript, they work just fine!</p>
+<div class="flex flex-col-reverse items-stretch space-y-2 md:flex-row-reverse md:space-x-2 md:space-x-reverse">
+    <div class="flex flex-col items-stretch w-full md:w-1/2">
+        <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+        <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124">
+            <py-script class="px-2" src="loop.py" std-out="out"></py-script>
+            <div id="out"></div>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2">
+        {{< showcode "content/post/pyscript-asyncio/loop.py" "python3" >}}
+        </div>
+    </div>
+</div>
+<p class="post-p">The reason that code with top-level await (i.e. "<code>await</code>" outside an async function) works in PyScript is due to a design decision on the part of the Pyodide team, whose thinking I imagine goes like this:</p>
+<ul class="post-ul">
+    <li>We usually can't just nakedly <code>await</code> things in Python, since we need an active event loop to schedule the coroutines into.</li>
+    <li>In the browser, we <span class="italic">always</span> have an active event loop (the browser event loop)</li>
+    <li>CPython allows us to compile code with the <code class="code">PyCF_ALLOW_TOP_LEVEL_AWAIT</code>, which, if it finds Top-Level 'Await' statements, returns the evaluated code as a coroutine</li>
+    <li>Therefore, if we evaluate a chunk of code and the result is a coroutine, we can simply schedule it into the browser event loop for the user and execute it. (If the result is not a coroutine, just return the result as normal.)</li>
+</ul>
+<p class="post-p">This is exactly what the internal Pyodide function <code class="code">runPythonAsync()</code> does - compiles code with PyCF_ALLOW_TOP_LEVEL_AWAIT, and if the result is a coroutine, schedules it and returns a promise representing the result. It's essentially a convenience function that takes advantage of the fact that, by definition, we always have an every loop available to us. And since PyScript (currently) uses <code class="code">runPythonAsync()</code> to run every code block, you can write top-level await code wherever you like.</p>
+<div class="grid grid-cols-1 md:gap-2 md:grid-cols-2">
+    {{< showcode "post/pyscript-futures/sleep_1.py"  "python3" >}}
+    {{< showcode "post/pyscript-futures/sleep_2.py"  "python3" >}}
+<py-script>
+    {{< loadcode "post/pyscript-futures/sleep_1.py" >}}
+</py-script>
+<py-script>
+    {{< loadcode "post/pyscript-futures/sleep_2.py" >}}
+</py-script>
+</div>
+<div class="flex flex-col md:flex-row">
+    <div class="w-full my-4 md:w-1/2">
+        <span class="text-sm text-gray-500">Output from sleep_1.py</span>
+        <div class="h-auto text-base bg-green-100 border-2" id="output-1"></div>
+    </div>
+    <div class="w-full m-4 md:w-1/2">
+        <span class="text-sm text-gray-500">Output from sleep_2.py</span>
+        <div class="h-auto text-base bg-green-100 border-2" id="output-2"></div>
+    </div>
+</div>
+<p class="post-p"><span class="font-semibold">BUT BEWARE!</span> This is the part that's most likely to change in future versions of PyScript. You'll note above that when we compile our Python Code, if the result is a coroutine, the JavaScript side gets a promise that resolves to the result of the coroutine. Importantly though, at least in 2022.09.1, <a href="https://github.com/pyscript/pyscript/blob/7d5f6c9ead72798f23915b2ce7b619f02322ac84/pyscriptjs/src/runtime.ts#L180">we don't await that promise resolving!</a> This is what allows the loader to continue, other scripts to evaluate etc. while the scheduled coroutine resolves in the background.</p>
+<p class="post-p">There's been <a href="https://github.com/pyscript/pyscript/issues/763">quite</a> a <a href="https://github.com/pyscript/pyscript/pull/715">bit</a> of <a href="https://github.com/pyscript/pyscript/pull/796">discussion</a> around what the loader lifecycle and async scripts, so I do expect this to change in the future. At this moment, it doesn't look like it's changing in the planned 2022.10.1, but time will tell!</p>
+<h2 class="post-h2">No Threading, No Multiprocessing</h2>
+<p class="post-p">Importable but not functional https://pyodide.org/en/stable/usage/wasm-constraints.html?highlight=threading#included-but-not-working-modules</p>
+<p class="post-p">Threading progress https://github.com/pyodide/pyodide/issues/237</p>
+
