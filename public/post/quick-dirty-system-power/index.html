@@ -181,9 +181,9 @@ if (!doNotTrack) {
 <p class="post-p">Here's what I came up with. It's not terrible robust, secure, or debuggable, but it's getting the job done for now. The client script runs on the computer connected to a UPS, and is triggered when the UPS switches to battery power. The server runs on as many connected computers as we want, and should be set to run at startup. The (static) IPs of the computers running the server script must be enterred in the client script.</p>
 <p class="code-title">client.py</p>
 <div class="overflow-y-scroll h-124">
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -238,68 +238,68 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#e6db74">&#34;&#34;&#34;
-</span><span style="color:#e6db74">This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
-</span><span style="color:#e6db74">This program (&#39;client&#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
-</span><span style="color:#e6db74">The server program should be running on any computers that need to be shutdown in this context.
-</span><span style="color:#e6db74">This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
-</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#c30">&#34;&#34;&#34;
+</span><span style="color:#c30">This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
+</span><span style="color:#c30">This program (&#39;client&#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
+</span><span style="color:#c30">The server program should be running on any computers that need to be shutdown in this context.
+</span><span style="color:#c30">This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
+</span><span style="color:#c30">&#34;&#34;&#34;</span>
 
-<span style="color:#f92672">import</span> socket
-<span style="color:#f92672">import</span> os
-<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">socket</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">os</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">time</span> <span style="color:#069;font-weight:bold">import</span> sleep
 
-socket<span style="color:#f92672">.</span>setdefaulttimeout(<span style="color:#ae81ff">10</span>)
-PORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">1933</span>
-MSG <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;SHUTDOWN NOW&#39;</span>
-RSP <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SHUTDOWN CONFIRMED&#34;</span>
+socket<span style="color:#555">.</span>setdefaulttimeout(<span style="color:#f60">10</span>)
+PORT <span style="color:#555">=</span> <span style="color:#f60">1933</span>
+MSG <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#39;SHUTDOWN NOW&#39;</span>
+RSP <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#34;SHUTDOWN CONFIRMED&#34;</span>
 
-deviceIPs <span style="color:#f92672">=</span> [
-    <span style="color:#e6db74">&#34;172.16.0.2&#34;</span>
+deviceIPs <span style="color:#555">=</span> [
+    <span style="color:#c30">&#34;172.16.0.2&#34;</span>
 ]
-attempts <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-MAX_ATTEMPTS <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+attempts <span style="color:#555">=</span> <span style="color:#f60">0</span>
+MAX_ATTEMPTS <span style="color:#555">=</span> <span style="color:#f60">5</span>
 
-print(<span style="color:#e6db74">&#34;Client program is contacting remote computers to shut them down&#34;</span>)
+<span style="color:#366">print</span>(<span style="color:#c30">&#34;Client program is contacting remote computers to shut them down&#34;</span>)
 
-<span style="color:#66d9ef">while</span> len(deviceIPs) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
-    attempts <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
-    <span style="color:#66d9ef">if</span> attempts <span style="color:#f92672">&gt;</span> MAX_ATTEMPTS:
-        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;System could not shut down the following IPs: </span><span style="color:#e6db74">{</span>deviceIPs<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-        print(<span style="color:#e6db74">&#34;Shutting down self in 15 seconds&#34;</span>)
-        sleep(<span style="color:#ae81ff">15</span>)
-        <span style="color:#66d9ef">break</span>
-    <span style="color:#66d9ef">for</span> ip <span style="color:#f92672">in</span> deviceIPs:
-        <span style="color:#66d9ef">with</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM) <span style="color:#66d9ef">as</span> s:
-            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Attempting to connect tp </span><span style="color:#e6db74">{</span>ip<span style="color:#e6db74">}</span><span style="color:#e6db74">, attempt </span><span style="color:#e6db74">{</span>attempts<span style="color:#e6db74">}</span><span style="color:#e6db74"> of </span><span style="color:#e6db74">{</span>MAX_ATTEMPTS<span style="color:#e6db74">}</span><span style="color:#e6db74"> (timeout is </span><span style="color:#e6db74">{</span>int(socket<span style="color:#f92672">.</span>getdefaulttimeout())<span style="color:#e6db74">}</span><span style="color:#e6db74">s)&#34;</span>)
-            <span style="color:#66d9ef">try</span>:
-                s<span style="color:#f92672">.</span>connect((ip, PORT))
-            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">TimeoutError</span> <span style="color:#66d9ef">as</span> err:
-                print(<span style="color:#e6db74">&#34;Connection timed out&#34;</span>)
-                <span style="color:#66d9ef">continue</span>
-            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Connection successful, sending message: </span><span style="color:#e6db74">{</span>MSG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-            s<span style="color:#f92672">.</span>sendall(MSG)
-            data <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">1024</span>)
-            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Received </span><span style="color:#e6db74">{</span>repr(data)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-            <span style="color:#66d9ef">if</span> data[:len(RSP)] <span style="color:#f92672">==</span> RSP:
-                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Received shutdown confirmation message from host at ip </span><span style="color:#e6db74">{</span>ip<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-                deviceIPs<span style="color:#f92672">.</span>remove(ip)
-            <span style="color:#66d9ef">else</span>:
-                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Got some other message than we expected from host at ip </span><span style="color:#e6db74">{</span>ip<span style="color:#e6db74">}</span><span style="color:#e6db74">: </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-    sleep(<span style="color:#ae81ff">1</span>)
-<span style="color:#66d9ef">else</span>:
-    print(<span style="color:#e6db74">&#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&#34;</span>)
-    sleep(<span style="color:#ae81ff">10</span>)
-os<span style="color:#f92672">.</span>system(<span style="color:#e6db74">&#34;shutdown /s /f /t 10&#34;</span>)</code></pre></td></tr></table>
+<span style="color:#069;font-weight:bold">while</span> <span style="color:#366">len</span>(deviceIPs) <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>:
+    attempts <span style="color:#555">+=</span> <span style="color:#f60">1</span>
+    <span style="color:#069;font-weight:bold">if</span> attempts <span style="color:#555">&gt;</span> MAX_ATTEMPTS:
+        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;System could not shut down the following IPs: </span><span style="color:#a00">{</span>deviceIPs<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Shutting down self in 15 seconds&#34;</span>)
+        sleep(<span style="color:#f60">15</span>)
+        <span style="color:#069;font-weight:bold">break</span>
+    <span style="color:#069;font-weight:bold">for</span> ip <span style="color:#000;font-weight:bold">in</span> deviceIPs:
+        <span style="color:#069;font-weight:bold">with</span> socket<span style="color:#555">.</span>socket(socket<span style="color:#555">.</span>AF_INET, socket<span style="color:#555">.</span>SOCK_STREAM) <span style="color:#069;font-weight:bold">as</span> s:
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Attempting to connect tp </span><span style="color:#a00">{</span>ip<span style="color:#a00">}</span><span style="color:#c30">, attempt </span><span style="color:#a00">{</span>attempts<span style="color:#a00">}</span><span style="color:#c30"> of </span><span style="color:#a00">{</span>MAX_ATTEMPTS<span style="color:#a00">}</span><span style="color:#c30"> (timeout is </span><span style="color:#a00">{</span><span style="color:#366">int</span>(socket<span style="color:#555">.</span>getdefaulttimeout())<span style="color:#a00">}</span><span style="color:#c30">s)&#34;</span>)
+            <span style="color:#069;font-weight:bold">try</span>:
+                s<span style="color:#555">.</span>connect((ip, PORT))
+            <span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">TimeoutError</span> <span style="color:#069;font-weight:bold">as</span> err:
+                <span style="color:#366">print</span>(<span style="color:#c30">&#34;Connection timed out&#34;</span>)
+                <span style="color:#069;font-weight:bold">continue</span>
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Connection successful, sending message: </span><span style="color:#a00">{</span>MSG<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+            s<span style="color:#555">.</span>sendall(MSG)
+            data <span style="color:#555">=</span> s<span style="color:#555">.</span>recv(<span style="color:#f60">1024</span>)
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Received </span><span style="color:#a00">{</span><span style="color:#366">repr</span>(data)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+            <span style="color:#069;font-weight:bold">if</span> data[:<span style="color:#366">len</span>(RSP)] <span style="color:#555">==</span> RSP:
+                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Received shutdown confirmation message from host at ip </span><span style="color:#a00">{</span>ip<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+                deviceIPs<span style="color:#555">.</span>remove(ip)
+            <span style="color:#069;font-weight:bold">else</span>:
+                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Got some other message than we expected from host at ip </span><span style="color:#a00">{</span>ip<span style="color:#a00">}</span><span style="color:#c30">: </span><span style="color:#a00">{</span>data<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+    sleep(<span style="color:#f60">1</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&#34;</span>)
+    sleep(<span style="color:#f60">10</span>)
+os<span style="color:#555">.</span>system(<span style="color:#c30">&#34;shutdown /s /f /t 10&#34;</span>)</code></pre></td></tr></table>
 </div>
 </div>
 </div>
 <p class="pb-8 post-img-caption">Scroll to see full code</p>
 <p class="code-title">server.py</p>
 <div class="overflow-y-scroll h-124">
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -333,38 +333,38 @@ os<span style="color:#f92672">.</span>system(<span style="color:#e6db74">&#34;sh
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#e6db74">&#34;&#34;&#34;
-</span><span style="color:#e6db74">This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
-</span><span style="color:#e6db74">This program (&#39;server&#39;) runs on any computer that is NOT receiving the direct singal to shut down.
-</span><span style="color:#e6db74">The &#39;client&#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
-</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#c30">&#34;&#34;&#34;
+</span><span style="color:#c30">This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
+</span><span style="color:#c30">This program (&#39;server&#39;) runs on any computer that is NOT receiving the direct singal to shut down.
+</span><span style="color:#c30">The &#39;client&#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
+</span><span style="color:#c30">&#34;&#34;&#34;</span>
 
-<span style="color:#f92672">import</span> socket
-<span style="color:#f92672">import</span> os
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">socket</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">os</span>
 
-HOST <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
-PORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">1933</span>
-MSG <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SHUTDOWN NOW&#34;</span>
-RSP <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;SHUTDOWN CONFIRMED&#34;</span>
+HOST <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
+PORT <span style="color:#555">=</span> <span style="color:#f60">1933</span>
+MSG <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#34;SHUTDOWN NOW&#34;</span>
+RSP <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#34;SHUTDOWN CONFIRMED&#34;</span>
 
-print(<span style="color:#e6db74">&#34;Server program is listening for shutdown commands from primary client&#34;</span>)
+<span style="color:#366">print</span>(<span style="color:#c30">&#34;Server program is listening for shutdown commands from primary client&#34;</span>)
 
-<span style="color:#66d9ef">with</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM) <span style="color:#66d9ef">as</span> s:
-    s<span style="color:#f92672">.</span>bind((HOST, PORT))
-    s<span style="color:#f92672">.</span>listen()
-    conn, addr <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>accept()
-    <span style="color:#66d9ef">with</span> conn:
-        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Connected by </span><span style="color:#e6db74">{</span>addr<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-        <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
-            data <span style="color:#f92672">=</span> conn<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">1024</span>)
-            <span style="color:#66d9ef">if</span> data[:len(MSG)] <span style="color:#f92672">==</span> MSG:
-                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Got shutdown MSG </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-                conn<span style="color:#f92672">.</span>sendall(RSP)
-                os<span style="color:#f92672">.</span>system(<span style="color:#e6db74">&#34;shutdown /s /f /t 10&#34;</span>)
-            <span style="color:#66d9ef">else</span>: 
-                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Got </span><span style="color:#e6db74">{</span>data<span style="color:#e6db74">= }</span><span style="color:#e6db74"> instead of expected </span><span style="color:#e6db74">{</span>data[:len(MSG)]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> data:
-                <span style="color:#66d9ef">break</span></code></pre></td></tr></table>
+<span style="color:#069;font-weight:bold">with</span> socket<span style="color:#555">.</span>socket(socket<span style="color:#555">.</span>AF_INET, socket<span style="color:#555">.</span>SOCK_STREAM) <span style="color:#069;font-weight:bold">as</span> s:
+    s<span style="color:#555">.</span>bind((HOST, PORT))
+    s<span style="color:#555">.</span>listen()
+    conn, addr <span style="color:#555">=</span> s<span style="color:#555">.</span>accept()
+    <span style="color:#069;font-weight:bold">with</span> conn:
+        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Connected by </span><span style="color:#a00">{</span>addr<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+        <span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
+            data <span style="color:#555">=</span> conn<span style="color:#555">.</span>recv(<span style="color:#f60">1024</span>)
+            <span style="color:#069;font-weight:bold">if</span> data[:<span style="color:#366">len</span>(MSG)] <span style="color:#555">==</span> MSG:
+                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Got shutdown MSG </span><span style="color:#a00">{</span>data<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+                conn<span style="color:#555">.</span>sendall(RSP)
+                os<span style="color:#555">.</span>system(<span style="color:#c30">&#34;shutdown /s /f /t 10&#34;</span>)
+            <span style="color:#069;font-weight:bold">else</span>: 
+                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Got </span><span style="color:#a00">{</span>data<span style="color:#a00">= }</span><span style="color:#c30"> instead of expected </span><span style="color:#a00">{</span>data[:<span style="color:#366">len</span>(MSG)]<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+            <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> data:
+                <span style="color:#069;font-weight:bold">break</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -380,9 +380,9 @@ print(<span style="color:#e6db74">&#34;Server program is listening for shutdown 
 <p class="post-p">So, I bashed together the following code to wake up, establish a network connection, and send a Wake-On-LAN message to each MAC address in a given array every 15 seconds or so:</p>
 <p class="code-title">code.py</p>
 <div class="overflow-y-scroll h-124">
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -460,82 +460,82 @@ print(<span style="color:#e6db74">&#34;Server program is listening for shutdown 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#75715e"># SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries</span>
-<span style="color:#75715e"># SPDX-License-Identifier: MIT</span>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#09f;font-style:italic"># SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries</span>
+<span style="color:#09f;font-style:italic"># SPDX-License-Identifier: MIT</span>
 
-<span style="color:#f92672">import</span> board
-<span style="color:#f92672">import</span> busio
-<span style="color:#f92672">import</span> digitalio
-<span style="color:#f92672">import</span> neopixel
-<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">board</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">busio</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">digitalio</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">neopixel</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">time</span> <span style="color:#069;font-weight:bold">import</span> sleep
 
-<span style="color:#f92672">from</span> adafruit_wiznet5k.adafruit_wiznet5k <span style="color:#f92672">import</span> WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
-<span style="color:#f92672">import</span> adafruit_wiznet5k.adafruit_wiznet5k_socket <span style="color:#66d9ef">as</span> socket
-<span style="color:#f92672">import</span> adafruit_requests <span style="color:#66d9ef">as</span> requests
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">adafruit_wiznet5k.adafruit_wiznet5k</span> <span style="color:#069;font-weight:bold">import</span> WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">adafruit_wiznet5k.adafruit_wiznet5k_socket</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">socket</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">adafruit_requests</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">requests</span>
 
-pixel <span style="color:#f92672">=</span> neopixel<span style="color:#f92672">.</span>NeoPixel(board<span style="color:#f92672">.</span>NEOPIXEL, <span style="color:#ae81ff">1</span>)
+pixel <span style="color:#555">=</span> neopixel<span style="color:#555">.</span>NeoPixel(board<span style="color:#555">.</span>NEOPIXEL, <span style="color:#f60">1</span>)
 
-targetMACs <span style="color:#f92672">=</span> [
-    [<span style="color:#ae81ff">0x12</span>,<span style="color:#ae81ff">0x34</span>,<span style="color:#ae81ff">0x56</span>,<span style="color:#ae81ff">0x78</span>,<span style="color:#ae81ff">0x9A</span>,<span style="color:#ae81ff">0xBC</span>], <span style="color:#75715e">#Computer NW</span>
-    [<span style="color:#ae81ff">0x12</span>,<span style="color:#ae81ff">0x34</span>,<span style="color:#ae81ff">0x56</span>,<span style="color:#ae81ff">0x78</span>,<span style="color:#ae81ff">0x9A</span>,<span style="color:#ae81ff">0xBD</span>], <span style="color:#75715e">#Computer NE</span>
-    <span style="color:#75715e">#... more computers as necessary</span>
+targetMACs <span style="color:#555">=</span> [
+    [<span style="color:#f60">0x12</span>,<span style="color:#f60">0x34</span>,<span style="color:#f60">0x56</span>,<span style="color:#f60">0x78</span>,<span style="color:#f60">0x9A</span>,<span style="color:#f60">0xBC</span>], <span style="color:#09f;font-style:italic">#Computer NW</span>
+    [<span style="color:#f60">0x12</span>,<span style="color:#f60">0x34</span>,<span style="color:#f60">0x56</span>,<span style="color:#f60">0x78</span>,<span style="color:#f60">0x9A</span>,<span style="color:#f60">0xBD</span>], <span style="color:#09f;font-style:italic">#Computer NE</span>
+    <span style="color:#09f;font-style:italic">#... more computers as necessary</span>
     ]
 
-<span style="color:#75715e"># Initialize ethernet interface with DHCP</span>
-cs <span style="color:#f92672">=</span> digitalio<span style="color:#f92672">.</span>DigitalInOut(board<span style="color:#f92672">.</span>D10)
-spi_bus <span style="color:#f92672">=</span> busio<span style="color:#f92672">.</span>SPI(board<span style="color:#f92672">.</span>SCK, MOSI<span style="color:#f92672">=</span>board<span style="color:#f92672">.</span>MOSI, MISO<span style="color:#f92672">=</span>board<span style="color:#f92672">.</span>MISO)
-eth <span style="color:#f92672">=</span> WIZNET5K(spi_bus, cs, is_dhcp<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+<span style="color:#09f;font-style:italic"># Initialize ethernet interface with DHCP</span>
+cs <span style="color:#555">=</span> digitalio<span style="color:#555">.</span>DigitalInOut(board<span style="color:#555">.</span>D10)
+spi_bus <span style="color:#555">=</span> busio<span style="color:#555">.</span>SPI(board<span style="color:#555">.</span>SCK, MOSI<span style="color:#555">=</span>board<span style="color:#555">.</span>MOSI, MISO<span style="color:#555">=</span>board<span style="color:#555">.</span>MISO)
+eth <span style="color:#555">=</span> WIZNET5K(spi_bus, cs, is_dhcp<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
 
-ip <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;172.16.0.10&#34;</span>)
-subnet_mask <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;255.255.0.0&#34;</span>)
-gateway <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;172.16.0.10&#34;</span>)
-dns <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#34;172.16.0.10&#34;</span>)
-eth<span style="color:#f92672">.</span>ifconfig <span style="color:#f92672">=</span> (ip, subnet_mask, gateway, dns)
-<span style="color:#75715e">#If using DHCP, uncomment the following line</span>
-<span style="color:#75715e">#eth.ifconfig = (ip, subnet_mask, None, None)</span>
+ip <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;172.16.0.10&#34;</span>)
+subnet_mask <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;255.255.0.0&#34;</span>)
+gateway <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;172.16.0.10&#34;</span>)
+dns <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;172.16.0.10&#34;</span>)
+eth<span style="color:#555">.</span>ifconfig <span style="color:#555">=</span> (ip, subnet_mask, gateway, dns)
+<span style="color:#09f;font-style:italic">#If using DHCP, uncomment the following line</span>
+<span style="color:#09f;font-style:italic">#eth.ifconfig = (ip, subnet_mask, None, None)</span>
 
-print(<span style="color:#e6db74">&#34;Assigned Ethernet Address: &#34;</span> <span style="color:#f92672">+</span> str(eth<span style="color:#f92672">.</span>pretty_ip(eth<span style="color:#f92672">.</span>ip_address)))
+<span style="color:#366">print</span>(<span style="color:#c30">&#34;Assigned Ethernet Address: &#34;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(eth<span style="color:#555">.</span>pretty_ip(eth<span style="color:#555">.</span>ip_address)))
 
-<span style="color:#75715e">#Built-in neopixel will be purple while waiting for Ethernet to connect</span>
-pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">255</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>)
+<span style="color:#09f;font-style:italic">#Built-in neopixel will be purple while waiting for Ethernet to connect</span>
+pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">255</span>,<span style="color:#f60">0</span>,<span style="color:#f60">255</span>)
 
-retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
-<span style="color:#66d9ef">while</span> retry:
-    retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
-    <span style="color:#66d9ef">try</span>:
-        eth<span style="color:#f92672">.</span>socket_connect(<span style="color:#ae81ff">0</span>, eth<span style="color:#f92672">.</span>unpretty_ip(<span style="color:#e6db74">&#39;172.16.255.255&#39;</span>), <span style="color:#ae81ff">556</span>, conn_mode<span style="color:#f92672">=</span>SNMR_UDP)
-    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">AssertionError</span> <span style="color:#66d9ef">as</span> err:
-        print(str(err) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;, retrying in 10 Seconds&#34;</span>)
-        retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
-        sleep(<span style="color:#ae81ff">10</span>)
+retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
+<span style="color:#069;font-weight:bold">while</span> retry:
+    retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>
+    <span style="color:#069;font-weight:bold">try</span>:
+        eth<span style="color:#555">.</span>socket_connect(<span style="color:#f60">0</span>, eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#39;172.16.255.255&#39;</span>), <span style="color:#f60">556</span>, conn_mode<span style="color:#555">=</span>SNMR_UDP)
+    <span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">AssertionError</span> <span style="color:#069;font-weight:bold">as</span> err:
+        <span style="color:#366">print</span>(<span style="color:#366">str</span>(err) <span style="color:#555">+</span> <span style="color:#c30">&#34;, retrying in 10 Seconds&#34;</span>)
+        retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
+        sleep(<span style="color:#f60">10</span>)
 
-    status <span style="color:#f92672">=</span> eth<span style="color:#f92672">.</span>socket_status(<span style="color:#ae81ff">0</span>)
-    <span style="color:#66d9ef">if</span> [int(b) <span style="color:#66d9ef">for</span> b <span style="color:#f92672">in</span> status] <span style="color:#f92672">==</span> [SNSR_SOCK_UDP]:
-        print(<span style="color:#e6db74">&#34;Socket 0 connected as UDP&#34;</span>)
-    <span style="color:#66d9ef">else</span>:
-        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Socket not connected, status is </span><span style="color:#e6db74">{</span>status<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-        retry <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
-        sleep(<span style="color:#ae81ff">10</span>)
+    status <span style="color:#555">=</span> eth<span style="color:#555">.</span>socket_status(<span style="color:#f60">0</span>)
+    <span style="color:#069;font-weight:bold">if</span> [<span style="color:#366">int</span>(b) <span style="color:#069;font-weight:bold">for</span> b <span style="color:#000;font-weight:bold">in</span> status] <span style="color:#555">==</span> [SNSR_SOCK_UDP]:
+        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Socket 0 connected as UDP&#34;</span>)
+    <span style="color:#069;font-weight:bold">else</span>:
+        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Socket not connected, status is </span><span style="color:#a00">{</span>status<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+        retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
+        sleep(<span style="color:#f60">10</span>)
 
-<span style="color:#75715e">#Built in neopixel will be blue when standing by to send WOL packets</span>
-pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>)
-sleep(<span style="color:#ae81ff">5</span>)
+<span style="color:#09f;font-style:italic">#Built in neopixel will be blue when standing by to send WOL packets</span>
+pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">0</span>,<span style="color:#f60">0</span>,<span style="color:#f60">255</span>)
+sleep(<span style="color:#f60">5</span>)
 
-<span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
-<span style="color:#75715e">#Built in neopixel will be green when sending WOL packets</span>
-    pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>,<span style="color:#ae81ff">0</span>)
-    <span style="color:#66d9ef">for</span> i, target <span style="color:#f92672">in</span> enumerate(targetMACs):
+<span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
+<span style="color:#09f;font-style:italic">#Built in neopixel will be green when sending WOL packets</span>
+    pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">0</span>,<span style="color:#f60">255</span>,<span style="color:#f60">0</span>)
+    <span style="color:#069;font-weight:bold">for</span> i, target <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(targetMACs):
         
-        fullPacket <span style="color:#f92672">=</span> bytearray([<span style="color:#ae81ff">0xFF</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">6</span> <span style="color:#f92672">+</span> target <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>)
-        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Sending WoL packet to computer </span><span style="color:#e6db74">{</span>i<span style="color:#e6db74">}</span><span style="color:#e6db74"> with mac address </span><span style="color:#e6db74">{</span>eth<span style="color:#f92672">.</span>pretty_mac(target)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
-        eth<span style="color:#f92672">.</span>socket_write(<span style="color:#ae81ff">0</span>, fullPacket, <span style="color:#ae81ff">1</span>)
+        fullPacket <span style="color:#555">=</span> <span style="color:#366">bytearray</span>([<span style="color:#f60">0xFF</span>] <span style="color:#555">*</span> <span style="color:#f60">6</span> <span style="color:#555">+</span> target <span style="color:#555">*</span> <span style="color:#f60">16</span>)
+        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Sending WoL packet to computer </span><span style="color:#a00">{</span>i<span style="color:#a00">}</span><span style="color:#c30"> with mac address </span><span style="color:#a00">{</span>eth<span style="color:#555">.</span>pretty_mac(target)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+        eth<span style="color:#555">.</span>socket_write(<span style="color:#f60">0</span>, fullPacket, <span style="color:#f60">1</span>)
         
-        sleep(<span style="color:#ae81ff">.1</span>)
+        sleep(<span style="color:#f60">.1</span>)
 
-    pixel[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">255</span>)
-    sleep(<span style="color:#ae81ff">15</span>)
+    pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">0</span>,<span style="color:#f60">0</span>,<span style="color:#f60">255</span>)
+    sleep(<span style="color:#f60">15</span>)
 
-eth<span style="color:#f92672">.</span>socket_close(<span style="color:#ae81ff">0</span>)</code></pre></td></tr></table>
+eth<span style="color:#555">.</span>socket_close(<span style="color:#f60">0</span>)</code></pre></td></tr></table>
 </div>
 </div>
 </div>

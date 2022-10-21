@@ -167,9 +167,9 @@ if (!doNotTrack) {
 <p class="post-p"><span class="line-through">Now, I'll head over to the YouTube data API's sample for listing channel data and copy that over into a script</span>. Actually, though the YouTube API explorer allows you to run code using just an API key and returns a valid response, the sample code provided only works for OAuth authentication. Thankfully, <a href="https://stackoverflow.com/questions/57531368/where-do-you-specify-your-api-key-when-making-a-request-with-the-google-api-pyth">Stack Overflow comes to the rescue</a> as it so often does, with a simple bit of code that uses an API key to make a request. From there, I built a couple of useful utility functions that get, for a given Channel ID, the playlist representing All Uploads and, for a given playlist, get the most recent X videos (5 by default).</p>
 <p class="code-title">yt-request.py</p>
 <div class="overflow-y-scroll h-124">
-    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -211,45 +211,45 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#f92672">import</span> json
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">json</span>
     
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">prebuild</span>():
-        <span style="color:#f92672">from</span> googleapiclient.discovery <span style="color:#f92672">import</span> build
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">prebuild</span>():
+        <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">googleapiclient.discovery</span> <span style="color:#069;font-weight:bold">import</span> build
     
-        <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;config.json&#39;</span>, <span style="color:#e6db74">&#39;r&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> infile:
-            config <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>load(infile)
-        api_key <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;yt_api_key&#39;</span>]  <span style="color:#75715e"># Please set your API key</span>
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#39;config.json&#39;</span>, <span style="color:#c30">&#39;r&#39;</span>, encoding<span style="color:#555">=</span><span style="color:#c30">&#39;utf-8&#39;</span>) <span style="color:#069;font-weight:bold">as</span> infile:
+            config <span style="color:#555">=</span> json<span style="color:#555">.</span>load(infile)
+        api_key <span style="color:#555">=</span> config[<span style="color:#c30">&#39;yt_api_key&#39;</span>]  <span style="color:#09f;font-style:italic"># Please set your API key</span>
     
-        api_service_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;youtube&#34;</span>
-        api_version <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;v3&#34;</span>
-        <span style="color:#66d9ef">return</span> build(api_service_name, api_version, developerKey<span style="color:#f92672">=</span>api_key)
+        api_service_name <span style="color:#555">=</span> <span style="color:#c30">&#34;youtube&#34;</span>
+        api_version <span style="color:#555">=</span> <span style="color:#c30">&#34;v3&#34;</span>
+        <span style="color:#069;font-weight:bold">return</span> build(api_service_name, api_version, developerKey<span style="color:#555">=</span>api_key)
     
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getPlaylistVideos</span>(playlistID, maxVids <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>):
-        youtube <span style="color:#f92672">=</span> prebuild()
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">getPlaylistVideos</span>(playlistID, maxVids <span style="color:#555">=</span> <span style="color:#f60">5</span>):
+        youtube <span style="color:#555">=</span> prebuild()
     
-        request <span style="color:#f92672">=</span> youtube<span style="color:#f92672">.</span>playlistItems()<span style="color:#f92672">.</span>list(
-            part<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;snippet,contentDetails&#34;</span>,
-            maxResults<span style="color:#f92672">=</span>maxVids,
-            playlistId<span style="color:#f92672">=</span>playlistID
+        request <span style="color:#555">=</span> youtube<span style="color:#555">.</span>playlistItems()<span style="color:#555">.</span>list(
+            part<span style="color:#555">=</span><span style="color:#c30">&#34;snippet,contentDetails&#34;</span>,
+            maxResults<span style="color:#555">=</span>maxVids,
+            playlistId<span style="color:#555">=</span>playlistID
         )
     
-        response <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span>execute()
-        <span style="color:#75715e">#print(json.dumps(response, indent=4))</span>
-        <span style="color:#66d9ef">return</span> (response)
+        response <span style="color:#555">=</span> request<span style="color:#555">.</span>execute()
+        <span style="color:#09f;font-style:italic">#print(json.dumps(response, indent=4))</span>
+        <span style="color:#069;font-weight:bold">return</span> (response)
     
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getUploadsPLFromChannelID</span>(channelID):
-        youtube <span style="color:#f92672">=</span> prebuild()
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">getUploadsPLFromChannelID</span>(channelID):
+        youtube <span style="color:#555">=</span> prebuild()
     
-        request <span style="color:#f92672">=</span> youtube<span style="color:#f92672">.</span>channels()<span style="color:#f92672">.</span>list(
-            part<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;snippet,contentDetails,statistics&#34;</span>,
-            id<span style="color:#f92672">=</span>channelID
+        request <span style="color:#555">=</span> youtube<span style="color:#555">.</span>channels()<span style="color:#555">.</span>list(
+            part<span style="color:#555">=</span><span style="color:#c30">&#34;snippet,contentDetails,statistics&#34;</span>,
+            <span style="color:#366">id</span><span style="color:#555">=</span>channelID
         )
-        response <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span>execute()
-        <span style="color:#66d9ef">return</span>(response[<span style="color:#e6db74">&#39;items&#39;</span>][<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#39;contentDetails&#39;</span>][<span style="color:#e6db74">&#39;relatedPlaylists&#39;</span>][<span style="color:#e6db74">&#39;uploads&#39;</span>])
+        response <span style="color:#555">=</span> request<span style="color:#555">.</span>execute()
+        <span style="color:#069;font-weight:bold">return</span>(response[<span style="color:#c30">&#39;items&#39;</span>][<span style="color:#f60">0</span>][<span style="color:#c30">&#39;contentDetails&#39;</span>][<span style="color:#c30">&#39;relatedPlaylists&#39;</span>][<span style="color:#c30">&#39;uploads&#39;</span>])
     
-    <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-        print(getUploadsPLFromChannelID(<span style="color:#e6db74">&#34;UCjgmTMVx2B5_DOB3bCZBq7A&#34;</span>))
-        print(getPlaylistVideos(<span style="color:#e6db74">&#34;UUjgmTMVx2B5_DOB3bCZBq7A&#34;</span>))
+    <span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+        <span style="color:#366">print</span>(getUploadsPLFromChannelID(<span style="color:#c30">&#34;UCjgmTMVx2B5_DOB3bCZBq7A&#34;</span>))
+        <span style="color:#366">print</span>(getPlaylistVideos(<span style="color:#c30">&#34;UUjgmTMVx2B5_DOB3bCZBq7A&#34;</span>))
     </code></pre></td></tr></table>
 </div>
 </div>
@@ -259,9 +259,9 @@ if (!doNotTrack) {
 <p class="post-p">With these methods created, it's pretty straightforward to write a little script that just pulls the 5 most recently uploaded videos from my youtube channel and stashes the data in a json file.</p>
 <p class="code-title">generateAll.py</p>
 <div class="overflow-y-scroll h-124">
-    <div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -288,29 +288,29 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#f92672">from</span> ytgallery <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">ytgallery</span> <span style="color:#069;font-weight:bold">import</span> <span style="color:#555">*</span>
     
-    myChannelID <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UCjgmTMVx2B5_DOB3bCZBq7A&#34;</span>
-    myUploads <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UUjgmTMVx2B5_DOB3bCZBq7A&#34;</span>
+    myChannelID <span style="color:#555">=</span> <span style="color:#c30">&#34;UCjgmTMVx2B5_DOB3bCZBq7A&#34;</span>
+    myUploads <span style="color:#555">=</span> <span style="color:#c30">&#34;UUjgmTMVx2B5_DOB3bCZBq7A&#34;</span>
     
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generateIndexGallery</span>():
-        videos <span style="color:#f92672">=</span> getPlaylistVideos(myUploads, maxVids<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
-        info <span style="color:#f92672">=</span> list()
-        <span style="color:#66d9ef">for</span> vData <span style="color:#f92672">in</span> videos[<span style="color:#e6db74">&#39;items&#39;</span>]:
-            vid <span style="color:#f92672">=</span> {
-                <span style="color:#e6db74">&#39;id&#39;</span>: vData[<span style="color:#e6db74">&#39;snippet&#39;</span>][<span style="color:#e6db74">&#39;resourceId&#39;</span>][<span style="color:#e6db74">&#39;videoId&#39;</span>],
-                <span style="color:#e6db74">&#39;title&#39;</span>: vData[<span style="color:#e6db74">&#39;snippet&#39;</span>][<span style="color:#e6db74">&#39;title&#39;</span>],
-                <span style="color:#e6db74">&#39;thumbnailURL&#39;</span>: vData[<span style="color:#e6db74">&#39;snippet&#39;</span>][<span style="color:#e6db74">&#39;thumbnails&#39;</span>][<span style="color:#e6db74">&#39;high&#39;</span>][<span style="color:#e6db74">&#39;url&#39;</span>]
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">generateIndexGallery</span>():
+        videos <span style="color:#555">=</span> getPlaylistVideos(myUploads, maxVids<span style="color:#555">=</span><span style="color:#f60">5</span>)
+        info <span style="color:#555">=</span> <span style="color:#366">list</span>()
+        <span style="color:#069;font-weight:bold">for</span> vData <span style="color:#000;font-weight:bold">in</span> videos[<span style="color:#c30">&#39;items&#39;</span>]:
+            vid <span style="color:#555">=</span> {
+                <span style="color:#c30">&#39;id&#39;</span>: vData[<span style="color:#c30">&#39;snippet&#39;</span>][<span style="color:#c30">&#39;resourceId&#39;</span>][<span style="color:#c30">&#39;videoId&#39;</span>],
+                <span style="color:#c30">&#39;title&#39;</span>: vData[<span style="color:#c30">&#39;snippet&#39;</span>][<span style="color:#c30">&#39;title&#39;</span>],
+                <span style="color:#c30">&#39;thumbnailURL&#39;</span>: vData[<span style="color:#c30">&#39;snippet&#39;</span>][<span style="color:#c30">&#39;thumbnails&#39;</span>][<span style="color:#c30">&#39;high&#39;</span>][<span style="color:#c30">&#39;url&#39;</span>]
                 }
-            info<span style="color:#f92672">.</span>append(vid)
+            info<span style="color:#555">.</span>append(vid)
     
-        <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;../../data/indexvideos.json&#34;</span>, <span style="color:#e6db74">&#34;w+&#34;</span>) <span style="color:#66d9ef">as</span> outfile:
-            json<span style="color:#f92672">.</span>dump(info, outfile)
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;../../data/indexvideos.json&#34;</span>, <span style="color:#c30">&#34;w+&#34;</span>) <span style="color:#069;font-weight:bold">as</span> outfile:
+            json<span style="color:#555">.</span>dump(info, outfile)
     
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main</span>():
         generateIndexGallery()
     
-    <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    <span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
         main()
     </code></pre></td></tr></table>
 </div>
@@ -326,9 +326,9 @@ if (!doNotTrack) {
 </ul>
 <p class="post-p">That's a bit of a word jumble, but perhaps it will be more clear visually. Here is the directory structure of files, a selected part of the template file (index.html) and the partial (yt_index.html):</p>
 <p class="code-title">Directory Structure</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -340,7 +340,7 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">my-hugo-project
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">my-hugo-project
 ├── data
 │   ├── yt
 │   │   ├──indexvideos.json
@@ -354,9 +354,9 @@ if (!doNotTrack) {
 </div>
 <div class="h-4"></div>
 <p class="code-title">indexvideos.json <span class="italic">(partial)</span></p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
@@ -368,42 +368,42 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
     {
-    <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;r3Z6bVylrbs&#34;</span>,
-    <span style="color:#f92672">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Using Analog Dials in your Projects&#34;</span>,
-    <span style="color:#f92672">&#34;thumbnailURL&#34;</span>: <span style="color:#e6db74">&#34;https://i.ytimg.com/vi/r3Z6bVylrbs/hqdefault.jpg&#34;</span>
+    <span style="color:#309;font-weight:bold">&#34;id&#34;</span>: <span style="color:#c30">&#34;r3Z6bVylrbs&#34;</span>,
+    <span style="color:#309;font-weight:bold">&#34;title&#34;</span>: <span style="color:#c30">&#34;Using Analog Dials in your Projects&#34;</span>,
+    <span style="color:#309;font-weight:bold">&#34;thumbnailURL&#34;</span>: <span style="color:#c30">&#34;https://i.ytimg.com/vi/r3Z6bVylrbs/hqdefault.jpg&#34;</span>
     },
     {
-    <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;E-TAz610T0c&#34;</span>,
-    <span style="color:#f92672">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Wireless DMX LED Pixel Control #Shorts&#34;</span>,
-    <span style="color:#960050;background-color:#1e0010">...</span></code></pre></td></tr></table>
+    <span style="color:#309;font-weight:bold">&#34;id&#34;</span>: <span style="color:#c30">&#34;E-TAz610T0c&#34;</span>,
+    <span style="color:#309;font-weight:bold">&#34;title&#34;</span>: <span style="color:#c30">&#34;Wireless DMX LED Pixel Control #Shorts&#34;</span>,
+    <span style="color:#a00;background-color:#faa">...</span></code></pre></td></tr></table>
 </div>
 </div>
 <div class="h-4"></div>
 <p class="code-title">index.html <span class="italic">(partial)</span></p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="display:block;width:100%;background-color:#d8dada"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
 </span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;flex flex-col space-y-2 md:space-y-0 md:space-x-2 md:flex-row&#34;</span>&gt;
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;flex flex-col space-y-2 md:space-y-0 md:space-x-2 md:flex-row&#34;</span>&gt;
     {{ range $.Site.Data.indexvideos }}
-<span style="display:block;width:100%;background-color:#3c3d38">        {{ partial &#34;yt_index.html&#34; . }}
+<span style="display:block;width:100%;background-color:#d8dada">        {{ partial &#34;yt_index.html&#34; . }}
 </span>    {{ end }}
-&lt;/<span style="color:#f92672">div</span>&gt;</code></pre></td></tr></table>
+&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;</code></pre></td></tr></table>
 </div>
 </div>
 <p class="post-img-caption">The dot after the name of the partial is <span class="underline">crucial</span>; it passes the current context to the partial template so the partial has access to all the data it needs.</p>
 <div class="h-4"></div>
 <p class="code-title">yt_index.html</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
@@ -412,13 +412,13 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">div</span>&gt;
-    &lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://www.youtube.com/watch?v={{ .id }}&#34;</span>&gt;
-    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;border-2 border-gray-400&#34;</span>&gt;
-      &lt;<span style="color:#f92672">img</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ .thumbnailURL }}&#34;</span> <span style="color:#a6e22e">alt</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Youtube Video: {{ .title }}&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w-auto&#34;</span>&gt;
-    &lt;/<span style="color:#f92672">div</span>&gt;
-    &lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;m-auto text-sm italic text-center&#34;</span>&gt;{{ .title }}&lt;/<span style="color:#f92672">p</span>&gt;&lt;/<span style="color:#f92672">a</span>&gt;
-&lt;/<span style="color:#f92672">div</span>&gt;</code></pre></td></tr></table>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">div</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">a</span> <span style="color:#309">href</span><span style="color:#555">=</span><span style="color:#c30">&#34;https://www.youtube.com/watch?v={{ .id }}&#34;</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;border-2 border-gray-400&#34;</span>&gt;
+      &lt;<span style="color:#309;font-weight:bold">img</span> <span style="color:#309">src</span><span style="color:#555">=</span><span style="color:#c30">&#34;{{ .thumbnailURL }}&#34;</span> <span style="color:#309">alt</span><span style="color:#555">=</span><span style="color:#c30">&#34;Youtube Video: {{ .title }}&#34;</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;w-auto&#34;</span>&gt;
+    &lt;/<span style="color:#309;font-weight:bold">div</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">p</span> <span style="color:#309">class</span><span style="color:#555">=</span><span style="color:#c30">&#34;m-auto text-sm italic text-center&#34;</span>&gt;{{ .title }}&lt;/<span style="color:#309;font-weight:bold">p</span>&gt;&lt;/<span style="color:#309;font-weight:bold">a</span>&gt;
+&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;</code></pre></td></tr></table>
 </div>
 </div>
 <p class="post-p">All this put together creates a series of divs on the front-page corresponding to my 5 most recently uploaded YouTube videos.</p>
