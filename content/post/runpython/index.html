@@ -1,0 +1,41 @@
+---
+title: "Runpython"
+date: 2022-10-21T11:42:59-05:00
+draft: true
+tags:
+- post
+description: "Description Here"
+---
+<h2 id="runPythonAsync"class="post-h2">Epilog: <code>runPython()</code> and <code>runPythonAsync()</code></h2>
+<p class="post-p">The following information in pretty deep-in-the-weeds for an end user of PyScript/Pyodide, but I thought I would take this chance to clear up some misunderstandings about the functionality of pyodide's <code>runPython()</code> and <code>runPythonAsync()</code></p>
+<p class="post-p">To start with - both functions are API wrappers <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/js/api.ts#L63-L70">[1]</a> <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/js/api.ts#L187-L194">[2]</a> around the lower-level functions <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/py/_pyodide/_base.py#L364-L460">eval_code()</a> and <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/py/_pyodide/_base.py#L464-L540">eval_code_async()</a>. These functions in turn are both short and simple:</p>
+<div class="grid grid-cols-1 md:grid-cols-2 md:space-x-4">
+    <div>
+        {{< highlight "python3" >}}
+def eval_code( ... )
+) -> Any:
+    return (
+        CodeRunner(
+            source,
+            flags=flags,
+            ...
+        )
+        .compile()
+        .run()
+    ){{< /highlight >}}
+    </div>
+    <div>
+        {{< highlight "python3" >}}
+async def eval_code_async(source, flags, ...))
+    flags = flags or ast.PyCF_ALLOW_TOP_LEVEL_AWAIT
+    return (
+        await CodeRunner(
+            source,
+            flags=flags,
+            ...
+        )
+        .compile()
+        .run_async()
+    ){{< /highlight >}}
+    </div>
+</div>
