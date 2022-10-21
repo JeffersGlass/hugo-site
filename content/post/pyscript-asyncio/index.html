@@ -32,10 +32,6 @@ slug_image: pyscript_future_featured.png
         <div class="overflow-x-auto md:col-span-3">Schedules calling the Callable in the browser event loop using <code>setTimeout(callback, 0)</code></div>
     </div>
     <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
-        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_soon_threadsafe(callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L223-L233"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
-        <div class="overflow-x-auto md:col-span-3">Since we have no threads, everything is "thread safe". This really just exists for API compatibility, and calls <code>call_soon(callback, ...)</code></code></div>
-    </div>
-    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
         <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_later(delay: float, callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L235-L280"><img src="/svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
         <div class="overflow-x-auto md:col-span-3">Schedules <code>callback</code> to be called in (roughly) <code>delay</code> seconds, using <code>setTimeout(callback, delay)</code>. Returns a <code>Handle</code> object with a <code>cancel()</code> the call.</div>
     </div>
@@ -50,45 +46,61 @@ slug_image: pyscript_future_featured.png
 </div>
 <p class="post-p">We can access the Pyodide event loop at <code class="code">PyScript.loop</code>, so we could write, for example, <code class="code">PyScript.loop.create_task(my_async_function())</code>. It's worth looking at the full function signatures of the methods linked above - the ones which take Callables all take an *args parameter to pass arguments into your call, so you don't need to wrap them in <code>functools.partial</code> or the like.</p>
 <p class="post-p">The presence of the Webloop implementation of the <code>asyncio</code> event loop means that most async concepts translate pretty directly - <code>async for</code>, <code>async with</code>, and other contructs which generate or consume coroutines or async iterators/context managers mostly just work. But the the above Webloop methods are the most useful in terms of creating behaviors you might want in your program.</p>
-<p class="post-p">Rather than walk through each method individually, I think the most instructive thing to do is simply to present examples of what I think are the most useful strategies:</p>
+<p class="post-p">Rather than walk through each method individually, I think the most instructive thing to do is simply to present and discuss examples of what I think are the most useful strategies:</p>
 <ul class="post-ul">
     <li><code>create_task</code>, which schedules a coroutine to be run soon.</li>
     <li><code>call_soon/call_later</code>, which schedules a callable to be called "ASAP" or after a specific amount of time</li>
     <li><code>asyncio.gather</code>, for running multiple awaitables (coroutines, Tasks, and Futures) concurrently</li>
 </ul>
 <h2 class="post-h2">Webloop Examples</h2>
-<div class="grid grid-cols-1 gap-y-4">
-    {{< showandrun file="content\post\pyscript-asyncio\clock.py" direction="flip" >}}
-    <div class="grid grid-cols-2">
-        <div>
-            {{< showcode "content\post\pyscript-asyncio\timer.py" "python" >}}
-            <py-script src="timer.py"></py-script>
-        </div>
-        <div class="flex flex-col items-stretch w-full">
-            <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
-            <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
-                <div id="timer-output"></div>
-            </div>
-        </div>
+<div class="grid grid-cols-1 gap-y-8">
+    <div>
+        <h4 class="post-h4"><code class="nocode">create_task()</code></h4>
+        {{< showandrun file="content\post\pyscript-asyncio\clock.py" direction="flip" >}}
+        <p class="post-p"><a href="https://docs.python.org/3/library/asyncio-task.html#task-object">As the Python Documentation says</a>: <span class="italic">Tasks are used to run coroutines in event loops. If a coroutine awaits [on a future], the Task suspends execution of the coroutine and waits for the completion of the Future.</span></p>
+        <p class="post-p">This is the key behavior we want when we want coroutines (including async functions defined with <code>async def</code>) to run concurrently.</p>
     </div>
-    <div class="grid grid-cols-2">
-        <div>
-            {{< showcode "content\post\pyscript-asyncio\race.py" "python" >}}
-            <py-script src="race.py"></py-script>
-        </div>
-        <div class="flex flex-col items-stretch w-full">
-            <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
-            <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
-                <button id="start-race">Restart Race</button>
-                <div id="race-output"></div>
+    <div>
+        <h4 class="mb-2 post-h4"><code class="nocode">call_soon()</code> and <code class="nocode">call_later()</code></h4>
+        <div class="grid grid-cols-2">
+            <div>
+                {{< showcode "content\post\pyscript-asyncio\timer.py" "python" >}}
+                <py-script src="timer.py"></py-script>
+            </div>
+            <div class="flex flex-col items-stretch w-full">
+                <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+                <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
+                    <div id="timer-output"></div>
+                </div>
             </div>
         </div>
+        <p class="post-p">Let's say you don't have a a coroutine with an internal <code>await</code> - you just have a regular old function (or Callable) that you'd like to be called either "now" (but allow other Async processes to happen as well) or after an interval (while not blocking in the meantime). For that, we have <code>call_soon()</code> and <code>call_later()</code>, respectively.</p>
+        <p class="post-p">Two positive effects of using either of these methods is that they (1) wrap your callable in a PyProxy object, so the browser garbage colletor doesn't throw them away before they're called; and (2) they return a <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.Handle">Handle Object</a> which can be used to cancel execution of the Callable prior to its calling. Neat!</p>
+    </div>
+    <div>
+        <h4 class="mb-2 post-h4"><code class="nocode">asnycio.gather()</code></h4>
+        <div class="grid grid-cols-2">
+            <div>
+                {{< showcode "content\post\pyscript-asyncio\race.py" "python" >}}
+                <py-script src="race.py"></py-script>
+            </div>
+            <div class="flex flex-col items-stretch w-full">
+                <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+                <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
+                    <button id="start-race">Restart Race</button>
+                    <div id="race-output"></div>
+                </div>
+            </div>
+        </div>
+        <p class="post-p">When you have multiple <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio-awaitables">awaitable objects</a> (coroutines, Tasks, and Futures) that you want to run "in a group" or "as a batch", <code>asyncio.gather()</code> can simplify your life. If any of the collection of awaitables is a coroutine, it is automatically wrapped in a Task (and scheduled).</p>
+        <p class="post-p">In a PyScript/Pyodide context, one can image using <code>gather</code> for UI management or "backend" work. For example, you might have a collection of onscreen objects (like the example above) that each need to update themselves asynchronously. Or you might <code>gather()</code> a collection of coroutines that use <a href="https://pyodide.org/en/stable/usage/api/python-api/http.html?highlight=pyfetch#pyodide.http.pyfetch">pyfetch()</a> to retrive network resources, allowing them to fetch asynchronously while PyScript continues executing on the page.</p>
     </div>
 </div>
 <h2 class="post-h2">Implicit Async</h2>
 <p class="post-p">PyScript/Pyodide has an interesting quirk that allows an additional way of working with coroutines, that has to to with what's called <span class="italic">"Top-Level Await"</span>. If you've written async/await code before, you might be familiar with Python yelling at you for trying to use 'await' outside of a coroutine, like so:</p>
-<div class="m-2 overflow-x-auto">
-    {{< highlight python "linenos=false,style=perldoc">}}
+<div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="h-full m-2 overflow-x-auto">
+{{< highlight python "linenos=false,style=manni">}}
     import asyncio
     print("One plus two is... wait for it...")
     await asyncio.sleep(1)
@@ -97,20 +109,21 @@ slug_image: pyscript_future_featured.png
     >>> await asyncio.sleep(1)
     >>> ^
     >>> SyntaxError: 'await' outside function{{< /highlight >}}
-</div>
-<div class="m-2 overflow-x-auto">
-    {{< highlight python "linenos=false,style=perldoc">}}
+    </div>
+    <div class="h-full m-2 overflow-x-auto">
+    {{< highlight python "linenos=false,style=manni">}}
     import asyncio
     async def add_slowly():
         print("One plus two is... wait for it...")
         await asyncio.sleep(1)
         print(1+2)
-    
+
     await add_slowly()
     ----
     >>> await asyncio.sleep(1)
     >>> ^
     >>> SyntaxError: 'await' outside async function{{< /highlight >}}
+    </div>
 </div>
 <p class="post-p">However, if you run those same pieces of code in PyScript, they work just fine!</p>
 <div class="flex flex-col-reverse items-stretch space-y-2 md:flex-row-reverse md:space-x-2 md:space-x-reverse">
@@ -131,17 +144,19 @@ slug_image: pyscript_future_featured.png
     <li>We usually can't just nakedly <code>await</code> things in Python, since we need an active event loop to schedule the coroutines into.</li>
     <li>In the browser, we <span class="italic">always</span> have an active event loop (the browser event loop)</li>
     <li>CPython allows us to compile code with the <code class="code">PyCF_ALLOW_TOP_LEVEL_AWAIT</code>, which, if it finds Top-Level 'Await' statements, returns the evaluated code as a coroutine</li>
-    <li>Therefore, if we evaluate a chunk of code and the result is a coroutine, we have the option to simply schedule it into the browser event loop for the user and execute it. (If the result is not a coroutine, just return the result as normal.)</li>
+    <li>Therefore, if we evaluate a chunk of code and the result is a coroutine, we have the option to simply schedule it into the browser event loop for the user and execute it. (If the result and discuss is not a coroutine, just return the result as normal.)</li>
 </ul>
 <p class="post-p">This is exactly what the internal Pyodide function <code class="code">runPythonAsync()</code> does - compiles code with PyCF_ALLOW_TOP_LEVEL_AWAIT, and if the result is a coroutine, schedules it and returns a promise representing the result. It's essentially a convenience function that takes advantage of the fact that, by definition, we always have an every loop available to us. And since PyScript (currently) uses <code class="code">runPythonAsync()</code> to run every code block, you can write top-level await code wherever you like.</p>
+<p class="info-banner">Importantly, <code>runPythonAsync()</code> <span class="font-semibold">does not run synchronous Python 'asynchronously'</span>. It simply allows code with Top Level Await statements to compile and be <code>await</code>ed. <a href="#runPythonAsync">Jump to the Epilogue</a> for more details.</p>
+<p class="post-p">See the following pair of demos, both of which run with top-level await</p>
 <div class="grid grid-cols-1 md:gap-2 md:grid-cols-2">
-    {{< showcode "post/pyscript-futures/sleep_1.py"  "python3" >}}
-    {{< showcode "post/pyscript-futures/sleep_2.py"  "python3" >}}
+    {{< showcode "post/pyscript-asyncio/sleep_1.py"  "python3" >}}
+    {{< showcode "post/pyscript-asyncio/sleep_2.py"  "python3" >}}
 <py-script>
-    {{< loadcode "post/pyscript-futures/sleep_1.py" >}}
+    {{< loadcode "post/pyscript-asyncio/sleep_1.py" >}}
 </py-script>
 <py-script>
-    {{< loadcode "post/pyscript-futures/sleep_2.py" >}}
+    {{< loadcode "post/pyscript-asyncio/sleep_2.py" >}}
 </py-script>
 </div>
 <div class="flex flex-col md:flex-row">
@@ -160,3 +175,37 @@ slug_image: pyscript_future_featured.png
 <p class="post-p">Personally, I think the implicit style is nice to have for quick-and-dirty examples like those just above, but they do make it hard to reason about execution order and script completion. And like I say, I suspect the details of that are going to continue to change and morph over time, so they might not be the most future-proof solution.</p>
 <p class="post-p">That's what I'd recommend, for any significant projects, you lean toward usign the <code>Webloop</code> methods for handling concurrent tasks. Back when I wrote <a href="http://localhost:1313/project/the-7-guis-pyscript/">The 7 Guis in PyScript</a>, I wasn't particularly familiar with Webloop, and so coded everything in the implicit style. All of the async work in those demos breaks down to essentially "do a lot of setup, then run a loop asychronously forever." Which makes quick, implicit async plausible. But when I moved on to the much-more-integrated <a href="http://localhost:1313/project/richdemo/">Rich on PyScript Project</a>, I had a hell of a time reasoning about what processes would be completed when, how to cancel and monitor them etc. from the Python side - starting that project with an asyncio/Webloop approach from the beginning would have been radially easier.</p>
 <p class="post-p">Finally, remember that while <code>async/await</code> in PyScript/Pyodide works <span class="italic">mostly</span> like it does on desktop or terminal, because there's an intermediate layer of reimplementation in Webloop, not all behaviors are guarenteed to be exactly the same. Troubleshoot and test thoroughly!</p>
+<hr>
+<h2 id="runPythonAsync"class="post-h2">Epilog: <code>runPython()</code> and <code>runPythonAsync()</code></h2>
+<p class="post-p">The following information in pretty deep-in-the-weeds for an end user of PyScript/Pyodide, but I thought I would take this chance to clear up some misunderstandings about the functionality of pyodide's <code>runPython()</code> and <code>runPythonAsync()</code></p>
+<p class="post-p">To start with - both functions are API wrappers <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/js/api.ts#L63-L70">[1]</a> <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/js/api.ts#L187-L194">[2]</a> around the lower-level functions <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/py/_pyodide/_base.py#L364-L460">eval_code()</a> and <a href="https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/py/_pyodide/_base.py#L464-L540">eval_code_async()</a>. These functions in turn are both short and simple:</p>
+<div class="grid grid-cols-1 md:grid-cols-2 md:space-x-4">
+    <div>
+        {{< highlight "python3" >}}
+def eval_code( ... )
+) -> Any:
+    return (
+        CodeRunner(
+            source,
+            flags=flags,
+            ...
+        )
+        .compile()
+        .run()
+    ){{< /highlight >}}
+    </div>
+    <div>
+        {{< highlight "python3" >}}
+async def eval_code_async(source, flags, ...))
+    flags = flags or ast.PyCF_ALLOW_TOP_LEVEL_AWAIT
+    return (
+        await CodeRunner(
+            source,
+            flags=flags,
+            ...
+        )
+        .compile()
+        .run_async()
+    ){{< /highlight >}}
+    </div>
+</div>
