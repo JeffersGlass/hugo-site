@@ -38,4 +38,4 @@ for n in range(NUM_RACERS):
 
     racers.append(racer(new_lane))
 
-asyncio.gather(*racers)
+asyncio.gather(*racers);
