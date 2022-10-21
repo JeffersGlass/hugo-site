@@ -159,56 +159,56 @@ if (!doNotTrack) {
 <p class="post-p">This pushes the new files to github, which triggers a github action to upload the files in the ./public folder to s3.</p>
 <p class="post-p">There must be a better way.</p>
 <p class="post-p">And I'm confident there is - I'd love to use some like <a href="https://github.com/JeffersGlass/hugo-build-action">Jake Jarvis' Hugo Build Action</a> to automatically rebuild the site whenever new code is pushed to Github or merged into the main branch. The issue is, the Docker image that Jarvis has used doesn't happen to include tailwind as part of its build. So, I think the way forward is for me to learn enough about docker and dockerfiles to add Tailwind to a fork of Jarvis' action, and use that to build my site.</p>
-<p class="post-p">The dockerfile for this action is remarkably short:<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<p class="post-p">The dockerfile for this action is remarkably short:<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># https://github.com/jakejarvis/hugo-docker</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ghcr.io/jakejarvis/hugo-extended:0.89.4</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;hugo&#34;</span>]</code></pre></td></tr></table>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#09f;font-style:italic"># https://github.com/jakejarvis/hugo-docker</span><span style="color:#a00;background-color:#faa">
+</span><span style="color:#a00;background-color:#faa"></span><span style="color:#069;font-weight:bold">FROM</span><span style="color:#c30"> ghcr.io/jakejarvis/hugo-extended:0.89.4</span><span style="color:#a00;background-color:#faa">
+</span><span style="color:#a00;background-color:#faa">
+</span><span style="color:#a00;background-color:#faa"></span><span style="color:#069;font-weight:bold">ENTRYPOINT</span> [<span style="color:#c30">&#34;hugo&#34;</span>]</code></pre></td></tr></table>
 </div>
 </div></p>
 <p class="post-p">From what I understand, this is using a pre-built docker image stored online (via Github?) to improve the speed of this action. That seems like quite a deep rabbit hole to go down, though an interesting one, but let's see if there's a faster way.</p>
 <p class="post-p">One thing that occurs to me is to see if anyone else has forked this repo, to make their own changes in the way I'm interesed in. And indeed, I'm the 10th person to fork this action, and several of them are X commits <span class="italic">ahead</span> of the original (as well as being several behind), meaning they've made some tweaks and changes. Let's look at <a href="https://github.com/willbicks/hugo-build-action/commit/96b801e40324dc378775d648a2d202ea244837ce">one of these commits from willbicks</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">ruby \
-<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#e6db74">HUGO_EXTENDED</span>:<span style="color:#f92672">+</span>libc6<span style="color:#f92672">-</span>compat libstdc<span style="color:#f92672">++</span>} <span style="color:#f92672">&amp;&amp;</span> \
-update<span style="color:#f92672">-</span>ca<span style="color:#f92672">-</span>certificates <span style="color:#f92672">&amp;&amp;</span> \
-<span style="display:block;width:100%;background-color:#3c3d38"><span style="color:#f92672">+</span> npm install <span style="color:#f92672">--</span>global postcss<span style="color:#f92672">-</span>cli autoprefixer @babel<span style="color:#f92672">/</span>core @babel<span style="color:#f92672">/</span>cli <span style="color:#f92672">&amp;&amp;</span> \
-</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="color:#f92672">-</span> npm install <span style="color:#f92672">--</span>global postcss postcss<span style="color:#f92672">-</span>cli autoprefixer @babel<span style="color:#f92672">/</span>core @babel<span style="color:#f92672">/</span>cli <span style="color:#f92672">&amp;&amp;</span> \
-</span>pip3 install <span style="color:#f92672">--</span>upgrade <span style="color:#66d9ef">Pygments</span><span style="color:#f92672">==</span><span style="color:#ae81ff">2</span><span style="color:#f92672">.</span>* <span style="color:#f92672">&amp;&amp;</span> \
-gem install asciidoctor <span style="color:#f92672">&amp;&amp;</span> \
-wget <span style="color:#e6db74">https</span>:<span style="color:#e6db74">//</span>github<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>gohugoio<span style="color:#f92672">/</span>hugo<span style="color:#f92672">/</span>releases<span style="color:#f92672">/</span>download<span style="color:#f92672">/</span>v<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#66d9ef">HUGO_VERSION</span>}<span style="color:#f92672">/</span>hugo_<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#e6db74">HUGO_EXTENDED</span>:<span style="color:#f92672">+</span>extended_}<span style="color:#960050;background-color:#1e0010">$</span>{<span style="color:#66d9ef">HUGO_VERSION</span>}_Linux<span style="color:#f92672">-</span><span style="color:#ae81ff">64</span>bit<span style="color:#f92672">.</span>tar<span style="color:#f92672">.</span>gz <span style="color:#f92672">&amp;&amp;</span> \</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">ruby \
+<span style="color:#a00;background-color:#faa">$</span>{<span style="color:#fc3">HUGO_EXTENDED</span>:<span style="color:#555">+</span>libc6<span style="color:#555">-</span>compat libstdc<span style="color:#555">++</span>} <span style="color:#555">&amp;&amp;</span> \
+update<span style="color:#555">-</span>ca<span style="color:#555">-</span>certificates <span style="color:#555">&amp;&amp;</span> \
+<span style="display:block;width:100%;background-color:#d8dada"><span style="color:#555">+</span> npm install <span style="color:#555">--</span>global postcss<span style="color:#555">-</span>cli autoprefixer @babel<span style="color:#555">/</span>core @babel<span style="color:#555">/</span>cli <span style="color:#555">&amp;&amp;</span> \
+</span><span style="display:block;width:100%;background-color:#d8dada"><span style="color:#555">-</span> npm install <span style="color:#555">--</span>global postcss postcss<span style="color:#555">-</span>cli autoprefixer @babel<span style="color:#555">/</span>core @babel<span style="color:#555">/</span>cli <span style="color:#555">&amp;&amp;</span> \
+</span>pip3 install <span style="color:#555">--</span>upgrade <span style="color:#360">Pygments</span><span style="color:#555">==</span><span style="color:#f60">2</span><span style="color:#555">.</span>* <span style="color:#555">&amp;&amp;</span> \
+gem install asciidoctor <span style="color:#555">&amp;&amp;</span> \
+wget <span style="color:#fc3">https</span>:<span style="color:#3aa">//</span>github<span style="color:#555">.</span>com<span style="color:#555">/</span>gohugoio<span style="color:#555">/</span>hugo<span style="color:#555">/</span>releases<span style="color:#555">/</span>download<span style="color:#555">/</span>v<span style="color:#a00;background-color:#faa">$</span>{<span style="color:#360">HUGO_VERSION</span>}<span style="color:#555">/</span>hugo_<span style="color:#a00;background-color:#faa">$</span>{<span style="color:#fc3">HUGO_EXTENDED</span>:<span style="color:#555">+</span>extended_}<span style="color:#a00;background-color:#faa">$</span>{<span style="color:#360">HUGO_VERSION</span>}_Linux<span style="color:#555">-</span><span style="color:#f60">64</span>bit<span style="color:#555">.</span>tar<span style="color:#555">.</span>gz <span style="color:#555">&amp;&amp;</span> \</code></pre></div>
 <p class="post-p">Hang on, that's alredy way longer than the Dockerfile in my fork! But it also looks like something I could actually modify...ah, it looks like back in <a href="https://github.com/JeffersGlass/hugo-build-action/commit/0aeee3828f8f0d61ab36cfc57f8a30190c70a57b">commit #0aeee38</a>, Jarvis switched from using a fully-written-out dockerfile to a version which is hosted as one of these prebuilt images. Let's see if we can put that old, fully-written-out docker file into use with the most recent version of hugo.</p>
 <p class="post-p">I'll start by copy-pasting the last longhand version of the Dockerfile that Jarvis wrote. Then I'll update the Hugo version to 0.89.4 (the latest at time of writing), and add "tailwindcss" to the npm command the Dockerfile runs. Finally, I'll change the action.yml file to point to the local Dockerfile, instead of the prebuilt image. Finally, I'll commit all the changes to git and push them back upstream to Github.</p>
 <p class="post-p">I'll create a new workflow for this instead of blowing away my old one (that just manually published a folder to s3), called hugoBuildAndUpload.yml. I'll also disable the previous action on Github, so it doesn't try to run when the new action uploads. Having saved that new yaml file, I'll push it to Github and see what happens...</p>
 <img src="noTailwind.PNG" alt="An error message saying Docker cannot find tailwindcss" class="post-img">
 <p class="post-p">Drat, not quite. Hugo seems to be running, but it still can't find tailwind, even though it should be installed via NPM now... perhaps my install order is wrong? By adding <code class="code">require('tailwindcss/nesting')</code> to my postcss requirements and re-pushing, I can see that Hugo/postcss are indeed attempting to build the site, but aren't able to find the required tailwind dependencies. This time the error is: <code class="code">Error: Error building site: POSTCSS: failed to transform "css/style.css" (text/css): Error: Cannot find module 'tailwindcss/nesting'</code></p>
 <p class="post-p">Let's see if tailwind isn't installing successfully, or if postcss can't find it for some reason. I'll add a line to the Dockerfile which should just run the -help command for tailwind on the command line, and error out if it breaks:
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="display:block;width:100%;background-color:#d8dada"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 </span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">RUN</span> hugo version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>hugo env <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>postcss --version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="display:block;width:100%;background-color:#3c3d38"><span style="color:#ae81ff"></span>tailwindcss -h <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span></span><span style="color:#ae81ff"></span>autoprefixer --version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>babel --version <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>pygmentize -V <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>asciidoctor --version</code></pre></td></tr></table>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#069;font-weight:bold">RUN</span> hugo version <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span><span style="color:#c30;font-weight:bold"></span>hugo env <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span><span style="color:#c30;font-weight:bold"></span>postcss --version <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span><span style="display:block;width:100%;background-color:#d8dada"><span style="color:#c30;font-weight:bold"></span>tailwindcss -h <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span></span><span style="color:#c30;font-weight:bold"></span>autoprefixer --version <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span><span style="color:#c30;font-weight:bold"></span>babel --version <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span><span style="color:#c30;font-weight:bold"></span>pygmentize -V <span style="color:#555">&amp;&amp;</span> <span style="color:#c30;font-weight:bold">\
+</span><span style="color:#c30;font-weight:bold"></span>asciidoctor --version</code></pre></td></tr></table>
 </div>
 </div></p>
 <p class="post-p">And indeed, in the action's output I can see the full help info from tailwindcss. A bit verbose perhaps, but I can at least see that tailwind is being installed successfully via npm</p>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Asyncio in PyScript</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/pyscript-asyncio/pyscript_future_featured.png"/>
+<meta name="twitter:title" content="Asyncio in PyScript"/>
+<meta name="twitter:description" content="Working with concurrency in PyScript"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Asyncio in PyScript</h1>
+				<p>Published October 21, 2022</p>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/asyncio">asyncio</a>
+					
+					<a href="../../tags/pyodide">pyodide</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					<style>
+    code:not(.nocode){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<script defer src="https://pyscript.net/releases/2022.09.1/pyscript.js"></script>
+<p class="post-p">When running Python in a terminal or desktop, there's a myriad of ways to allow your code to do multiple things at once. You can spin off a new thread to handle computations, create a new process to offload work to other CPUs, even load up a while new <a href="https://pythondev.readthedocs.io/subinterpreters.html">subinterpretter</a> (someday!) to execution more code.</p>
+<p class="post-p">When running Python in the Browser, you get one process and (at least for now) one thread. That's it. And it's <span class="italic">the same thread</span> that the browser window's event loop runs on. So we can't block - ever - or things fall apart.</p>
+<p class="post-p">So what if we want to do more than one thing at once? Asyncio to the rescue! In this post, we'll look at using <code>async/await/asyncio</code> in PyScript/Pyodide to write concurrent code.</p>
+<div class="info-banner">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts in parallel in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</div>
+<div class="warning-banner">This post was originally written for PyScript 2022.09.1. <span class="font-semibold">It will almost certainly be broken by later releases.</span></div>
+<h2 class="post-h2">An Async/Await Recap</h2>
+<p class="post-p">There are many ways of achieving the goal of "do multiple things at once" in Python - using multiple processes, using multiple threads within a single process, or making one thread do the work of many by requiring each piece of code to declare when it it wants to 'release' the thread to do other work. The <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a> package in the python standard library, as well as the <code>async</code> and <code>await</code> keywords in the language, exist to support this last paradigm.</p>
+<p class="post-p">The typical way of writing these "cooperative" pieces of code is to declare <code class="nocode">Coroutines</code> using the <code>async def</code> keyword, then execute them with one of the many <a href="https://docs.python.org/3/library/asyncio-task.html#running-an-asyncio-program">asyncio execution methods</a>. Within a coroutine, the <code>await</code> keyword is used to indicate that control of the event loop (thread) should pause execution of the coroutine and move on to any others that are waiting. A statement like <code class="code">await foo()</code> means "suspend execution of the surrounding coroutine until the result of <code>foo()</code> is returned.</p>
+<p class="post-p">An example you can run in a regular terminal:</p>
+<div class="mx-2">
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">up_down</span>():
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34;What goes up&#34;</span>)
+    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34;Must come down&#34;</span>)
+
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">throw_things_up</span>():
+    <span style="color:#09f;font-style:italic"># asyncio.gather() runs multiple awaitable things and gathers their return values (or errors)</span>
+    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>gather(up_down(), up_down(), up_down())
+
+asyncio<span style="color:#555">.</span>run(throw_things_up())
+
+<span style="color:#09f;font-style:italic"># ------ Output ------</span>
+
+What goes up
+What goes up
+What goes up
+<span style="color:#09f;font-style:italic"># ~1 second gap here</span>
+Must come down
+Must come down
+Must come down</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+
+<p class="post-p">This is just a quick and dirty primer - if asnyc/await/asyncio is a wholly new subject for you, I recommend the excellent <a href="https://realpython.com/async-io-python/#the-10000-foot-view-of-async-io">Real Python article on Asyncio</a> for a deeper understanding before moving on.</p>
+<h2 class="post-h2">Pyodide.Webloop</h2>
+<p class="post-p">The Pyodide runtime (which is the most common one used in PyScript at the moment) provides a custom wrapper for the asyncio event loop, that allows <code>async/await</code> to work with the browser event loop. Many of the methods will be familiar if you've worked with <code>asyncio</code>, but it's worth highlighting some useful ones, as well as broken ones:</p>
+<div class="grid grid-cols-1 px-2 py-2 mx-4 bg-green-100 divide-y-2 divide-green-800 md:gap-y-2 md:divide-y-0 divide-opacity-30">
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">create_task(coro: Coroutine)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L342-L363"><img src="../../svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Schedules the Coroutine into the event loop, to run concurrently as a Task. Works like <code>asyncio.create_task()</code></code></div>
+    </div>
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_soon(callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L207-L221"><img src="../../svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Schedules calling the Callable in the browser event loop using <code>setTimeout(callback, 0)</code></div>
+    </div>
+    <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">call_later(delay: float, callback: Callable, ...)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L235-L280"><img src="../../svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Schedules <code>callback</code> to be called in (roughly) <code>delay</code> seconds, using <code>setTimeout(callback, delay)</code>. Returns a <code>Handle</code> object with a <code>cancel()</code> the call.</div>
+    </div>
+    <div class="px-2 bg-yellow-100 md:px-0 md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-yellow-800 md:divide-opacity-50 ">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold text-black">run_until_complete(future)</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L185-L201"><img src="../../svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Since we can't block, this just ensures that the future is scheduled and returns the future. As the documentation notes, it's better to use <code>future.add_done_callback(do_something_with_result)</code></div>
+    </div>
+    <div class="px-2 bg-yellow-100 md:px-0 md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-yellow-800 md:divide-opacity-50">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold">run_forever()</span> <a href="https://github.com/pyodide/pyodide/blob/00d0f347c86008c70565001e62b03db42b20d3a4/src/py/pyodide/webloop.py#L176-L183"><img src="../../svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">Different from asyncio.loop.run_forever - this is a a no-op! Since we can't block, this method does nothing.</div>
+    </div>
+    <div class="px-2 bg-yellow-100 md:px-0 md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-yellow-800 md:divide-opacity-50">
+        <div class="md:col-span-2 md:text-right"><span class="font-bold">asyncio.run()</span> <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.run"><img src="../../svg/externallink.svg" alt="" class="inline-block h-4"></a></div>
+        <div class="overflow-x-auto md:col-span-3">This function, like several of the base <code>asyncio</code> functions, can't be called from <span class="italic">within</span> an active event loop. And because we're inside the event loop in the browser, my understanding is we're <span class="italic">always</span> in an event loop. If you see an error like this, try one of the functions above.</div>
+    </div>
+</div>
+<p class="post-p">We can access the Pyodide event loop at <code class="code">PyScript.loop</code>, so we could write, for example, <code class="code">PyScript.loop.create_task(my_async_function())</code>. It's worth looking at the full function signatures of the methods linked above - the ones which take Callables all take an *args parameter to pass arguments into your call, so you don't need to wrap them in <code>functools.partial</code> or the like.</p>
+<p class="post-p">The presence of the Webloop implementation of the <code>asyncio</code> event loop means that most async concepts translate pretty directly - <code>async for</code>, <code>async with</code>, and other constructs which generate or consume coroutines or async iterators/context managers mostly just work. But the above Webloop methods are the most useful in terms of creating behaviors you might want in your program.</p>
+<p class="post-p">Rather than walk through each method individually, I think the most instructive thing to do is simply to present and discuss examples of what I think are the most useful strategies:</p>
+<ul class="post-ul">
+    <li><code>create_task</code>, which schedules a coroutine to be run soon.</li>
+    <li><code>call_soon/call_later</code>, which schedules a callable to be called "ASAP" or after a specific amount of time</li>
+    <li><code>asyncio.gather</code>, for running multiple awaitables (coroutines, Tasks, and Futures) concurrently</li>
+</ul>
+<h2 class="post-h2">Webloop Examples</h2>
+<div class="grid grid-cols-1 gap-y-8">
+    <div>
+        <h4 class="post-h4"><code class="nocode">create_task()</code></h4>
+        <div class="flex items-stretch flex-col-reverse space-y-2   md:flex-row-reverse md:space-x-2 md:space-x-reverse  ">
+    <div class="flex flex-col items-stretch w-full md:w-1/2">
+        <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+        <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124">
+            <py-script class="px-2" src="clock.py"></py-script>
+            <div id="clock-output"></div>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2">
+        <p class="code-title">clock.py</p>
+        
+        
+        <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">datetime</span> <span style="color:#069;font-weight:bold">import</span> datetime
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">clock_forever</span>():
+    <span style="color:#069;font-weight:bold">while</span>(<span style="color:#069;font-weight:bold">True</span>):
+        now <span style="color:#555">=</span> datetime<span style="color:#555">.</span>now()
+        Element(<span style="color:#c30">&#39;clock-output&#39;</span>)<span style="color:#555">.</span>write(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>now<span style="color:#555">.</span>hour<span style="color:#a00">}</span><span style="color:#c30">:</span><span style="color:#a00">{</span>now<span style="color:#555">.</span>minute<span style="color:#a00">:</span><span style="color:#c30">02</span><span style="color:#a00">}</span><span style="color:#c30">:</span><span style="color:#a00">{</span>now<span style="color:#555">.</span>second<span style="color:#a00">:</span><span style="color:#c30">02</span><span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+
+PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>create_task(clock_forever())</code></pre></td></tr></table>
+</div>
+</div>
+        
+    </div>
+</div>
+        <p class="post-p"><a href="https://docs.python.org/3/library/asyncio-task.html#task-object">As the Python Documentation says</a>: <span class="italic">Tasks are used to run coroutines in event loops. If a coroutine awaits [on a future], the Task suspends execution of the coroutine and waits for the completion of the Future.</span></p>
+        <p class="post-p">This is the key behavior we want when we want coroutines (including async functions defined with <code>async def</code>) to run concurrently.</p>
+    </div>
+    <div>
+        <h4 class="mb-2 post-h4"><code class="nocode">call_soon()</code> and <code class="nocode">call_later()</code></h4>
+        <div class="grid grid-cols-2">
+            <div>
+                <div>
+    <p class="code-title">timer.py</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">functools</span> <span style="color:#069;font-weight:bold">import</span> partial
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">finish_in</span>(seconds):
+    <span style="color:#069;font-weight:bold">if</span> seconds <span style="color:#555">&lt;=</span> <span style="color:#f60">0</span>:
+        Element(<span style="color:#c30">&#39;timer-output&#39;</span>)<span style="color:#555">.</span>write(<span style="color:#c30">&#34;DONE!&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+    <span style="color:#069;font-weight:bold">else</span>:
+        Element(<span style="color:#c30">&#39;timer-output&#39;</span>)<span style="color:#555">.</span>write(seconds, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+        PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>call_later(<span style="color:#f60">1</span>, finish_in, seconds<span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>call_soon(finish_in, <span style="color:#f60">5</span>)</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+                <py-script src="timer.py"></py-script>
+            </div>
+            <div class="flex flex-col items-stretch w-full">
+                <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+                <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
+                    <div id="timer-output"></div>
+                </div>
+            </div>
+        </div>
+        <p class="post-p">Let's say you don't have a a coroutine with an internal <code>await</code> - you just have a regular old function (or Callable) that you'd like to be called either "now" (but allow other Async processes to happen as well) or after an interval (while not blocking in the meantime). For that, we have <code>call_soon()</code> and <code>call_later()</code>, respectively.</p>
+        <p class="post-p">Notice that this example happens to use both <code>call_soon()</code> and <code>call_later</code>, but that's purely to illustrate their functionality. If you wanted to make an async function that counts down from 5, there are probably clearer ways to do it.</p>
+        <p class="post-p">Two positive effects of using either of these methods is that they (1) wrap your callable in a PyProxy object, so the browser garbage colletor doesn't throw them away before they're called; and (2) they return a <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.Handle">Handle Object</a> which can be used to cancel execution of the Callable prior to its calling. Neat!</p>
+    </div>
+    <div>
+        <h4 class="mb-2 post-h4"><code class="nocode">asyncio.gather()</code></h4>
+        <div class="grid grid-cols-2">
+            <div>
+                <div>
+    <p class="code-title">race.py</p>
+    
+    
+    <div class="overflow-y-scroll h-124">
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">functools</span> <span style="color:#069;font-weight:bold">import</span> partial
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">random</span>
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi.wrappers</span> <span style="color:#069;font-weight:bold">import</span> add_event_listener
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> document
+
+<span style="color:#09f;font-style:italic">#Our awaitable coroutine - we&#39;ll use asyncio.gather() to run lots of these</span>
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">racer</span>(lane_element):
+    speed <span style="color:#555">=</span> random<span style="color:#555">.</span>random() <span style="color:#555">+</span> <span style="color:#f60">.4</span>
+    lane_element<span style="color:#555">.</span>value <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    <span style="color:#069;font-weight:bold">while</span> lane_element<span style="color:#555">.</span>value <span style="color:#555">&lt;</span> <span style="color:#f60">100</span>:
+        lane_element<span style="color:#555">.</span>value <span style="color:#555">+=</span> speed
+        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">.1</span>)
+    
+    <span style="color:#09f;font-style:italic">#race is over for this lane; change border color</span>
+    lane_element<span style="color:#555">.</span>classList<span style="color:#555">.</span>remove(<span style="color:#c30">&#39;border-yellow-700&#39;</span>)
+    lane_element<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#39;border-green-500&#39;</span>)
+    
+
+NUM_RACERS <span style="color:#555">=</span> <span style="color:#f60">5</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">run_race</span>():
+    racers <span style="color:#555">=</span> []
+
+    <span style="color:#09f;font-style:italic">#clear output</span>
+    output <span style="color:#555">=</span> document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#39;race-output&#39;</span>)
+    <span style="color:#069;font-weight:bold">while</span> output<span style="color:#555">.</span>firstChild:
+        output<span style="color:#555">.</span>removeChild(output<span style="color:#555">.</span>firstChild)
+
+    <span style="color:#069;font-weight:bold">for</span> n <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(NUM_RACERS):
+        <span style="color:#09f;font-style:italic">#Create new progress bars as lanes for our &#34;racers&#34;</span>
+        new_lane <span style="color:#555">=</span> document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;progress&#34;</span>)
+        new_lane<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;lane-</span><span style="color:#a00">{</span>n<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+        new_lane<span style="color:#555">.</span>max <span style="color:#555">=</span> <span style="color:#f60">100</span>
+        new_lane<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#39;border-4&#39;</span>, <span style="color:#c30">&#39;border-yellow-500&#39;</span>, <span style="color:#c30">&#39;m-2&#39;</span>, <span style="color:#c30">&#39;h-6&#39;</span>, <span style="color:#c30">&#39;w-11/12&#39;</span>)
+        
+
+        <span style="color:#09f;font-style:italic">#Add the progress bars and labels to the document</span>
+        document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;race-output&#34;</span>)<span style="color:#555">.</span>appendChild(new_lane)
+
+        racers<span style="color:#555">.</span>append(racer(new_lane))
+
+    <span style="color:#09f;font-style:italic"># Return a Promise representing the results.</span>
+    <span style="color:#09f;font-style:italic"># If you don&#39;t need the results, no need to return or await this</span>
+    <span style="color:#069;font-weight:bold">return</span> asyncio<span style="color:#555">.</span>gather(<span style="color:#555">*</span>racers)
+
+<span style="color:#09f;font-style:italic">#Run the race over and over</span>
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">race_monitor</span>():
+    <span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
+        results <span style="color:#555">=</span> run_race()
+        <span style="color:#069;font-weight:bold">await</span> results
+        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+
+<span style="color:#09f;font-style:italic">#Start the monitoring task</span>
+asyncio<span style="color:#555">.</span>create_task(race_monitor())</code></pre></td></tr></table>
+</div>
+</div>
+    
+    </div>
+    <p class="post-img-caption">Scroll to see complete code</p>
+    
+</div>
+                <py-script src="race.py"></py-script>
+            </div>
+            <div class="flex flex-col items-stretch w-full">
+                <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+                <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124 md:ml-2">
+                    <div id="race-output"></div>
+                </div>
+            </div>
+        </div>
+        <p class="post-p">When you have multiple <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio-awaitables">awaitable objects</a> (coroutines, Tasks, and Futures) that you want to run "in a group" or "as a batch", <code>asyncio.gather()</code> can simplify your life. If any of the collection of awaitables is a coroutine, it is automatically wrapped in a Task (and scheduled).</p>
+        <p class="post-p">In a PyScript/Pyodide context, one can image using <code>gather</code> for UI management or "backend" work. For example, you might have a collection of onscreen objects (like the example above) that each need to update themselves asynchronously. Or you might <code>gather()</code> a collection of coroutines that use <a href="https://pyodide.org/en/stable/usage/api/python-api/http.html?highlight=pyfetch#pyodide.http.pyfetch">pyfetch()</a> to retrieve network resources, allowing them to fetch asynchronously while PyScript continues executing on the page.</p>
+    </div>
+</div>
+<h2 class="post-h2">Implicit Async</h2>
+<p class="post-p">PyScript/Pyodide has an interesting quirk that allows an additional way of working with coroutines, that has to to with what's called <span class="italic">"Top-Level Await"</span>. If you've written async/await code before, you might be familiar with Python yelling at you for trying to use 'await' outside of a coroutine, like so:</p>
+<div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="h-full m-2 overflow-x-auto">
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34;One plus two is... wait for it...&#34;</span>)
+    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+    <span style="color:#366">print</span>(<span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">2</span>)
+    <span style="color:#555">----</span>
+    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#555">^</span>
+    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#c00;font-weight:bold">SyntaxError</span>: <span style="color:#c30">&#39;await&#39;</span> outside function</code></pre></div>
+    </div>
+    <div class="h-full m-2 overflow-x-auto">
+    <div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">add_slowly</span>():
+        <span style="color:#366">print</span>(<span style="color:#c30">&#34;One plus two is... wait for it...&#34;</span>)
+        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+        <span style="color:#366">print</span>(<span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">2</span>)
+
+    <span style="color:#069;font-weight:bold">await</span> add_slowly()
+    <span style="color:#555">----</span>
+    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#555">^</span>
+    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#c00;font-weight:bold">SyntaxError</span>: <span style="color:#c30">&#39;await&#39;</span> outside <span style="color:#069;font-weight:bold">async</span> function</code></pre></div>
+    </div>
+</div>
+<p class="post-p">However, if you run those same pieces of code in PyScript, they work just fine!</p>
+<div class="flex flex-col-reverse items-stretch space-y-2 md:flex-row-reverse md:space-x-2 md:space-x-reverse">
+    <div class="flex flex-col items-stretch w-full md:w-1/2">
+        <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+        <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124">
+            <py-script class="px-2" src="bad_add.py" std-out="out"></py-script>
+            <div id="out"></div>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2">
+        <div>
+    <p class="code-title">bad_add.py</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">add_slowly</span>():
+    Element(<span style="color:#c30">&#34;out&#34;</span>)<span style="color:#555">.</span>write(<span style="color:#c30">&#34;One plus two is... wait for it...&#34;</span>)
+    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">5</span>)
+    Element(<span style="color:#c30">&#34;out&#34;</span>)<span style="color:#555">.</span>write(<span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">2</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+
+<span style="color:#09f;font-style:italic">#This isn&#39;t normally possible:</span>
+<span style="color:#069;font-weight:bold">await</span> add_slowly()</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+        </div>
+    </div>
+</div>
+<p class="post-p">The reason that code with top-level await (i.e. "<code>await</code>" outside an async function) works in PyScript is due to a design decision on the part of the Pyodide team, whose thinking I imagine goes like this:</p>
+<ul class="post-ul">
+    <li>We usually can't just nakedly <code>await</code> things in Python, since we need an active event loop to schedule the coroutines into.</li>
+    <li>In the browser, we <span class="italic">always</span> have an active event loop (the browser event loop)</li>
+    <li>CPython allows us to compile code with the <code class="code">PyCF_ALLOW_TOP_LEVEL_AWAIT</code>, which, if it finds Top-Level 'Await' statements, returns the evaluated code as a coroutine</li>
+    <li>Therefore, if we evaluate a chunk of code and the result is a coroutine, we have the option to simply schedule it into the browser event loop for the user and execute it. (If the result and discuss is not a coroutine, just return the result as normal.)</li>
+</ul>
+<p class="post-p">This is exactly what the internal Pyodide function <code class="code">runPythonAsync()</code> does - compiles code with PyCF_ALLOW_TOP_LEVEL_AWAIT, and if the result is a coroutine, schedules it and returns a promise representing the result. It's essentially a convenience function that takes advantage of the fact that, by definition, we always have an every loop available to us. And since PyScript (currently) uses <code class="code">runPythonAsync()</code> to run every code block, you can write top-level await code wherever you like.</p>
+<p class="warning-banner">Importantly, <code>runPythonAsync()</code> <span class="font-semibold">does not run synchronous Python 'asynchronously'</span>. It simply allows code with Top Level Await statements to compile and be <code>await</code>ed. <a href="https://gist.github.com/JeffersGlass/10adc330d8099fda1ee481bd82bc29c7">[1]</a>. <code class="code">While True: pass</code> will still block forever.</p>
+<p class="post-p">See the following pair of demos, both of which run with top-level await</p>
+<div class="grid grid-cols-1 md:gap-2 md:grid-cols-2">
+    <div>
+    <p class="code-title">sleep_1.py</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> count
+
+output_1 <span style="color:#555">=</span> Element(<span style="color:#c30">&#34;output-1&#34;</span>)
+<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> count():
+    output_1<span style="color:#555">.</span>write(<span style="color:#c30">f</span><span style="color:#c30">&#34;Counted to </span><span style="color:#a00">{</span>i<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
+</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+    <div>
+    <p class="code-title">sleep_2.py</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> count
+
+output_2 <span style="color:#555">=</span> Element(<span style="color:#c30">&#34;output-2&#34;</span>)
+<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> count():
+    output_2<span style="color:#555">.</span>write(<span style="color:#c30">f</span><span style="color:#c30">&#34;Counted to </span><span style="color:#a00">{</span>i<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">.7</span>) <span style="color:#09f;font-style:italic">#Note the smaller sleep time!</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<py-script>
+    import asyncio
+from itertools import count
+
+output_1 = Element("output-1")
+for i in count():
+    output_1.write(f"Counted to {i}")
+    await asyncio.sleep(1)
+
+</py-script>
+<py-script>
+    import asyncio
+from itertools import count
+
+output_2 = Element("output-2")
+for i in count():
+    output_2.write(f"Counted to {i}")
+    await asyncio.sleep(.7) #Note the smaller sleep time!
+
+</py-script>
+</div>
+<div class="flex flex-col md:flex-row">
+    <div class="w-full my-4 md:w-1/2">
+        <span class="text-sm text-gray-500">Output from sleep_1.py</span>
+        <div class="h-auto text-base bg-green-100 border-2" id="output-1"></div>
+    </div>
+    <div class="w-full m-4 md:w-1/2">
+        <span class="text-sm text-gray-500">Output from sleep_2.py</span>
+        <div class="h-auto text-base bg-green-100 border-2" id="output-2"></div>
+    </div>
+</div>
+<p class="post-p"><span class="font-semibold">BUT BEWARE!</span> This is the part that's most likely to change in future versions of PyScript. You'll note above that when we compile our Python Code, if the result is a coroutine, the JavaScript side gets a promise that resolves to the result of the coroutine. Importantly though, at least in PyScript 2022.09.1, <a href="https://github.com/pyscript/pyscript/blob/7d5f6c9ead72798f23915b2ce7b619f02322ac84/pyscriptjs/src/runtime.ts#L180">we don't await that promise resolving!</a> This is what allows the loader to continue, other scripts to evaluate etc. while the scheduled coroutine resolves in the background.</p>
+<p class="post-p">There's been <a href="https://github.com/pyscript/pyscript/issues/763">quite</a> a <a href="https://github.com/pyscript/pyscript/pull/715">bit</a> of <a href="https://github.com/pyscript/pyscript/pull/796">discussion</a> around what the loader lifecycle and async scripts, so I do expect this to change in the future. At this moment, it doesn't look like it's changing in the planned 2022.10.1, but time will tell!</p>
+<h2 class="post-h2">Conclusions</h2>
+<p class="post-p">Personally, I think the implicit style is nice to have for quick-and-dirty examples like those just above, but they do make it hard to reason about execution order and script completion. And like I say, I suspect the details of that are going to continue to change and morph over time, so they might not be the most future-proof solution.</p>
+<p class="post-p">That's why I'd recommend, for any significant projects, you lean toward using the <code>Webloop</code> methods for handling concurrent tasks. Back when I wrote <a href="http://localhost:1313/project/the-7-guis-pyscript/">The 7 Guis in PyScript</a>, I wasn't particularly familiar with Webloop, and so coded everything in the implicit style. All of the async work in those demos breaks down to essentially "do a lot of setup, then run a loop asynchronously forever." Which makes quick, implicit async plausible.</p>
+<p class="post-p">But when I moved on to the much-more-integrated <a href="http://localhost:1313/project/richdemo/">Rich on PyScript Project</a>, I had a hell of a time reasoning about what processes would be completed when, how to cancel and monitor them etc. from the Python side - starting that project with an asyncio/Webloop approach from the beginning would have been radially easier.</p>
+<p class="post-p">Finally, remember that while <code>async/await</code> in PyScript/Pyodide works <span class="italic">mostly</span> like it does on desktop or terminal, because there's an intermediate layer of reimplementation in Webloop, not all behaviors are guaranteed to be exactly the same. Troubleshoot and test thoroughly, and <span class="italic">don't block the loop!</span></p>
+
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>

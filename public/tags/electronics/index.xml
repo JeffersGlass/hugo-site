@@ -40,9 +40,9 @@
 &lt;p class=&#34;post-p&#34;&gt;Here&#39;s what I came up with. It&#39;s not terrible robust, secure, or debuggable, but it&#39;s getting the job done for now. The client script runs on the computer connected to a UPS, and is triggered when the UPS switches to battery power. The server runs on as many connected computers as we want, and should be set to run at startup. The (static) IPs of the computers running the server script must be enterred in the client script.&lt;/p&gt;
 &lt;p class=&#34;code-title&#34;&gt;client.py&lt;/p&gt;
 &lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
@@ -97,68 +97,68 @@
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This program (&amp;#39;client&amp;#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;The server program should be running on any computers that need to be shutdown in this context.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;This program (&amp;#39;client&amp;#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;The server program should be running on any computers that need to be shutdown in this context.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
 
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; socket
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; os
-&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; sleep
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;socket&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;os&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;time&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; sleep
 
-socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;setdefaulttimeout(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
-PORT &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1933&lt;/span&gt;
-MSG &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SHUTDOWN NOW&amp;#39;&lt;/span&gt;
-RSP &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SHUTDOWN CONFIRMED&amp;#34;&lt;/span&gt;
+socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;setdefaulttimeout(&lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;)
+PORT &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1933&lt;/span&gt;
+MSG &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;SHUTDOWN NOW&amp;#39;&lt;/span&gt;
+RSP &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;SHUTDOWN CONFIRMED&amp;#34;&lt;/span&gt;
 
-deviceIPs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
-    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.2&amp;#34;&lt;/span&gt;
+deviceIPs &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;172.16.0.2&amp;#34;&lt;/span&gt;
 ]
-attempts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-MAX_ATTEMPTS &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;
+attempts &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+MAX_ATTEMPTS &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;5&lt;/span&gt;
 
-print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Client program is contacting remote computers to shut them down&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Client program is contacting remote computers to shut them down&amp;#34;&lt;/span&gt;)
 
-&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; len(deviceIPs) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
-    attempts &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; attempts &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; MAX_ATTEMPTS:
-        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;System could not shut down the following IPs: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;deviceIPs&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-        print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Shutting down self in 15 seconds&amp;#34;&lt;/span&gt;)
-        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; ip &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; deviceIPs:
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket(socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;AF_INET, socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SOCK_STREAM) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; s:
-            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Attempting to connect tp &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;, attempt &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;attempts&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; of &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;MAX_ATTEMPTS&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; (timeout is &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;int(socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;getdefaulttimeout())&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s)&amp;#34;&lt;/span&gt;)
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
-                s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;connect((ip, PORT))
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TimeoutError&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; err:
-                print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Connection timed out&amp;#34;&lt;/span&gt;)
-                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
-            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Connection successful, sending message: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;MSG&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-            s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sendall(MSG)
-            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;recv(&lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;)
-            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Received &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;repr(data)&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data[:len(RSP)] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; RSP:
-                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Received shutdown confirmation message from host at ip &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-                deviceIPs&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;remove(ip)
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
-                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Got some other message than we expected from host at ip &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-    sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&amp;#34;&lt;/span&gt;)
-    sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
-os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;system(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;shutdown /s /f /t 10&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(deviceIPs) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;:
+    attempts &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; attempts &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; MAX_ATTEMPTS:
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;System could not shut down the following IPs: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;deviceIPs&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Shutting down self in 15 seconds&amp;#34;&lt;/span&gt;)
+        sleep(&lt;span style=&#34;color:#f60&#34;&gt;15&lt;/span&gt;)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;break&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; ip &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; deviceIPs:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;socket(socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;AF_INET, socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;SOCK_STREAM) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; s:
+            &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Attempting to connect tp &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;, attempt &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;attempts&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; of &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;MAX_ATTEMPTS&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; (timeout is &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getdefaulttimeout())&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;s)&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;try&lt;/span&gt;:
+                s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;connect((ip, PORT))
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;TimeoutError&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; err:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Connection timed out&amp;#34;&lt;/span&gt;)
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;continue&lt;/span&gt;
+            &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Connection successful, sending message: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;MSG&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+            s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;sendall(MSG)
+            data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;recv(&lt;span style=&#34;color:#f60&#34;&gt;1024&lt;/span&gt;)
+            &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Received &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;repr&lt;/span&gt;(data)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; data[:&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(RSP)] &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; RSP:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Received shutdown confirmation message from host at ip &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+                deviceIPs&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;remove(ip)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Got some other message than we expected from host at ip &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;ip&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+    sleep(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&amp;#34;&lt;/span&gt;)
+    sleep(&lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;)
+os&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;system(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;shutdown /s /f /t 10&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p class=&#34;pb-8 post-img-caption&#34;&gt;Scroll to see full code&lt;/p&gt;
 &lt;p class=&#34;code-title&#34;&gt;server.py&lt;/p&gt;
 &lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
@@ -192,38 +192,38 @@ os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;system(&lt;span style=
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;This program (&amp;#39;server&amp;#39;) runs on any computer that is NOT receiving the direct singal to shut down.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;The &amp;#39;client&amp;#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;This program (&amp;#39;server&amp;#39;) runs on any computer that is NOT receiving the direct singal to shut down.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;The &amp;#39;client&amp;#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
 
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; socket
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; os
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;socket&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;os&lt;/span&gt;
 
-HOST &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-PORT &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1933&lt;/span&gt;
-MSG &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SHUTDOWN NOW&amp;#34;&lt;/span&gt;
-RSP &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;SHUTDOWN CONFIRMED&amp;#34;&lt;/span&gt;
+HOST &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+PORT &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1933&lt;/span&gt;
+MSG &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;SHUTDOWN NOW&amp;#34;&lt;/span&gt;
+RSP &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;SHUTDOWN CONFIRMED&amp;#34;&lt;/span&gt;
 
-print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Server program is listening for shutdown commands from primary client&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Server program is listening for shutdown commands from primary client&amp;#34;&lt;/span&gt;)
 
-&lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket(socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;AF_INET, socket&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SOCK_STREAM) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; s:
-    s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;bind((HOST, PORT))
-    s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;listen()
-    conn, addr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; s&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;accept()
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; conn:
-        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Connected by &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;addr&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;:
-            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; conn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;recv(&lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;)
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data[:len(MSG)] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; MSG:
-                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Got shutdown MSG &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-                conn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sendall(RSP)
-                os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;system(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;shutdown /s /f /t 10&amp;#34;&lt;/span&gt;)
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;: 
-                print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Got &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#e6db74&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; instead of expected &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;data[:len(MSG)]&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; data:
-                &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;socket(socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;AF_INET, socket&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;SOCK_STREAM) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; s:
+    s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;bind((HOST, PORT))
+    s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;listen()
+    conn, addr &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;accept()
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; conn:
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Connected by &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;addr&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;:
+            data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; conn&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;recv(&lt;span style=&#34;color:#f60&#34;&gt;1024&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; data[:&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(MSG)] &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; MSG:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Got shutdown MSG &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+                conn&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;sendall(RSP)
+                os&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;system(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;shutdown /s /f /t 10&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: 
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Got &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#a00&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; instead of expected &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;data[:&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(MSG)]&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; data:
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;break&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -239,9 +239,9 @@ print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Server program is liste
 &lt;p class=&#34;post-p&#34;&gt;So, I bashed together the following code to wake up, establish a network connection, and send a Wake-On-LAN message to each MAC address in a given array every 15 seconds or so:&lt;/p&gt;
 &lt;p class=&#34;code-title&#34;&gt;code.py&lt;/p&gt;
 &lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
@@ -319,82 +319,82 @@ print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Server program is liste
 &lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# SPDX-License-Identifier: MIT&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries&lt;/span&gt;
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# SPDX-License-Identifier: MIT&lt;/span&gt;
 
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; board
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; busio
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; digitalio
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; neopixel
-&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; time &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; sleep
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;board&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;busio&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;digitalio&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;neopixel&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;time&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; sleep
 
-&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; adafruit_wiznet5k.adafruit_wiznet5k &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; adafruit_wiznet5k.adafruit_wiznet5k_socket &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; socket
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; adafruit_requests &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; requests
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;adafruit_wiznet5k.adafruit_wiznet5k&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;adafruit_wiznet5k.adafruit_wiznet5k_socket&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;socket&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;adafruit_requests&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;requests&lt;/span&gt;
 
-pixel &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; neopixel&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;NeoPixel(board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;NEOPIXEL, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+pixel &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; neopixel&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;NeoPixel(board&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;NEOPIXEL, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
 
-targetMACs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
-    [&lt;span style=&#34;color:#ae81ff&#34;&gt;0x12&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x34&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x56&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x78&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x9A&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0xBC&lt;/span&gt;], &lt;span style=&#34;color:#75715e&#34;&gt;#Computer NW&lt;/span&gt;
-    [&lt;span style=&#34;color:#ae81ff&#34;&gt;0x12&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x34&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x56&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x78&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0x9A&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0xBD&lt;/span&gt;], &lt;span style=&#34;color:#75715e&#34;&gt;#Computer NE&lt;/span&gt;
-    &lt;span style=&#34;color:#75715e&#34;&gt;#... more computers as necessary&lt;/span&gt;
+targetMACs &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [
+    [&lt;span style=&#34;color:#f60&#34;&gt;0x12&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x34&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x56&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x78&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x9A&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0xBC&lt;/span&gt;], &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Computer NW&lt;/span&gt;
+    [&lt;span style=&#34;color:#f60&#34;&gt;0x12&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x34&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x56&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x78&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0x9A&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0xBD&lt;/span&gt;], &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Computer NE&lt;/span&gt;
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#... more computers as necessary&lt;/span&gt;
     ]
 
-&lt;span style=&#34;color:#75715e&#34;&gt;# Initialize ethernet interface with DHCP&lt;/span&gt;
-cs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; digitalio&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DigitalInOut(board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;D10)
-spi_bus &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; busio&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SPI(board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SCK, MOSI&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;MOSI, MISO&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;board&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;MISO)
-eth &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; WIZNET5K(spi_bus, cs, is_dhcp&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Initialize ethernet interface with DHCP&lt;/span&gt;
+cs &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; digitalio&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;DigitalInOut(board&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;D10)
+spi_bus &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; busio&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;SPI(board&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;SCK, MOSI&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;board&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;MOSI, MISO&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;board&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;MISO)
+eth &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; WIZNET5K(spi_bus, cs, is_dhcp&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
 
-ip &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
-subnet_mask &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;255.255.0.0&amp;#34;&lt;/span&gt;)
-gateway &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
-dns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
-eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ifconfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (ip, subnet_mask, gateway, dns)
-&lt;span style=&#34;color:#75715e&#34;&gt;#If using DHCP, uncomment the following line&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;#eth.ifconfig = (ip, subnet_mask, None, None)&lt;/span&gt;
+ip &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
+subnet_mask &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;255.255.0.0&amp;#34;&lt;/span&gt;)
+gateway &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
+dns &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;172.16.0.10&amp;#34;&lt;/span&gt;)
+eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;ifconfig &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; (ip, subnet_mask, gateway, dns)
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#If using DHCP, uncomment the following line&lt;/span&gt;
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#eth.ifconfig = (ip, subnet_mask, None, None)&lt;/span&gt;
 
-print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Assigned Ethernet Address: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; str(eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;pretty_ip(eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ip_address)))
+&lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Assigned Ethernet Address: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pretty_ip(eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;ip_address)))
 
-&lt;span style=&#34;color:#75715e&#34;&gt;#Built-in neopixel will be purple while waiting for Ethernet to connect&lt;/span&gt;
-pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;)
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Built-in neopixel will be purple while waiting for Ethernet to connect&lt;/span&gt;
+pixel[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#f60&#34;&gt;255&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;255&lt;/span&gt;)
 
-retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; retry:
-    retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;False&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
-        eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_connect(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;172.16.255.255&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#ae81ff&#34;&gt;556&lt;/span&gt;, conn_mode&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;SNMR_UDP)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;AssertionError&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; err:
-        print(str(err) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;, retrying in 10 Seconds&amp;#34;&lt;/span&gt;)
-        retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
-        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+retry &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;while&lt;/span&gt; retry:
+    retry &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;try&lt;/span&gt;:
+        eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;socket_connect(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;unpretty_ip(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;172.16.255.255&amp;#39;&lt;/span&gt;), &lt;span style=&#34;color:#f60&#34;&gt;556&lt;/span&gt;, conn_mode&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;SNMR_UDP)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;AssertionError&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; err:
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(err) &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;, retrying in 10 Seconds&amp;#34;&lt;/span&gt;)
+        retry &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;
+        sleep(&lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;)
 
-    status &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_status(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; [int(b) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; b &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; status] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; [SNSR_SOCK_UDP]:
-        print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Socket 0 connected as UDP&amp;#34;&lt;/span&gt;)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
-        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Socket not connected, status is &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;status&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-        retry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;
-        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+    status &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;socket_status(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; [&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(b) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; b &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; status] &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; [SNSR_SOCK_UDP]:
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Socket 0 connected as UDP&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Socket not connected, status is &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;status&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+        retry &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;
+        sleep(&lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;)
 
-&lt;span style=&#34;color:#75715e&#34;&gt;#Built in neopixel will be blue when standing by to send WOL packets&lt;/span&gt;
-pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;)
-sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;)
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Built in neopixel will be blue when standing by to send WOL packets&lt;/span&gt;
+pixel[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;255&lt;/span&gt;)
+sleep(&lt;span style=&#34;color:#f60&#34;&gt;5&lt;/span&gt;)
 
-&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;True&lt;/span&gt;:
-&lt;span style=&#34;color:#75715e&#34;&gt;#Built in neopixel will be green when sending WOL packets&lt;/span&gt;
-    pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i, target &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; enumerate(targetMACs):
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;:
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Built in neopixel will be green when sending WOL packets&lt;/span&gt;
+    pixel[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;255&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i, target &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(targetMACs):
         
-        fullPacket &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bytearray([&lt;span style=&#34;color:#ae81ff&#34;&gt;0xFF&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; target &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt;)
-        print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Sending WoL packet to computer &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;i&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; with mac address &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;pretty_mac(target)&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)
-        eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_write(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, fullPacket, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+        fullPacket &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bytearray&lt;/span&gt;([&lt;span style=&#34;color:#f60&#34;&gt;0xFF&lt;/span&gt;] &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;6&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; target &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;16&lt;/span&gt;)
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Sending WoL packet to computer &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;i&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; with mac address &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pretty_mac(target)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+        eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;socket_write(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, fullPacket, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
         
-        sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;.1&lt;/span&gt;)
+        sleep(&lt;span style=&#34;color:#f60&#34;&gt;.1&lt;/span&gt;)
 
-    pixel[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;255&lt;/span&gt;)
-    sleep(&lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;)
+    pixel[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;255&lt;/span&gt;)
+    sleep(&lt;span style=&#34;color:#f60&#34;&gt;15&lt;/span&gt;)
 
-eth&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;socket_close(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+eth&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;socket_close(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
