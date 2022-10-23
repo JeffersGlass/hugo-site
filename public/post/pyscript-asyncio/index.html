@@ -168,7 +168,7 @@ if (!doNotTrack) {
 <p class="post-p">So what if we want to do more than one thing at once? Asyncio to the rescue! In this post, we'll look at using <code>async/await/asyncio</code> in PyScript/Pyodide to write concurrent code.</p>
 <div class="info-banner">Note that this page will focus on cooperative multitasking within Python via coroutines; for multitasking by running Python scripts in parallel in the browser, see Pyodide's documentation on <a href="https://pyodide.org/en/stable/usage/webworker.html?highlight=thread">Using Pyodide in a web worker</a>.</div>
 <div class="warning-banner">This post was originally written for PyScript 2022.09.1. <span class="font-semibold">It will almost certainly be broken by later releases.</span></div>
-<h2 class="post-h2">An Async/Await Recap</h2>
+<h2 class="post-h2" id="recap">An Async/Await Recap</h2>
 <p class="post-p">There are many ways of achieving the goal of "do multiple things at once" in Python - using multiple processes, using multiple threads within a single process, or making one thread do the work of many by requiring each piece of code to declare when it it wants to 'release' the thread to do other work. The <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a> package in the python standard library, as well as the <code>async</code> and <code>await</code> keywords in the language, exist to support this last paradigm.</p>
 <p class="post-p">The typical way of writing these "cooperative" pieces of code is to declare <code class="nocode">Coroutines</code> using the <code>async def</code> keyword, then execute them with one of the many <a href="https://docs.python.org/3/library/asyncio-task.html#running-an-asyncio-program">asyncio execution methods</a>. Within a coroutine, the <code>await</code> keyword is used to indicate that control of the event loop (thread) should pause execution of the coroutine and move on to any others that are waiting. A statement like <code class="code">await foo()</code> means "suspend execution of the surrounding coroutine until the result of <code>foo()</code> is returned.</p>
 <p class="post-p">An example you can run in a regular terminal:</p>
@@ -226,7 +226,7 @@ Must come down</code></pre></td></tr></table>
 </div>
 
 <p class="post-p">This is just a quick and dirty primer - if asnyc/await/asyncio is a wholly new subject for you, I recommend the excellent <a href="https://realpython.com/async-io-python/#the-10000-foot-view-of-async-io">Real Python article on Asyncio</a> for a deeper understanding before moving on.</p>
-<h2 class="post-h2">Pyodide.Webloop</h2>
+<h2 class="post-h2" id="webloop">Pyodide.Webloop</h2>
 <p class="post-p">The Pyodide runtime (which is the most common one used in PyScript at the moment) provides a custom wrapper for the asyncio event loop, that allows <code>async/await</code> to work with the browser event loop. Many of the methods will be familiar if you've worked with <code>asyncio</code>, but it's worth highlighting some useful ones, as well as broken ones:</p>
 <div class="grid grid-cols-1 px-2 py-2 mx-4 bg-green-100 divide-y-2 divide-green-800 md:gap-y-2 md:divide-y-0 divide-opacity-30">
     <div class="md:grid md:grid-cols-5 md:gap-x-2 md:divide-x-2 md:divide-green-800 md:divide-opacity-50 ">
@@ -262,7 +262,7 @@ Must come down</code></pre></td></tr></table>
     <li><code>call_soon/call_later</code>, which schedules a callable to be called "ASAP" or after a specific amount of time</li>
     <li><code>asyncio.gather</code>, for running multiple awaitables (coroutines, Tasks, and Futures) concurrently</li>
 </ul>
-<h2 class="post-h2">Webloop Examples</h2>
+<h2 class="post-h2" id="webloopexamples">Webloop Examples</h2>
 <div class="grid grid-cols-1 gap-y-8">
     <div>
         <h4 class="post-h4"><code class="nocode">create_task()</code></h4>
@@ -505,7 +505,7 @@ asyncio<span style="color:#555">.</span>create_task(race_monitor())</code></pre>
         <p class="post-p">In a PyScript/Pyodide context, one can image using <code>gather</code> for UI management or "backend" work. For example, you might have a collection of onscreen objects (like the example above) that each need to update themselves asynchronously. Or you might <code>gather()</code> a collection of coroutines that use <a href="https://pyodide.org/en/stable/usage/api/python-api/http.html?highlight=pyfetch#pyodide.http.pyfetch">pyfetch()</a> to retrieve network resources, allowing them to fetch asynchronously while PyScript continues executing on the page.</p>
     </div>
 </div>
-<h2 class="post-h2">Implicit Async</h2>
+<h2 class="post-h2" id="implicitasync">Implicit Async</h2>
 <p class="post-p">PyScript/Pyodide has an interesting quirk that allows an additional way of working with coroutines, that has to to with what's called <span class="italic">"Top-Level Await"</span>. If you've written async/await code before, you might be familiar with Python yelling at you for trying to use 'await' outside of a coroutine, like so:</p>
 <div class="grid grid-cols-1 md:grid-cols-2">
     <div class="h-full m-2 overflow-x-auto">
@@ -671,7 +671,7 @@ for i in count():
 </div>
 <p class="post-p"><span class="font-semibold">BUT BEWARE!</span> This is the part that's most likely to change in future versions of PyScript. You'll note above that when we compile our Python Code, if the result is a coroutine, the JavaScript side gets a promise that resolves to the result of the coroutine. Importantly though, at least in PyScript 2022.09.1, <a href="https://github.com/pyscript/pyscript/blob/7d5f6c9ead72798f23915b2ce7b619f02322ac84/pyscriptjs/src/runtime.ts#L180">we don't await that promise resolving!</a> This is what allows the loader to continue, other scripts to evaluate etc. while the scheduled coroutine resolves in the background.</p>
 <p class="post-p">There's been <a href="https://github.com/pyscript/pyscript/issues/763">quite</a> a <a href="https://github.com/pyscript/pyscript/pull/715">bit</a> of <a href="https://github.com/pyscript/pyscript/pull/796">discussion</a> around what the loader lifecycle and async scripts, so I do expect this to change in the future. At this moment, it doesn't look like it's changing in the planned 2022.10.1, but time will tell!</p>
-<h2 class="post-h2">Conclusions</h2>
+<h2 class="post-h2" id="conclusions">Conclusions</h2>
 <p class="post-p">Personally, I think the implicit style is nice to have for quick-and-dirty examples like those just above, but they do make it hard to reason about execution order and script completion. And like I say, I suspect the details of that are going to continue to change and morph over time, so they might not be the most future-proof solution.</p>
 <p class="post-p">That's why I'd recommend, for any significant projects, you lean toward using the <code>Webloop</code> methods for handling concurrent tasks. Back when I wrote <a href="http://localhost:1313/project/the-7-guis-pyscript/">The 7 Guis in PyScript</a>, I wasn't particularly familiar with Webloop, and so coded everything in the implicit style. All of the async work in those demos breaks down to essentially "do a lot of setup, then run a loop asynchronously forever." Which makes quick, implicit async plausible.</p>
 <p class="post-p">But when I moved on to the much-more-integrated <a href="http://localhost:1313/project/richdemo/">Rich on PyScript Project</a>, I had a hell of a time reasoning about what processes would be completed when, how to cancel and monitor them etc. from the Python side - starting that project with an asyncio/Webloop approach from the beginning would have been radially easier.</p>
