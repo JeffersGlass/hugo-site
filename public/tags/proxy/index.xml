@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>proxy on Jeff Glass</title>
+    <link>https://jeff.glass/tags/proxy/</link>
+    <description>Recent content in proxy on Jeff Glass</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 24 Oct 2022 03:32:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/proxy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PyScript - Why Do We Need create_proxy()?</title>
+      <link>https://jeff.glass/post/pyscript-why-create-proxy/</link>
+      <pubDate>Mon, 24 Oct 2022 03:32:42 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/pyscript-why-create-proxy/</guid>
+      <description>&lt;style&gt;
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;problem&#34;&gt;The Problem&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Pyodide has an almost-magical ability to proxy objects and functions between Python and JavaScript in both directions... except when sometimes it seems to mysteriously break. Consider this stumbling block that new users often hit:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;button &lt;span style=&#34;color:#366&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;my_button&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;Say Hello&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;button&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;py&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; console, document
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;hello&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+        console&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Hello!&amp;#34;&lt;/span&gt;)
+
+    document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;my_button&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, hello)
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;py&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;This seems like a perfectly reasonable thing to do, but upon clicking the button, an error pops up in the developer console:&lt;/p&gt;
+&lt;p class=&#34;post-p error-banner&#34;&gt;Uncaught Error: This borrowed proxy was automatically destroyed at the end of a function call. Try using create_proxy or create_once_callable.&lt;br&gt;The object was of type &#34;function&#34; and had repr &amp;quot;&amp;lt;function hello at 0x919828&amp;gt;&amp;quot;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The usual band-aid is wrap the Python Function in &lt;code&gt;create_proxy()&lt;/code&gt; like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyodide.ffi&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; create_proxy
+document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;my_button&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, create_pyoxy(hello))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Which seems to just make things work... but why?&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;why&#34;&gt;Why &lt;code&gt;create_proxy()&lt;/code&gt;?&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;When you call something like &lt;code&gt;button.addEventListener(&#34;click&#34;, hello)&lt;/code&gt; (without create_proxy), Pyodide needs to briefly proxy the Python function &lt;code&gt;hello&lt;/code&gt; so the JS function &lt;code&gt;addEventListener&lt;/code&gt; knows how to interact with it. But once &lt;code&gt;addEventListener&lt;/code&gt; terminates, that proxy is no longer needed, it gets destroyed... and then when an event comes around to trigger your function, the proxy it should be using is gone. Which is why you&#39;ll see the error above talking about a &#34;borrowed proxy being automatically destroyed&#34;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The two functions that the Error mentions (&lt;code&gt;create_proxy()&lt;/code&gt; and &lt;code&gt;create_once_callable()&lt;/code&gt;) create a PyProxy (a JS object) of your Python object that you, the user, are supposed to manage the lifetime of, by calling &lt;code&gt;PyProxy.destroy()&lt;/code&gt; on it when you&#39;re done with it. Or, if you use &lt;code&gt;create_once_callable()&lt;/code&gt;, the proxy will destroy() itself after the first time it&#39;s called.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;In practical terms, for something like an event listener, you may never want to destroy the proxy for the lifetime of your page, so you can just leave it hanging around. But it&#39;s worth noting that if you remove that event listener or button (maybe in a &#39;single-page-app&#39; where you&#39;re manipulating what&#39;s on the page quite a bit), you should plan to track and destroy the PyProxy, otherwise it just hangs around taking up memory.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;better-solution&#34;&gt;A Better Solution&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Keeping track of the proxies that wrap each of our Python functions sounds like a real pain, no? Thankfully, there&#39;s a better way, thanks to some new features in the Pyodide runtime.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Since Pyodide 21.0 (PyScript 2022.09.1), there are now wrappers built into pyodide for adding event listeners: &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/ffi.html?highlight=add_event_listener#pyodide.ffi.wrappers.add_event_listener&#34;&gt;pyodide.ffi.wrappers.add_event_listener()&lt;/a&gt; and &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/ffi.html?highlight=remove_event_listener#pyodide.ffi.wrappers.remove_event_listener&#34;&gt;pyodide.ffi.wrappers.remove_event_listener()&lt;/a&gt; which, if you use them in conjunction, will handle proxy creation and destruction for you.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;For example, here is the entirety of &lt;code&gt;pyodide.ffi.wrappers.add_event_listener&lt;/code&gt;:&lt;/p&gt;
+&lt;p class=&#34;code-title&#34;&gt;&lt;a href=&#34;https://github.com/pyodide/pyodide/blob/dc31bc8f3ecdde1eb21d345a81f8f4acc3d077ca/src/py/pyodide/ffi/wrappers.py&#34; class=&#34;underline no-style-link&#34;&gt;pyodide/wrappers.py &lt;span class=&#34;italic&#34;&gt;(partial)&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;add_event_listener&lt;/span&gt;(
+    elt: JsProxy, event: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, listener: Callable[[Any], &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;]
+) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;Wrapper for JavaScript&amp;#39;s addEventListener() which automatically manages the lifetime
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    of a JsProxy corresponding to the listener param.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    proxy &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; create_proxy(listener)
+    EVENT_LISTENERS[(elt&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;js_id, event, listener)] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; proxy
+    elt&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;addEventListener(event, proxy)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can see that this:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Creates a proxy of the listener function using &lt;code&gt;create_proxy()&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Adds a reference to that proxy in an internal dictionary for later reference&lt;/li&gt;
+    &lt;li&gt;Adds the event listener using the browser&#39;s &lt;code&gt;addEventListener()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;code&gt;remove_event_listener&lt;/code&gt; simply undoes this process - it removes the event listener using JavaScript&#39;s &lt;code&gt;removeEventListener&lt;/code&gt;, looks up the appropriate proxy in the internal dictionary, and &lt;code&gt;destroy()&lt;/code&gt;s it.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So now, our code above would look like:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;button &lt;span style=&#34;color:#366&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;my_button&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;Say Hello&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;button&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;py&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; console, document
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyodide.ffi.wrappers&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; add_event_listener
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;hello&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+        console&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Hello!&amp;#34;&lt;/span&gt;)
+
+    btn &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;my_button&amp;#34;&lt;/span&gt;)
+    add_event_listener(btn, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, hello)
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;py&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;I personally recommend using these wrapper methods for all new code where possible, instead of using &lt;code&gt;create_proxy()&lt;/code&gt; and &lt;code&gt;addEventListener()&lt;/code&gt; manually.&lt;/p&gt;</description>
+      &lt;
+    </item>
+    
+  </channel>
+</rss>
