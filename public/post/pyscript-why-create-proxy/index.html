@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>PyScript - Why Do We Need create_proxy()?</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/pyscript-why-create-proxy/py_proxy_featured.png"/>
+<meta name="twitter:title" content="PyScript - Why Do We Need create_proxy()?"/>
+<meta name="twitter:description" content="Pyodide&#39;s create_proxy function explained"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">PyScript - Why Do We Need create_proxy()?</h1>
+				<p>Published October 24, 2022</p>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+					<a href="../../tags/pyodide">pyodide</a>
+					
+					<a href="../../tags/proxy">proxy</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					<style>
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<h2 class="post-h2" id="problem">The Problem</h2>
+<p class="post-p">Pyodide has an almost-magical ability to proxy objects and functions between Python and JavaScript in both directions... except when sometimes it seems to mysteriously break. Consider this stumbling block that new users often hit:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#555">&lt;</span>button <span style="color:#366">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;my_button&#34;</span><span style="color:#555">&gt;</span>Say Hello<span style="color:#555">&lt;/</span>button<span style="color:#555">&gt;</span>
+<span style="color:#555">&lt;</span>py<span style="color:#555">-</span>script<span style="color:#555">&gt;</span>
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> console, document
+    
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">hello</span>(<span style="color:#555">*</span>args):
+        console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;Hello!&#34;</span>)
+
+    document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;my_button&#34;</span>)<span style="color:#555">.</span>addEventListener(<span style="color:#c30">&#34;click&#34;</span>, hello)
+<span style="color:#555">&lt;/</span>py<span style="color:#555">-</span>script<span style="color:#555">&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">This seems like a perfectly reasonable thing to do, but upon clicking the button, an error pops up in the developer console:</p>
+<p class="post-p error-banner">Uncaught Error: This borrowed proxy was automatically destroyed at the end of a function call. Try using create_proxy or create_once_callable.<br>The object was of type "function" and had repr &quot;&lt;function hello at 0x919828&gt;&quot;</p>
+<p class="post-p">The usual band-aid is wrap the Python Function in <code>create_proxy()</code> like so:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi</span> <span style="color:#069;font-weight:bold">import</span> create_proxy
+document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;my_button&#34;</span>)<span style="color:#555">.</span>addEventListener(<span style="color:#c30">&#34;click&#34;</span>, create_pyoxy(hello))</code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">Which seems to just make things work... but why?</p>
+<h2 class="post-h2" id="why">Why <code>create_proxy()</code>?</h2>
+<p class="post-p">When you call something like <code>button.addEventListener("click", hello)</code> (without create_proxy), Pyodide needs to briefly proxy the Python function <code>hello</code> so the JS function <code>addEventListener</code> knows how to interact with it. But once <code>addEventListener</code> terminates, that proxy is no longer needed, it gets destroyed... and then when an event comes around to trigger your function, the proxy it should be using is gone. Which is why you'll see the error above talking about a "borrowed proxy being automatically destroyed".</p>
+<p class="post-p">The two functions that the Error mentions (<code>create_proxy()</code> and <code>create_once_callable()</code>) create a PyProxy (a JS object) of your Python object that you, the user, are supposed to manage the lifetime of, by calling <code>PyProxy.destroy()</code> on it when you're done with it. Or, if you use <code>create_once_callable()</code>, the proxy will destroy() itself after the first time it's called.</p>
+<p class="post-p">In practical terms, for something like an event listener, you may never want to destroy the proxy for the lifetime of your page, so you can just leave it hanging around. But it's worth noting that if you remove that event listener or button (maybe in a 'single-page-app' where you're manipulating what's on the page quite a bit), you should plan to track and destroy the PyProxy, otherwise it just hangs around taking up memory.</p>
+<h2 class="post-h2" id="better-solution">A Better Solution</h2>
+<p class="post-p">Keeping track of the proxies that wrap each of our Python functions sounds like a real pain, no? Thankfully, there's a better way, thanks to some new features in the Pyodide runtime.</p>
+<p class="post-p">Since Pyodide 21.0 (PyScript 2022.09.1), there are now wrappers built into pyodide for adding event listeners: <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html?highlight=add_event_listener#pyodide.ffi.wrappers.add_event_listener">pyodide.ffi.wrappers.add_event_listener()</a> and <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html?highlight=remove_event_listener#pyodide.ffi.wrappers.remove_event_listener">pyodide.ffi.wrappers.remove_event_listener()</a> which, if you use them in conjunction, will handle proxy creation and destruction for you.</p>
+<p class="post-p">For example, here is the entirety of <code>pyodide.ffi.wrappers.add_event_listener</code>:</p>
+<p class="code-title"><a href="https://github.com/pyodide/pyodide/blob/dc31bc8f3ecdde1eb21d345a81f8f4acc3d077ca/src/py/pyodide/ffi/wrappers.py" class="underline no-style-link">pyodide/wrappers.py <span class="italic">(partial)</span></a></p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">add_event_listener</span>(
+    elt: JsProxy, event: <span style="color:#366">str</span>, listener: Callable[[Any], <span style="color:#069;font-weight:bold">None</span>]
+) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+    <span style="color:#c30">&#34;&#34;&#34;Wrapper for JavaScript&#39;s addEventListener() which automatically manages the lifetime
+</span><span style="color:#c30">    of a JsProxy corresponding to the listener param.
+</span><span style="color:#c30">    &#34;&#34;&#34;</span>
+    proxy <span style="color:#555">=</span> create_proxy(listener)
+    EVENT_LISTENERS[(elt<span style="color:#555">.</span>js_id, event, listener)] <span style="color:#555">=</span> proxy
+    elt<span style="color:#555">.</span>addEventListener(event, proxy)</code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">You can see that this:</p>
+<ul class="post-ul">
+    <li>Creates a proxy of the listener function using <code>create_proxy()</code></li>
+    <li>Adds a reference to that proxy in an internal dictionary for later reference</li>
+    <li>Adds the event listener using the browser's <code>addEventListener()</code></li>
+</ul>
+<p class="post-p"><code>remove_event_listener</code> simply undoes this process - it removes the event listener using JavaScript's <code>removeEventListener</code>, looks up the appropriate proxy in the internal dictionary, and <code>destroy()</code>s it.</p>
+<p class="post-p">So now, our code above would look like:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#555">&lt;</span>button <span style="color:#366">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;my_button&#34;</span><span style="color:#555">&gt;</span>Say Hello<span style="color:#555">&lt;/</span>button<span style="color:#555">&gt;</span>
+<span style="color:#555">&lt;</span>py<span style="color:#555">-</span>script<span style="color:#555">&gt;</span>
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> console, document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi.wrappers</span> <span style="color:#069;font-weight:bold">import</span> add_event_listener
+    
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">hello</span>(<span style="color:#555">*</span>args):
+        console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;Hello!&#34;</span>)
+
+    btn <span style="color:#555">=</span> document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;my_button&#34;</span>)
+    add_event_listener(btn, <span style="color:#c30">&#34;click&#34;</span>, hello)
+<span style="color:#555">&lt;/</span>py<span style="color:#555">-</span>script<span style="color:#555">&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">I personally recommend using these wrapper methods for all new code where possible, instead of using <code>create_proxy()</code> and <code>addEventListener()</code> manually.</p>
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>
