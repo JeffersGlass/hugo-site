@@ -1,0 +1,81 @@
+---
+title: "Pyscript - Why Do We Need create_proxy()?"
+date: 2022-10-24T07:53:42-05:00
+draft: true
+tags:
+- python
+- pyscript
+- pyodide
+- proxy
+description: "Pyodide's create_proxy function explained"
+slug_image: py_proxy_featured.png
+---
+<style>
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<h2 class="post-h2" id="problem">The Problem</h2>
+<p class="post-p">Pyodide has an almost-magical ability to proxy objects and functions between Python and JavaScript in both directions... except when sometimes it seems to mysteriously break. Consider this stumbling block that new users often hit:</p>
+{{< highlight "python" >}}
+<button id="my_button">Say Hello</button>
+<py-script>
+    from js import console, document
+    
+    def hello(*args):
+        console.log("Hello!")
+
+    document.getElementById("my_button").addEventListener("click", hello)
+</py-script>
+{{< /highlight >}}
+<p class="post-p">This seems like a perfectly reasonable thing to do, but upon clicking the button, an error pops up in the developer console:</p>
+<p class="post-p error-banner">Uncaught Error: This borrowed proxy was automatically destroyed at the end of a function call. Try using create_proxy or create_once_callable.<br>The object was of type "function" and had repr &quot;&lt;function hello at 0x919828&gt;&quot;</p>
+<p class="post-p">The usual band-aid is wrap the Python Function in <code>create_proxy()</code> like so:</p>
+{{< highlight "python" "linenostart=8">}}
+from pyodide.ffi import create_proxy
+document.getElementById("my_button").addEventListener("click", create_pyoxy(hello))
+{{< /highlight >}}
+<p class="post-p">Which seems to just make things work... but why?</p>
+<h2 class="post-h2" id="why">Why <code>create_proxy()</code>?</h2>
+<p class="post-p">When you call something like <code>button.addEventListener("click", hello)</code> (without create_proxy), Pyodide needs to briefly proxy the Python function <code>hello</code> so the JS function <code>addEventListener</code> knows how to interact with it. But once <code>addEventListener</code> terminates, that proxy is no longer needed, it gets destroyed... and then when an event comes around to trigger your function, the proxy it should be using is gone. Which is why you'll see the error above talking about a "borrowed proxy being automatically destroyed".</p>
+<p class="post-p">The two functions that the Error mentions (<code>create_proxy()</code> and <code>create_once_callable()</code>) create a PyProxy (a JS object) of your Python object that you, the user, are supposed to manage the lifetime of, by calling <code>PyProxy.destroy()</code> on it when you're done with it. Or, if you use <code>create_once_callable()</code>, the proxy will destroy() itself after the first time it's called.</p>
+<p class="post-p">In practical terms, for something like an event listener, you may never want to destroy the proxy for the lifetime of your page, so you can just leave it hanging around. But it's worth noting that if you remove that event listener or button (maybe in a 'single-page-app' where you're manipulating what's on the page quite a bit), you should plan to track and destroy the PyProxy, otherwise it just hangs around taking up memory.</p>
+<h2 class="post-h2" id="better-solution">A Better Solution</h2>
+<p class="post-p">Keeping track of the proxies that wrap each of our Python functions sounds like a real pain, no? Thankfully, there's a better way, thanks to some new features in the Pyodide runtime.</p>
+<p class="post-p">Since Pyodide 21.0 (PyScript 2022.09.1), there are now wrappers built into pyodide for adding event listeners: <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html?highlight=add_event_listener#pyodide.ffi.wrappers.add_event_listener">pyodide.ffi.wrappers.add_event_listener()</a> and <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html?highlight=remove_event_listener#pyodide.ffi.wrappers.remove_event_listener">pyodide.ffi.wrappers.remove_event_listener()</a> which, if you use them in conjunction, will handle proxy creation and destruction for you.</p>
+<p class="post-p">For example, here is the entirety of <code>pyodide.ffi.wrappers.add_event_listener</code>:</p>
+<p class="code-title"><a href="https://github.com/pyodide/pyodide/blob/dc31bc8f3ecdde1eb21d345a81f8f4acc3d077ca/src/py/pyodide/ffi/wrappers.py" class="underline no-style-link">pyodide/wrappers.py <span class="italic">(partial)</span></a></p>
+{{< highlight "python" "linenostart=18" >}}
+def add_event_listener(
+    elt: JsProxy, event: str, listener: Callable[[Any], None]
+) -> None:
+    """Wrapper for JavaScript's addEventListener() which automatically manages the lifetime
+    of a JsProxy corresponding to the listener param.
+    """
+    proxy = create_proxy(listener)
+    EVENT_LISTENERS[(elt.js_id, event, listener)] = proxy
+    elt.addEventListener(event, proxy)
+{{< /highlight >}}
+<p class="post-p">You can see that this:</p>
+<ul class="post-ul">
+    <li>Creates a proxy of the listener function using <code>create_proxy()</code></li>
+    <li>Adds a reference to that proxy in an internal dictionary for later reference</li>
+    <li>Adds the event listener using the browser's <code>addEventListener()</code></li>
+</ul>
+<p class="post-p"><code>remove_event_listener</code> simply undoes this process - it removes the event listener using JavaScript's <code>removeEventListener</code>, looks up the appropriate proxy in the internal dictionary, and <code>destroy()</code>s it.</p>
+<p class="post-p">So now, our code above would look like:</p>
+{{< highlight "python" >}}
+<button id="my_button">Say Hello</button>
+<py-script>
+    from js import console, document
+    from pyodide.ffi.wrappers import add_event_listener
+    
+    def hello(*args):
+        console.log("Hello!")
+
+    btn = document.getElementById("my_button")
+    add_event_listener(btn, "click", hello)
+</py-script>
+{{< /highlight >}}
+<p class="post-p">I personally recommend using these wrapper methods for all new code where possible, instead of using <code>create_proxy()</code> and <code>addEventListener()</code> manually.</p>
