@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Python on Jeff Glass</title>
+    <title>python on Jeff Glass</title>
     <link>https://jeff.glass/tags/python/</link>
-    <description>Recent content in Python on Jeff Glass</description>
+    <description>Recent content in python on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 21 Oct 2022 03:05:14 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
@@ -530,8 +530,8 @@ for i in count():
 &lt;p class=&#34;post-p&#34;&gt;There&#39;s been &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/763&#34;&gt;quite&lt;/a&gt; a &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/715&#34;&gt;bit&lt;/a&gt; of &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/796&#34;&gt;discussion&lt;/a&gt; around what the loader lifecycle and async scripts, so I do expect this to change in the future. At this moment, it doesn&#39;t look like it&#39;s changing in the planned 2022.10.1, but time will tell!&lt;/p&gt;
 &lt;h2 class=&#34;post-h2&#34; id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
 &lt;p class=&#34;post-p&#34;&gt;Personally, I think the implicit style is nice to have for quick-and-dirty examples like those just above, but they do make it hard to reason about execution order and script completion. And like I say, I suspect the details of that are going to continue to change and morph over time, so they might not be the most future-proof solution.&lt;/p&gt;
-&lt;p class=&#34;post-p&#34;&gt;That&#39;s why I&#39;d recommend, for any significant projects, you lean toward using the &lt;code&gt;Webloop&lt;/code&gt; methods for handling concurrent tasks. Back when I wrote &lt;a href=&#34;http://localhost:1313/project/the-7-guis-pyscript/&#34;&gt;The 7 Guis in PyScript&lt;/a&gt;, I wasn&#39;t particularly familiar with Webloop, and so coded everything in the implicit style. All of the async work in those demos breaks down to essentially &#34;do a lot of setup, then run a loop asynchronously forever.&#34; Which makes quick, implicit async plausible.&lt;/p&gt;
-&lt;p class=&#34;post-p&#34;&gt;But when I moved on to the much-more-integrated &lt;a href=&#34;http://localhost:1313/project/richdemo/&#34;&gt;Rich on PyScript Project&lt;/a&gt;, I had a hell of a time reasoning about what processes would be completed when, how to cancel and monitor them etc. from the Python side - starting that project with an asyncio/Webloop approach from the beginning would have been radially easier.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;That&#39;s why I&#39;d recommend, for any significant projects, you lean toward using the &lt;code&gt;Webloop&lt;/code&gt; methods for handling concurrent tasks. Back when I wrote &lt;a href=&#34;../../project/the-7-guis-pyscript/&#34;&gt;The 7 Guis in PyScript&lt;/a&gt;, I wasn&#39;t particularly familiar with Webloop, and so coded everything in the implicit style. All of the async work in those demos breaks down to essentially &#34;do a lot of setup, then run a loop asynchronously forever.&#34; Which makes quick, implicit async plausible.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;But when I moved on to the much-more-integrated &lt;a href=&#34;../../project/richdemo/&#34;&gt;Rich on PyScript Project&lt;/a&gt;, I had a hell of a time reasoning about what processes would be completed when, how to cancel and monitor them etc. from the Python side - starting that project with an asyncio/Webloop approach from the beginning would have been radially easier.&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;Finally, remember that while &lt;code&gt;async/await&lt;/code&gt; in PyScript/Pyodide works &lt;span class=&#34;italic&#34;&gt;mostly&lt;/span&gt; like it does on desktop or terminal, because there&#39;s an intermediate layer of reimplementation in Webloop, not all behaviors are guaranteed to be exactly the same. Troubleshoot and test thoroughly, and &lt;span class=&#34;italic&#34;&gt;don&#39;t block the loop!&lt;/span&gt;&lt;/p&gt;
 </description>
       &lt;
@@ -9237,6 +9237,88 @@ validInitialVelocities &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt
     
     <item>
       <title>Advent of Code 2020: Day 2-9</title>
+      <link>https://jeff.glass/backup-post/advent-of-code-2020-day-2-9/</link>
+      <pubDate>Wed, 02 Dec 2020 16:17:42 -0500</pubDate>
+      
+      <guid>https://jeff.glass/backup-post/advent-of-code-2020-day-2-9/</guid>
+      <description>
+&lt;!--&lt;script src=&#34;&lt;script src=&#34;https://gist.github.com/JeffersGlass/c9e89c313081b88574ebb759d7e3e72e.js&#34;&gt;&lt;/script&gt;.js&#34;&gt;&lt;/script&gt;--&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;strong&gt;&lt;a data-type=&#34;URL&#34; href=&#39;.js&#34;&#39;&gt;Code for all days is on GitHub&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;h2&gt;Day 2&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Nothing terribly fancy going on with the day 2 challenge - essentially, reading in a text file and doing operations on strings. After developing the ability to split the input lines and validate them in part one, part 2 throws a curveball by changing up how the lines should be validated. I refactored my &#34;isValidLine&#34; code to take a validation function as one of its arguments, since the parsing/splitting of the line is the same for both parts 1 and 2.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;(&lt;em&gt;The names of the validation functions come from the problem description - they validate the passwords for a sled company and a toboggan company, respectively&lt;/em&gt;.)&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/7e97c17b46a2779e50b9005c27c26c95.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;h2&gt;Day 3&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;A slightly more involved bit of data and text processing today, as we help our would-be tobogganist make it down a snowy slope covered in trees. As a way of pushing my Python knowledge, I tried to complete both parts of today&#39;s challenge using list comprehensions and iterative functions like map, reduce, enumerate, etc. My impulse is to write things out more explicitly by iterating through the elements of input in a for loop, but practicing the list comprehensions and their related utility functions feels good.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Is the inline code better than the more verbose versions? I&#39;m not entirely sure - it&#39;s certainly less readable than the expanded-into-a-loop versions. It&#39;s also somewhat harder to debug, because there aren&#39;t logical places to, say, print intermediate results. So something like my getSlopeTrees() function, as written, is just silly-long and hard to read - the getSlopeTreesVerbose() function, which I wrote as part of troubleshooting a specific issue is definitely more readable.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;The punchline of my issue was: at least in Python 3.9, floats can&#39;t be used as list indices, even if they&#39;re integers. That is, even if a float for which is_integer() returns true, you must explicitly cast that float to an integer to use it index a list. In code form:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/e2ceed37a5b459304216389328854e87.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;So, another thing learned. Thanks Advent of Code!&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Here&#39;s the full code from Day 3:&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/9dbd5c3977a9ddaa59308001d55dd48a.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;h2&gt;Day 4&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;We can slowly feel the difficulty starting to ramp up here in day four. We&#39;re still walking on paved roads, as it were, but they&#39;re not as well maintained as they used to be in day one.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Today&#39;s problem concerns more text parsing - the first part just says to validate, essentially, that 7 unique strings are present between sets of blank lines in the input file. The code for this is pretty straightforward - I tried for a little while to do it all in one list comprehension, but ended up splitting it into two lines, which I think is clearer. To be sure, I don&#39;t think that doing it in one comprehension would be &lt;em&gt;better&lt;/em&gt;, just that I thought it would be fun practice.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/cf670f595c99db49b8564cc600ce26c6.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Of course, with the problem statement framing these 7 strings as labels for values in a passport (eyc:blu, hgt:171cm, etc), it seemed like a straight guess that we&#39;d actually have to parse those values by field and do something with them in part two. And of course, we were right. For each of the 7 fields, validation criteria are listed, including ensuring certain fields are numerical and within certain bounds, prepended or postended by certain characters, and so on. &lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;This part turned out ok - it takes the text file, splits it into individual passport strings, then splits each of those into a list of strings of the form &#34;key:value&#34;. The part that feels most &#34;un-Pythonic&#34; to me is the part (commented below) that turns that list of lists of strings into a list of dictionaries. I figure there&#39;s got to be a way to do that with a comprehension, but I couldn&#39;t quite make it work, so I did it as a couple For loops. It works fun, just feels a little clunky.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;I also implemented my own prettyPrintPassword function (and its alias &#39;ppp&#39;) - it doesn&#39;t do any sorting of the fields, and it doesn&#39;t show you &lt;em&gt;why&lt;/em&gt; a passport is invalid if it fails, but it did what I needed it to do for troubleshooting purposes.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/de08f5f205eddaccbe56980f9b3d4d29.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;h2&gt;Day 5&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Wow, a quickie today! The title of the day&#39;s challenge (&#39;Binary Boarding&#39;) gives you a pretty strong clue what it&#39;s going to be about. The challenge is essentially to parse text representing binary numbers in your language of choice and find the minimum, maximum, and missing values in between. &lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;This is my shortest solution so far, at only 5 lines of code (for both parts!):&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/a233c4ef04fc5eb9422bebf8b0106770.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;This is where Python&#39;s use of convenience generators (like range), built in math functions on general iterators (like min and max), and lots of string functionality (like replace) really shines - the code is easy to write and clean.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Looking back at &lt;a &#34;=&#34;&#34; 11=&#34;&#34; 2020=&#34;&#34; 25=&#34;&#34; advent-of-code-2020=&#34;&#34; data-id=&#34;3332&#34; data-type=&#34;post&#34; href=&#34;&amp;lt;script src=&#34; https:=&#34;&#34; jeff.glass=&#34;&#34;&gt;my goals for Code.js&#34;&amp;gt; Advent 2020&lt;/a&gt;, I&#39;d say I&#39;m doing pretty well - I&#39;m already feeling more fluent/comfortable with list/dictionary comprehensions, the git workflow is becoming more natural, and I&#39;ve completed each project on the day it&#39;s issued. Not too much challenge in terms of the algorithms and data structures so far, but then it is only day 5....&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;em&gt;This post will be updated with code from a handful of future days, until it gets too long/unwieldy.&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;Day 6&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;As it turns out, talking out loud while generating algorithms while writing code is... hard. &lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;I coded up the solution to Day 6 &lt;a href=&#34;&amp;lt;script src=&#34; https:=&#34;&#34; watch?v=&#39;s7UDMUALBxU&#34;&#39; www.youtube.com=&#34;&#34;&gt;live on stream on Sunday.js&#34;&amp;gt; night&lt;/a&gt;, which was both fun and challenging. Part one of the challenge wasn&#39;t too terribly hard - it basically asks whether each letter of the alphabet is contained between any pair of blank links (&#34;\n\n&#34;) in the input file. That&#39;s a solution that only takes a few lines to write.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;I ended up writing three solutions to part 2. I ended up ordering them in the code in order of their complexity/lines of code, but that&#39;s not the order I wrote them in. I first wrote a really over-complicated solution (3), then condensed it down to a single list comprehension (1), then expanded that back out just a little to make it more readable. Like I said on stream, if I were writing this code to go into some kind of actual codebase, I think solution (2) is the one I&#39;d use - it&#39;s concise enough to be comprehensible, but long enough to not be overwhelmingly dense.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/2801abec57bce67bad64d553974984b6.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;h2&gt;Day 7&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Oof, this day too far, far longer than it should have, all because I misunderstood Python&#39;s strip() function. strip, for those who are wondering, removes any of the set of characters given as its arguments from the beginning or end of a string. So, &#34;Hello World&#34;.strip(&#39;Hld&#39;) =&amp;gt; &#34;ello Wor&#34;. Unfortunately, I thought that the strip function removed the exact &lt;em&gt;string&lt;/em&gt; given it it as an argument, leading to it stripping additional characters off of the end of some inputs and causing my parsing to be wrong. Oof.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;In any case, the two halves of day 7 involve creating a tree of data in two different ways (one in which parents reference children, and one in which children reference parents). Then we sum up the total number of parents or children, unweighted or weighted, respectively.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/52440fef8db4118166b0cda14c6e7a65.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;h2&gt;Day 8&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Day 8 is giving me flashbacks to the &lt;a 2&#34;=&#34;&#34; 2019=&#34;&#34; adventofcode.com=&#34;&#34; day=&#34;&#34; href=&#34;&amp;lt;script src=&#34; https:=&#34;&#34;&gt;intcode challenges&lt;/a&gt; of 2019! .js&#34;&amp;gt;But it&#39;s a much softer start this time - we only have three pseudo-assembly instructions to parse, and simpler questions to answer. Once we&#39;ve built a simple function for processing a given list of these instructions, we&#39;ve solved part one. Part 2 requires iterating over our input data and manipulating it slightly, and testing to see whether the new version of the input fulfills the required condition, so our code will need to work over general lists of instructions.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;The only thing that hung me up today was forgetting to take into account how Python&#39;s lists handle objects. Specifically, this is the behavior that I was (rightly, but unwantedly) seeing:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;pre class=&#34;wp-block-code&#34;&gt;&lt;code&gt;listA = [[1,2],[2,4],[3,6]]&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;listB = [a for a in listA]&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;listB[0] = [4, 8]&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;print(listA)&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&amp;gt;&amp;gt;&amp;gt;[[4,8],[2,4],[3,6]]&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Though it doesn&#39;t look like listA is ever being modified, the way we&#39;ve constructed listB, it actually &lt;em&gt;references&lt;/em&gt; the same objects as listA. So when we change the object [1,2] to be [4,8], it changes everywhere that object is referenced in both lists. A little thing I once knew, but had skipped my brain for about 8 minutes. Whoops!&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/89eae182516f48540976b532e08de65c.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+&lt;h2&gt;Day 9&lt;/h2&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Well that felt pretty good! The consensus across the interwebs (twitter, reddit) seems to be that today was relatively easy, and I&#39;d agree. The problem involved two different ways of comparing integers in an input list to the previous 25 numbers, and doing some math on them. There are probably slightly more efficient algorithms, especially for part 2 - currently when the running sum starting from a given position, I throw out the entire sum and start again from the next position, which is likely wasteful. But for only 1000 inputs, the code still runs in ~160 milliseconds, so I don&#39;t think it&#39;s worth the time to make it more efficient. If this problem comes back in future days, that may be worth revisiting.&lt;/p&gt;
+&lt;figure class=&#34;wp-block-embed is-type-rich is-provider-embed-handler&#34;&gt;&lt;div class=&#34;wp-block-embed__wrapper&#34;&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/0936c84fffd5e6ce5c6044767e59282d.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/div&gt;&lt;/figure&gt;
+</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Advent of Code 2020: Day 2-9</title>
       <link>https://jeff.glass/post/advent-of-code-2020-day-2-9/</link>
       <pubDate>Wed, 02 Dec 2020 16:17:42 -0500</pubDate>
       
@@ -9319,6 +9401,55 @@ validInitialVelocities &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt
     
     <item>
       <title>Advent of Code 2020: Day 1</title>
+      <link>https://jeff.glass/backup-post/advent-of-code-2020-day-1/</link>
+      <pubDate>Tue, 01 Dec 2020 16:58:57 -0500</pubDate>
+      
+      <guid>https://jeff.glass/backup-post/advent-of-code-2020-day-1/</guid>
+      <description>&lt;p class=&#34;post-paragraph&#34;&gt;&lt;em&gt;I know in &lt;a href=&#34;https://jeff.glass/2020/11/25/advent-of-code-2020/&#34;&gt;my introductory post&lt;/a&gt; I said I wasn&#39;t going to post something every day, and I meant it! But I ended up with a little extra time on my hands today and this casual summary has turned into an actual post... I&#39;m going to have to think about how I categorize these posts so anyone who stumbled across my blog isn&#39;t wading through five pages of Advent of Code writeups before getting to tiny moving lights. But for now, here&#39;s day 1.&lt;/em&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;a href=&#34;https://github.com/JeffersGlass/codeadvent2020/tree/main/Day1&#34;&gt;&lt;em&gt;&lt;span style=&#34;text-decoration: underline;&#34;&gt;&lt;strong&gt;Full code is available on GitHub.&lt;/strong&gt;&lt;/span&gt;&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Much like last year, this year&#39;s Day 1 challenge starts by essentially making sure we can read in a text file and do basic math on it. The first problem asks us to find which two integers in a text file that sum to 2020 and retrieve their product; the second asks the same question, but for a set of 3 integers.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Just for gits and shiggles, I implemented the solution to part one in two different ways. The first, in a function I title &#34;naiveFind&#34;, just loads all of the numbers from the file into a list, then loops over every pair of numbers until it finds a pair that sums to 2020 (the success() function is detailed below). This is a fine way to approach this problem, but not terribly efficient for long lists:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/d481ae8dbac18127dafa9746d5e142fe.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;The speedier way to solve this problem is to use a hashmap, which we get for free in the form of Python dictionary lookups (&lt;em&gt;in most implementations of Python&lt;/em&gt;.) Rather than looping over all pairs of numbers, we can just proceed through the the list once, storing each member in a dictionary, and as we load each new number, we check to see if it&#39;s &#34;2020&#39;s complement&#34; is already in our dictionary&#39;s keys. This is faster than a raw comparison because looking via hashing is cheaper than doing a &#39;by-hand&#39; comparison of all of the numbers ourselves.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/a33279fd7dabe5869cb7923b86e5f938.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;For the second part of the problem, I only implemented a &#34;naive&#34; solution, running in O(n³) time:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/31e836eecc0434f4838598d0858b1d8b.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;With the need to now communicate a set of three numbers (and their product) that form a solution, I rewrote my success() function to accommodate any number of inputs as arguments. (The original, two-input function is commented-out at the bottom.)&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/f5d52dc0a2d5b5b8af53c9edb27e5337.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;To see how efficient these various functions were, I wrote a quick decorator function that allows me to see the (rough) execution time of each solution:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;script src=&#34;https://gist.github.com/JeffersGlass/bb312d167985d9db8c7ea0c0ca01d2f4.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Running all three of our search functions in turn:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;a href=&#34;https://jeff.glass/wp-content/uploads/2020/12/function-timing.jpg&#34;&gt;&lt;img alt=&#34;&#34; class=&#34;aligncenter wp-image-3340 size-full post-img&#34; height=&#34;106&#34; src=&#34;function-timing.jpg&#34; width=&#34;514&#34;/&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;We can see that:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li&gt;The naïve way of looping over all the pairs of products takes about 1.5 ms to complete&lt;/li&gt;
+&lt;li&gt;The hashset (dictionary) method of finding one pair of numbers takes about 0.6 ms to complete&lt;/li&gt;
+&lt;li&gt;The naïve way of finding a triple of numbers takes about 65 ms to complete&lt;/li&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Some stray thoughts from today&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+&lt;li&gt;When I originally tried to run my basic test code to ensure I was reading the input text file correctly, I got the error: &#34;No such file or directory.&#34; Which is odd, because the text file was just sitting in the same folder as my Python script, like always. It turns out that by default, VSCode uses the open &lt;em&gt;folder&lt;/em&gt; as its source, not where the script is actually being executed. You can change this in the Python terminal settings:&lt;img alt=&#34;image&#34; class=&#34;post-img&#34; src=&#34;https://user-images.githubusercontent.com/3840081/84087466-ff37df00-a99e-11ea-8fea-3f21dcd80e23.png&#34;/&gt;&lt;/li&gt;
+&lt;li&gt;I&#39;ve made use of the functools.wraps wrapper to assist me in writing my own decorator functions before, but using it again today to write the timer function makes me want to look a little deeper under the hood to see what it&#39;s doing.&lt;/li&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;/p&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;strong&gt;Postscript:&lt;/strong&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;I was just kicking around the #AdventOfCode hashtag on Twitter after completing my solutions, and ran across these super-nifty &#34;Pythonic&#34; solutions by @Brotherluii:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;https://twitter.com/Brotherluii/status/1333756750579830784&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;For those for whom the embedded tweet doesn&#39;t work:&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;&lt;pre class=&#34;wp-block-code&#34;&gt;&lt;code&gt;with open(&#39;input.txt&#39;, &#39;r&#39;) as file:&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;    data = {int(number) for number in file}&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;#Part 1&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;print({entry * (2020-entry) for entry in data if (2020-entry) in data})&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;#Part 2&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;print({entry1 * entry2 * (2020 - entry1 - entry2)&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;    for entry1 in data for entry2 in data&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;    if (2020 - entry1 - entry2) in data})&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Though I understand list comprehensions, I feel like they&#39;re never my go-to tool, but seeing them composed like this, I can see how they can be pretty beautiful in the right hands.&lt;/p&gt;
+</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Advent of Code 2020: Day 1</title>
       <link>https://jeff.glass/post/advent-of-code-2020-day-1/</link>
       <pubDate>Tue, 01 Dec 2020 16:58:57 -0500</pubDate>
       
@@ -9362,6 +9493,29 @@ validInitialVelocities &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt
 &lt;p class=&#34;post-p&#34;&gt;    for entry1 in data for entry2 in data&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;    if (2020 - entry1 - entry2) in data})&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;Though I understand list comprehensions, I feel like they&#39;re never my go-to tool, but seeing them composed like this, I can see how they can be pretty beautiful in the right hands.&lt;/p&gt;
+</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Advent of Code 2020</title>
+      <link>https://jeff.glass/backup-post/advent-of-code-2020/</link>
+      <pubDate>Wed, 25 Nov 2020 19:31:37 -0500</pubDate>
+      
+      <guid>https://jeff.glass/backup-post/advent-of-code-2020/</guid>
+      <description>&lt;p class=&#34;post-paragraph&#34;&gt;Last winter, I participated in the annual &lt;a href=&#34;https://adventofcode.com/&#34;&gt;Advent of Code Challenge&lt;/a&gt;, a website which offers small (&lt;em&gt;but not necessarily easy&lt;/em&gt;) programming challenges every day from December 1 through 25. It turned out to be a great way to get exposed to different corners of development in my language of choice (Python), and with a little more time on my hands this Winter, I&#39;m excited to dive into it again.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;The challenges are all written in a non-programming-language-specific way. For example, the &lt;a href=&#34;https://adventofcode.com/2019/day/1&#34;&gt;first part of the problem from December 1, 2019&lt;/a&gt; boils down to:&lt;/p&gt;
+&lt;div class=&#34;pl-8 font-mono&#34;&gt;
+&lt;p&gt;* Ingest a list of numbers from a text file, with one line per number&lt;/p&gt;
+&lt;p&gt;* For each number, divide it by 3, round down, and subtract 2&lt;/p&gt;
+&lt;p&gt;* Sum all these results together&lt;/p&gt;
+&lt;p&gt;* Print/return/somehow give the user back the sum&lt;/p&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;While I was doing this in Python, there&#39;s no reason you couldn&#39;t do it in C, or Java, or Haskell, or ALGOL, or any language of your choice (&lt;em&gt;though of course, some of the problems will be more tractable using structures built into some langauges and not othe&lt;/em&gt;rs&lt;em&gt;)&lt;/em&gt;. The actual prompts are a bit more flavorful that that example - a narrative about needed to rescue Santa from outer-space was woven through all 25 problem last year.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;I&#39;m confident in saying that my Python has gotten significantly stronger over the past year, but I&#39;m feeling like I could be stronger in some algorithmic thinking (the &lt;em&gt;mazes&lt;/em&gt; last year slayed me) and in some process crevices around my workflow. To that end, my goals for this year are:&lt;/p&gt;
+&lt;ul class=&#34;pl-8 post-ul&#34;&gt;&lt;li&gt;To strengthen my intuition for solving data-based problems with time-efficient algorithms&lt;/li&gt;&lt;li&gt;To cement the core concepts around Pythonic data structures in my knowledgebase&lt;/li&gt;&lt;li&gt;To become more comfortable with Git/GitHub, in particular its command line interface and the branch/merge/HEAD flow&lt;/li&gt;&lt;li&gt;To complete each challenge on the day it&#39;s issued&lt;/li&gt;&lt;/ul&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;Because nobody needs their RSS feed flooded by me every day for a month, I think I&#39;ve found a way to start a blog post on, say, December 1st, update it every day for a week, then only push to the RSS feed on the 7th - so if you want to check on them daily, you can go to the actual factual blog, or just wait for the summary posts to come out.&lt;/p&gt;
+&lt;p class=&#34;post-paragraph&#34;&gt;If you&#39;re just interested in the code (or are reading this from the future) and want to see my solutions, I&#39;ll be posting the code &lt;a href=&#34;https://github.com/JeffersGlass/codeadvent2020&#34;&gt;over on GitHub&lt;/a&gt;. I&#39;m not going to be striving to be one of the first 100 people posting successes to each problem (&lt;a href=&#34;https://adventofcode.com/2020/leaderboard&#34;&gt;for which there is a leaderboard&lt;/a&gt;), I&#39;m just solving these for me. And I encourage anyone out there looking to build their programming confidence to do the same!&lt;/p&gt;
 </description>
       &lt;
     </item>
