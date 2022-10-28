@@ -54,6 +54,40 @@ display("World", append=True){{< /highlight >}}
 <p class="post-p">There are certain small differences, since of course the dev console <span class="italic">isn't</span> a terminal. For instance, we discovered just the other day that <code>console.log()</code> (which is used to write to the dev console) <a href="https://github.com/pyscript/pyscript/issues/472#issuecomment-1281228942">doesn't output unless it receives a newline</a>. So something like <code class="code">print("Hello world", end = "")</code> won't show up until you log something else with a newline in it!</p>
 <p class="post-p">If I were a betting man, I'd hedge that the API for <code>display()</code> is likely to continue to change and evolve. It's a brand-new and breaking feature, and I suspect its semantics are going to continue to get tweaked. If you find more issues or inconsistencies, be sure to <a href="https://github.com/pyscript/pyscript/issues">raise an issue on GitHub about it!</a></p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="PyScript">PyScript</h2>
+<h4 class="post-h4" id="paths">Changes to <code>&lt;py-config&gt; paths</code></h4>
+<p class="post-p">Previously, all files listed in <code>&lt;py-config&gt;</code> were <code>fetch()</code>'d from the listed URLs and dropped into the embedded filesystem in the same folder as the running Python Script. Which is to say, pointing a path to the relative URL <code class="code">'data/files/Feb-24/data.txt'</code> would make that file available via <code class="code">with open('data.txt')... </code>.</p>
+<p class="post-p">Now, <code>paths</code> attemps to preserve the directory structure of loaded resources. So the above resource <code class="code">'data/files/Feb-24/data.txt'</code> would now be available at <code class="code">with open('data/files/Feb-24/data.txt')...</code> This is a first step toward rationalizing the importing of structured packages - there's an <a href="https://github.com/pyscript/pyscript/issues/519#issuecomment-1276276317">open proposal about that</a> now.</p>
+<p class="post-p">As a longer example, the following was valid in PyScript 2022.09.1:</p>
+<p class="code-title">Demo_2022_09_1.html</p>
+{{< highlight "html" "hl_lines=3 9" >}}
+<script defer src="https://pyscript.net/releases/2022.09.1/pyscript.js"></script>
+<py-config>
+  paths = ['a.txt', 'b_folder/b.txt']
+</py-config>
+<py-script>
+  with open('a.txt', 'r') as filehandle:
+    print(filehandle.read())
+  print("------")
+  with open('b.txt', 'r') as filehandle:
+    print(filehandle.read())
+</py-script>
+{{< /highlight >}}
+<p class="post-p">But in PyScript 2022.10.1, the locations where the files are imported in a way that reflects their original paths:</p>
+<p class="code-title">Demo_2022_10_1.html</p>
+{{< highlight "html" "hl_lines=3 9" >}}
+<script defer src="https://pyscript.net/releases/2022.10.1/pyscript.js"></script>
+<py-config>
+  paths = ['a.txt', 'b_folder/b.txt']
+</py-config>
+<py-script>
+  with open('a.txt', 'r') as filehandle:
+    display(filehandle.read())
+  display("------")
+  with open('b_folder/b.txt', 'r') as filehandle:
+    display(filehandle.read())
+</py-script>
+{{< /highlight >}}
+<p class="post-p">Paths is generally meant to be used for local resources, as fully qualified URLs will be imported in a pretty wacky way. For example, <code class="code">paths: 'http://www.example.com/data/file.txt'</code> would have to be accessed via <code class="code">with open('http:/www.example.com/data/file.txt', 'r')...</code> (Note the single slash following <code>http</code>)</p>
 <h4 class="post-h4">PyScript JS module</h4>
 <p class="post-p"><code>pyscript.js</code> now exposes the instance of Pyodide it creates <a href="https://docs.pyscript.net/latest/reference/pyscript-module.html">as a JavaScript object</a>. Users wishing to run code directly in Pyodide, or to use another JavaScript module that interacts directly with Pyodide, can use this exported reference to do so. (<a href="https://github.com/pyscript/pyscript/pull/868">#868</a>)</p>
 <p class="post-p">The Pyodide runtime is accessible as <code class="code">pyscript.runtime.interpreter</code>, like so:</p>
@@ -102,6 +136,7 @@ display("World", append=True){{< /highlight >}}
 <p class="post-p">The py-config system has been overhauled to simply its use internally - including simplifying how the default configuration options are merged with user-supplied options (<a href="https://github.com/pyscript/pyscript/pull/806">#806</a>), dealing with multiple <code>&lt;py-config&gt;</code>s on a page (<a href="https://github.com/pyscript/pyscript/pull/826">#826</a>), and finally killing <code>&lt;py-env&gt;</code> altogether (<a href="https://github.com/pyscript/pyscript/pull/775">#775</a>).</p>
 <p class="post-p">The TOML parser handling has also been improved, in that it no longer hangs forever if given misshapen TOML. (<a href="https://github.com/pyscript/pyscript/pull/815">#815</a>)</p>
 <p class="post-p">An important clarification has also been added to the docs - because of <a href="https://toml.io/en/">the way the TOML format works</a>, if you're using TOML for your py-config, <code>[[runtimes]]</code> must be the last element. If the <code>[[runtimes]]</code> table precedes the other individual elements (like `paths` or `packages`), those elements end up <span class="italic">inside</span> <code>[[runtimes]]</code>, which will cause them to be missed. (<a href="https://github.com/pyscript/pyscript/pull/861">#861</a>)</p>
+<p class="post-p">This in addition to the <a href="#paths">change to the <code>paths</code> parameter noted above</a>.</p>
 <h4 class="post-h4">Undefined elements are no longer hidden</h4>
 <p class="post-p">Previous, any unknown HTML elements were hidden by <code>pyscript.css</code> in an attempt to suppress onscreen visibility of things like <code>&lt;py-config&gt;</code>. This had the unintended consequence of hiding elements with typos - for example, a user-typed <code>&lt;py-scrip&gt;</code> element would be "unknown" and also hidden. Now, PyScript explicitly only hides the page-elements that need hiding. (<a href="https://github.com/pyscript/pyscript/pull/837">#837</a>)</p>
 <h4 class="post-h4">Directory Listings for Releases</h4>
@@ -136,7 +171,7 @@ display("World", append=True){{< /highlight >}}
 <p class="post-p">The <a href="https://discord.gg/CQU2Qyeb">PyScript Discord</a> is now the official hub for realtime communication around PyScript - both internally for the maintainers and the for the community to gather, ask questions, and get help. Come join us!</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="infrastructure">Infrastructure</h2>
 <h4 class="post-h4">Refactoring PyScript</h4>
-<p class="post-p">Antonio has embarked on several of massive refactoring endevours, to streamline and rationalize the process of how PyScript loads itself and Pyodide and how it then executes Python scripts. Hopefully the changes this imparts to the end-users of PyScript are minimal, but speaking from a maintenance and codebase standpoint, the amount that's been done to make sense of both of these processes makes it a significantly easier to reason about what-happens-when. (<a href="https://github.com/pyscript/pyscript/pull/806">#806</a>, <a href="https://github.com/pyscript/pyscript/pull/850">#850</a>, <a href="https://github.com/pyscript/pyscript/pull/881">#881</a>)</p>
+<p class="post-p">Antonio has embarked on several of massive refactoring endevours, to streamline and rationalize the process of how PyScript loads itself and Pyodide and how it then executes Python scripts. Hopefully the changes this imparts to the end-users of PyScript are minimal, but speaking from a maintenance and codebase standpoint, the amount that's been done to make sense of both of these processes makes it a significantly easier to reason about what-happens-when. (<a href="https://github.com/pyscript/pyscript/pull/806">#806</a>, <a href="https://github.com/pyscript/pyscript/pull/850">#850</a>, <a href="https://github.com/pyscript/pyscript/pull/881">#881</a>, <a href="https://github.com/pyscript/pyscript/pull/884">#884</a>)</p>
 <h4 class="post-h4">Testing</h4>
 <p class="post-p">The pytest-driven test system used to re-download the Pyodide runtime and other resources for each test, significantly slowing it down. The test system now has the ability to cache resources between tests, and retry tests on network failures. (<a href="https://github.com/pyscript/pyscript/pull/829">829</a>)</p>
 <p class="post-p">We also now have a way for the test system to watch for and confirm that specific errors are being thrown, allowing for the writing of <span class="italic">negative</span> integration tests (that should throw specific errors in PyScript). (<a href="https://github.com/pyscript/pyscript/pull/874">#874</a>)</p>
@@ -148,6 +183,7 @@ display("World", append=True){{< /highlight >}}
     <blockquote class="post-blockquote">We also figured that if these issues were put out there, maybe a community member might pick it up...</blockquote>
 </p>
 <p class="post-p">So if you're looking to get your feet wet contributing to the PyScript documentation, this would be a great place to start! Ms. Kinnaman also lists <a href="https://github.com/pyscript/pyscript/issues/848#issuecomment-1289602249">a few criteria for what that documentation would ideally include</a>, as an outline for anyone who wants to take a stab.</p>
+<p class="post-p"><span class="italic">Late Breaking News!</span> Engineering Manager Ted Patrick jumped in and created the start of documentation for the <code>&lt;py-script&gt;</code>, <code>&lt;py-repl&gt;</code>, and <code>&lt;py-config&gt;</code> tags! Thanks Ted.</p>
 <h4 class="post-h4" id="maintainers">New Maintainers</h4>
 <p class="post-p"><a href="https://github.com/pauleveritt">Paul Everitt</a> and I are now community maintainers on the PyScript project. It's been tremendously exciting and satisfying working on and with PyScript the past few months - the core team over at Annaconda has been swell all around, and I'm very grateful to be a part of the team in my own way. (<a href="https://github.com/pyscript/pyscript/pull/824">#824</a> <a href="https://github.com/pyscript/pyscript/pull/825">#825</a>)</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Next">What's Next?</h2>
