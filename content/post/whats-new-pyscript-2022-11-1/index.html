@@ -1,13 +1,13 @@
 ---
-title: "What's New in Pyscript 2022.10.1"
-date: 2022-10-25T10:12:48-05:00
+title: "What's New in Pyscript 2022.11.1"
+date: 2022-11-25T10:12:48-05:00
 draft: true
 tags:
 - Python
 - PyScript
 - Pyodide
 - JavaScript
-description: "The big changes in PyScript version 2022.10.1"
+description: "The big changes in PyScript version 2022.11.1"
 slug_image: py_2022_10_1_featured.png
 ---
 <style>
@@ -30,8 +30,8 @@ slug_image: py_2022_10_1_featured.png
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-green-600">display()</code></h2>
 <p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
 <p class="post-p">One key concept to know here is Python's <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish (perhaps to dump a buffer of data into it directly without the additional processing that <code>print()</code> does), but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
-<p class="post-p">Prior to 2022.10.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up.</p>
-<p class="post-p">As of 2022.10.1, <span class="font-bold"><code>print()</code> goes to the developer console; <code>display()</code> is for outputting to the browser window</span>:</p>
+<p class="post-p">Prior to 2022.11.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up.</p>
+<p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> goes to the developer console; <code>display()</code> is for outputting to the browser window</span>:</p>
 <div class="py-2 pl-2 m-0 ml-4 bg-green-100">
     <h4 class="text-xl"><code class="nocode" >display(*values, target=None, append=True)</code></h4>
     <div class="ml-4">
@@ -72,10 +72,10 @@ display("World", append=True){{< /highlight >}}
     print(filehandle.read())
 </py-script>
 {{< /highlight >}}
-<p class="post-p">But in PyScript 2022.10.1, the locations where the files are imported in a way that reflects their original paths:</p>
+<p class="post-p">But in PyScript 2022.11.1, the locations where the files are imported in a way that reflects their original paths:</p>
 <p class="code-title">Demo_2022_10_1.html</p>
 {{< highlight "html" "hl_lines=3 9" >}}
-<script defer src="https://pyscript.net/releases/2022.10.1/pyscript.js"></script>
+<script defer src="https://pyscript.net/releases/2022.11.1/pyscript.js"></script>
 <py-config>
   paths = ['a.txt', 'b_folder/b.txt']
 </py-config>
@@ -93,7 +93,7 @@ display("World", append=True){{< /highlight >}}
 <p class="post-p">The Pyodide runtime is accessible as <code class="code">pyscript.runtime.interpreter</code>, like so:</p>
 <div class="mx-4 my-2">
 {{< highlight "html" >}}
-<script defer src="https://pyscript.net/releases/2022.10.1/pyscript.js"></script>
+<script defer src="https://pyscript.net/releases/2022.11.1/pyscript.js"></script>
 <button onclick="logFromPython()">Click Me to Log</button>
 <script>
     function logFromPython() {
@@ -108,7 +108,7 @@ display("World", append=True){{< /highlight >}}
 <p class="post-p">The <code class="code">pyscript.runtime.globals</code> attribute holds a reference to Python <code>globals()</code> dictionary, making it easy to reference Python objects from JavaScript. By the wonder that is Pyodide, the objects are proxied back and forth pretty much seamlessly, but especially when logging to the console, using the <a href="https://pyodide.org/en/stable/usage/api/js-api.html#PyProxy.toJs">toJs()</a> function makes the conversion explicit:</p>
 <div class="mx-4 my-2">
 {{< highlight "html" >}}
-<script defer src="https://pyscript.net/releases/2022.10.1/pyscript.js"></script>
+<script defer src="https://pyscript.net/releases/2022.11.1/pyscript.js"></script>
 
 <py-script>
     from js import document, Event
