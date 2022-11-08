@@ -21,6 +21,7 @@ slug_image: py_2022_11_1_featured.png
 <div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
     <span>Jump To: <span>
     <a href="#Display">display()</a> • 
+    <a href="#paths">[[fetch]]</a> • 
     <a href="#PyScript">PyScript</a> • 
     <a href="#Community">Community</a> • 
     <a href="#infrastructure">Infrastructure</a> • 
@@ -29,7 +30,7 @@ slug_image: py_2022_11_1_featured.png
 </div>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-green-600">display()</code></h2>
 <p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
-<p class="post-p">One key concept to know here is Python's <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish (perhaps to dump a buffer of data into it directly without the additional processing that <code>print()</code> does), but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
+<p class="post-p">One key Python concept to know here is <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish, but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
 <p class="post-p">Prior to 2022.11.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up.</p>
 <p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> goes to the developer console; <code>display()</code> is for outputting to the browser window</span>:</p>
 <div class="py-2 pl-2 m-0 ml-4 bg-green-100">
@@ -50,44 +51,193 @@ display("Hello", "World!", append=True)
 display("Hello")
 display("World", append=True){{< /highlight >}}
 </div>
+<p class="post-p">Following another PR by Antonio (<a href="https://github.com/pyscript/pyscript/pull/915">#915</a>), <code>display()</code> escapes any HTML given to it as an input string, so <code>display(&lt;br&gt;)</code> prints the literal characters <code class="code">&lt;br&gt;</code> to the screen, instead of creating a newline. For non-string inputs, <code>display(some_obj)</code> calls <code>repr(some_obj)</code> and escapes that. If you <span class="italic">do</span> want to inject HTML into your page, a new object is to use the new <a href="https://github.com/pyscript/pyscript/blob/515858f3134bf031497f0420e8a0e7fbc4c32be0/pyscriptjs/src/python/pyscript.py#L49">HTML class</a>, a la <code>display(HTML("&lt;p&gt;A new paragraph&lt;/p&gt;"))</code>.</p>
 <p class="post-p">So if <code>display()</code> is for writing to the screen, what does <code>print()</code> do? It writes to the <a href="https://support.monday.com/hc/en-us/articles/360002197259-How-to-open-the-developer-console">Developer Console</a>. This is the closest analog in the browser to a "dumb terminal", and so it makes a certain amount of sense for <code>stdout</code> to be routed there.</p>
 <p class="post-p">There are certain small differences, since of course the dev console <span class="italic">isn't</span> a terminal. For instance, we discovered just the other day that <code>console.log()</code> (which is used to write to the dev console) <a href="https://github.com/pyscript/pyscript/issues/472#issuecomment-1281228942">doesn't output unless it receives a newline</a>. So something like <code class="code">print("Hello world", end = "")</code> won't show up until you log something else with a newline in it!</p>
-<p class="post-p">If I were a betting man, I'd hedge that the API for <code>display()</code> is likely to continue to change and evolve. It's a brand-new and breaking feature, and I suspect its semantics are going to continue to get tweaked. If you find more issues or inconsistencies, be sure to <a href="https://github.com/pyscript/pyscript/issues">raise an issue on GitHub about it!</a></p>
+<p class="post-p">If I were a betting man, I'd hedge that the API for <code>display()</code> is likely to continue to change and evolve. It's a brand-new and breaking feature, and I suspect its semantics are going to continue to get tweaked. If you find more issues or inconsistencies, be sure to <a href="https://github.com/pyscript/pyscript/issues">raise an issue on GitHub</a> or come tell us about it <a href="https://discord.gg/CQU2Qyeb">on the PyScript Discord</a>.</p>
+<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="paths">Fetching Files with <code>&lt;py-config&gt; [[fetch]]</code></h4>
+<p class="post-p">Previously, all files listed in <code>&lt;py-config&gt; paths:</code> were <code>fetch()</code>'d from the listed URLs and dropped into the embedded filesystem in the same folder as the running Python Script. Which is to say, pointing a path to the relative URL <code class="code">'data/files/Feb-24/info.txt'</code> would make that file available via <code class="code">with open('info.txt')... </code>.</p>
+<p class="post-p bg-red-400">Now, there are additional options for fetching multiple files in a way that preserves their URL/directory structure. They're all bundled into a new "fetch configuration" table in <code>&lt;py-config&gt;</code> labelled <code>[[fetch]]</code>, with the following members:</p>
+<table class="m-2">
+    <tr class="font-bold">
+        <td>Value</td>
+        <td>Type</td>
+        <td>Description</td>
+    </tr>
+    <tr>
+        <td>`from`</td>
+        <td>string</td>
+        <td>Base URL for the resource to be fetched.</td>
+    </tr>
+    <tr>
+        <td>`to_folder`</td>
+        <td>string</td>
+        <td>Name of the folder to create in the filesystem.</td>
+    </tr>
+    <tr>
+        <td>`to_file`</td>
+        <td>string</td>
+        <td>Name of the target to create in the filesystem. Cannot be combined with "files"</td>
+    </tr>
+    <tr>
+        <td>`files`</td>
+        <td>List of string</td>
+        <td>List of files to be downloaded. Cannot be combined with "to_file"</td>
+    </tr>
+</table>
+<p class="post-p">The pseudo-code for what PyScript will fetch is something like this:</p>
+{{< highlight "python3" "linenos=false" >}}
+    if both "files" and "to_file" are specified: Error
+
+    if "from" is not specified, from = "" #defaults to relative URLs
+    if "to_folder" is not specified, to_folder = "." #defaults to the working current directory, where Python Scripts are run format    
+
+    if "files" is specified:
+        for each file in "files":
+            #These concatenations are done in a smart way to try to avoid dangling/missing "/"s
+            source_URL = "from" + file 
+            destination = "to_folder" + file
+            download object from the source_url to destination in the local file system
+
+    else: #"files" not specified:
+        if "to_file" is specified:
+            download object from url "from" to "to_folder" + "to_file"
+        else if "from" ends in a file-name: #i.e. the part after the last "/" 
+            download object from url "from" to "to_folder" + 'filename' at end of "from"{{< /highlight >}}
+<p class="post-p">Let's look at some recipies for using these new attributes to fetch resoures from the web and download them to the Emscripten local file system to Python can use them. For the examples where we're fetching our own files and modules, we'll assume our site has the following simple structure:</p>
+<pre class="bg-gray-200 p-4">
+my-site/
+├─ content/
+│  ├─ info.txt
+│  ├─ <span class="font-bold">index.html <<< File with &lt;py-config&gt;</span>
+├─ files/
+│  ├─ data.csv
+├─ packages/
+│  ├─ my_package/
+│  │  ├─ __init__.py
+│  │  ├─ helloworld/
+│  │  │  ├─ __init__.py/
+│  │  │  ├─ greetings.py/
+</pre>
+<div class="grid grid-cols-1 xl:grid-cols-2 mt-4 gap-x-3 gap-y-4">
+
+<div class="w-full">
+<p class="code-title">Single File</p>
+<div class="pr-4 bg-codeblock">
+{{< highlight "html" >}}
+
+<py-config>
+    [[fetch]]
+    files = ['info.txt']
+    # URL defaults to 'relative to this folder'
+    # Destination defaults to 'adjacent to the Python files we run'
+</py-config>
+
+<py-script>
+    with open('info.txt', 'r') as fp:
+        print(fp.read())
+</py-script>
+{{< /highlight >}}
+</div>
+</div>
+
+<div class="w-full">
+    <p class="code-title">Single File w/ Renaming</p>
+    <div class="pr-4 bg-codeblock">
+    {{< highlight "html" >}}
+<py-config>
+    [[fetch]]
+    from = 'info.txt'
+    to_file = 'info_loaded_from_web.txt'
+</py-config>
+
+<py-script>
+    with open('info_loaded_from_web.txt', 'r') as fp:
+        print(fp.read())
+</py-script>{{< /highlight >}}
+    </div>
+    </div>
+
+<div class="w-full">
+<p class="code-title">To Another Local Folder</p>
+<div class="pr-4 bg-codeblock">
+{{< highlight "html" >}}
+
+<py-config>
+    [[fetch]]
+    files = ['info.txt']
+    to_folder = 'infofiles/loaded_info' 
+    # trailing slash would also be acceptable: 'infofiles/loaded_info/' 
+</py-config>
+
+<py-script>
+    with open("infofiles/loaded_info/info.txt", "r") as fp:
+        print(fp.read())
+</py-script>
+{{< /highlight >}}
+</div>
+</div>
+
+<div class="w-full">
+    <p class="code-title">From Another Folder to Current Working Directory</p>
+    <div class="pr-4 bg-codeblock">
+    {{< highlight "html" >}}
+<py-config>
+    [[fetch]]
+    files = ['sensordata.csv']
+    from = '../data/'
+    # fetch file from URL '../data/sensordata.csv' to local file './sensordata.csv'
+</py-config>
+
+<py-script>
+    import csv
+    with open("./sensordata.csv", "r") as csvfile:
+        datareader = csv.reader(csvfile)
+        for row in datareader:
+            print(row)
+</py-script>{{< /highlight >}}
+    </div>
+    </div>
+
+    <div class="w-full">
+        <p class="code-title">Multiple Files, Preserving Folder Structure</p>
+        <div class="pr-4 bg-codeblock">
+{{< highlight "html" >}}
+<py-config>
+    [[fetch]]
+    files = ['__init__.py', 'helloworld/greetings.py', 'helloworld/__init__.py']
+    from = '../packages/my_package/'
+    to_folder = './my_package'
+</py-config>
+
+<py-script>
+from my_package.helloworld.greetings import say_hi
+print(say_hi())
+</py-script>{{< /highlight >}}
+        </div>
+        </div>
+
+    <div class="w-full">
+        <p class="code-title">From an API Endpoint</p>
+        <div class="pr-4 bg-codeblock">
+{{< highlight "html" >}}
+<py-config>
+    [[fetch]]
+    from = 'https://catfact.ninja/fact'
+    to_file = './cat_fact.json'
+</py-config>
+
+<py-script>
+import json
+with open("cat_fact.json", "r") as fp:
+    data = json.load(fp)
+display(data['fact'])
+</py-script>{{< /highlight >}}
+        </div>
+        </div>
+
+</div>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="PyScript">PyScript</h2>
-<h4 class="post-h4" id="paths">Changes to <code>&lt;py-config&gt; paths</code></h4>
-<p class="post-p">Previously, all files listed in <code>&lt;py-config&gt;</code> were <code>fetch()</code>'d from the listed URLs and dropped into the embedded filesystem in the same folder as the running Python Script. Which is to say, pointing a path to the relative URL <code class="code">'data/files/Feb-24/data.txt'</code> would make that file available via <code class="code">with open('data.txt')... </code>.</p>
-<p class="post-p">Now, <code>paths</code> attemps to preserve the directory structure of loaded resources. So the above resource <code class="code">'data/files/Feb-24/data.txt'</code> would now be available at <code class="code">with open('data/files/Feb-24/data.txt')...</code> This is a first step toward rationalizing the importing of structured packages - there's an <a href="https://github.com/pyscript/pyscript/issues/519#issuecomment-1276276317">open proposal about that</a> now.</p>
-<p class="post-p">As a longer example, the following was valid in PyScript 2022.09.1:</p>
-<p class="code-title">Demo_2022_09_1.html</p>
-{{< highlight "html" "hl_lines=3 9" >}}
-<script defer src="https://pyscript.net/releases/2022.09.1/pyscript.js"></script>
-<py-config>
-  paths = ['a.txt', 'b_folder/b.txt']
-</py-config>
-<py-script>
-  with open('a.txt', 'r') as filehandle:
-    print(filehandle.read())
-  print("------")
-  with open('b.txt', 'r') as filehandle:
-    print(filehandle.read())
-</py-script>
-{{< /highlight >}}
-<p class="post-p">But in PyScript 2022.11.1, the locations where the files are imported in a way that reflects their original paths:</p>
-<p class="code-title">Demo_2022_10_1.html</p>
-{{< highlight "html" "hl_lines=3 9" >}}
-<script defer src="https://pyscript.net/releases/2022.11.1/pyscript.js"></script>
-<py-config>
-  paths = ['a.txt', 'b_folder/b.txt']
-</py-config>
-<py-script>
-  with open('a.txt', 'r') as filehandle:
-    display(filehandle.read())
-  display("------")
-  with open('b_folder/b.txt', 'r') as filehandle:
-    display(filehandle.read())
-</py-script>
-{{< /highlight >}}
-<p class="post-p">Paths is generally meant to be used for local resources, as fully qualified URLs will be imported in a pretty wacky way. For example, <code class="code">paths: 'http://www.example.com/data/file.txt'</code> would have to be accessed via <code class="code">with open('http:/www.example.com/data/file.txt', 'r')...</code> (Note the single slash following <code>http</code>)</p>
 <h4 class="post-h4">PyScript JS module</h4>
 <p class="post-p"><code>pyscript.js</code> now exposes the instance of Pyodide it creates <a href="https://docs.pyscript.net/latest/reference/pyscript-module.html">as a JavaScript object</a>. Users wishing to run code directly in Pyodide, or to use another JavaScript module that interacts directly with Pyodide, can use this exported reference to do so. (<a href="https://github.com/pyscript/pyscript/pull/868">#868</a>)</p>
 <p class="post-p">The Pyodide runtime is accessible as <code class="code">pyscript.runtime.interpreter</code>, like so:</p>
@@ -132,11 +282,18 @@ display("World", append=True){{< /highlight >}}
         <img class="border-2 border-gray-400" src="consoledemo1.PNG" alt="A pair of entries from the developer console reading '3' and 'PyScript', 'Pyodide', 'WASM'">
     </div>
 </div>
+<h4 class="post-h4">Better Warnings and Errors</h4>
+<p class="post-p">Fabio Rosado (yes, there's <a href="#maintainers">two Fabios</a> on the PyScript team now!) put together a great PR that cleans up the presentation of warnings and errors caused during PyScript startup - if you write invalid TOML for <code>&lt;py-config&gt;</code>, say, or use a deprecated function or feature. (<a href="https://github.com/pyscript/pyscript/pull/909">#909</a>) <span class="italic bg-red-400">(Speaking of which, see below for more notes on deprecated features.)</span></p>
+<img src="./warningerror.jpg" alt="A screenshot showing a new-style error banner at the top of an HTML page (with red border) and a warning banner (with an orange border and an 'X' button to close it." class="post-img">
+<p class="post-img-caption">The new appearance of warnings and errors caused during PyScript startup and configuration.</p>
+<br>
+<img src="./python-error.png" alt="A ZeroDivisionError warning box, outlined in red on an HTML page" class="post-img">
+<p class="post-img-caption">The new appearance of errors that are thrown when running Python code.</p>
 <h4 class="post-h4">Streamlined py-config</h4>
 <p class="post-p">The py-config system has been overhauled to simply its use internally - including simplifying how the default configuration options are merged with user-supplied options (<a href="https://github.com/pyscript/pyscript/pull/806">#806</a>), dealing with multiple <code>&lt;py-config&gt;</code>s on a page (<a href="https://github.com/pyscript/pyscript/pull/826">#826</a>), and finally killing <code>&lt;py-env&gt;</code> altogether (<a href="https://github.com/pyscript/pyscript/pull/775">#775</a>).</p>
 <p class="post-p">The TOML parser handling has also been improved, in that it no longer hangs forever if given misshapen TOML. (<a href="https://github.com/pyscript/pyscript/pull/815">#815</a>)</p>
 <p class="post-p">An important clarification has also been added to the docs - because of <a href="https://toml.io/en/">the way the TOML format works</a>, if you're using TOML for your py-config, <code>[[runtimes]]</code> must be the last element. If the <code>[[runtimes]]</code> table precedes the other individual elements (like `paths` or `packages`), those elements end up <span class="italic">inside</span> <code>[[runtimes]]</code>, which will cause them to be missed. (<a href="https://github.com/pyscript/pyscript/pull/861">#861</a>)</p>
-<p class="post-p">This in addition to the <a href="#paths">change to the <code>paths</code> parameter noted above</a>.</p>
+<p class="post-p">This in addition to the <a href="#paths">changes to <code>[[fetch]]</code> noted above</a>.</p>
 <h4 class="post-h4">Undefined elements are no longer hidden</h4>
 <p class="post-p">Previous, any unknown HTML elements were hidden by <code>pyscript.css</code> in an attempt to suppress onscreen visibility of things like <code>&lt;py-config&gt;</code>. This had the unintended consequence of hiding elements with typos - for example, a user-typed <code>&lt;py-scrip&gt;</code> element would be "unknown" and also hidden. Now, PyScript explicitly only hides the page-elements that need hiding. (<a href="https://github.com/pyscript/pyscript/pull/837">#837</a>)</p>
 <h4 class="post-h4">Directory Listings for Releases</h4>
@@ -170,6 +327,9 @@ display("World", append=True){{< /highlight >}}
 <h4 class="post-h4">Discord</h4>
 <p class="post-p">The <a href="https://discord.gg/CQU2Qyeb">PyScript Discord</a> is now the official hub for realtime communication around PyScript - both internally for the maintainers and the for the community to gather, ask questions, and get help. Come join us!</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="infrastructure">Infrastructure</h2>
+
+<h4 class="post-h4">Dev Docs</h4>
+<p class="post-p"><a href="https://docs.pyscript.net/latest/index.html">The PyScript Documentation</a> now has a <a href="https://docs.pyscript.net/latest/development/">Development Section</a>, as a central place for notes about how the development and release process for PyScript works.</p>
 <h4 class="post-h4">Refactoring PyScript</h4>
 <p class="post-p">Antonio has embarked on several of massive refactoring endevours, to streamline and rationalize the process of how PyScript loads itself and Pyodide and how it then executes Python scripts. Hopefully the changes this imparts to the end-users of PyScript are minimal, but speaking from a maintenance and codebase standpoint, the amount that's been done to make sense of both of these processes makes it a significantly easier to reason about what-happens-when. (<a href="https://github.com/pyscript/pyscript/pull/806">#806</a>, <a href="https://github.com/pyscript/pyscript/pull/850">#850</a>, <a href="https://github.com/pyscript/pyscript/pull/881">#881</a>, <a href="https://github.com/pyscript/pyscript/pull/884">#884</a>)</p>
 <h4 class="post-h4">Testing</h4>
@@ -185,7 +345,7 @@ display("World", append=True){{< /highlight >}}
 <p class="post-p">So if you're looking to get your feet wet contributing to the PyScript documentation, this would be a great place to start! Ms. Kinnaman also lists <a href="https://github.com/pyscript/pyscript/issues/848#issuecomment-1289602249">a few criteria for what that documentation would ideally include</a>, as an outline for anyone who wants to take a stab.</p>
 <p class="post-p"><span class="italic">Late Breaking News!</span> Engineering Manager Ted Patrick jumped in and created the start of documentation for the <code>&lt;py-script&gt;</code>, <code>&lt;py-repl&gt;</code>, and <code>&lt;py-config&gt;</code> tags! Thanks Ted.</p>
 <h4 class="post-h4" id="maintainers">New Maintainers</h4>
-<p class="post-p"><a href="https://github.com/pauleveritt">Paul Everitt</a> and I are now community maintainers on the PyScript project. It's been tremendously exciting and satisfying working on and with PyScript the past few months - the core team over at Annaconda has been swell all around, and I'm very grateful to be a part of the team in my own way. (<a href="https://github.com/pyscript/pyscript/pull/824">#824</a> <a href="https://github.com/pyscript/pyscript/pull/825">#825</a>)</p>
+<p class="post-p"><a href="https://github.com/pauleveritt">Paul Everitt</a>, <a href="https://github.com/FabioRosado">Fabio Rosado</a> and I are now community maintainers on the PyScript project. It's been tremendously exciting and satisfying working on and with PyScript the past few months - the core team over at Annaconda has been swell all around, and I'm very grateful to be a part of the team in my own way. (<a href="https://github.com/pyscript/pyscript/pull/824">#824</a> <a href="https://github.com/pyscript/pyscript/pull/825">#825</a> (<a href="https://github.com/pyscript/pyscript/issues/898">#898</a>))</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Next">What's Next?</h2>
 <h4 class="post-h4">Events</h4>
 <p class="post-p">There's a proposal (a couple proposals) swirling around over in <a href="https://github.com/pyscript/research">PyScript/Research</a> about the syntax for events ("py-[event]" or "onclick" or otherwise). What's exciting is that there's tons of possibilities! Now the hard part will be to sort together the possibilities and potentiatials, weight up the pros and cons (run functions in Python vs. JavaScript, access to JS and/or Python objects as arguments, do we pass literal code or references to Callables, etc) and make the call.</p>
