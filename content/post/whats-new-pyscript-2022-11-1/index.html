@@ -86,7 +86,7 @@ slug_image: py_2022_11_1_featured.png
     <a href="#pyodide">Pyodide</a> • 
     <a href="#Next">What's Next?</a>
 </div>
-<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-green-600">display()</code></h2>
+<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-red-700">display()</code></h2>
 <p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
 <p class="post-p">One key Python concept to know here is <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish, but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
 <p class="post-p">Prior to 2022.11.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up.</p>
@@ -164,40 +164,55 @@ display(HTML("<p><b>But this is an honest-to-goodness bold paragraph!</b></p>"))
         <td>Base URL for the resource to be fetched.</td>
     </tr>
     <tr>
-        <td>`to_folder`</td>
+        <td>`to_folder`</td>pseu
         <td>string</td>
         <td>Name of the folder to create in the filesystem.</td>
-    </tr>
-    <tr>
-        <td>`to_file`</td>
-        <td>string</td>
-        <td>Name of the target to create in the filesystem. Cannot be combined with "files"</td>
     </tr>
     <tr>
         <td>`files`</td>
         <td>List of string</td>
         <td>List of files to be downloaded. Cannot be combined with "to_file"</td>
     </tr>
+    <tr>
+        <td>`to_file`</td>
+        <td>string</td>
+        <td>Name of the target to create in the filesystem. Cannot be combined with "files"</td>
+    </tr>
 </table>
+<p class="post-p">Breaking that down a bit, here's how I personally think through which parameters to use:</p>
+<ul class="py-4 pl-8 text-justify list-disc list-outside">
+    <li><code>files</code> vs <code>to_file</code>:</li>
+    <ul class="py-2 pl-8 text-justify list-disc list-outside">
+        <li>If you want the files in the Emscripten file system to have the same name as on the server, use <code>files</code></li>
+        <li>If you want the files in the Emscripten file system to have a <span class="italic">different</span> name than on the server, or if the URL has no file name (e.g. an API endpooint), use <code>to_file</code></li>
+    </ul>
+    <li>If <code>from</code> is specified, it will be used as the prefix for URL's to down files from (can be absolute or relative). Leave unspecified to reference the same relative URL path as the current document.
+    <li>If <code>to_folder</code> is specified, files will be placed in that folder in the Emscripten file system; otherwise, they'll be placed in the same folder Python scripts are executed from</li>
+    </li>
+
+</ul>
 <p class="post-p">The pseudo-code for what PyScript will fetch is something like this:</p>
-{{< highlight "python3" "linenos=false" >}}
-    if both "files" and "to_file" are specified: Error
+<div class="px-8 overflow-x-scroll bg-codeblock">
+<pre>
+<span class="font-semibold text-red-700">if</span> both <span class="font-semibold text-blue-500">files</span> and <span class="font-semibold text-blue-500">to_file</span> are specified: Error
 
-    if "from" is not specified, from = "" #defaults to relative URLs
-    if "to_folder" is not specified, to_folder = "." #defaults to the working current directory, where Python Scripts are run format    
+<span class="font-semibold text-red-700">if</span> <span class="font-semibold text-blue-500">from</span> is not specified, <span class="font-semibold text-blue-500">from</span> = ""<span class="text-green-700"> #defaults to relative URLs</span>
+<span class="font-semibold text-red-700">if</span> <span class="font-semibold text-blue-500">to_folder</span> is not specified, <span class="font-semibold text-blue-500">to_folder</span> = "." <span class="text-green-700">#defaults to the working current directory, where Python Scripts are run</span>
 
-    if "files" is specified:
-        for each file in "files":
-            #These concatenations are done in a smart way to try to avoid dangling/missing "/"s
-            source_URL = "from" + file 
-            destination = "to_folder" + file
-            download object from the source_url to destination in the local file system
+<span class="font-semibold text-red-700">if</span> <span class="font-semibold text-blue-500">files</span> is specified:
+    for each <span class="font-semibold text-blue-500">file</span> in <span class="font-semibold text-blue-500">files</span>:
+        <span class="text-green-700">#These concatenations are done in a smart way to try to avoid dangling/missing "/"s</span>
+        <span class="font-semibold text-blue-500">source_URL</span> = <span class="font-semibold text-blue-500">from</span> + <span class="font-semibold text-blue-500">file</span>
+        <span class="font-semibold text-blue-500">destination</span> = <span class="font-semibold text-blue-500">to_folder</span> + <span class="font-semibold text-blue-500">file</span>
+        download object from the source_url to destination in the local file system
 
-    else: #"files" not specified:
-        if "to_file" is specified:
-            download object from url "from" to "to_folder" + "to_file"
-        else if "from" ends in a file-name: #i.e. the part after the last "/" 
-            download object from url "from" to "to_folder" + 'filename' at end of "from"{{< /highlight >}}
+<span class="font-semibold text-red-700">else:</span> <span class="text-green-700">#"files" not specified:</span>
+    <span class="font-semibold text-red-700">if</span> to_file is specified:
+        download object from url <span class="font-semibold text-blue-500">from</span> to <span class="font-semibold text-blue-500">(to_folder + to_file)</span>
+    <span class="font-semibold text-red-700">else if</span> <span class="font-semibold text-blue-500">from</span> ends in a file-name: <span class="text-green-700">#i.e. the part after the last "/"</span>
+        download object from url <span class="font-semibold text-blue-500">from</span> to <span class="font-semibold text-blue-500">(to_folder + ('filename' at end of from))</span>
+</pre>
+</div>
 <p class="post-p">Let's look at some recipies for using these new attributes to fetch resoures from the web and download them to the Emscripten local file system to Python can use them.</p>
 <div class="p-2 border-2 border-blue-200 rounded-xl" id="fetch-container">
     <div class="overflow-y-scroll" style="height: 37rem;" id="fetch-examples">
