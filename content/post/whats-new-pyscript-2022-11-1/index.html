@@ -30,7 +30,7 @@ slug_image: py_2022_11_1_featured.png
 </div>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-green-600">display()</code></h2>
 <p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
-<p class="post-p">One key Python concept to know here is <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish, but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
+<p class="post-p bg-red-200">One key Python concept to know here is <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish, but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
 <p class="post-p">Prior to 2022.11.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up.</p>
 <p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> goes to the developer console; <code>display()</code> is for outputting to the browser window</span>:</p>
 <div class="py-2 pl-2 m-0 ml-4 bg-green-100">
@@ -239,6 +239,7 @@ display(data['fact'])
 </div>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="PyScript">PyScript</h2>
 <h4 class="post-h4">PyScript JS module</h4>
+<h5 class="pt-3 text-lg">Pyodide Runtime Access</h5>
 <p class="post-p"><code>pyscript.js</code> now exposes the instance of Pyodide it creates <a href="https://docs.pyscript.net/latest/reference/pyscript-module.html">as a JavaScript object</a>. Users wishing to run code directly in Pyodide, or to use another JavaScript module that interacts directly with Pyodide, can use this exported reference to do so. (<a href="https://github.com/pyscript/pyscript/pull/868">#868</a>)</p>
 <p class="post-p">The Pyodide runtime is accessible as <code class="code">pyscript.runtime.interpreter</code>, like so:</p>
 <div class="mx-4 my-2">
@@ -282,8 +283,12 @@ display(data['fact'])
         <img class="border-2 border-gray-400" src="consoledemo1.PNG" alt="A pair of entries from the developer console reading '3' and 'PyScript', 'Pyodide', 'WASM'">
     </div>
 </div>
+<h5 class="pt-3 text-lg">PyScript Version Numbers</h5>
+<p class="post-p bg-red-200">Versions available in Python and JS</p>
+<h4 class="post-h4"><code>&lt;py-button&gt;</code>, <code>&lt;py-inputbox&gt;</code>, <code>&lt;py-box&gt;</code>, and <code>&lt;py-title&gt;</code> are Deprecated</h4>
+<p class="post-p bg-red-200">These are deprecated</p>
 <h4 class="post-h4">Better Warnings and Errors</h4>
-<p class="post-p">Fabio Rosado (yes, there's <a href="#maintainers">two Fabios</a> on the PyScript team now!) put together a great PR that cleans up the presentation of warnings and errors caused during PyScript startup - if you write invalid TOML for <code>&lt;py-config&gt;</code>, say, or use a deprecated function or feature. (<a href="https://github.com/pyscript/pyscript/pull/909">#909</a>) <span class="italic bg-red-400">(Speaking of which, see below for more notes on deprecated features.)</span></p>
+<p class="post-p">Fabio Rosado (yes, there's <a href="#maintainers">two Fabios</a> on the PyScript team now!) put together a series of great PRs that clean up the presentation of warnings and errors caused during PyScript startup - if you write invalid TOML for <code>&lt;py-config&gt;</code>, say, or use a deprecated function or feature. (<a href="https://github.com/pyscript/pyscript/pull/909">#909</a>). The banners can contain either plain text or HTML, which will allow us a lot of flexibilty going forward in how we use them. (<a href="https://github.com/pyscript/pyscript/pull/947">#947</a>) </p>
 <img src="./warningerror.jpg" alt="A screenshot showing a new-style error banner at the top of an HTML page (with red border) and a warning banner (with an orange border and an 'X' button to close it." class="post-img">
 <p class="post-img-caption">The new appearance of warnings and errors caused during PyScript startup and configuration.</p>
 <br>
