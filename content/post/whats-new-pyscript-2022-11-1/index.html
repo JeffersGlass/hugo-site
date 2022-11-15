@@ -87,10 +87,10 @@ slug_image: py_2022_11_1_featured.png
     <a href="#Next">What's Next?</a>
 </div>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-red-700">display()</code></h2>
-<p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
+<p class="post-p">There's one change to the way Python works in PyScript that's so big, it's getting its own whole section! <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span></p>
 <p class="post-p">One key Python concept to know here is <a href="https://docs.python.org/3/library/sys.html?highlight=stdout#sys.stdout">sys.stdout</a>, a File object that Python writes to when it wants to <code>print()</code> something to the terminal, display an <code>input()</code> prompt, and so on. Other modules may write directly to <code>stdout</code> if they wish, but <code>print()</code> is by far the most visible use of <code>stdout</code>.</p>
 <p class="post-p">Prior to 2022.11.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll guess where to put your content" doesn't really hold up.</p>
-<p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> (stdout) goes to the developer console; <code>display()</code> is for outputting to the browser window</span>:</p>
+<p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> (stdout) goes to the developer console; <code>display()</code> is for outputting to the browser window</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
 <div class="py-2 pl-2 m-0 ml-4 bg-green-100">
     <h4 class="text-xl"><code class="nocode" >display(*values, target=None, append=True)</code></h4>
     <div class="ml-4">
@@ -151,7 +151,7 @@ display(HTML("<p><b>But this is an honest-to-goodness bold paragraph!</b></p>"))
 <p class="post-p">If I were a betting man, I'd hedge that the API for <code>display()</code> is likely to continue to change and evolve. It's a brand-new and breaking feature, and I suspect its semantics are going to continue to get tweaked. If you find more issues or inconsistencies, be sure to <a href="https://github.com/pyscript/pyscript/issues">raise an issue on GitHub</a> or come tell us about it <a href="https://discord.gg/CQU2Qyeb">on the PyScript Discord</a>.</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="paths">Fetching Files with <code>&lt;py-config&gt; [[fetch]]</code></h4>
 <p class="post-p">Previously, all files listed in <code>&lt;py-config&gt; paths:</code> were <code>fetch()</code>'d from the listed URLs and dropped into the embedded filesystem in the same folder as the running Python Script. Which is to say, pointing a path to the relative URL <code class="code">'data/files/Feb-24/info.txt'</code> would make that file available via <code class="code">with open('info.txt')... </code>.</p>
-<p class="bg-red-200 post-p">Now, there are additional options for fetching multiple files in a way that preserves their URL/directory structure. They're all bundled into a new "fetch configuration" table in <code>&lt;py-config&gt;</code> labelled <code>[[fetch]]</code>, with the following members:</p>
+<p class="post-p">Now, there are additional options for fetching multiple files in a way that preserves their URL/directory structure. They're all bundled into a new "fetch configuration" table in <code>&lt;py-config&gt;</code> labelled <code>[[fetch]]</code>, with the following members:</p>
 <table class="m-2">
     <tr class="font-bold">
         <td>Value</td>
