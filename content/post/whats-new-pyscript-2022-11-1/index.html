@@ -76,6 +76,7 @@ slug_image: py_2022_11_1_featured.png
     js.document.dispatchEvent(loaded_event)
 </py-script>
 <p class="post-p">Another couple months have flown by, and PyScript has a shiny new release: <span class="bg-red-200">VERSION RELEASE LINK HERE</span> With a shorter release cycle, there's been less time for upstream projects (Pyodide, Emscripten) to move ahead, but there's still been loads of work done on PyScript in the past month.</p>
+<p class="bg-red-200 post-p">For those who want to get <span class="italic">really</span> in the weeds, I've prepared <a href="">a granular changelog of every Issue and Pull Request since the last release</a>. It was made possibly by a (slightly tweaked) version of Ned Batchelder's <a href="https://github.com/nedbat/dinghy">Dinghy GitHub digest tool</a> </p>
 <div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
     <span>Jump To: <span>
     <a href="#Display">display()</a> • 
@@ -493,8 +494,8 @@ display(data['fact'])
         <img class="border-2 border-gray-400" src="consoledemo1.PNG" alt="A pair of entries from the developer console reading '3' and 'PyScript', 'Pyodide', 'WASM'">
     </div>
 </div>
-<h5 class="pt-3 text-lg">PyScript Version Numbers (Python)</h5>
-<p class="post-p">You can also access the current version of PyScript via the pyscript js module at <code>pyscript.version</code>. But you can do even more exciting things with it in Python...</p>
+<h5 class="pt-3 text-lg">PyScript Version Numbers (JavaScript)</h5>
+<p class="post-p">You can also access the current version of PyScript via the pyscript js module at <code>pyscript.version</code>. This will appear as a "dotted string" like <code class="code">2022.11.1.final</code> But version numbers are even more powerful on the Python side.</p>
 <h4 class="post-h4">PyScript Version Numbers (Python)</h4>
 <p class="post-p"></p>
 <p class="post-p">Up to this point, the current PyScript version is something a user would have to infer from what URL they sourced <code class="code">pyscript.js</code> from. As of version 2022.11.1, though, you can access that information directly in Python via a couple of new attributes.</p>
@@ -521,7 +522,33 @@ display(f"The current version of PyScript running right now is {PyScript.__versi
 </div>
 <div class="load-pyscript"></div>
 <h4 class="post-h4"><code>&lt;py-button&gt;</code>, <code>&lt;py-inputbox&gt;</code>, <code>&lt;py-box&gt;</code>, and <code>&lt;py-title&gt;</code> are Deprecated</h4>
-<p class="bg-red-200 post-p">These are deprecated</p>
+<p class="bg-red-200 post-p">All four of these custom HTML elements, which have been present in PyScript since its alpha release, have been deprecated. <code>&lt;py-button&gt;</code> and <code>&lt;py-inputbox&gt;</code> are simple enough to replicate with existing HTML elements and event listeners, while <code>&lt;py-box&gt;</code> and <code>&lt;py-title&gt;</code> were pre-formatted <code>&lt;div&gt;</code>s.</p>
+<p class="post-p">Those components haven't been fully removed from PyScript yet, just deprecated, and nicely, the deprecation warning banner that appears suggests altenate elements with new CSS classes that maintain the old elements' styling. The suggested solutions are:</p>
+<stlye>
+<div class="flex justify-center my-2">
+    <table class="w-full text-center md:w-2/3">
+        <tr>
+            <th>Deprecated Tag</th>
+            <th>Replacement Solution</th>
+        </tr>
+        <tr>
+            <td><code>&lt;py-button&gt;</code></td>
+            <td><code>&lt;button py-click=&quot;function()&quot; class=&quot;py-button&quot;&gt;</code></td>
+        </tr>
+        <tr>
+            <td><code>&lt;py-inputbox&gt;</code></td>
+            <td><code>&lt;input class=&quot;py-input&quot;&gt;</code></td>
+        </tr>
+        <tr>
+            <td><code>&lt;py-box&gt;</code></td>
+            <td><code>&lt;div class=&quot;py-box&quot;&gt;</code></td>
+        </tr>
+        <tr>
+            <td><code>&lt;py-title&gt;</code></td>
+            <td><code>&lt;h1&gt;</code></td>
+        </tr>
+    </table>
+</div>
 <h4 class="post-h4">Better Warnings and Errors</h4>
 <p class="post-p">Fabio Rosado (yes, there's <a href="#maintainers">two Fabios</a> on the PyScript team now!) put together a series of great PRs that clean up the presentation of warnings and errors caused during PyScript startup - if you write invalid TOML for <code>&lt;py-config&gt;</code>, say, or use a deprecated function or feature. (<a href="https://github.com/pyscript/pyscript/pull/909">#909</a>). The banners can contain either plain text or HTML, which will allow us a lot of flexibility going forward in how we use them. (<a href="https://github.com/pyscript/pyscript/pull/947">#947</a>) </p>
 <img src="./warningerror.jpg" alt="A screenshot showing a new-style error banner at the top of an HTML page (with red border) and a warning banner (with an orange border and an 'X' button to close it." class="post-img">
@@ -588,7 +615,7 @@ display(f"The current version of PyScript running right now is {PyScript.__versi
 <h4 class="post-h4" id="maintainers">New Maintainers</h4>
 <p class="post-p"><a href="https://github.com/pauleveritt">Paul Everitt</a>, <a href="https://github.com/FabioRosado">Fabio Rosado</a> and I are now community maintainers on the PyScript project. It's been tremendously exciting and satisfying working on and with PyScript the past few months - the core team over at Annaconda has been swell all around, and I'm very grateful to be a part of the team in my own way. (<a href="https://github.com/pyscript/pyscript/pull/824">#824</a> <a href="https://github.com/pyscript/pyscript/pull/825">#825</a> <a href="https://github.com/pyscript/pyscript/issues/898">#898</a>)</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="pyodide">Pyodide</h2>
-<p class="post-p">Pyodide did have another minor release recently, <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-21-3">0.21.3</a>. And while it wasn't anywhere near as big a change as the 0.20 to 0.21 release, a few critical fixes did make their way in:</p>
+<p class="post-p">Pyodide did have another minor release recently, <span class="italic">0.21.3</span>. And while it wasn't anywhere near as big a change as the 0.20 to 0.21 release, a few critical fixes did make their way in. See <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-21-3">the Pyodide Changelog</a> for details.</p>
 <h4 class="post-h4">Relative URLs for Index URLs</h4>
 <p class="post-p">In Version 0.21.2, it was briefly impossible to use a relative URL as a the indexURL for the Pyodide package (where it looks to load the Python side of its runtime and other key support files). That's now fixed. (<a href="https://github.com/pyodide/pyodide/pull/3077">Pyodide # 3077</a>)</p>
 <h4 class="post-h4">Source Maps Restored</h4>
