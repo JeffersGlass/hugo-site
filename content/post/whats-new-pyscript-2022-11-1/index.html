@@ -16,6 +16,11 @@ slug_image: py_2022_11_1_featured.png
         --tw-text-opacity: 1;
         color: rgba(5, 120, 85, var(--tw-text-opacity));
     }
+    .py-terminal{
+        min-height: 10em;
+        background-color: black;
+        color: white;"
+    }
 </style>
 
 
@@ -45,14 +50,14 @@ slug_image: py_2022_11_1_featured.png
         css_link = document.createElement("link")
         css_link.rel = "stylesheet"
         css_link.type = "text/css"
-        //css_link.href = "https://pyscript.net/unstable/pyscript.css"
-        css_link.href = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.css"
+        css_link.href = "https://pyscript.net/unstable/pyscript.css"
+        //css_link.href = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.css"
         document.getElementsByTagName('head')[0].appendChild(css_link)
 
         //load cs
         script_tag = document.createElement('script')
-        //script_tag.src = "https://pyscript.net/unstable/pyscript.js"
-        script_tag.src = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.js"
+        script_tag.src = "https://pyscript.net/unstable/pyscript.js"
+        //script_tag.src = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.js"
         document.body.append(script_tag)        
     }
     document.addEventListener('pyscript_ready', () => {
@@ -88,11 +93,12 @@ slug_image: py_2022_11_1_featured.png
     <a href="#pyodide">Pyodide</a> • 
     <a href="#Next">What's Next?</a>
 </div>
-<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-green-600">display()</code></h2>
-<p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to the browser window!</span> The new function to use is called <span class="font-bold"><code>display()</code></span>(<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
+<h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="Display"><code class="text-green-600">display()</code>, <code>&lt;py-terminal&gt;</code>, and <code>stdout</code></h2>
+<h4 class="post-h4"><code>display()</code></h4>
+<p class="post-p">There's one change to the PyScript API that's so big, it's getting its own whole section! And it has to do with how PyScript outputs to the browser window. <span class="font-bold"><code>print()</code> no longer outputs to arbitrary places in the browser window!</span> The new function to use is called <span class="font-bold"><code>display()</code></span>. And using <code>print()</code> has some new and interesting behaviors as well.</p>
 <p class="post-p">In "desktop flavored" Python, <code>print()</code> takes the <code>*objects</code> it's given, converts them to strings <a href="https://docs.python.org/3/library/functions.html#print">"like <code>str()</code> does"</a>, and sends the results to <code class="code">sys.stdout</code>. <code>sys.stdout</code> is a File-like object with methods like <code>read()</code>, <code>readline()</code>, <code>write()</code>, and so on. It represents a continuous stream of text, plus the idea that various characters break up the stream into "lines." And that's about it. The simplicity of this default output stream is its power - a very similar structure can be used to represent a stream of text into a file, over a network, a buffer, etc.</p>
 <p class="post-p">Prior to 2022.11.1, Python's <code>sys.stdout</code> was routed <span class="italic">to the screen</span> via fairly complicated <a href="https://github.com/pyscript/pyscript/blob/beb3aa157419ecb53863c76674069c78cb48dfe1/pyscriptjs/src/python/pyscript.py#L368-L419">wrapper setup</a>. However, a browser window has so many more dimensions of possibility for where we might want to place content compared to a terminal. Thus, the metaphor of "use <code>print()</code> and we'll just send some version of that stream to a location on the page" wasn't as useful as it could be.</p>
-<p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> (stdout) goes to the developer console; <code>display()</code> is for outputting to the browser window</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
+<p class="post-p">As of 2022.11.1, <span class="font-bold"><code>print()</code> (i.e. stdout) goes to the developer console; <code>display()</code> is for outputting to the browser window</span> (<a href="https://github.com/pyscript/pyscript/pull/749">#749</a>)</p>
 <div class="py-2 pl-2 m-0 ml-4 bg-green-100">
     <h4 class="text-xl"><code class="nocode" >display(*values, target=None, append=True)</code></h4>
     <div class="ml-4">
@@ -134,7 +140,7 @@ display("Hello world", target="target-div")
     </div>
 </div>
 <div class="load-pyscript"></div>
-<p class="post-p">Following another PR by Antonio (<a href="https://github.com/pyscript/pyscript/pull/915">#915</a>), <code>display()</code> escapes any HTML given to it as an input string, so <code>display(&lt;br&gt;)</code> prints the literal characters <code class="code">&lt;br&gt;</code> to the screen, instead of creating a newline. For non-string inputs, <code>display(some_obj)</code> calls <code>repr(some_obj)</code> and escapes that. If you <span class="italic">do</span> want to inject HTML into your page, a new object is to use the new <a href="https://github.com/pyscript/pyscript/blob/515858f3134bf031497f0420e8a0e7fbc4c32be0/pyscriptjs/src/python/pyscript.py#L49">HTML class</a>:</p>
+<p class="post-p"><code>display()</code> escapes any HTML given to it as an input string, so <code>display(&lt;br&gt;)</code> prints the literal characters <code class="code">&lt;br&gt;</code> to the screen, instead of creating a newline. For non-string inputs, <code>display(some_obj)</code> calls <code>repr(some_obj)</code> and escapes that. If you <span class="italic">do</span> want to inject HTML into your page, a new object is to use the new <a href="https://github.com/pyscript/pyscript/blob/515858f3134bf031497f0420e8a0e7fbc4c32be0/pyscriptjs/src/python/pyscript.py#L49">HTML class</a>:</p>
 <div class="">
 <p class="code-title">HTML Class</p>
 {{< highlight "python3" >}}
@@ -152,8 +158,68 @@ display(HTML("<p><b>But this is an honest-to-goodness bold paragraph!</b></p>"))
 <p class="post-p">Finally, it's worth nothing that the behavior of placing content based on the currently executing tag doesn't necessarily work for coroutines in async contexts. In most situations, you'll see a helpful warning banner will let you know:</p>
 <p class="flex justify-center post-p"><code class="px-2 text-gray-800 text-red-800 border-2 border-red-800 nocode">Implicit target not allowed here. Please use display(..., target=...)</code></p>
 <p class="post-p">But due to some tricky edge cases with how warnings percolate up from coroutines, things currently may just fail silently.</p>
-<p class="post-p">So if <code>display()</code> is for writing to the screen, what does <code>print()</code> do? It writes to the <a href="https://support.monday.com/hc/en-us/articles/360002197259-How-to-open-the-developer-console">Developer Console</a>. This is the closest analog in the browser to a "dumb terminal", and so it makes a certain amount of sense for <code>stdout</code> to be routed there.</p>
-<p class="post-p">There are certain small differences, since of course the dev console <span class="italic">isn't</span> a terminal. For instance, we discovered just the other day that <code>console.log()</code> (which is used to write to the dev console) <a href="https://github.com/pyscript/pyscript/issues/472#issuecomment-1281228942">doesn't output unless it receives a newline</a>. So something like <code class="code">print("Hello world", end = "")</code> won't show up until you log something else with a newline in it!</p>
+<h4 class="post-h4"><code>&lt;py-terminal&gt;</code></h4>
+<p class="post-p">So if <code>display()</code> is for writing to the screen, what does <code>print()</code> do? Well, a couple of things, but most visibly, it writes to the <code>&lt;py-terminal&gt;</code></p>
+<div class="mx-0 static-example md:mx-4">
+{{< highlight "python3" >}}
+print("Hello, world!")
+for i in range(5):
+    print(f"I can count to {3}")
+{{< /highlight >}}
+<pre class="px-4 py-2 mt-2 py-terminal" >Hello, world!<br>I can count to 0<br>I can count to 1<br>I can count to 2<br>I can count to 3<br>I can count to 4<br></pre>
+
+</div>
+<div class="hidden live-example">
+    <py-script>
+        print("Hello, world!")
+        for i in range(3):
+            print(f"I can count to {i}")
+    </py-script>
+    <div class="w-full md:w-5/6 md:m-auto gap-y-4">
+        <py-repl>
+        print("Hello, world!")
+        for i in range(3):
+            print(f"I can count to {i}")
+        </py-repl>
+        <div class="px-4 py-2 bg-black">
+            <py-terminal></py-terminal>
+        </div>
+    </div>
+</div>
+<div class="load-pyscript"></div>
+<p class="post-p">The <code>&lt;py-terminal&gt;</code> achieves a couple things:</p>
+<ul class="post-ul">
+    <li>It makes sure that output to stdout goes <span class="italic">somewhere</span> visible; if you copy and paste Python code from your desktop environment to the browser, you can see at least something happening</li>
+    <li>If you want to use a terminal-like output for your code, this is a pre-made solution</li>
+</ul>
+<p class="post-p">The behavior and placement of the <code>&lt;py-terminal&gt;</code> is configurable via a new <a href="https://docs.pyscript.net/latest/reference/plugins/py-terminal.html">terminal setting</a> in <code>&lt;py-config&gt;</code>. The options are:</p>
+<table class="w-full md:w-3/4 md:m-auto">
+    <thead>
+        <tr>
+            <th>value</th>
+            <th>description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="divide-x-2 divide-gray-400">
+            <td class="pl-2 pr-4"><code>&quot;auto&quot;</code></td>
+            <td class="pl-4 pr-2">(default) Automatically add a <code>&lt;py-terminal auto&gt;</code>, to the page. The terminal is initially hidden and automatically shown as soon as something writes to <code>stdout</code> and/or <code>stderr</code></td>
+        </tr>
+        <tr class="divide-x-2 divide-gray-400">
+            <td class="pl-2 pr-4"><code>true</code></td>
+            <td class="pl-4 pr-2">Automatically add a visible <code>&lt;py-terminal&gt;</code> to the page when PyScript loads. It will be added to the end of the &lt;body&lt; unless there is a <code>&lt;py-terminal&gt;</code> tag on the page.</td>
+        </tr>
+        <tr class="divide-x-2 divide-gray-400">
+            <td class="pl-2 pr-4"><code>false</code></td>
+            <td class="pl-4 pr-2">Don&#39;t add <code>&lt;py-terminal&gt;</code> to the page</td>
+        </tr>
+    </tbody>
+</table>
+<p class="post-p">So, if you want to stick the terminal somewhere specific, simply include <code>&lt;py-terminal&gt;&lt;/py-terminal&gt;</code> on your page. You can even include several py-terminals - output to <code>stdout</code> will be sent to all of them.</p>
+<h4 class="post-h4">stdout</h4>
+<p class="post-p">In addition to going to <code>&lt;py-terminal&gt;</code>, writes to <code>stdout</code> also go to the <a href="https://support.monday.com/hc/en-us/articles/360002197259-How-to-open-the-developer-console">Developer Console</a>. This is the closest analog in the browser to a "dumb terminal", and so it makes a certain amount of sense for <code>stdout</code> to be routed there.</p>
+<p class="post-p">There are certain small differences, since of course the dev console <span class="italic">isn't</span> a terminal. For instance, we discovered just the other day that <code>console.log()</code> (which is used to write to the dev console) <a href="https://github.com/pyscript/pyscript/issues/472#issuecomment-1281228942">doesn't output unless it receives a newline</a>. So something like <code class="code">print("Hello world", end = "")</code> won't show up until you log something else with a newline in it! But for simple debugging purposes, or for output where (even temporarily) including a <code>&lt;py-terminal&gt;</code> on the page would be untenable, this is a great addition.</p>
+<h4 class="post-h4">Remarks</h4>
 <p class="post-p">If I were a betting man, I'd hedge that the API for <code>display()</code> is likely to continue to change and evolve. It's a brand-new and breaking feature, and I suspect its semantics are going to continue to get tweaked. If you find more issues or inconsistencies, be sure to <a href="https://github.com/pyscript/pyscript/issues">raise an issue on GitHub</a> or come tell us about it <a href="https://discord.gg/CQU2Qyeb">on the PyScript Discord</a>.</p>
 <h2 class="pb-1 border-b-2 border-gray-300 post-h2 anchor" id="paths">Fetching Files with <code>&lt;py-config&gt; [[fetch]]</code></h4>
 <p class="post-p">Previously, all files listed in <code>&lt;py-config&gt; paths:</code> were <code>fetch()</code>'d from the listed URLs and dropped into the embedded filesystem in the same folder as the running Python Script. Which is to say, pointing a path to the relative URL <code class="code">'data/files/Feb-24/info.txt'</code> would make that file available via <code class="code">with open('info.txt')... </code>.</p>
@@ -227,8 +293,8 @@ display(HTML("<p><b>But this is an honest-to-goodness bold paragraph!</b></p>"))
         content/
         ├─ <span class="font-bold">index.html <<< File with &lt;py-config&gt;</span>
         ├─ info.txt
-        ├─ files/
-        │  ├─ data.csv
+        ├─ data/
+        │  ├─ sensordata.csv
         ├─ packages/
         │  ├─ my_package/
         │  │  ├─ __init__.py
@@ -392,6 +458,46 @@ print(say_hi())
                     </py-repl>
                     </div>
                 </div>
+
+                <div class="w-full">
+                    <p class="code-title">Multiple Fetch Configs</p>
+                    <div class="pr-4 bg-codeblock">
+            {{< highlight "html" >}}
+    <py-config>
+        [[fetch]]
+        files = ['info.txt']
+        
+        [[fetch]]
+        from = 'data/'
+        files = ['sensordata.csv']
+    </py-config>
+    
+    <py-script>
+    with open('info.txt', 'rb') as fp:
+        info_length = len(fp.read())
+    
+    with open('data.csv', 'rb') as fp:
+        data_length = len(fp.read())
+
+    display(f"info.txt is {info_length} bytes and data.csv is {data_length} bytes")
+    </py-script>{{< /highlight >}}
+    <py-script class="hidden">
+        asyncio.ensure_future(load_to_local('./info.txt', './info.txt'))
+        asyncio.ensure_future(load_to_local('./data.csv', './data/sensordata.csv'))
+    </py-script>
+                    </div>
+                    <div class="hidden my-2 mb-6 live-example">
+                        <py-repl>
+                            with open('info.txt', 'rb') as fp:
+                                info_length = len(fp.read())
+                            
+                            with open('data.csv', 'rb') as fp:
+                                data_length = len(fp.read())
+
+                            display(f"info.txt is {info_length} bytes and data.csv is {data_length} bytes")
+                        </py-repl>
+                        </div>
+                    </div>
         
             <div class="w-full">
                 <p class="code-title">From an API Endpoint</p>
@@ -550,7 +656,9 @@ display(f"The current version of PyScript running right now is {PyScript.__versi
     </table>
 </div>
 <h4 class="post-h4">Better Warnings and Errors</h4>
-<p class="post-p">Fabio Rosado (yes, there's <a href="#maintainers">two Fabios</a> on the PyScript team now!) put together a series of great PRs that clean up the presentation of warnings and errors caused during PyScript startup - if you write invalid TOML for <code>&lt;py-config&gt;</code>, say, or use a deprecated function or feature. (<a href="https://github.com/pyscript/pyscript/pull/909">#909</a>). The banners can contain either plain text or HTML, which will allow us a lot of flexibility going forward in how we use them. (<a href="https://github.com/pyscript/pyscript/pull/947">#947</a>) </p>
+<p class="bg-red-200 post-p">Fabio Rosado (yes, there's <a href="#maintainers">two Fabios</a> on the PyScript team now!) put together a series of great PRs that clean up the presentation of warnings and errors caused during PyScript's lifecycle. First, to help users find the most relevent help quickly, PyScript errors now include error numbers:</p>
+<img src="" alt="" class="w-64 h-64 m-auto bg-red-200 post-img">
+<p class="post-p">If you write invalid TOML for <code>&lt;py-config&gt;</code>, say, or use a deprecated function or feature. (<a href="https://github.com/pyscript/pyscript/pull/909">#909</a>). The banners can contain either plain text or HTML, which will allow us a lot of flexibilty going forward in how we use them. (<a href="https://github.com/pyscript/pyscript/pull/947">#947</a>) </p>
 <img src="./warningerror.jpg" alt="A screenshot showing a new-style error banner at the top of an HTML page (with red border) and a warning banner (with an orange border and an 'X' button to close it." class="post-img">
 <p class="post-img-caption">The new appearance of warnings and errors caused during PyScript startup and configuration.</p>
 <br>
