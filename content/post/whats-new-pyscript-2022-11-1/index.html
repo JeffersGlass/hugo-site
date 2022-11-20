@@ -83,9 +83,10 @@ slug_image: py_2022_11_1_featured.png
     loaded_event = js.Event.new('pyscript_ready')
     js.document.dispatchEvent(loaded_event)
 </py-script>
-<p class="post-p">Another couple months have flown by, and PyScript has a shiny new release: <span class="bg-red-200">VERSION RELEASE LINK HERE</span> With a shorter release cycle, there's been less time for upstream projects (Pyodide, Emscripten) to move ahead, but there's still been loads of work done on PyScript in the past month.</p>
+<p class="post-p">Another couple months have flown by, and PyScript has a shiny new release: <span class="bg-red-200">VERSION RELEASE LINK HERE</span>.</p>
 <p class="bg-red-200 post-p">For those who want to get <span class="italic">really</span> in the weeds, I've prepared <a href="">a granular changelog of every Issue and Pull Request since the last release</a>. It was made possibly by a (slightly tweaked) version of Ned Batchelder's <a href="https://github.com/nedbat/dinghy">Dinghy GitHub digest tool</a> </p>
 <p class="post-p">What's <span class="italic">not</span> covered here in depth are some of the amazing things built with or adjacent to PyScript. In particular, if you haven't seen the <a href="https://pyscript.net/tech-preview/micropython/">technical preview of MicroPython running in the Browser</a> or <a href="https://pyviz-dev.github.io/panel/user_guide/Running_in_Webassembly.html">running Panel apps in the browser</a> with <code>panel convert</code>, you absolutely must. But those deserve their own writeups, and this post will focus on the PyScript release itself.</p>
+<p class="post-p">Now is a great time to remind users that, for consistent long term bevahior, I recommend projects link to pinned releass like <code class="code">https://pyscript.net/releases/2022.11.1/pyscript.js</code>, and not to <code class="code">/latest/pyscript.js</code>. If your project links to <code class="code">/latest</code>, all the improvements in the new release have almost certainly broke it. Pinned releases are the way to go, and there's talk of deprecating/removing <code class="code">/latest</code> in the near future.</p>
 <div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
     <span>Jump To: <span>
     <a href="#Display">display()</a> • 
@@ -678,12 +679,11 @@ display(data['fact'])
     </div>
 </div>
 <h5 class="pt-3 text-lg">PyScript Version Numbers (JavaScript)</h5>
-<p class="bg-red-200 post-p">You can also access the current version of PyScript via the pyscript js module at <code>pyscript.version</code>. This will appear as a "dotted string" like <code class="code">2022.11.1.final</code> But version numbers are even more powerful on the Python side.</p>
+<p class="post-p">You can also access the current version of PyScript via the pyscript js module at <code>pyscript.version</code>. This will appear as a "dotted string" like <code class="code">2022.11.1.dev</code> But version numbers are even more powerful on the Python side.</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">PyScript Version Numbers (Python)</h4>
-<p class="post-p"></p>
 <p class="post-p">Up to this point, the current PyScript version is something a user would have to infer from what URL they sourced <code class="code">pyscript.js</code> from. As of version 2022.11.1, though, you can access that information directly in Python via a couple of new attributes.</p>
 <p class="post-p"><a href="https://docs.pyscript.net/latest/reference/API/version_info.html" class="font-semibold">PyScript.version_info</a> is a <code>nametuple</code> representing the current version in a code-savvy way - it's intended for use when comparing version numbers, i.e. to establish feature compatibility. For example:</p>
-<p class="code-title">Version Differences</p>
+<p class="code-title">Using version_info</p>
 {{< highlight "python3" >}}
 <py-script>
     import js
@@ -703,6 +703,7 @@ display(data['fact'])
     </py-repl>
 </div>
 <p class="post-p">On the other hand, <a href="https://docs.pyscript.net/latest/reference/API/__version__.html" class="font-semibold">PyScript.__version__</a> is a human-readable version of the current version, like "2022.11.1.final"</p>
+<p class="code-title">Using __version__</p>
 {{< highlight "python3" >}}
 display(f"The current version of PyScript running right now is {PyScript.__version__}")
 {{< /highlight >}}
