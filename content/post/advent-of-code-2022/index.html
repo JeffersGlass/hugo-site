@@ -1,0 +1,99 @@
+---
+title: "Advent of Code 2022"
+date: 2022-11-26T14:23:16-06:00
+draft: true
+tags:
+- codeadvent
+- python
+- pyscript
+slug_image: python_cover.png
+description: "Solutions to the annual holiday coding challenge, in Python and PyScript"
+---
+<p class="post-p">Another year, another 25 curious code challenges from <a href="https://adventofcode.com/">Advent of Code!</a> This year, I'll be attempting to make as many solutions as possible something you can run right here in your browser window via <a href="https://pyscript.net">PyScript</a>.</p>
+<div id="TOC" class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200">
+    <p class="text-2xl relative-anchor" id="toc">Table of Contents</p>
+    <div class="ml-8 font-semibold" id="toc-contents">
+    </div>
+</div>
+<py-config class="hidden">
+    [[fetch]]
+    files = ['utils.py']
+</py-config>
+
+{{< adv2022 title="Day 0 - Testing the Machinery" id="day0" file="day0/main.py">}}
+In preparation for this years AoC, I've set up a hugo templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.
+{{< /adv2022   >}}
+
+<py-script class="hidden">
+    import js
+    loaded_event = js.Event.new('pyscript_ready')
+    js.document.dispatchEvent(loaded_event)
+</py-script>
+<style>
+    .code-container {
+        border-width: 2px;
+    }
+</style>
+<script>    
+    //Create Load PyScript buttons:
+    document.addEventListener('DOMContentLoaded', () => {
+        btn_locations = document.getElementsByClassName('load-pyscript')
+        Array.from(btn_locations).forEach(div => {
+            div.classList.add('my-2', 'md:mx-4', 'border-2', 'border-blue-200', 'p-2', 'grid', 'grid-cols-1', 'rounded-xl', 'flex', 'flex-row', 'justify-center', 'w-auto', "py-1", 'h-auto', 'md:h-full')
+            let p = document.createElement('p')
+            p.classList.add('my-auto', 'mr-4', 'italic')
+            p.innerText = "Want to run these examples live in your browser?"
+            div.appendChild(p)
+            //button
+            let btn = document.createElement('button')
+            btn.innerText = "Load PyScript"
+            btn.classList.add('load-pyscript-button', 'h-12')
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    document.addEventListener('DOMContentLoaded', () => {
+        headings = document.getElementsByClassName('post-h2')
+        tocContents = document.getElementById('toc-contents')
+        Array.from(headings).forEach(header => {
+            //<p><a class = "text-gray-500" href="#day1">Day 1</a></p>
+            const line = document.createElement('p')
+            const link = document.createElement('a')
+            link.href = `#${header.id}`
+            link.innerText = header.innerText
+            line.appendChild(link)
+            tocContents.appendChild(line)
+        })
+    })
+
+    function loadPyScript() {
+        //load css
+        css_link = document.createElement("link")
+        css_link.rel = "stylesheet"
+        css_link.type = "text/css"
+        css_link.href = "https://pyscript.net/unstable/pyscript.css"
+        //css_link.href = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.css"
+        document.getElementsByTagName('head')[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement('script')
+        script_tag.src = "https://pyscript.net/unstable/pyscript.js"
+        //script_tag.src = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.js"
+        document.body.append(script_tag)        
+    }
+    document.addEventListener('pyscript_ready', () => {
+        static = document.getElementsByClassName('static-example')
+        live = document.getElementsByClassName('live-example')
+        Array.from(static).forEach(div => {
+            div.classList.add('hidden')
+        })
+        Array.from(live).forEach(div => {
+            div.classList.remove('hidden')
+        })
+        load_buttons = document.getElementsByClassName('load-pyscript')
+        Array.from(load_buttons).forEach(elem => {
+            elem.classList.add('hidden')
+        })
+    })
+</script>
