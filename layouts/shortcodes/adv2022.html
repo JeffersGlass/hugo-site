@@ -1,0 +1,36 @@
+<h2 class="post-h2" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        <p class="post-p">{{ .Inner }}</p> 
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 space-y-2">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="{{.Get "id"}}-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input type="file" id="{{.Get "id"}}-upload-input" name="{{.Get "id"}}-upload">
+                </div>
+                <div class="font-mono " id="{{.Get "id"}}-output"></div>
+                <div class="col-span-1"><button class="w-full py-2 mx-2 load-pyscript-button" id="{{.Get "id"}}-run-btn" py-click="main_day0()">RUN</button></div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('{{.Get "id"}}-upload-input')
+            </py-script>
+            <py-script src="{{.Get "file"}}"></py-script>
+        </div>
+    </div>
+    <div class="md:col-span-2">
+        <p class="code-title">{{.Get "id"}}.py</p>
+        {{ $filepath := delimit (slice "content/post/advent-of-code-2022/" (.Get "file")) "" }}
+        <div class="overflow-y-scroll max-h-76">{{ highlight (os.ReadFile $filepath) "python" "" }}</div>
+        {{ $lines :=  len (split (os.ReadFile $filepath ) "\n") }}
+        {{ if ge $lines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+    </div>
+
+</div>
