@@ -6,7 +6,156 @@
     <description>Recent content in Blog Posts on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 24 Oct 2022 03:32:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 26 Nov 2022 14:23:16 -0600</lastBuildDate><atom:link href="https://jeff.glass/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Advent of Code 2022</title>
+      <link>https://jeff.glass/post/advent-of-code-2022/</link>
+      <pubDate>Sat, 26 Nov 2022 14:23:16 -0600</pubDate>
+      
+      <guid>https://jeff.glass/post/advent-of-code-2022/</guid>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Another year, another 25 curious code challenges from &lt;a href=&#34;https://adventofcode.com/&#34;&gt;Advent of Code!&lt;/a&gt; This year, I&#39;ll be attempting to make as many solutions as possible something you can run right here in your browser window via &lt;a href=&#34;https://pyscript.net&#34;&gt;PyScript&lt;/a&gt;.&lt;/p&gt;
+&lt;div id=&#34;TOC&#34; class=&#34;w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200&#34;&gt;
+    &lt;p class=&#34;text-2xl relative-anchor&#34; id=&#34;toc&#34;&gt;Table of Contents&lt;/p&gt;
+    &lt;div class=&#34;ml-8 font-semibold&#34; id=&#34;toc-contents&#34;&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;py-config class=&#34;hidden&#34;&gt;
+    [[fetch]]
+    files = [&#39;utils.py&#39;]
+&lt;/py-config&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#39;day0&#39;&gt;Day 0 - Testing the Machinery&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        &lt;p class=&#34;post-p&#34;&gt;
+In preparation for this year&#39;s AoC, I&#39;ve set up a Hugo templating system to allow me to quickly write and share each day&#39;s code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The &lt;code&gt;get_input&lt;/code&gt; function handles getting input from the textarea or file upload.
+&lt;/p&gt; 
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 space-y-2&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day0-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input type=&#34;file&#34; id=&#34;day0-upload-input&#34; name=&#34;day0-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono &#34; id=&#34;day0-output&#34;&gt;&lt;/div&gt;
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 mx-2 load-pyscript-button&#34; id=&#34;day0-run-btn&#34; py-click=&#34;main_day0()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day0-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day0/main.py&#34;&gt;&lt;/py-script&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;md:col-span-2&#34;&gt;
+        &lt;p class=&#34;code-title&#34;&gt;day0.py&lt;/p&gt;
+        
+        &lt;div class=&#34;overflow-y-scroll max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day0&lt;/span&gt;():
+    display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Input given: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day0&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+         target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day0-output&amp;#34;&lt;/span&gt;,
+         append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+        
+        
+    &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;py-script class=&#34;hidden&#34;&gt;
+    import js
+    loaded_event = js.Event.new(&#39;pyscript_ready&#39;)
+    js.document.dispatchEvent(loaded_event)
+&lt;/py-script&gt;
+&lt;style&gt;
+    .code-container {n
+        border-width: 2px;
+    }
+&lt;/style&gt;
+&lt;script&gt;    
+    //Create Load PyScript buttons:
+    document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+        btn_locations = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(btn_locations).forEach(div =&gt; {
+            div.classList.add(&#39;my-2&#39;, &#39;md:mx-4&#39;, &#39;border-2&#39;, &#39;border-blue-200&#39;, &#39;p-2&#39;, &#39;grid&#39;, &#39;grid-cols-1&#39;, &#39;rounded-xl&#39;, &#39;flex&#39;, &#39;flex-row&#39;, &#39;justify-center&#39;, &#39;w-auto&#39;, &#34;py-1&#34;, &#39;h-auto&#39;, &#39;md:h-full&#39;)
+            let p = document.createElement(&#39;p&#39;)
+            p.classList.add(&#39;my-auto&#39;, &#39;mr-4&#39;, &#39;italic&#39;)
+            p.innerText = &#34;Want to run these examples live in your browser?&#34;
+            div.appendChild(p)
+            //button
+            let btn = document.createElement(&#39;button&#39;)
+            btn.innerText = &#34;Load PyScript&#34;
+            btn.classList.add(&#39;load-pyscript-button&#39;, &#39;h-12&#39;)
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+        headings = document.getElementsByClassName(&#39;post-h2&#39;)
+        tocContents = document.getElementById(&#39;toc-contents&#39;)
+        Array.from(headings).forEach(header =&gt; {
+            //&lt;p&gt;&lt;a class = &#34;text-gray-500&#34; href=&#34;#day1&#34;&gt;Day 1&lt;/a&gt;&lt;/p&gt;
+            const line = document.createElement(&#39;p&#39;)
+            const link = document.createElement(&#39;a&#39;)
+            link.href = `#${header.id}`
+            link.innerText = header.innerText
+            line.appendChild(link)
+            tocContents.appendChild(line)
+        })
+    })
+
+    function loadPyScript() {
+        //load css
+        css_link = document.createElement(&#34;link&#34;)
+        css_link.rel = &#34;stylesheet&#34;
+        css_link.type = &#34;text/css&#34;
+        css_link.href = &#34;https://pyscript.net/unstable/pyscript.css&#34;
+        //css_link.href = &#34;http://127.0.0.1:5501/pyscriptjs/build/pyscript.css&#34;
+        document.getElementsByTagName(&#39;head&#39;)[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement(&#39;script&#39;)
+        script_tag.src = &#34;https://pyscript.net/unstable/pyscript.js&#34;
+        //script_tag.src = &#34;http://127.0.0.1:5501/pyscriptjs/build/pyscript.js&#34;
+        document.body.append(script_tag)        
+    }
+    document.addEventListener(&#39;pyscript_ready&#39;, () =&gt; {
+        static = document.getElementsByClassName(&#39;static-example&#39;)
+        live = document.getElementsByClassName(&#39;live-example&#39;)
+        Array.from(static).forEach(div =&gt; {
+            div.classList.add(&#39;hidden&#39;)
+        })
+        Array.from(live).forEach(div =&gt; {
+            div.classList.remove(&#39;hidden&#39;)
+        })
+        load_buttons = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(load_buttons).forEach(elem =&gt; {
+            elem.classList.add(&#39;hidden&#39;)
+        })
+    })
+&lt;/script&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>PyScript - Why Do We Need create_proxy()?</title>
       <link>https://jeff.glass/post/pyscript-why-create-proxy/</link>
