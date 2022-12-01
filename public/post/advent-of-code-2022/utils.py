@@ -8,10 +8,13 @@ def get_input(id):
     if os.path.exists(local_file_path):
         with open(local_file_path) as fp:
             return fp.read()
-    elif val := document.getElementById(f"{id}-textinput").value:
-        return val
     else:
-        return ""
+        textId = f"{id}-textinput"
+        console.log(f"Looking for value of #{textId}")
+        val = document.getElementById(f"{id}-textinput").value
+        if val is not None: return val
+        else:
+            return ""
 
 async def file_upload(event):
     file_list = event.target.files

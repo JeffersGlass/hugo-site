@@ -165,12 +165,12 @@ if (!doNotTrack) {
     files = ['utils.py']
 </py-config>
 
-<h2 class="post-h2" id='day0'>Day 0 - Testing the Machinery</h2>
+<h2 class="post-h2 mt-12 border-b-2 border-gray-200" id='day0'>Day 0 - Testing the Machinery</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
-        <p class="post-p">
-In preparation for this year's AoC, I've set up a Hugo templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.
-</p> 
+        
+<p class="post-p">In preparation for this year's AoC, I've set up a Hugo templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.</p>
+
     </div>
     <div>
         <div class="load-pyscript"></div>
@@ -191,7 +191,7 @@ In preparation for this year's AoC, I've set up a Hugo templating system to allo
                 from utils import attach_upload_listener
                 attach_upload_listener('day0-upload-input')
             </py-script>
-            <py-script src="day0/main.py"></py-script>
+            <py-script src="day0/main.py"></py-script> 
         </div>
     </div>
     <div class="md:col-span-2">
@@ -220,6 +220,127 @@ In preparation for this year's AoC, I've set up a Hugo templating system to allo
     </div>
 
 </div>
+
+<h2 class="post-h2 mt-12 border-b-2 border-gray-200" id='day1_1'>Day 1: Calorie Counting (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">And we're off! As common for day 1 of AoC, this puzzle is is about making sure you can read input and identify line breaks, and do some very simple parsing.</p>
+<p class="post-p">One way to solve this problem would be to calculate the sum of calories in every elf's pack, then find the max of those. Astute coders will notice that you don't need to actually hold all the packs in memory at once; you can calculate them one at a time and retain the highest value seen so far, which avoids undue memory usage. Python more-or-less does this for us if we use generator expressions for everything.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day1_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day1_1-upload-input" name="day1_1-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day1_1-output"></div>
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day1_1-run-btn" py-click="main_day1_1()">RUN</button></div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day1_1-upload-input')
+            </py-script>
+            <py-script src="day1/main_1.py"></py-script> 
+        </div>
+    </div>
+    <div class="md:col-span-2">
+        <p class="code-title">day1_1.py</p>
+        
+        <div class="overflow-y-scroll max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day1_1</span>():
+    elf_packs <span style="color:#555">=</span> (get_input(<span style="color:#c30">&#39;day1_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n\n</span><span style="color:#c30">&#39;</span>))
+    elf_calories <span style="color:#555">=</span> (<span style="color:#366">sum</span>(<span style="color:#366">int</span>(line) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> pack<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)) <span style="color:#069;font-weight:bold">for</span> pack <span style="color:#000;font-weight:bold">in</span> elf_packs)
+    display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span><span style="color:#366">max</span>(elf_calories)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+         target<span style="color:#555">=</span><span style="color:#c30">&#34;day1_1-output&#34;</span>,
+         append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day1_2</span>():
+    <span style="color:#069;font-weight:bold">pass</span></code></pre></td></tr></table>
+</div>
+</div></div>
+        
+        
+    </div>
+
+</div>
+
+<h2 class="post-h2 mt-12 border-b-2 border-gray-200" id='day1_2'>Day 1: Calorie Counting (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Another common theme with Advent of Code - part 2 on a given day will try to subvert the optimizations you may have made in part 1!</p>
+<p class="post-p">For a quick-and-dirty solution here, I'll use the <code>sorted</code> function to convert our generator into a sorted list, then sum the last (largest) three elements. If this were a larger list of elements, we could come up with our own generator that injested elements from an Iterable one by one, and retained the largest three.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day1_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day1_2-upload-input" name="day1_2-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day1_2-output"></div>
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day1_2-run-btn" py-click="main_day1_2()">RUN</button></div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day1_2-upload-input')
+            </py-script>
+            <py-script src="day1/main_2.py"></py-script> 
+        </div>
+    </div>
+    <div class="md:col-span-2">
+        <p class="code-title">day1_2.py</p>
+        
+        <div class="overflow-y-scroll max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day1_2</span>():
+    elf_packs <span style="color:#555">=</span> (get_input(<span style="color:#c30">&#39;day1_2&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n\n</span><span style="color:#c30">&#39;</span>))
+    elf_calories <span style="color:#555">=</span> <span style="color:#366">sorted</span>(<span style="color:#366">sum</span>(<span style="color:#366">int</span>(line) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> pack<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)) <span style="color:#069;font-weight:bold">for</span> pack <span style="color:#000;font-weight:bold">in</span> elf_packs)
+    display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span><span style="color:#366">sum</span>(elf_calories[<span style="color:#555">-</span><span style="color:#f60">3</span>:])<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+         target<span style="color:#555">=</span><span style="color:#c30">&#34;day1_2-output&#34;</span>,
+         append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+        
+        
+    </div>
+
+</div>
+
 
 <py-script class="hidden">
     import js
