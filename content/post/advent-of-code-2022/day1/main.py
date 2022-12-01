@@ -4,3 +4,6 @@ def main_day1_1():
     display(f"{max(elf_calories)= }",
          target="day1_1-output",
          append=False)
+
+def main_day1_2():
+    pass
