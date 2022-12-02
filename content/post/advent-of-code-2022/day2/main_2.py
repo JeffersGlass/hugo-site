@@ -7,7 +7,7 @@ def translateLine(s):
 def scoreFromStrategy(theirs, result):
     theirsIndex = ["X", "Y", "Z"].index(theirs) # X,Y,Z => 0,1,2
     relativeIndex = {"X": 2, "Y": 0, "Z": 1} #Offset by whether we lose, win, or draw
-    selectedShape = ["X", "Y", "Z", "X", "Y"][theirsIndex + relativeIndex[result]] #Find our choice
+    selectedShape = ["X", "Y", "Z"][(theirsIndex + relativeIndex[result]) % 3] #Find our choice
     selectedShapePoints = {"X": 1, "Y": 2, "Z": 3} #Points for our choice
 
     resultPoints = {"X": 0, "Y": 3, "Z": 6}
