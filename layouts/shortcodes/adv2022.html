@@ -1,10 +1,10 @@
-<h2 class="post-h2 mt-12 border-b-2 border-gray-200 mb-1" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         {{ .Inner }}
     </div>
     <div>
-        <div class="load-pyscript"></div>
+        <div class="load-pyscript{{if isset .Params "vizfile"}} viz{{end}}"></div>
         <div class="hidden live-example">
             <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
                 <div>
@@ -32,7 +32,7 @@
             {{ if isset .Params "file" }}<py-script src="{{.Get "file"}}"></py-script> {{ end }}
         </div>
     </div>
-    <div class="md:col-span-2 w-full"id="{{.Get "id"}}-viz"></div>
+    <div class="w-full md:col-span-2"id="{{.Get "id"}}-viz"></div>
 
     {{ $filepath := delimit (slice "content/post/advent-of-code-2022/" (.Get "file")) "" }}
     {{ $filelines :=  len (split (os.ReadFile $filepath ) "\n") }}
@@ -42,14 +42,14 @@
         {{ if isset .Params "vizfile" }}<li data-tab-target="#{{.Get "id"}}-viz-code" class="tab code-title">{{.Get "id"}}-viz.py</li>{{ end }} 
     </ul>
     <div id="{{.Get "id"}}-code" data-tab-content class="active tab-content md:col-span-2">
-        <div class="overflow-y-scroll max-h-76 border-4">{{ highlight (os.ReadFile $filepath) "python" "" }}</div>
+        <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $filepath) "python" "" }}</div>
         {{ if ge $filelines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
     </div>
     {{ if isset .Params "vizfile" }}
     {{ $vizpath := delimit (slice "content/post/advent-of-code-2022/" (.Get "vizfile")) "" }}
     {{ $vizlines :=  len (split (os.ReadFile $vizpath ) "\n") }}
     <div id="{{.Get "id"}}-viz-code" data-tab-content class="tab-content md:col-span-2">
-        <div class="overflow-y-scroll max-h-76 border-4">{{ highlight (os.ReadFile $vizpath) "python" "" }}</div>
+        <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $vizpath) "python" "" }}</div>
         {{ if ge $vizlines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
     </div>
     {{ end }} 
