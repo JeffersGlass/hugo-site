@@ -13,7 +13,7 @@ async def viz_day1_1_coro():
         ctx = document.createElement("canvas")
         ctx.id = "day1_1-viz-canvas"
         parent = document.getElementById("day1_1-viz")
-        parent.style.height = "600px"
+        #parent.style.height = "600px"
         
         parent.appendChild(ctx)
 
@@ -21,6 +21,10 @@ async def viz_day1_1_coro():
     elf_calories = [sum(int(line) for line in pack.split('\n')) for pack in elf_packs]
     most = max(elf_calories)
     most_index = elf_calories.index(most)
+
+    display(f"{max(elf_calories)= }",
+         target="day1_1-output",
+         append=False)
 
     my_chart = Chart.new(ctx, j({
         "type": "bar",
