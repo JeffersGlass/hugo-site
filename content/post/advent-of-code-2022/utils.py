@@ -14,7 +14,7 @@ def get_input(id):
         val = document.getElementById(f"{id}-textinput").value
         if val is not None: return val
         else:
-            return ""
+            console.warn(f"No input found for id {id}")
 
 async def file_upload(event):
     file_list = event.target.files

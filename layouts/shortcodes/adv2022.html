@@ -1,4 +1,4 @@
-<h2 class="post-h2 mt-12 border-b-2 border-gray-200" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
+<h2 class="post-h2 mt-12 border-b-2 border-gray-200 mb-1" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         {{ .Inner }}
@@ -16,7 +16,14 @@
                     <input class="w-full" type="file" id="{{.Get "id"}}-upload-input" name="{{.Get "id"}}-upload">
                 </div>
                 <div class="font-mono bg-gray-200" id="{{.Get "id"}}-output"></div>
+                {{ if isset .Params "vizfile" }}<div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">{{ end }}
                 <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="{{.Get "id"}}-run-btn" py-click="main_{{.Get "id"}}()">RUN</button></div>
+                {{ if isset .Params "vizfile" }}
+                <div>
+                    <py-script src="{{.Get "vizfile"}}"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="{{.Get "id"}}-run-btn" py-click="viz_{{.Get "id"}}()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>{{ end }}
             </div>
             <py-script>
                 from utils import attach_upload_listener
@@ -25,12 +32,26 @@
             {{ if isset .Params "file" }}<py-script src="{{.Get "file"}}"></py-script> {{ end }}
         </div>
     </div>
-    <div class="md:col-span-2">
-        <p class="code-title">{{.Get "id"}}.py</p>
-        {{ $filepath := delimit (slice "content/post/advent-of-code-2022/" (.Get "file")) "" }}
-        <div class="overflow-y-scroll max-h-76">{{ highlight (os.ReadFile $filepath) "python" "" }}</div>
-        {{ $lines :=  len (split (os.ReadFile $filepath ) "\n") }}
-        {{ if ge $lines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+    <div class="md:col-span-2 w-full"id="{{.Get "id"}}-viz"></div>
+
+    {{ $filepath := delimit (slice "content/post/advent-of-code-2022/" (.Get "file")) "" }}
+    {{ $filelines :=  len (split (os.ReadFile $filepath ) "\n") }}
+    {{ if isset .Params "vizfile" }}{{ $vizpath := delimit (slice "content/post/advent-of-code-2022/" (.Get "file")) "" }}{{ end }} 
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target="#{{.Get "id"}}-code" class="active tab code-title">{{.Get "id"}}.py</li>
+        {{ if isset .Params "vizfile" }}<li data-tab-target="#{{.Get "id"}}-viz-code" class="tab code-title">{{.Get "id"}}-viz.py</li>{{ end }} 
+    </ul>
+    <div id="{{.Get "id"}}-code" data-tab-content class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll max-h-76 border-4">{{ highlight (os.ReadFile $filepath) "python" "" }}</div>
+        {{ if ge $filelines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
     </div>
+    {{ if isset .Params "vizfile" }}
+    {{ $vizpath := delimit (slice "content/post/advent-of-code-2022/" (.Get "vizfile")) "" }}
+    {{ $vizlines :=  len (split (os.ReadFile $vizpath ) "\n") }}
+    <div id="{{.Get "id"}}-viz-code" data-tab-content class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll max-h-76 border-4">{{ highlight (os.ReadFile $vizpath) "python" "" }}</div>
+        {{ if ge $vizlines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+    </div>
+    {{ end }} 
 
 </div>
