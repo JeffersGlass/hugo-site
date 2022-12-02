@@ -335,6 +335,220 @@ if (!doNotTrack) {
 
 </div>
 
+<h2 class="post-h2 mt-12 border-b-2 border-gray-200" id='day2_1'>Day 2: Rock Paper Scissors (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Some slightly more complicated input handling today, with some slightly more involved conditional logic to accumulate a score</p>
+<p class="post-p">It's also quite useful to me to be able to run these examples from the terminal, as well as in PyScript. If you look at the end of today's code, you'll see a use of checking whether we're running in pyodide (<code>if 'pyodide' in sys.modules</code>), and chosing where to snag the input from based on that determination.</code></p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day2_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day2_1-upload-input" name="day2_1-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day2_1-output"></div>
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day2_1-run-btn" py-click="main_day2_1()">RUN</button></div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day2_1-upload-input')
+            </py-script>
+            <py-script src="day2/main_1.py"></py-script> 
+        </div>
+    </div>
+    <div class="md:col-span-2">
+        <p class="code-title">day2_1.py</p>
+        
+        <div class="overflow-y-scroll max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">translateLine</span>(s):
+    <span style="color:#069;font-weight:bold">return</span> s<span style="color:#555">.</span>translate(<span style="color:#366">str</span><span style="color:#555">.</span>maketrans({<span style="color:#c30">&#34;A&#34;</span>: <span style="color:#c30">&#34;X&#34;</span>, <span style="color:#c30">&#34;B&#34;</span>: <span style="color:#c30">&#34;Y&#34;</span>, <span style="color:#c30">&#34;C&#34;</span>: <span style="color:#c30">&#34;Z&#34;</span>}))
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">scoreFromStrategy</span>(theirs, mine):
+    selectedShapePoints <span style="color:#555">=</span> {<span style="color:#c30">&#34;X&#34;</span>: <span style="color:#f60">1</span>, <span style="color:#c30">&#34;Y&#34;</span>: <span style="color:#f60">2</span>, <span style="color:#c30">&#34;Z&#34;</span>: <span style="color:#f60">3</span>}
+    points <span style="color:#555">=</span> selectedShapePoints[mine]
+    <span style="color:#069;font-weight:bold">if</span> theirs <span style="color:#555">==</span> mine: <span style="color:#09f;font-style:italic">#draw</span>
+        points <span style="color:#555">+=</span> <span style="color:#f60">3</span>
+    <span style="color:#069;font-weight:bold">elif</span>  ((theirs, mine) <span style="color:#555">==</span> (<span style="color:#c30">&#34;X&#34;</span>, <span style="color:#c30">&#34;Y&#34;</span>) <span style="color:#000;font-weight:bold">or</span>
+        (theirs, mine) <span style="color:#555">==</span> (<span style="color:#c30">&#34;Y&#34;</span>, <span style="color:#c30">&#34;Z&#34;</span>) <span style="color:#000;font-weight:bold">or</span>
+        (theirs, mine) <span style="color:#555">==</span> (<span style="color:#c30">&#34;Z&#34;</span>, <span style="color:#c30">&#34;X&#34;</span>)): <span style="color:#09f;font-style:italic">#win</span>
+        points <span style="color:#555">+=</span> <span style="color:#f60">6</span>
+    <span style="color:#069;font-weight:bold">return</span> points
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">scoreFromInput</span>(data):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(scoreFromStrategy(<span style="color:#555">*</span>translateLine(line)<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day2_1</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day2_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>scoreFromInput(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day2_1-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#39;input.txt&#39;</span>, <span style="color:#c30">&#39;r&#39;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+            data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>scoreFromInput(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+        
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+</div>
+
+<h2 class="post-h2 mt-12 border-b-2 border-gray-200" id='day2_2'>Day 2: Rock Paper Scissors (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">I fully admit to my solution here trying to be way too clever. The speediest way to solve this problem (both in execution time and in writing) would almost certainly be to create a looking table of the 9 possible input lines with their resultant scores, and just loop over the input and sum according to those scores.</p>
+<p class="post-p">That said, this is a good chance to start stirring the brain cells on another common theme in Advnent of Code challenges - using one part of the input to determine how to interpret another part of the input.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day2_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day2_2-upload-input" name="day2_2-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day2_2-output"></div>
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day2_2-run-btn" py-click="main_day2_2()">RUN</button></div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day2_2-upload-input')
+            </py-script>
+            <py-script src="day2/main_2.py"></py-script> 
+        </div>
+    </div>
+    <div class="md:col-span-2">
+        <p class="code-title">day2_2.py</p>
+        
+        <div class="overflow-y-scroll max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> cycle
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">translateLine</span>(s):
+    <span style="color:#069;font-weight:bold">return</span> s<span style="color:#555">.</span>translate(<span style="color:#366">str</span><span style="color:#555">.</span>maketrans({<span style="color:#c30">&#34;A&#34;</span>: <span style="color:#c30">&#34;X&#34;</span>, <span style="color:#c30">&#34;B&#34;</span>: <span style="color:#c30">&#34;Y&#34;</span>, <span style="color:#c30">&#34;C&#34;</span>: <span style="color:#c30">&#34;Z&#34;</span>}))
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">scoreFromStrategy</span>(theirs, result):
+    theirsIndex <span style="color:#555">=</span> [<span style="color:#c30">&#34;X&#34;</span>, <span style="color:#c30">&#34;Y&#34;</span>, <span style="color:#c30">&#34;Z&#34;</span>]<span style="color:#555">.</span>index(theirs) <span style="color:#09f;font-style:italic"># X,Y,Z =&gt; 0,1,2</span>
+    relativeIndex <span style="color:#555">=</span> {<span style="color:#c30">&#34;X&#34;</span>: <span style="color:#f60">2</span>, <span style="color:#c30">&#34;Y&#34;</span>: <span style="color:#f60">0</span>, <span style="color:#c30">&#34;Z&#34;</span>: <span style="color:#f60">1</span>} <span style="color:#09f;font-style:italic">#Offset by whether we lose, win, or draw</span>
+    selectedShape <span style="color:#555">=</span> [<span style="color:#c30">&#34;X&#34;</span>, <span style="color:#c30">&#34;Y&#34;</span>, <span style="color:#c30">&#34;Z&#34;</span>, <span style="color:#c30">&#34;X&#34;</span>, <span style="color:#c30">&#34;Y&#34;</span>][theirsIndex <span style="color:#555">+</span> relativeIndex[result]] <span style="color:#09f;font-style:italic">#Find our choice</span>
+    selectedShapePoints <span style="color:#555">=</span> {<span style="color:#c30">&#34;X&#34;</span>: <span style="color:#f60">1</span>, <span style="color:#c30">&#34;Y&#34;</span>: <span style="color:#f60">2</span>, <span style="color:#c30">&#34;Z&#34;</span>: <span style="color:#f60">3</span>} <span style="color:#09f;font-style:italic">#Points for our choice</span>
+
+    resultPoints <span style="color:#555">=</span> {<span style="color:#c30">&#34;X&#34;</span>: <span style="color:#f60">0</span>, <span style="color:#c30">&#34;Y&#34;</span>: <span style="color:#f60">3</span>, <span style="color:#c30">&#34;Z&#34;</span>: <span style="color:#f60">6</span>}
+    score <span style="color:#555">=</span> selectedShapePoints[selectedShape] <span style="color:#555">+</span> resultPoints[result]
+    <span style="color:#069;font-weight:bold">return</span> score 
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">scoreFromInput</span>(data):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(scoreFromStrategy(<span style="color:#555">*</span>translateLine(line)<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day2_2</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day2_2&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>scoreFromInput(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day2_2-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#39;input.txt&#39;</span>, <span style="color:#c30">&#39;r&#39;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+            data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>scoreFromInput(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+        
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+</div>
+
 
 <py-script class="hidden">
     import js
