@@ -14,8 +14,9 @@ async def viz_day1_1_coro():
         ctx.id = "day1_1-viz-canvas"
         parent = document.getElementById("day1_1-viz")
         parent.appendChild(ctx)
-        parent.style.width="100%"
-        parent.style.height="auto"
+        parent.style.width="48rem"
+        parent.style.height="24rem"
+        parent.style.position = 'relative'
 
     elf_packs = (get_input('day1_1').split('\n\n'))
     elf_calories = [sum(int(line) for line in pack.split('\n')) for pack in elf_packs]
