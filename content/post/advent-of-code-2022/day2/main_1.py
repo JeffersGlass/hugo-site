@@ -1,8 +1,9 @@
-#(get_input('day1_1').split('\n\n'))
-#display(f"{max(elf_calories)= }", target="day1_1-output", append=False)
+import sys
+
+def translateLine(s):
+    return s.translate(str.maketrans({"A": "X", "B": "Y", "C": "Z"}))
 
 def scoreFromStrategy(theirs, mine):
-
     selectedShapePoints = {"X": 1, "Y": 2, "Z": 3}
     points = selectedShapePoints[mine]
     if theirs == mine: #draw
@@ -10,20 +11,21 @@ def scoreFromStrategy(theirs, mine):
     elif  ((theirs, mine) == ("X", "Y") or
         (theirs, mine) == ("Y", "Z") or
         (theirs, mine) == ("Z", "X")): #win
-        print("WIN")
         points += 6
     return points
 
 def scoreFromInput(data):
-    total = 0
-    for line in data:
-        translated_line = line.translate(str.maketrans({"A": "X", "B": "Y", "C": "Z"}))
-        score = scoreFromStrategy(*translated_line.split(" "))
-        print(f"{translated_line= } {score=}\n")
-        total += score
-    return total
+    return sum(scoreFromStrategy(*translateLine(line).split(" ")) for line in data)
 
-if __name__ == "__main__":
-    with open('input.txt', 'r') as fp:
-        data = fp.read().split('\n')
-        print(f"{scoreFromInput(data)= }")
+if 'pyodide' in sys.modules:
+    def main_day2_1():
+        data = get_input('day2_1').split('\n')
+        display(f"{scoreFromInput(data)= }",
+            target="day2_1-output",
+            append=False)
+
+else:
+    if __name__ == "__main__":
+        with open('input.txt', 'r') as fp:
+            data = fp.read().split('\n')
+            print(f"{scoreFromInput(data)= }")
