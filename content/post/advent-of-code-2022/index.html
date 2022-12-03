@@ -19,10 +19,32 @@ description: "Solutions to the annual holiday coding challenge, in Python and Py
     [[fetch]]
     files = ['utils.py']
 </py-config>
+<py-terminal></py-terminal>
 
 {{< adv2022 title="Day 0 - Testing the Machinery" id="day0" file="day0/main.py">}}
-In preparation for this year's AoC, I've set up a Hugo templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.
-{{< /adv2022   >}}
+<p class="post-p">In preparation for this year's AoC, I've set up a Hugo templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.</p>
+{{< /adv2022 >}}
+
+{{< adv2022 title="Day 1: Calorie Counting (Part 1)" id="day1_1" file="day1/main_1.py" vizfile="day1/viz_1.py">}}
+<p class="post-p">And we're off! As common for day 1 of AoC, this puzzle is is about making sure you can read input and identify line breaks, and do some very simple parsing.</p>
+<p class="post-p">One way to solve this problem would be to calculate the sum of calories in every elf's pack, then find the max of those. Astute coders will notice that you don't need to actually hold all the packs in memory at once; you can calculate them one at a time and retain the highest value seen so far, which avoids undue memory usage. Python more-or-less does this for us if we use generator expressions for everything.</p>
+{{< /adv2022 >}}
+
+{{< adv2022 title="Day 1: Calorie Counting (Part 2)" id="day1_2" file="day1/main_2.py">}}
+<p class="post-p">Another common theme with Advent of Code - part 2 on a given day will try to subvert the optimizations you may have made in part 1!</p>
+<p class="post-p">For a quick-and-dirty solution here, I'll use the <code>sorted</code> function to convert our generator into a sorted list, then sum the last (largest) three elements. If this were a larger list of elements, we could come up with our own generator that injested elements from an Iterable one by one, and retained the largest three.</p>
+{{< /adv2022 >}}
+
+{{< adv2022 title="Day 2: Rock Paper Scissors (Part 1)" id="day2_1" file="day2/main_1.py">}}
+<p class="post-p">Some slightly more complicated input handling today, with some slightly more involved conditional logic to accumulate a score</p>
+<p class="post-p">It's also quite useful to me to be able to run these examples from the terminal, as well as in PyScript. If you look at the end of today's code, you'll see a use of checking whether we're running in pyodide (<code>if 'pyodide' in sys.modules</code>), and chosing where to snag the input from based on that determination.</code></p>
+{{< /adv2022 >}}
+
+{{< adv2022 title="Day 2: Rock Paper Scissors (Part 2)" id="day2_2" file="day2/main_2.py">}}
+<p class="post-p">I fully admit to my solution here trying to be way too clever. The speediest way to solve this problem (both in execution time and in writing) would almost certainly be to create a looking table of the 9 possible input lines with their resultant scores, and just loop over the input and sum according to those scores.</p>
+<p class="post-p">That said, this is a good chance to start stirring the brain cells on another common theme in Advnent of Code challenges - using one part of the input to determine how to interpret another part of the input.</p>
+{{< /adv2022 >}}
+
 
 <py-script class="hidden">
     import js
@@ -34,6 +56,7 @@ In preparation for this year's AoC, I've set up a Hugo templating system to allo
         border-width: 2px;
     }
 </style>
+<span class="text-green"></span>
 <script>    
     //Create Load PyScript buttons:
     document.addEventListener('DOMContentLoaded', () => {
@@ -42,7 +65,10 @@ In preparation for this year's AoC, I've set up a Hugo templating system to allo
             div.classList.add('my-2', 'md:mx-4', 'border-2', 'border-blue-200', 'p-2', 'grid', 'grid-cols-1', 'rounded-xl', 'flex', 'flex-row', 'justify-center', 'w-auto', "py-1", 'h-auto', 'md:h-full')
             let p = document.createElement('p')
             p.classList.add('my-auto', 'mr-4', 'italic')
-            p.innerText = "Want to run these examples live in your browser?"
+            p.innerHTML = "Want to run these examples live in your browser?"
+            if (div.classList.contains("viz")){
+                p.innerHTML += ' <p class="font-semibold text-green-600">This example includes a visualization.</p>'
+            }
             div.appendChild(p)
             //button
             let btn = document.createElement('button')
@@ -68,6 +94,11 @@ In preparation for this year's AoC, I've set up a Hugo templating system to allo
     })
 
     function loadPyScript() {
+        //load chartjs
+        chartlink = document.createElement('script')
+        chartlink.src = "https://cdn.jsdelivr.net/npm/chart.js"
+        document.body.append(chartlink)
+        
         //load css
         css_link = document.createElement("link")
         css_link.rel = "stylesheet"
@@ -97,3 +128,5 @@ In preparation for this year's AoC, I've set up a Hugo templating system to allo
         })
     })
 </script>
+<link rel="stylesheet" href="tabs.css">
+<script src="tabs.js"></script>
