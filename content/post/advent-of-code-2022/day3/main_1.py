@@ -14,11 +14,8 @@ def prioritySum(data):
     return sum
 
 if 'pyodide' in sys.modules:
-    import js
     def main_day3_1():
-        js.console.log("Main day 3_1")
         data = get_input('day3_1').split('\n')
-        js.console.log(data)
         display(f"{prioritySum(data)= }",
             target="day3_1-output",
             append=False)
