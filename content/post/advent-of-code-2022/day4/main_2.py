@@ -5,11 +5,11 @@ def overlaps(a: tuple[int, int] , b: tuple[int, int]) -> bool:
            (b[0] <= a[0] <= b[1]) or (b[0] <= a[1] <= b[1])
 
 def solutionFromInput(data):
-    pairs = [line.split(',') for line in data]
-    pairs = [(p[0].split('-'), p[1].split('-')) for p in pairs]
-    pairs = [((int(p[0][0]), int(p[0][1])), (int(p[1][0]), int(p[1][1]))) for p in pairs]
-    matches = [overlaps(pair[0], pair[1]) for pair in pairs]
-    return matches.count(True)
+    pairs = (line.split(',') for line in data)
+    pairs = ((p[0].split('-'), p[1].split('-')) for p in pairs)
+    pairs = (((int(p[0][0]), int(p[0][1])), (int(p[1][0]), int(p[1][1]))) for p in pairs)
+    matches = (overlaps(pair[0], pair[1]) for pair in pairs)
+    return sum(1 if m else 0 for m in matches)
 
 if 'pyodide' in sys.modules:
     def main_day4_2():
