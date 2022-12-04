@@ -736,7 +736,7 @@ if (!doNotTrack) {
 
     </div>
     <div>
-        <div class="load-pyscript"></div>
+        <div class="load-pyscript viz"></div>
         <div class="hidden live-example">
             <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
                 <div>
@@ -748,9 +748,14 @@ if (!doNotTrack) {
                     <input class="w-full" type="file" id="day3_1-upload-input" name="day3_1-upload">
                 </div>
                 <div class="font-mono bg-gray-200" id="day3_1-output"></div>
-                
+                <div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">
                 <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day3_1-run-btn" py-click="main_day3_1()">RUN</button></div>
                 
+                <div>
+                    <py-script src="day3/viz_1.py"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day3_1-run-btn" py-click="viz_day3_1()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>
             </div>
             <py-script>
                 from utils import attach_upload_listener
@@ -766,7 +771,7 @@ if (!doNotTrack) {
      
     <ul class="tabs md:col-span-2">
         <li data-tab-target="#day3_1-code" class="active tab code-title">day3_1.py</li>
-         
+        <li data-tab-target="#day3_1-viz-code" class="tab code-title">day3_1-viz.py</li> 
     </ul>
     <div id="day3_1-code" data-tab-content class="active tab-content md:col-span-2">
         <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
@@ -833,6 +838,187 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
 
 
     </code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+    
+    
+    
+    <div id="day3_1-viz-code" data-tab-content class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">84
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">string</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+</span> <span style="color:#f60">1</span> <span style="color:#069;font-weight:bold">for</span> index, s <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(string<span style="color:#555">.</span>ascii_lowercase)} <span style="color:#555">|</span>\
+            {s: index <span style="color:#555">+</span> <span style="color:#f60">27</span> <span style="color:#069;font-weight:bold">for</span> index, s <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(string<span style="color:#555">.</span>ascii_uppercase)}
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">prioritySum</span>(data):
+    <span style="color:#366">sum</span> <span style="color:#555">=</span> <span style="color:#f60">0</span>    
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        midpoint <span style="color:#555">=</span> <span style="color:#366">int</span>(<span style="color:#366">len</span>(line)<span style="color:#555">/</span><span style="color:#f60">2</span>)
+        first <span style="color:#555">=</span> <span style="color:#366">set</span>(line[:midpoint])
+        second <span style="color:#555">=</span> <span style="color:#366">set</span>(line[midpoint:])
+        <span style="color:#366">sum</span> <span style="color:#555">+=</span> charValue[(first <span style="color:#555">&amp;</span> second)<span style="color:#555">.</span>pop()]
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">visualizeProcessing</span>(data, tbody):    
+    tbody<span style="color:#555">.</span>style<span style="color:#555">.</span>fontFamily <span style="color:#555">=</span> <span style="color:#c30">&#39;monospace&#39;</span>
+    tbody<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;unformatted-table&#34;</span>)
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        row <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;tr&#39;</span>)
+        scoreElement <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;td&#39;</span>)
+        firstElement <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;td&#39;</span>)
+        secondElement <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;td&#39;</span>)
+
+        <span style="color:#09f;font-style:italic">#styling</span>
+        row<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;bg-gray-900&#34;</span>, <span style="color:#c30">&#34;text-gray-300&#34;</span>)
+        scoreElement<span style="color:#555">.</span>style<span style="color:#555">.</span>paddingRight <span style="color:#555">=</span> <span style="color:#c30">&#34;2rem&#34;</span>
+        firstElement<span style="color:#555">.</span>style<span style="color:#555">.</span>textAlign <span style="color:#555">=</span> <span style="color:#c30">&#34;right&#34;</span>
+        firstElement<span style="color:#555">.</span>style<span style="color:#555">.</span>paddingRight <span style="color:#555">=</span> <span style="color:#c30">&#34;0.5rem&#34;</span>
+
+        <span style="color:#09f;font-style:italic">#Actually add the content</span>
+        midpoint <span style="color:#555">=</span> <span style="color:#366">int</span>(<span style="color:#366">len</span>(line)<span style="color:#555">/</span><span style="color:#f60">2</span>)
+        first <span style="color:#555">=</span> line[:midpoint]
+        second <span style="color:#555">=</span> line[midpoint:]
+        commonChar <span style="color:#555">=</span> (<span style="color:#366">set</span>(first) <span style="color:#555">&amp;</span> <span style="color:#366">set</span>(second))<span style="color:#555">.</span>pop()
+        score <span style="color:#555">=</span> charValue[commonChar]
+
+        first <span style="color:#555">=</span> first<span style="color:#555">.</span>replace(commonChar, <span style="color:#c30">f</span><span style="color:#c30">&#39;&lt;span style=&#34;text-shadow: 0 0 5px #ffffff; color: rgb(255, 255, 255)&#34;&gt;</span><span style="color:#a00">{</span>commonChar<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#39;</span>)
+        second <span style="color:#555">=</span> second<span style="color:#555">.</span>replace(commonChar, <span style="color:#c30">f</span><span style="color:#c30">&#39;&lt;span style=&#34;text-shadow: 0 0 5px #ffffff; color: rgb(255, 255, 255)&#34;&gt;</span><span style="color:#a00">{</span>commonChar<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#39;</span>)
+
+        <span style="color:#09f;font-style:italic">#Format and insert text</span>
+        firstElement<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#34;&lt;span&gt;&#34;</span> <span style="color:#555">+</span> first <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;/span&gt;&#34;</span>
+        secondElement<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#34;&lt;span&gt;&#34;</span> <span style="color:#555">+</span> second <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;/span&gt;&#34;</span>
+        scoreElement<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;&lt;span&gt;</span><span style="color:#a00">{</span>commonChar<span style="color:#a00">}</span><span style="color:#c30">=</span><span style="color:#a00">{</span>score<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#34;</span>
+
+        row<span style="color:#555">.</span>appendChild(scoreElement)
+        row<span style="color:#555">.</span>appendChild(firstElement)
+        row<span style="color:#555">.</span>appendChild(secondElement)
+        tbody<span style="color:#555">.</span>appendChild(row)
+
+    <span style="color:#09f;font-style:italic">#grayRows = js.document.querySelectorAll(&#34;tbody tr:nth-child(2n-1)&#34;)</span>
+    grayRows <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>querySelectorAll(<span style="color:#c30">&#34;tr&#34;</span>)
+    <span style="color:#069;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> grayRows:
+        js<span style="color:#555">.</span>console<span style="color:#555">.</span>log(row<span style="color:#555">.</span>style)
+        row<span style="color:#555">.</span>style<span style="color:#555">.</span>removeProperty(<span style="color:#c30">&#34;background-color&#34;</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">setupTable</span>():
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+    table <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;table&#39;</span>)
+    table<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;w-full&#34;</span>)
+    tbody <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;tbody&#39;</span>)
+    table<span style="color:#555">.</span>appendChild(tbody)
+    vizelem <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day3_1-viz&#34;</span>)
+    vizelem<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;w-full&#34;</span>)
+    vizelem<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;h-76&#34;</span>)
+    vizelem<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;overflow-y-scroll&#34;</span>)
+    vizelem<span style="color:#555">.</span>appendChild(table)
+    <span style="color:#069;font-weight:bold">return</span> tbody
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day3_1</span>():
+        tbody <span style="color:#555">=</span> setupTable()
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day3_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+        visualizeProcessing(data, tbody)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>prioritySum(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day3_1-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+
+<span style="color:#069;font-weight:bold">elif</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()
+    result <span style="color:#555">=</span> prioritySum(data<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>))
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>result<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>)
+</code></pre></td></tr></table>
 </div>
 </div></div>
          <div class="text-sm post-img-caption">Scroll to see complete code</div> 
@@ -969,6 +1155,7 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
     loaded_event = js.Event.new('pyscript_ready')
     js.document.dispatchEvent(loaded_event)
 </py-script>
+
 <style>
     .code-container {n
         border-width: 2px;
