@@ -23,7 +23,7 @@ def visualizeProcessing(data, tbody):
         secondElement = js.document.createElement('td')
 
         #styling
-        row.classList.add("bg-gray-900", "text-gray-50")
+        row.classList.add("bg-gray-900", "text-gray-300")
         scoreElement.style.paddingRight = "2rem"
         firstElement.style.textAlign = "right"
         firstElement.style.paddingRight = "0.5rem"
@@ -35,8 +35,8 @@ def visualizeProcessing(data, tbody):
         commonChar = (set(first) & set(second)).pop()
         score = charValue[commonChar]
 
-        first = first.replace(commonChar, f'<span style="text-shadow: 0 0 5px #ffffff">{commonChar}</span>')
-        second = second.replace(commonChar, f'<span style="text-shadow: 0 0 5px #ffffff">{commonChar}</span>')
+        first = first.replace(commonChar, f'<span style="text-shadow: 0 0 5px #ffffff; color: rgb(255, 255, 255)">{commonChar}</span>')
+        second = second.replace(commonChar, f'<span style="text-shadow: 0 0 5px #ffffff; color: rgb(255, 255, 255)">{commonChar}</span>')
 
         #Format and insert text
         firstElement.innerHTML = "<span>" + first + "</span>"
