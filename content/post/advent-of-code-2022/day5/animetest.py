@@ -87,9 +87,7 @@ def makeDisplay(yard):
         for stackLevel, crate in enumerate(yard[stack]):
             bottom = indexToBottom(stackLevel)
             container = js.document.createElement('div')
-            container.style.width = f"{crateSize}px"
-            container.style.height = f"{crateSize}px"
-            container.style.backgroundColor = startColor
+            container.style.width = f"{crateSize}px"vizfile="day5/viz_1.py"
             container.style.border = "2px solid #2c2e34"
             container.style.position = "absolute"#div.style.padding = "2rem 2rem 2rem 2rem"
             container.style.bottom = f"{bottom}px"
@@ -171,6 +169,9 @@ def operateOn(yard: yardType, ins: Instruction, instructionIndex: int, final:boo
 def doAllInstructions(instructions):
     for instructionIndex, ins in enumerate(instructions):
         operateOn(yard, ins, instructionIndex, final = True if instructionIndex == len(instructions) - 1 else False)
+    #<button onclick="startAnimation()">Play</button>
+    #<button onclick="stopAnimation()">Pause</button>
+    #<input type="range" id="seekbar" min="0" max="100" value="0" oninput="myTimeline.pause();myTimeline.seek(myTimeline.duration * (this.value/100))" style="width: 100%"></progress>
 
 doAllInstructions(instructions)
 
