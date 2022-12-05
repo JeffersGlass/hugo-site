@@ -58,7 +58,11 @@ def topCrates(crates: yardType):
     
 
 if 'pyodide' in sys.modules:
-    pass
+    def main_day5_1():
+        data = get_input('day5_1')
+        display(f"{solutionFromInput(data)= }",
+            target="day5_1-output",
+            append=False)
 else:
     with open("input.txt", "r") as fp:
         data = fp.read()
