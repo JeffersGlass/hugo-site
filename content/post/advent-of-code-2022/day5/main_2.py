@@ -11,14 +11,14 @@ class Instruction(NamedTuple):
     from_stack: str
     to_stack: str
 
-def solutionFromInput(data: str) -> str:
+def solutionWithClumpedStacks(data: str) -> str:
     data = data.split("\n")
-    stacks, instructions = parseInput(data)
+    stacks, instructions = parseInput5_2(data)
     for ins in instructions:
-        stacks = operateOn(stacks, ins)
-    return topCrates(stacks)
+        stacks = operateOn5_2(stacks, ins)
+    return topCrates5_2(stacks)
 
-def parseInput(data: list[str]) -> tuple[yardType, list[Instruction]]:
+def parseInput5_2(data: list[str]) -> tuple[yardType, list[Instruction]]:
     firstBlankLine = data.index("")
     cratePositions = data[:firstBlankLine]
     cratePositions.reverse() #ordered bottom to top
@@ -46,19 +46,23 @@ def parseInput(data: list[str]) -> tuple[yardType, list[Instruction]]:
     
     return (crates, instructions)
 
-def operateOn(crates: yardType, ins: Instruction) -> yardType:
+def operateOn5_2(crates: yardType, ins: Instruction) -> yardType:
     to_move = crates[ins.from_stack][-ins.quantity:]
     crates[ins.from_stack] = crates[ins.from_stack][:-ins.quantity]
     crates[ins.to_stack].extend(to_move)
     return crates
 
-def topCrates(crates: yardType):
+def topCrates5_2(crates: yardType):
     return ''.join([stack.pop() for stack in crates.values()])
     
 
 if 'pyodide' in sys.modules:
-    pass
+    def main_day5_2():
+        data = get_input('day5_2')
+        display(f"{solutionWithClumpedStacks(data)= }",
+            target="day5_2-output",
+            append=False)
 else:
     with open("input.txt", "r") as fp:
         data = fp.read()
-    print(solutionFromInput(data))
+    print(solutionWithClumpedStacks(data))
