@@ -64,6 +64,6 @@ if 'pyodide' in sys.modules:
             target="day5_1-output",
             append=False)
 else:
-    with open("input.txt", "r") as fp:
+    with open("inputtest.txt", "r") as fp:
         data = fp.read()
     print(solutionFromInput(data))
