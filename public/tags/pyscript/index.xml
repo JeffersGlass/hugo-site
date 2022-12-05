@@ -13,7 +13,14 @@
       <pubDate>Sat, 26 Nov 2022 14:23:16 -0600</pubDate>
       
       <guid>https://jeff.glass/post/advent-of-code-2022/</guid>
-      <description>&lt;p class=&#34;post-p&#34;&gt;Another year, another 25 curious code challenges from &lt;a href=&#34;https://adventofcode.com/&#34;&gt;Advent of Code!&lt;/a&gt; This year, I&#39;ll be attempting to make as many solutions as possible something you can run right here in your browser window via &lt;a href=&#34;https://pyscript.net&#34;&gt;PyScript&lt;/a&gt;.&lt;/p&gt;
+      <description>&lt;style&gt;
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+&lt;p class=&#34;post-p&#34;&gt;Another year, another 25 curious code challenges from &lt;a href=&#34;https://adventofcode.com/&#34;&gt;Advent of Code!&lt;/a&gt; This year, I&#39;ll be attempting to make as many solutions as possible something you can run right here in your browser window via &lt;a href=&#34;https://pyscript.net&#34;&gt;PyScript&lt;/a&gt;.&lt;/p&gt;
 &lt;div id=&#34;TOC&#34; class=&#34;w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200&#34;&gt;
     &lt;p class=&#34;text-2xl relative-anchor&#34; id=&#34;toc&#34;&gt;Table of Contents&lt;/p&gt;
     &lt;div class=&#34;ml-8 font-semibold&#34; id=&#34;toc-contents&#34;&gt;
@@ -1379,6 +1386,422 @@ charValue &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {s: index &lt;sp
     })
 &lt;/script&gt;
 
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day5_1&#39;&gt;Day 5: Supply Stacks (Part 1)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;As I&#39;ve experienced in previous years, the process of identifying a strategy or algorithm to solve a problem, and the creating the data structure for that algorithm, go hand in hand.&lt;/p&gt;&lt;p class=&#34;post-p&#34;&gt;In today&#39;s case, the fact that the input is presented row-by-row, but the data is relevant column-by-column, means that a cerain amount of input processessing is necessary to make the data useful. But once it is, the solution is relatively straightfoward.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day5_1-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day5_1-upload-input&#34; name=&#34;day5_1-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day5_1-output&#34;&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day5_1-run-btn&#34; py-click=&#34;main_day5_1()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day5_1-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day5/main_1.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day5_1-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day5_1=&#34;#day5_1-code&#34; class=&#34;active tab code-title&#34;&gt;day5_1.py&lt;/li&gt;
+         
+    &lt;/ul&gt;
+    &lt;div id=&#34;day5_1-code&#34; data-tab-content-day5_1 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; NamedTuple
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;re&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; NewType
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# The &amp;#39;yard&amp;#39; is the collection of all the stacks of crates&lt;/span&gt;
+yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;yardType&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;dict&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;:&lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;])
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Instruction&lt;/span&gt;(NamedTuple):
+    quantity: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    from_stack: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;
+    to_stack: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#(&amp;#34;Instruction&amp;#34;, (&amp;#39;quantity&amp;#39;, &amp;#39;from_stack&amp;#39;, &amp;#39;to_stack&amp;#39;))&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solutionFromInput&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;:
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+    stacks, instructions &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; parseInput(data)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; ins &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; instructions:
+        stacks &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; operateOn(stacks, ins)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; topCrates(stacks)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;parseInput&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;]) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;tuple&lt;/span&gt;[yardType, &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[Instruction]]:
+    firstBlankLine &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;index(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+    cratePositions &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[:firstBlankLine]
+    cratePositions&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;reverse() &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#ordered bottom to top&lt;/span&gt;
+    instructionLines &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[firstBlankLine&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Create crate data struction&lt;/span&gt;
+    crateNameLine &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; cratePositions[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#get crate labels from line&lt;/span&gt;
+    crates &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {name: [] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; name &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; crateNameLine&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split()} &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#create dicts per line&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; cratePositions[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; index, crateName &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(line[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;::&lt;span style=&#34;color:#f60&#34;&gt;4&lt;/span&gt;]):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; crateName &lt;span style=&#34;color:#555&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;:
+                crates[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(crateNameLine[index&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;4&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;])]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(crateName) &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Add crate to list&lt;/span&gt;
+    
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Parse instructions&lt;/span&gt;
+    instructions &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; ins &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; instructionLines:
+        match &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;match(&lt;span style=&#34;color:#c30&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;move (?P&amp;lt;num&amp;gt;\d+) from (?P&amp;lt;from_stack&amp;gt;\d+) to (?P&amp;lt;to_stack&amp;gt;\d+)&amp;#39;&lt;/span&gt;, ins)
+        num, from_stack, to_stack &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;num&amp;#39;&lt;/span&gt;), match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;from_stack&amp;#39;&lt;/span&gt;), match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;to_stack&amp;#39;&lt;/span&gt;)
+
+        instructions&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(Instruction(
+                quantity &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;num&amp;#39;&lt;/span&gt;)),
+                from_stack &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;from_stack&amp;#39;&lt;/span&gt;),
+                to_stack &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;to_stack&amp;#39;&lt;/span&gt;)
+            ))
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; (crates, instructions)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;operateOn&lt;/span&gt;(crates: yardType, ins: Instruction) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; yardType:
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#printCrates(crates)&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; _ &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;quantity):
+        crates[ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;to_stack]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(crates[ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;from_stack]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pop())
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; crates
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;topCrates&lt;/span&gt;(crates: yardType):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;join([stack&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pop() &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; stack &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; crates&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;values()])
+    
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day5_1&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day5_1&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solutionFromInput(data)&lt;span style=&#34;color:#a00&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day5_1-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;inputtest.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(solutionFromInput(data))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday5_1 = document.querySelectorAll(&#39;[data-tab-target-day5_1]&#39;)
+    const tabContentsday5_1 = document.querySelectorAll(&#39;[data-tab-content-day5_1]&#39;)
+
+    tabsday5_1.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay5_1)
+            tabContentsday5_1.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday5_1.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day5_2&#39;&gt;Day 5: Supply Stacks (Part 2)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;I was wondering when I would get bit by one of PyScript&#39;s core limitations (currently) - all &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt; tags are executed in the same global namespace. Meaning if you have two functions with the same name in two separate files/script tags, any objects whos names overlap previous tags &lt;span class=&#34;italic&#34;&gt;overwrite those objects&lt;/span&gt;. Hence names like &lt;code&gt;operateOn5_2()&lt;/code&gt; to ensure the functions are unique to this day/part.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day5_2-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day5_2-upload-input&#34; name=&#34;day5_2-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day5_2-output&#34;&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day5_2-run-btn&#34; py-click=&#34;main_day5_2()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day5_2-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day5/main_2.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day5_2-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day5_2=&#34;#day5_2-code&#34; class=&#34;active tab code-title&#34;&gt;day5_2.py&lt;/li&gt;
+         
+    &lt;/ul&gt;
+    &lt;div id=&#34;day5_2-code&#34; data-tab-content-day5_2 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; NamedTuple
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;re&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; NewType
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# The &amp;#39;yard&amp;#39; is the collection of all the stacks of crates&lt;/span&gt;
+yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;yardType&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;dict&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;:&lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;])
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Instruction&lt;/span&gt;(NamedTuple):
+    quantity: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    from_stack: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;
+    to_stack: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solutionWithClumpedStacks&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;:
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+    stacks, instructions &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; parseInput5_2(data)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; ins &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; instructions:
+        stacks &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; operateOn5_2(stacks, ins)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; topCrates5_2(stacks)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;parseInput5_2&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;]) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;tuple&lt;/span&gt;[yardType, &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[Instruction]]:
+    firstBlankLine &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;index(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+    cratePositions &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[:firstBlankLine]
+    cratePositions&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;reverse() &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#ordered bottom to top&lt;/span&gt;
+    instructionLines &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[firstBlankLine&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Create crate data struction&lt;/span&gt;
+    crateNameLine &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; cratePositions[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#get crate labels from line&lt;/span&gt;
+    crates &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {name: [] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; name &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; crateNameLine&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split()} &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#create dicts per line&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; cratePositions[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; index, crateName &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(line[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;::&lt;span style=&#34;color:#f60&#34;&gt;4&lt;/span&gt;]):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; crateName &lt;span style=&#34;color:#555&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;:
+                crates[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(crateNameLine[index&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;4&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;])]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(crateName) &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Add crate to list&lt;/span&gt;
+    
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Parse instructions&lt;/span&gt;
+    instructions &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; ins &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; instructionLines:
+        match &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;match(&lt;span style=&#34;color:#c30&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;move (?P&amp;lt;num&amp;gt;\d+) from (?P&amp;lt;from_stack&amp;gt;\d+) to (?P&amp;lt;to_stack&amp;gt;\d+)&amp;#39;&lt;/span&gt;, ins)
+        num, from_stack, to_stack &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;num&amp;#39;&lt;/span&gt;), match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;from_stack&amp;#39;&lt;/span&gt;), match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;to_stack&amp;#39;&lt;/span&gt;)
+
+        instructions&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(Instruction(
+                quantity &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;num&amp;#39;&lt;/span&gt;)),
+                from_stack &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;from_stack&amp;#39;&lt;/span&gt;),
+                to_stack &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;to_stack&amp;#39;&lt;/span&gt;)
+            ))
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; (crates, instructions)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;operateOn5_2&lt;/span&gt;(crates: yardType, ins: Instruction) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; yardType:
+    to_move &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; crates[ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;from_stack][&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;quantity:]
+    crates[ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;from_stack] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; crates[ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;from_stack][:&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;quantity]
+    crates[ins&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;to_stack]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;extend(to_move)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; crates
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;topCrates5_2&lt;/span&gt;(crates: yardType):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;join([stack&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pop() &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; stack &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; crates&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;values()])
+    
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day5_2&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day5_2&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solutionWithClumpedStacks(data)&lt;span style=&#34;color:#a00&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day5_2-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(solutionWithClumpedStacks(data))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday5_2 = document.querySelectorAll(&#39;[data-tab-target-day5_2]&#39;)
+    const tabContentsday5_2 = document.querySelectorAll(&#39;[data-tab-content-day5_2]&#39;)
+
+    tabsday5_2.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay5_2)
+            tabContentsday5_2.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday5_2.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
 &lt;py-script class=&#34;hidden&#34;&gt;
     import js
     loaded_event = js.Event.new(&#39;pyscript_ready&#39;)
@@ -1432,6 +1855,11 @@ charValue &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {s: index &lt;sp
         chartlink = document.createElement(&#39;script&#39;)
         chartlink.src = &#34;https://cdn.jsdelivr.net/npm/chart.js&#34;
         document.body.append(chartlink)
+
+        //load animejs
+        animejslink = document.createElement(&#39;script&#39;)
+        animejslink.src=&#34;https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js&#34;
+        document.body.append(animejslink)
         
         //load css
         css_link = document.createElement(&#34;link&#34;)

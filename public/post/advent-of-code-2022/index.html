@@ -154,7 +154,14 @@ if (!doNotTrack) {
 				
 				<hr>
 				<div>
-					<p class="post-p">Another year, another 25 curious code challenges from <a href="https://adventofcode.com/">Advent of Code!</a> This year, I'll be attempting to make as many solutions as possible something you can run right here in your browser window via <a href="https://pyscript.net">PyScript</a>.</p>
+					<style>
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<p class="post-p">Another year, another 25 curious code challenges from <a href="https://adventofcode.com/">Advent of Code!</a> This year, I'll be attempting to make as many solutions as possible something you can run right here in your browser window via <a href="https://pyscript.net">PyScript</a>.</p>
 <div id="TOC" class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200">
     <p class="text-2xl relative-anchor" id="toc">Table of Contents</p>
     <div class="ml-8 font-semibold" id="toc-contents">
@@ -1520,6 +1527,422 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
     })
 </script>
 
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day5_1'>Day 5: Supply Stacks (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">As I've experienced in previous years, the process of identifying a strategy or algorithm to solve a problem, and the creating the data structure for that algorithm, go hand in hand.</p><p class="post-p">In today's case, the fact that the input is presented row-by-row, but the data is relevant column-by-column, means that a cerain amount of input processessing is necessary to make the data useful. But once it is, the solution is relatively straightfoward.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day5_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day5_1-upload-input" name="day5_1-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day5_1-output"></div>
+                
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day5_1-run-btn" py-click="main_day5_1()">RUN</button></div>
+                
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day5_1-upload-input')
+            </py-script>
+            <py-script src="day5/main_1.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day5_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day5_1="#day5_1-code" class="active tab code-title">day5_1.py</li>
+         
+    </ul>
+    <div id="day5_1-code" data-tab-content-day5_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NamedTuple
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NewType
+
+<span style="color:#09f;font-style:italic"># The &#39;yard&#39; is the collection of all the stacks of crates</span>
+yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34;yardType&#34;</span>, <span style="color:#366">dict</span>[<span style="color:#366">str</span>:<span style="color:#366">list</span>])
+
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Instruction</span>(NamedTuple):
+    quantity: <span style="color:#366">int</span>
+    from_stack: <span style="color:#366">str</span>
+    to_stack: <span style="color:#366">str</span>
+    <span style="color:#09f;font-style:italic">#(&#34;Instruction&#34;, (&#39;quantity&#39;, &#39;from_stack&#39;, &#39;to_stack&#39;))</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solutionFromInput</span>(data: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">str</span>:
+    data <span style="color:#555">=</span> data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+    stacks, instructions <span style="color:#555">=</span> parseInput(data)
+    <span style="color:#069;font-weight:bold">for</span> ins <span style="color:#000;font-weight:bold">in</span> instructions:
+        stacks <span style="color:#555">=</span> operateOn(stacks, ins)
+    <span style="color:#069;font-weight:bold">return</span> topCrates(stacks)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">parseInput</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>]) <span style="color:#555">-&gt;</span> <span style="color:#366">tuple</span>[yardType, <span style="color:#366">list</span>[Instruction]]:
+    firstBlankLine <span style="color:#555">=</span> data<span style="color:#555">.</span>index(<span style="color:#c30">&#34;&#34;</span>)
+    cratePositions <span style="color:#555">=</span> data[:firstBlankLine]
+    cratePositions<span style="color:#555">.</span>reverse() <span style="color:#09f;font-style:italic">#ordered bottom to top</span>
+    instructionLines <span style="color:#555">=</span> data[firstBlankLine<span style="color:#555">+</span><span style="color:#f60">1</span>:]
+
+    <span style="color:#09f;font-style:italic"># Create crate data struction</span>
+    crateNameLine <span style="color:#555">=</span> cratePositions[<span style="color:#f60">0</span>] <span style="color:#09f;font-style:italic">#get crate labels from line</span>
+    crates <span style="color:#555">=</span> {name: [] <span style="color:#069;font-weight:bold">for</span> name <span style="color:#000;font-weight:bold">in</span> crateNameLine<span style="color:#555">.</span>split()} <span style="color:#09f;font-style:italic">#create dicts per line</span>
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> cratePositions[<span style="color:#f60">1</span>:]:
+        <span style="color:#069;font-weight:bold">for</span> index, crateName <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line[<span style="color:#f60">1</span>::<span style="color:#f60">4</span>]):
+            <span style="color:#069;font-weight:bold">if</span> crateName <span style="color:#555">!=</span> <span style="color:#c30">&#34; &#34;</span>:
+                crates[<span style="color:#366">str</span>(crateNameLine[index<span style="color:#555">*</span><span style="color:#f60">4</span> <span style="color:#555">+</span> <span style="color:#f60">1</span>])]<span style="color:#555">.</span>append(crateName) <span style="color:#09f;font-style:italic">#Add crate to list</span>
+    
+    <span style="color:#09f;font-style:italic"># Parse instructions</span>
+    instructions <span style="color:#555">=</span> []
+    <span style="color:#069;font-weight:bold">for</span> ins <span style="color:#000;font-weight:bold">in</span> instructionLines:
+        match <span style="color:#555">=</span> re<span style="color:#555">.</span>match(<span style="color:#c30">r</span><span style="color:#c30">&#39;move (?P&lt;num&gt;\d+) from (?P&lt;from_stack&gt;\d+) to (?P&lt;to_stack&gt;\d+)&#39;</span>, ins)
+        num, from_stack, to_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;num&#39;</span>), match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;from_stack&#39;</span>), match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;to_stack&#39;</span>)
+
+        instructions<span style="color:#555">.</span>append(Instruction(
+                quantity <span style="color:#555">=</span> <span style="color:#366">int</span>(match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;num&#39;</span>)),
+                from_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;from_stack&#39;</span>),
+                to_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;to_stack&#39;</span>)
+            ))
+    
+    <span style="color:#069;font-weight:bold">return</span> (crates, instructions)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">operateOn</span>(crates: yardType, ins: Instruction) <span style="color:#555">-&gt;</span> yardType:
+    <span style="color:#09f;font-style:italic">#printCrates(crates)</span>
+    <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(ins<span style="color:#555">.</span>quantity):
+        crates[ins<span style="color:#555">.</span>to_stack]<span style="color:#555">.</span>append(crates[ins<span style="color:#555">.</span>from_stack]<span style="color:#555">.</span>pop())
+    <span style="color:#069;font-weight:bold">return</span> crates
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">topCrates</span>(crates: yardType):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join([stack<span style="color:#555">.</span>pop() <span style="color:#069;font-weight:bold">for</span> stack <span style="color:#000;font-weight:bold">in</span> crates<span style="color:#555">.</span>values()])
+    
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day5_1</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day5_1&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solutionFromInput(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day5_1-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;inputtest.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()
+    <span style="color:#366">print</span>(solutionFromInput(data))</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday5_1 = document.querySelectorAll('[data-tab-target-day5_1]')
+    const tabContentsday5_1 = document.querySelectorAll('[data-tab-content-day5_1]')
+
+    tabsday5_1.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay5_1)
+            tabContentsday5_1.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday5_1.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day5_2'>Day 5: Supply Stacks (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">I was wondering when I would get bit by one of PyScript's core limitations (currently) - all <code>&lt;py-script&gt;</code> tags are executed in the same global namespace. Meaning if you have two functions with the same name in two separate files/script tags, any objects whos names overlap previous tags <span class="italic">overwrite those objects</span>. Hence names like <code>operateOn5_2()</code> to ensure the functions are unique to this day/part.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day5_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day5_2-upload-input" name="day5_2-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day5_2-output"></div>
+                
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day5_2-run-btn" py-click="main_day5_2()">RUN</button></div>
+                
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day5_2-upload-input')
+            </py-script>
+            <py-script src="day5/main_2.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day5_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day5_2="#day5_2-code" class="active tab code-title">day5_2.py</li>
+         
+    </ul>
+    <div id="day5_2-code" data-tab-content-day5_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NamedTuple
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NewType
+
+<span style="color:#09f;font-style:italic"># The &#39;yard&#39; is the collection of all the stacks of crates</span>
+yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34;yardType&#34;</span>, <span style="color:#366">dict</span>[<span style="color:#366">str</span>:<span style="color:#366">list</span>])
+
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Instruction</span>(NamedTuple):
+    quantity: <span style="color:#366">int</span>
+    from_stack: <span style="color:#366">str</span>
+    to_stack: <span style="color:#366">str</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solutionWithClumpedStacks</span>(data: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">str</span>:
+    data <span style="color:#555">=</span> data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+    stacks, instructions <span style="color:#555">=</span> parseInput5_2(data)
+    <span style="color:#069;font-weight:bold">for</span> ins <span style="color:#000;font-weight:bold">in</span> instructions:
+        stacks <span style="color:#555">=</span> operateOn5_2(stacks, ins)
+    <span style="color:#069;font-weight:bold">return</span> topCrates5_2(stacks)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">parseInput5_2</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>]) <span style="color:#555">-&gt;</span> <span style="color:#366">tuple</span>[yardType, <span style="color:#366">list</span>[Instruction]]:
+    firstBlankLine <span style="color:#555">=</span> data<span style="color:#555">.</span>index(<span style="color:#c30">&#34;&#34;</span>)
+    cratePositions <span style="color:#555">=</span> data[:firstBlankLine]
+    cratePositions<span style="color:#555">.</span>reverse() <span style="color:#09f;font-style:italic">#ordered bottom to top</span>
+    instructionLines <span style="color:#555">=</span> data[firstBlankLine<span style="color:#555">+</span><span style="color:#f60">1</span>:]
+
+    <span style="color:#09f;font-style:italic"># Create crate data struction</span>
+    crateNameLine <span style="color:#555">=</span> cratePositions[<span style="color:#f60">0</span>] <span style="color:#09f;font-style:italic">#get crate labels from line</span>
+    crates <span style="color:#555">=</span> {name: [] <span style="color:#069;font-weight:bold">for</span> name <span style="color:#000;font-weight:bold">in</span> crateNameLine<span style="color:#555">.</span>split()} <span style="color:#09f;font-style:italic">#create dicts per line</span>
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> cratePositions[<span style="color:#f60">1</span>:]:
+        <span style="color:#069;font-weight:bold">for</span> index, crateName <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line[<span style="color:#f60">1</span>::<span style="color:#f60">4</span>]):
+            <span style="color:#069;font-weight:bold">if</span> crateName <span style="color:#555">!=</span> <span style="color:#c30">&#34; &#34;</span>:
+                crates[<span style="color:#366">str</span>(crateNameLine[index<span style="color:#555">*</span><span style="color:#f60">4</span> <span style="color:#555">+</span> <span style="color:#f60">1</span>])]<span style="color:#555">.</span>append(crateName) <span style="color:#09f;font-style:italic">#Add crate to list</span>
+    
+    <span style="color:#09f;font-style:italic"># Parse instructions</span>
+    instructions <span style="color:#555">=</span> []
+    <span style="color:#069;font-weight:bold">for</span> ins <span style="color:#000;font-weight:bold">in</span> instructionLines:
+        match <span style="color:#555">=</span> re<span style="color:#555">.</span>match(<span style="color:#c30">r</span><span style="color:#c30">&#39;move (?P&lt;num&gt;\d+) from (?P&lt;from_stack&gt;\d+) to (?P&lt;to_stack&gt;\d+)&#39;</span>, ins)
+        num, from_stack, to_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;num&#39;</span>), match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;from_stack&#39;</span>), match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;to_stack&#39;</span>)
+
+        instructions<span style="color:#555">.</span>append(Instruction(
+                quantity <span style="color:#555">=</span> <span style="color:#366">int</span>(match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;num&#39;</span>)),
+                from_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;from_stack&#39;</span>),
+                to_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;to_stack&#39;</span>)
+            ))
+    
+    <span style="color:#069;font-weight:bold">return</span> (crates, instructions)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">operateOn5_2</span>(crates: yardType, ins: Instruction) <span style="color:#555">-&gt;</span> yardType:
+    to_move <span style="color:#555">=</span> crates[ins<span style="color:#555">.</span>from_stack][<span style="color:#555">-</span>ins<span style="color:#555">.</span>quantity:]
+    crates[ins<span style="color:#555">.</span>from_stack] <span style="color:#555">=</span> crates[ins<span style="color:#555">.</span>from_stack][:<span style="color:#555">-</span>ins<span style="color:#555">.</span>quantity]
+    crates[ins<span style="color:#555">.</span>to_stack]<span style="color:#555">.</span>extend(to_move)
+    <span style="color:#069;font-weight:bold">return</span> crates
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">topCrates5_2</span>(crates: yardType):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join([stack<span style="color:#555">.</span>pop() <span style="color:#069;font-weight:bold">for</span> stack <span style="color:#000;font-weight:bold">in</span> crates<span style="color:#555">.</span>values()])
+    
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day5_2</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day5_2&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solutionWithClumpedStacks(data)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day5_2-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()
+    <span style="color:#366">print</span>(solutionWithClumpedStacks(data))</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday5_2 = document.querySelectorAll('[data-tab-target-day5_2]')
+    const tabContentsday5_2 = document.querySelectorAll('[data-tab-content-day5_2]')
+
+    tabsday5_2.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay5_2)
+            tabContentsday5_2.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday5_2.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
 <py-script class="hidden">
     import js
     loaded_event = js.Event.new('pyscript_ready')
@@ -1573,6 +1996,11 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
         chartlink = document.createElement('script')
         chartlink.src = "https://cdn.jsdelivr.net/npm/chart.js"
         document.body.append(chartlink)
+
+        //load animejs
+        animejslink = document.createElement('script')
+        animejslink.src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+        document.body.append(animejslink)
         
         //load css
         css_link = document.createElement("link")
