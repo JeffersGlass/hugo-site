@@ -10,7 +10,7 @@ from main_1 import parseInput, yardType, Instruction
 def j(obj):
     return to_js(obj, dict_converter=Object.fromEntries)
 
-with open("input.txt", "r") as fp:
+with open("inputtest.txt", "r") as fp:
     data = fp.read().split('\n')
 yard, instructions = parseInput(data)
 
@@ -35,6 +35,9 @@ overall.appendChild(div)
 
 divHeight = 800
 divWidth = 600
+
+startColor = "Aquamarine"
+endColor = "green"
 
 div.style.height = f"{divHeight}px"
 div.style.width = f"{divWidth}px"
@@ -84,9 +87,7 @@ def makeDisplay(yard):
         for stackLevel, crate in enumerate(yard[stack]):
             bottom = indexToBottom(stackLevel)
             container = js.document.createElement('div')
-            container.style.width = f"{crateSize}px"
-            container.style.height = f"{crateSize}px"
-            container.style.backgroundColor = "Aquamarine"
+            container.style.width = f"{crateSize}px"vizfile="day5/viz_1.py"
             container.style.border = "2px solid #2c2e34"
             container.style.position = "absolute"#div.style.padding = "2rem 2rem 2rem 2rem"
             container.style.bottom = f"{bottom}px"
@@ -114,9 +115,22 @@ js.stopAnimation = myTimeline.pause
 js.myTimeline = myTimeline
 
 progressElement = js.document.getElementById("seekbar")
+prevProgress = 0
 
-def updateSeekbar(*args):
+def updateSeekbar(yard, *args):
+    global prevProgress
     progressElement.value = myTimeline.progress
+    if myTimeline.progress == 100:
+        for stack in yard:
+            if len(yard[stack].crates):
+                topCrate = yard[stack].crates[-1]
+                topCrate.element.style.backgroundColor = endColor
+    elif prevProgress == 100:
+        for stack in yard:
+            for crate in yard[stack].crates:
+                crate.element.style.backgroundColor = startColor
+
+    prevProgress = myTimeline.progress
 
 
 def displayOnMove(from_stack, to_stack, quantity, instructionCount, instructionIndex, *args):
@@ -144,11 +158,9 @@ def moveOneCrate(yard: yardType, from_stack: str, to_stack: str, quantity: int, 
             j({"bottom": f"{newBottom}px"})
         ],
         "begin": partial(displayOnMove, from_stack, to_stack, quantity, instructionCount, instructionIndex),
-        "update": updateSeekbar,
+        "update": partial(updateSeekbar, yard),
         "complete": partial(doFinalOutput, yard) if final else (lambda _: None)
     }))
-    
-    
 
 def operateOn(yard: yardType, ins: Instruction, instructionIndex: int, final:bool) -> yard:
     for instructionCount in range(ins.quantity):
@@ -157,6 +169,9 @@ def operateOn(yard: yardType, ins: Instruction, instructionIndex: int, final:boo
 def doAllInstructions(instructions):
     for instructionIndex, ins in enumerate(instructions):
         operateOn(yard, ins, instructionIndex, final = True if instructionIndex == len(instructions) - 1 else False)
+    #<button onclick="startAnimation()">Play</button>
+    #<button onclick="stopAnimation()">Pause</button>
+    #<input type="range" id="seekbar" min="0" max="100" value="0" oninput="myTimeline.pause();myTimeline.seek(myTimeline.duration * (this.value/100))" style="width: 100%"></progress>
 
 doAllInstructions(instructions)
 
