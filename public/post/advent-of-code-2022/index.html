@@ -1535,7 +1535,7 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
 
     </div>
     <div>
-        <div class="load-pyscript"></div>
+        <div class="load-pyscript viz"></div>
         <div class="hidden live-example">
             <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
                 <div>
@@ -1547,9 +1547,14 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
                     <input class="w-full" type="file" id="day5_1-upload-input" name="day5_1-upload">
                 </div>
                 <div class="font-mono bg-gray-200" id="day5_1-output"></div>
-                
+                <div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">
                 <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day5_1-run-btn" py-click="main_day5_1()">RUN</button></div>
                 
+                <div>
+                    <py-script src="day5/viz_1.py"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day5_1-run-btn" py-click="viz_day5_1()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>
             </div>
             <py-script>
                 from utils import attach_upload_listener
@@ -1565,7 +1570,7 @@ charValue <span style="color:#555">=</span> {s: index <span style="color:#555">+
      
     <ul class="tabs md:col-span-2">
         <li data-tab-target-day5_1="#day5_1-code" class="active tab code-title">day5_1.py</li>
-         
+        <li data-tab-target-day5_1="#day5_1-viz-code" class="tab code-title">day5_1-viz.py</li> 
     </ul>
     <div id="day5_1-code" data-tab-content-day5_1 class="active tab-content md:col-span-2">
         <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
@@ -1710,6 +1715,530 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
     <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;inputtest.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
         data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()
     <span style="color:#366">print</span>(solutionFromInput(data))</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+    
+    
+    
+    <div id="day5_1-viz-code" data-tab-content-day5_1 class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">153
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">154
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">155
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">156
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">157
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">158
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">159
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">160
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">161
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">162
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">163
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">164
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">165
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">166
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">167
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">168
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">169
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">170
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">171
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">172
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">173
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">174
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">175
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">176
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">177
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">178
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">179
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">180
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">181
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">182
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">183
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">184
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">185
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">186
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">187
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">188
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">189
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">190
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">191
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">192
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">193
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">194
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">195
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">196
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">197
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">198
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">199
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">200
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">201
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">202
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">203
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">204
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">205
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">206
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">207
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">208
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">209
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">210
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">211
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">212
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">213
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">214
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">215
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">216
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">217
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">218
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">219
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">220
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">221
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">222
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">223
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">224
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">225
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">226
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">227
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">228
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">229
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">230
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">231
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">232
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">233
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">234
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">235
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">236
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">237
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">238
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">239
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">240
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">241
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">242
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">243
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">244
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">245
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">246
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">247
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">248
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">249
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">250
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">251
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">252
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">253
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">254
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">255
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">256
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day5_1</span>():
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NamedTuple
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">dataclasses</span> <span style="color:#069;font-weight:bold">import</span> dataclass
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">functools</span> <span style="color:#069;font-weight:bold">import</span> partial
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> anime, Object
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi</span> <span style="color:#069;font-weight:bold">import</span> to_js, create_proxy
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi.wrappers</span> <span style="color:#069;font-weight:bold">import</span> add_event_listener
+
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NewType
+
+    <span style="color:#09f;font-style:italic"># The &#39;yard&#39; is the collection of all the stacks of crates</span>
+    yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34;yardType&#34;</span>, <span style="color:#366">dict</span>[<span style="color:#366">str</span>:<span style="color:#366">list</span>])
+
+    <span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Instruction</span>(NamedTuple):
+        quantity: <span style="color:#366">int</span>
+        from_stack: <span style="color:#366">str</span>
+        to_stack: <span style="color:#366">str</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">j</span>(obj):
+        <span style="color:#069;font-weight:bold">return</span> to_js(obj, dict_converter<span style="color:#555">=</span>Object<span style="color:#555">.</span>fromEntries)
+
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day5_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)        
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">parseInput</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>]) <span style="color:#555">-&gt;</span> <span style="color:#366">tuple</span>[yardType, <span style="color:#366">list</span>[Instruction]]:
+        firstBlankLine <span style="color:#555">=</span> data<span style="color:#555">.</span>index(<span style="color:#c30">&#34;&#34;</span>)
+        cratePositions <span style="color:#555">=</span> data[:firstBlankLine]
+        cratePositions<span style="color:#555">.</span>reverse() <span style="color:#09f;font-style:italic">#ordered bottorstBlankLine = data.index(&#34;&#34;)</span>
+        cratePositions <span style="color:#555">=</span> data[:firstBlankLine]
+        cratePositions<span style="color:#555">.</span>reverse() <span style="color:#09f;font-style:italic">#ordered bottom to top</span>
+        instructionLines <span style="color:#555">=</span> data[firstBlankLine<span style="color:#555">+</span><span style="color:#f60">1</span>:]
+
+        <span style="color:#09f;font-style:italic"># Create crate data struction</span>
+        crateNameLine <span style="color:#555">=</span> cratePositions[<span style="color:#f60">0</span>] <span style="color:#09f;font-style:italic">#get crate labels from line</span>
+        crates <span style="color:#555">=</span> {name: [] <span style="color:#069;font-weight:bold">for</span> name <span style="color:#000;font-weight:bold">in</span> crateNameLine<span style="color:#555">.</span>split()} <span style="color:#09f;font-style:italic">#create dicts per line</span>
+        <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> cratePositions[<span style="color:#f60">1</span>:]:
+            <span style="color:#069;font-weight:bold">for</span> index, crateName <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line[<span style="color:#f60">1</span>::<span style="color:#f60">4</span>]):
+                <span style="color:#069;font-weight:bold">if</span> crateName <span style="color:#555">!=</span> <span style="color:#c30">&#34; &#34;</span>:
+                    crates[<span style="color:#366">str</span>(crateNameLine[index<span style="color:#555">*</span><span style="color:#f60">4</span> <span style="color:#555">+</span> <span style="color:#f60">1</span>])]<span style="color:#555">.</span>append(crateName) <span style="color:#09f;font-style:italic">#Add crate to list</span>
+        
+        <span style="color:#09f;font-style:italic"># Parse instructions</span>
+        instructions <span style="color:#555">=</span> []
+        <span style="color:#069;font-weight:bold">for</span> ins <span style="color:#000;font-weight:bold">in</span> instructionLines:
+            match <span style="color:#555">=</span> re<span style="color:#555">.</span>match(<span style="color:#c30">r</span><span style="color:#c30">&#39;move (?P&lt;num&gt;\d+) from (?P&lt;from_stack&gt;\d+) to (?P&lt;to_stack&gt;\d+)&#39;</span>, ins)
+            num, from_stack, to_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;num&#39;</span>), match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;from_stack&#39;</span>), match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;to_stack&#39;</span>)
+
+            instructions<span style="color:#555">.</span>append(Instruction(
+                    quantity <span style="color:#555">=</span> <span style="color:#366">int</span>(match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;num&#39;</span>)),
+                    from_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;from_stack&#39;</span>),
+                    to_stack <span style="color:#555">=</span> match<span style="color:#555">.</span>group(<span style="color:#c30">&#39;to_stack&#39;</span>)
+                ))
+        
+        <span style="color:#069;font-weight:bold">return</span> (crates, instructions)
+
+    yard, instructions <span style="color:#555">=</span> parseInput(data)
+
+    <span style="color:#99f">@dataclass</span>
+    <span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Crate</span>():
+        label:<span style="color:#366">str</span>
+        element:<span style="color:#366">object</span>
+
+        <span style="color:#069;font-weight:bold">def</span> __str__(self):
+            <span style="color:#069;font-weight:bold">return</span> self<span style="color:#555">.</span>label
+
+    <span style="color:#99f">@dataclass</span>
+    <span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Stack</span>():
+        crates: <span style="color:#366">list</span>
+        x: <span style="color:#366">int</span>
+
+    overall <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day5_1-viz&#34;</span>)
+    overall<span style="color:#555">.</span>style<span style="color:#555">.</span>margin <span style="color:#555">=</span> <span style="color:#c30">&#34;50px 50px 50px 50px&#34;</span>
+    overall<span style="color:#555">.</span>style<span style="color:#555">.</span>position <span style="color:#555">=</span> <span style="color:#c30">&#34;relative&#34;</span>
+    div <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;div&#39;</span>)
+    overall<span style="color:#555">.</span>appendChild(div)
+
+    divHeight <span style="color:#555">=</span> <span style="color:#f60">800</span>
+    divWidth <span style="color:#555">=</span> <span style="color:#f60">600</span>
+
+    startColor <span style="color:#555">=</span> <span style="color:#c30">&#34;Aquamarine&#34;</span>
+    endColor <span style="color:#555">=</span> <span style="color:#c30">&#34;green&#34;</span>
+
+    div<span style="color:#555">.</span>style<span style="color:#555">.</span>height <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>divHeight<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+    div<span style="color:#555">.</span>style<span style="color:#555">.</span>width <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>divWidth<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+    div<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> <span style="color:#c30">&#34;#eee&#34;</span>
+
+    floorY <span style="color:#555">=</span> divHeight <span style="color:#555">-</span> <span style="color:#f60">100</span>
+
+    floor <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;div&#39;</span>)
+    floor<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">&#34;floor&#34;</span>
+    floor<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> <span style="color:#c30">&#34;#777&#34;</span>
+    floor<span style="color:#555">.</span>style<span style="color:#555">.</span>position <span style="color:#555">=</span> <span style="color:#c30">&#34;absolute&#34;</span>
+    floor<span style="color:#555">.</span>style<span style="color:#555">.</span>height <span style="color:#555">=</span> <span style="color:#c30">&#34;10px&#34;</span>
+    floor<span style="color:#555">.</span>style<span style="color:#555">.</span>width <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>divWidth<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+    floor<span style="color:#555">.</span>style<span style="color:#555">.</span>bottom <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>divHeight<span style="color:#555">-</span>floorY<span style="color:#555">-</span><span style="color:#f60">10</span><span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+    floor<span style="color:#555">.</span>style<span style="color:#555">.</span>left <span style="color:#555">=</span> <span style="color:#c30">&#34;0px&#34;</span>
+    overall<span style="color:#555">.</span>appendChild(floor)
+
+    textOutput <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;div&#34;</span>)
+    textOutput<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">&#34;day5_1_text_output&#34;</span>
+    overall<span style="color:#555">.</span>parentNode<span style="color:#555">.</span>insertBefore(textOutput, overall<span style="color:#555">.</span>nextSibling)
+
+    <span style="color:#09f;font-style:italic">#&lt;button onclick=&#34;startAnimation()&#34;&gt;Play&lt;/button&gt;</span>
+    <span style="color:#09f;font-style:italic">#js.startAnimation = myTimeline.play</span>
+    playButton <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;button&#34;</span>)
+    playButton<span style="color:#555">.</span>innerText <span style="color:#555">=</span> <span style="color:#c30">&#34;Play&#34;</span>
+    playButton<span style="color:#555">.</span>style<span style="color:#555">.</span>padding <span style="color:#555">=</span> <span style="color:#c30">&#34;.5rem 1rem .5rem 1rem&#34;</span>
+    playButton<span style="color:#555">.</span>style<span style="color:#555">.</span>border <span style="color:#555">=</span> <span style="color:#c30">&#34;2px solid #2c2e34&#34;</span>
+    playButton<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> <span style="color:#c30">&#34;#bbf7d0&#34;</span>
+    
+
+    <span style="color:#09f;font-style:italic">#&lt;button onclick=&#34;stopAnimation()&#34;&gt;Pause&lt;/button&gt;</span>
+    <span style="color:#09f;font-style:italic">#js.stopAnimation = myTimeline.pause</span>
+    pauseButton <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;button&#34;</span>)
+    pauseButton<span style="color:#555">.</span>innerText <span style="color:#555">=</span> <span style="color:#c30">&#34;Pause&#34;</span>
+    pauseButton<span style="color:#555">.</span>style<span style="color:#555">.</span>padding <span style="color:#555">=</span> <span style="color:#c30">&#34;.5rem 1rem .5rem 1rem&#34;</span>
+    pauseButton<span style="color:#555">.</span>style<span style="color:#555">.</span>border <span style="color:#555">=</span> <span style="color:#c30">&#34;2px solid #2c2e34&#34;</span>
+    pauseButton<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> <span style="color:#c30">&#34;#fef08a&#34;</span>
+
+    <span style="color:#09f;font-style:italic">#&lt;input type=&#34;range&#34; id=&#34;seekbar&#34; min=&#34;0&#34; max=&#34;100&#34; value=&#34;0&#34; oninput=&#34;myTimeline.pause();myTimeline.seek(myTimeline.duration * (this.value/100))&#34; style=&#34;width: 100%&#34;&gt;&lt;/progress&gt;</span>
+    seekbar <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;input&#34;</span>)
+    seekbar<span style="color:#555">.</span>type <span style="color:#555">=</span> <span style="color:#c30">&#34;range&#34;</span>
+    seekbar<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">&#34;seekbar&#34;</span>
+    seekbar<span style="color:#555">.</span>min <span style="color:#555">=</span> <span style="color:#c30">&#34;0&#34;</span>
+    seekbar<span style="color:#555">.</span>max <span style="color:#555">=</span> <span style="color:#c30">&#34;100&#34;</span>
+    seekbar<span style="color:#555">.</span>value <span style="color:#555">=</span> <span style="color:#c30">&#34;0&#34;</span>
+    seekbar<span style="color:#555">.</span>style<span style="color:#555">.</span>width <span style="color:#555">=</span> <span style="color:#c30">&#34;400px&#34;</span>
+
+    controlHolder <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;div&#34;</span>)
+    controlHolder<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">&#34;day5_2_controls&#34;</span>
+    controlHolder<span style="color:#555">.</span>appendChild(playButton)
+    controlHolder<span style="color:#555">.</span>appendChild(pauseButton)
+    controlHolder<span style="color:#555">.</span>appendChild(seekbar)
+    controlHolder<span style="color:#555">.</span>style<span style="color:#555">.</span>position <span style="color:#555">=</span> <span style="color:#c30">&#34;absolute&#34;</span>
+    controlHolder<span style="color:#555">.</span>style<span style="color:#555">.</span>bottom <span style="color:#555">=</span> <span style="color:#c30">&#34;10px&#34;</span>
+    controlHolder<span style="color:#555">.</span>style<span style="color:#555">.</span>left <span style="color:#555">=</span> <span style="color:#c30">&#34;20px&#34;</span>
+    controlHolder<span style="color:#555">.</span>style<span style="color:#555">.</span>width <span style="color:#555">=</span> <span style="color:#c30">&#34;100%&#34;</span>
+    div<span style="color:#555">.</span>appendChild(controlHolder)
+
+    crateSize <span style="color:#555">=</span> <span style="color:#f60">25</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">indexToBottom</span>(index):
+        <span style="color:#069;font-weight:bold">return</span> divHeight <span style="color:#555">-</span> floorY <span style="color:#555">+</span> (crateSize<span style="color:#555">+</span><span style="color:#f60">5</span>) <span style="color:#555">*</span> index
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">makeDisplay</span>(yard):
+        <span style="color:#069;font-weight:bold">for</span> index, stack <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(yard):
+            newStackList <span style="color:#555">=</span> []
+            leftEdge <span style="color:#555">=</span> index <span style="color:#555">*</span> (crateSize <span style="color:#555">*</span> <span style="color:#f60">2</span>) <span style="color:#555">+</span> <span style="color:#f60">25</span>
+
+            stackLabel <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;div&#39;</span>)
+            stackLabel<span style="color:#555">.</span>style<span style="color:#555">.</span>width <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>crateSize<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+            stackLabel<span style="color:#555">.</span>style<span style="color:#555">.</span>height <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>crateSize<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+            stackLabel<span style="color:#555">.</span>style<span style="color:#555">.</span>position <span style="color:#555">=</span> <span style="color:#c30">&#34;absolute&#34;</span>
+            stackLabel<span style="color:#555">.</span>style<span style="color:#555">.</span>left <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>leftEdge<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+            stackLabel<span style="color:#555">.</span>style<span style="color:#555">.</span>top <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>floorY <span style="color:#555">+</span> <span style="color:#f60">15</span><span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+            stackLabel<span style="color:#555">.</span>style<span style="color:#555">.</span>textAlign <span style="color:#555">=</span> <span style="color:#c30">&#34;center&#34;</span>
+            label <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;span&#34;</span>)
+            label<span style="color:#555">.</span>innerText <span style="color:#555">=</span> stack
+            stackLabel<span style="color:#555">.</span>appendChild(label)
+            div<span style="color:#555">.</span>appendChild(stackLabel)
+
+            <span style="color:#069;font-weight:bold">for</span> stackLevel, crate <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(yard[stack]):
+                bottom <span style="color:#555">=</span> indexToBottom(stackLevel)
+                container <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#39;div&#39;</span>)
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> startColor
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>width <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>crateSize<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>border <span style="color:#555">=</span> <span style="color:#c30">&#34;2px solid #2c2e34&#34;</span>
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>position <span style="color:#555">=</span> <span style="color:#c30">&#34;absolute&#34;</span>
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>bottom <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>bottom<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>left <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>leftEdge<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>
+                container<span style="color:#555">.</span>style<span style="color:#555">.</span>textAlign <span style="color:#555">=</span> <span style="color:#c30">&#34;center&#34;</span>
+
+                label <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;span&#34;</span>)
+                label<span style="color:#555">.</span>innerText <span style="color:#555">=</span> <span style="color:#366">str</span>(crate)
+                container<span style="color:#555">.</span>appendChild(label)
+
+                newStackList<span style="color:#555">.</span>append(Crate(crate, container))
+                div<span style="color:#555">.</span>appendChild(container)
+            yard[stack] <span style="color:#555">=</span> Stack(crates<span style="color:#555">=</span> newStackList, x <span style="color:#555">=</span> leftEdge)
+
+    makeDisplay(yard)
+
+    myTimeline <span style="color:#555">=</span> anime<span style="color:#555">.</span>timeline(j({
+        <span style="color:#c30">&#34;duration&#34;</span>: <span style="color:#f60">500</span>,
+        <span style="color:#c30">&#34;easing&#34;</span>: <span style="color:#c30">&#34;easeInOutSine&#34;</span>,
+        <span style="color:#c30">&#34;autoplay&#34;</span>: <span style="color:#069;font-weight:bold">True</span>
+    }))
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">seekbar_input</span>(evt):
+        myTimeline<span style="color:#555">.</span>pause()
+        myTimeline<span style="color:#555">.</span>seek(myTimeline<span style="color:#555">.</span>duration <span style="color:#555">*</span> (<span style="color:#366">float</span>(evt<span style="color:#555">.</span>srcElement<span style="color:#555">.</span>value)<span style="color:#555">/</span><span style="color:#f60">100</span>))
+
+    add_event_listener(seekbar, <span style="color:#c30">&#39;input&#39;</span>, seekbar_input)
+    add_event_listener(playButton, <span style="color:#c30">&#39;click&#39;</span>, <span style="color:#069;font-weight:bold">lambda</span> _: myTimeline<span style="color:#555">.</span>play())
+    add_event_listener(pauseButton, <span style="color:#c30">&#39;click&#39;</span>, <span style="color:#069;font-weight:bold">lambda</span> _: myTimeline<span style="color:#555">.</span>pause())
+
+    progressElement <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;seekbar&#34;</span>)
+    prevProgress <span style="color:#555">=</span> <span style="color:#f60">0</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">updateSeekbar</span>(yard, <span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">nonlocal</span> prevProgress
+        progressElement<span style="color:#555">.</span>value <span style="color:#555">=</span> myTimeline<span style="color:#555">.</span>progress
+        <span style="color:#069;font-weight:bold">if</span> myTimeline<span style="color:#555">.</span>progress <span style="color:#555">==</span> <span style="color:#f60">100</span>:
+            <span style="color:#069;font-weight:bold">for</span> stack <span style="color:#000;font-weight:bold">in</span> yard:
+                <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">len</span>(yard[stack]<span style="color:#555">.</span>crates):
+                    topCrate <span style="color:#555">=</span> yard[stack]<span style="color:#555">.</span>crates[<span style="color:#555">-</span><span style="color:#f60">1</span>]
+                    topCrate<span style="color:#555">.</span>element<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> endColor
+        <span style="color:#069;font-weight:bold">elif</span> prevProgress <span style="color:#555">==</span> <span style="color:#f60">100</span>:
+            <span style="color:#069;font-weight:bold">for</span> stack <span style="color:#000;font-weight:bold">in</span> yard:
+                <span style="color:#069;font-weight:bold">for</span> crate <span style="color:#000;font-weight:bold">in</span> yard[stack]<span style="color:#555">.</span>crates:
+                    crate<span style="color:#555">.</span>element<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> startColor
+
+        prevProgress <span style="color:#555">=</span> myTimeline<span style="color:#555">.</span>progress
+
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">displayOnMove</span>(from_stack, to_stack, quantity, instructionCount, instructionIndex, <span style="color:#555">*</span>args):
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;Instruction </span><span style="color:#a00">{</span>instructionIndex<span style="color:#a00">}</span><span style="color:#c30">: Move </span><span style="color:#a00">{</span>quantity<span style="color:#a00">}</span><span style="color:#c30"> crate</span><span style="color:#a00">{</span><span style="color:#c30">&#39;s&#39;</span> <span style="color:#069;font-weight:bold">if</span> quantity <span style="color:#555">&gt;</span> <span style="color:#f60">1</span> <span style="color:#069;font-weight:bold">else</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#a00">}</span><span style="color:#c30"> from stack </span><span style="color:#a00">{</span>from_stack<span style="color:#a00">}</span><span style="color:#c30"> to stack </span><span style="color:#a00">{</span>to_stack<span style="color:#a00">}</span><span style="color:#c30">. </span><span style="color:#a00">{</span>instructionCount<span style="color:#555">+</span><span style="color:#f60">1</span><span style="color:#a00">}</span><span style="color:#c30"> of </span><span style="color:#a00">{</span>quantity<span style="color:#a00">}</span><span style="color:#c30"> complete&#34;</span>, target<span style="color:#555">=</span><span style="color:#c30">&#34;day5_1_text_output&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">doFinalOutput</span>(yard, <span style="color:#555">*</span>args):
+        solution <span style="color:#555">=</span> <span style="color:#c30">&#34;&#34;</span>
+        <span style="color:#069;font-weight:bold">for</span> stack <span style="color:#000;font-weight:bold">in</span> yard:
+            <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">len</span>(yard[stack]<span style="color:#555">.</span>crates):
+                topCrate <span style="color:#555">=</span> yard[stack]<span style="color:#555">.</span>crates[<span style="color:#555">-</span><span style="color:#f60">1</span>]
+                topCrate<span style="color:#555">.</span>element<span style="color:#555">.</span>style<span style="color:#555">.</span>backgroundColor <span style="color:#555">=</span> <span style="color:#c30">&#34;green&#34;</span>
+                solution <span style="color:#555">+=</span> topCrate<span style="color:#555">.</span>label
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;SOLUTION: </span><span style="color:#a00">{</span>solution<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>, target<span style="color:#555">=</span><span style="color:#c30">&#34;day5_1_text_output&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">moveOneCrate</span>(yard: yardType, from_stack: <span style="color:#366">str</span>, to_stack: <span style="color:#366">str</span>, quantity: <span style="color:#366">int</span>, timeline, instructionCount, instructionIndex, final):
+        js<span style="color:#555">.</span>console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;moveOneCrate&#34;</span>)
+        crate <span style="color:#555">=</span> yard[from_stack]<span style="color:#555">.</span>crates<span style="color:#555">.</span>pop()
+        yard[to_stack]<span style="color:#555">.</span>crates<span style="color:#555">.</span>append(crate)
+        newBottom <span style="color:#555">=</span> indexToBottom(yard[to_stack]<span style="color:#555">.</span>crates<span style="color:#555">.</span>index(crate))
+        timeline<span style="color:#555">.</span>add(j({
+            <span style="color:#c30">&#34;targets&#34;</span>: crate<span style="color:#555">.</span>element,
+            <span style="color:#c30">&#34;keyframes&#34;</span>: [
+                j({<span style="color:#c30">&#34;bottom&#34;</span>: <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>divHeight <span style="color:#555">-</span> <span style="color:#f60">20</span> <span style="color:#555">-</span> crateSize<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>}),
+                j({<span style="color:#c30">&#34;left&#34;</span>: yard[to_stack]<span style="color:#555">.</span>x}),
+                j({<span style="color:#c30">&#34;bottom&#34;</span>: <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>newBottom<span style="color:#a00">}</span><span style="color:#c30">px&#34;</span>})
+            ],
+            <span style="color:#c30">&#34;begin&#34;</span>: partial(displayOnMove, from_stack, to_stack, quantity, instructionCount, instructionIndex),
+            <span style="color:#c30">&#34;update&#34;</span>: partial(updateSeekbar, yard),
+            <span style="color:#c30">&#34;complete&#34;</span>: partial(doFinalOutput, yard) <span style="color:#069;font-weight:bold">if</span> final <span style="color:#069;font-weight:bold">else</span> (<span style="color:#069;font-weight:bold">lambda</span> _: <span style="color:#069;font-weight:bold">None</span>)
+        }))
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">operateOn</span>(yard: yardType, ins: Instruction, instructionIndex: <span style="color:#366">int</span>, final:<span style="color:#366">bool</span>) <span style="color:#555">-&gt;</span> yard:
+        <span style="color:#069;font-weight:bold">for</span> instructionCount <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(ins<span style="color:#555">.</span>quantity):
+            moveOneCrate(yard, ins<span style="color:#555">.</span>from_stack, ins<span style="color:#555">.</span>to_stack, ins<span style="color:#555">.</span>quantity, myTimeline, instructionCount, instructionIndex, final <span style="color:#555">=</span> final <span style="color:#000;font-weight:bold">and</span> instructionCount <span style="color:#555">==</span> ins<span style="color:#555">.</span>quantity <span style="color:#555">-</span> <span style="color:#f60">1</span>)
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">doAllInstructions</span>(instructions):
+        <span style="color:#069;font-weight:bold">for</span> instructionIndex, ins <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(instructions):
+            operateOn(yard, ins, instructionIndex, final <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span> <span style="color:#069;font-weight:bold">if</span> instructionIndex <span style="color:#555">==</span> <span style="color:#366">len</span>(instructions) <span style="color:#555">-</span> <span style="color:#f60">1</span> <span style="color:#069;font-weight:bold">else</span> <span style="color:#069;font-weight:bold">False</span>)
+
+    doAllInstructions(instructions)
+
+    js<span style="color:#555">.</span>console<span style="color:#555">.</span>log(js<span style="color:#555">.</span>window)</code></pre></td></tr></table>
 </div>
 </div></div>
          <div class="text-sm post-img-caption">Scroll to see complete code</div> 
@@ -1935,6 +2464,234 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
                 tabContent.classList.remove('active')
             })
             tabsday5_2.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day6_1'>Day 6: Tuning Trouble (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Part of the fun of Advent of Code is trying to guess what things in Part 1 of each day are going to get turned topsy-turvy in Part 2. Today's question, involving finding when elements in a sliding window are unique, lead me to a few guesses. Would there be some other criteria for determining success? Only one duplicated letter perhaps? Perhaps the window would need to ignore only its center element, or the window would jump by twos, or something.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day6_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day6_1-upload-input" name="day6_1-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day6_1-output"></div>
+                
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day6_1-run-btn" py-click="main_day6_1()">RUN</button></div>
+                
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day6_1-upload-input')
+            </py-script>
+            <py-script src="day6/main_1.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day6_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day6_1="#day6_1-code" class="active tab code-title">day6_1.py</li>
+         
+    </ul>
+    <div id="day6_1-code" data-tab-content-day6_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">collections</span> <span style="color:#069;font-weight:bold">import</span> deque
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">findIndexAllDifferent</span>(input_stream, n):
+    window <span style="color:#555">=</span> deque(maxlen<span style="color:#555">=</span>n)
+    <span style="color:#069;font-weight:bold">for</span> index, token <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(input_stream):
+        window<span style="color:#555">.</span>append(token)
+        <span style="color:#069;font-weight:bold">if</span> index <span style="color:#555">+</span> <span style="color:#f60">1</span> <span style="color:#555">&gt;=</span> n <span style="color:#000;font-weight:bold">and</span> <span style="color:#366">len</span>(<span style="color:#366">set</span>(window)) <span style="color:#555">&gt;=</span> n:
+            <span style="color:#069;font-weight:bold">return</span> index <span style="color:#555">+</span> <span style="color:#f60">1</span>
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#555">-</span><span style="color:#f60">1</span>
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day6_1</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day6_1&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>findIndexAllDifferent(data, <span style="color:#f60">4</span>)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day6_1-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>strip(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+    <span style="color:#366">print</span>(findIndexAllDifferent(data, <span style="color:#f60">4</span>))
+    </code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday6_1 = document.querySelectorAll('[data-tab-target-day6_1]')
+    const tabContentsday6_1 = document.querySelectorAll('[data-tab-content-day6_1]')
+
+    tabsday6_1.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay6_1)
+            tabContentsday6_1.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday6_1.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day6_2'>Day 6: Tuning Trouble (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Thankfully, it turned out part 2 made the simplest possible adjustment - the length of the window. Hence, the code for the two parts looks almost identical. I suppose the objective was to catch out anyone who "manually" checked each element of the sliding window for uniqueness against the other three.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day6_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day6_2-upload-input" name="day6_2-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day6_2-output"></div>
+                
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day6_2-run-btn" py-click="main_day6_2()">RUN</button></div>
+                
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day6_2-upload-input')
+            </py-script>
+            <py-script src="day6/main_2.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day6_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day6_2="#day6_2-code" class="active tab code-title">day6_2.py</li>
+         
+    </ul>
+    <div id="day6_2-code" data-tab-content-day6_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">collections</span> <span style="color:#069;font-weight:bold">import</span> deque
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">findIndexAllDifferent_6_2</span>(input_stream, n):
+    window <span style="color:#555">=</span> deque(maxlen<span style="color:#555">=</span>n)
+    <span style="color:#069;font-weight:bold">for</span> index, token <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(input_stream):
+        window<span style="color:#555">.</span>append(token)
+        <span style="color:#069;font-weight:bold">if</span> index <span style="color:#555">+</span> <span style="color:#f60">1</span> <span style="color:#555">&gt;=</span> n <span style="color:#000;font-weight:bold">and</span> <span style="color:#366">len</span>(<span style="color:#366">set</span>(window)) <span style="color:#555">&gt;=</span> n:
+            <span style="color:#069;font-weight:bold">return</span> index <span style="color:#555">+</span> <span style="color:#f60">1</span>
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#555">-</span><span style="color:#f60">1</span>
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day6_2</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day6_2&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>findIndexAllDifferent_6_2(data, <span style="color:#f60">14</span>)<span style="color:#a00">= }</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day6_2-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>strip(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+    <span style="color:#366">print</span>(findIndexAllDifferent_6_2(data, <span style="color:#f60">14</span>))</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday6_2 = document.querySelectorAll('[data-tab-target-day6_2]')
+    const tabContentsday6_2 = document.querySelectorAll('[data-tab-content-day6_2]')
+
+    tabsday6_2.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay6_2)
+            tabContentsday6_2.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday6_2.forEach(tab => {
                 tab.classList.remove('active')
             })
             tab.classList.add('active')
