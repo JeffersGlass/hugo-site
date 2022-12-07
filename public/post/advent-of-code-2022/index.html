@@ -168,6 +168,7 @@ if (!doNotTrack) {
     </div>
 </div>
 <py-config class="hidden">
+    packages = ['anytree']
     [[fetch]]
     files = ['utils.py']
 </py-config>
@@ -2699,6 +2700,1004 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
         })
     })
 </script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day7_1'>Day 7: No Space Left on Device (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">When running into a challenge like today's, the question is always: "Should I implement my own data structure, or make use of a built-in/pre-existing module?" Today I opted for the later, and discovered the <a href="https://github.com/c0fec0de/anytree">anytree package</a> for the first time. It has all the functionality I could way - children/parent tracking, arbitrary attributes on Nodes, provision for walking/tranversing/searching the tree, importing/exporting dictionaries/JSON, symlinks... I suspect I'm going to get a lot of use out of this.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript viz"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day7_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day7_1-upload-input" name="day7_1-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day7_1-output"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day7_1-run-btn" py-click="main_day7_1()">RUN</button></div>
+                
+                <div>
+                    <py-script src="day7/viz_1.py"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day7_1-run-btn" py-click="viz_day7_1()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day7_1-upload-input')
+            </py-script>
+            <py-script src="day7/main_1.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day7_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day7_1="#day7_1-code" class="active tab code-title">day7_1.py</li>
+        <li data-tab-target-day7_1="#day7_1-viz-code" class="tab code-title">day7_1-viz.py</li> 
+    </ul>
+    <div id="day7_1-code" data-tab-content-day7_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree</span> <span style="color:#069;font-weight:bold">import</span> Node, RenderTree, PreOrderIter
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree.search</span> <span style="color:#069;font-weight:bold">import</span> findall
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solution_7_1</span>(data):
+    <span style="color:#069;font-weight:bold">if</span> (root_cmd <span style="color:#555">:=</span> data[<span style="color:#f60">0</span>]) <span style="color:#555">==</span> <span style="color:#c30">&#34;$ cd /&#34;</span>:
+        root <span style="color:#555">=</span> Node(<span style="color:#c30">&#39;/&#39;</span>)
+        data <span style="color:#555">=</span> data[<span style="color:#f60">1</span>:]
+    <span style="color:#069;font-weight:bold">else</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;First command something other than cd / : </span><span style="color:#a00">{</span>root_cmd<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    currentNode <span style="color:#555">=</span> root
+
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        currentNode <span style="color:#555">=</span> processLine_7_1(line, root, currentNode)
+
+    <span style="color:#09f;font-style:italic"># After constructing tree, pre-calculate folder sizes.</span>
+    <span style="color:#09f;font-style:italic"># A bit inefficient, but fine</span>
+    <span style="color:#069;font-weight:bold">for</span> node <span style="color:#000;font-weight:bold">in</span> PreOrderIter(root):
+        <span style="color:#069;font-weight:bold">if</span> isFolder_7_1(node) <span style="color:#000;font-weight:bold">and</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#34;folder_size&#34;</span>):
+            node<span style="color:#555">.</span>folder_size <span style="color:#555">=</span> containedFileSize_7_1(node)
+
+    small_folders <span style="color:#555">=</span> findall(root, <span style="color:#069;font-weight:bold">lambda</span> n: <span style="color:#366">hasattr</span>(n, <span style="color:#c30">&#34;folder_size&#34;</span>) <span style="color:#000;font-weight:bold">and</span> n<span style="color:#555">.</span>folder_size <span style="color:#555">&lt;=</span> <span style="color:#f60">100_000</span>)
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(f<span style="color:#555">.</span>folder_size <span style="color:#069;font-weight:bold">for</span> f <span style="color:#000;font-weight:bold">in</span> small_folders)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">processLine_7_1</span>(line: <span style="color:#366">str</span>, rootNode: Node, currentNode: Node) <span style="color:#555">-&gt;</span> Node:
+    <span style="color:#c30">&#34;&#34;&#34;
+</span><span style="color:#c30">    Processes one line of input; mutates the tree pointed to by rootNode,
+</span><span style="color:#c30">    returns the new currentNode
+</span><span style="color:#c30">    &#34;&#34;&#34;</span>
+    nextCurrentNode <span style="color:#555">=</span> currentNode
+    match line<span style="color:#555">.</span>split():
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;/&#34;</span>]:
+            <span style="color:#09f;font-style:italic"># Move out to root</span>
+            nextCurrentNode <span style="color:#555">=</span> rootNode
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;..&#34;</span>]:
+            <span style="color:#09f;font-style:italic"># Move out one level</span>
+            nextCurrentNode <span style="color:#555">=</span> currentNode<span style="color:#555">.</span>parent
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#366">dir</span>]:
+            <span style="color:#09f;font-style:italic"># Move to directory {dir}</span>
+            nextCurrentNode <span style="color:#555">=</span> [child <span style="color:#069;font-weight:bold">for</span> child <span style="color:#000;font-weight:bold">in</span> currentNode<span style="color:#555">.</span>children <span style="color:#069;font-weight:bold">if</span> child<span style="color:#555">.</span>name <span style="color:#555">==</span> <span style="color:#366">dir</span>][<span style="color:#f60">0</span>]
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;ls&#34;</span>]:
+            <span style="color:#09f;font-style:italic">#list files</span>
+            <span style="color:#069;font-weight:bold">pass</span>
+        case [<span style="color:#c30">&#34;dir&#34;</span>, dirname]:
+            <span style="color:#09f;font-style:italic"># New directory {dirname}</span>
+            newDir <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>dirname, parent <span style="color:#555">=</span> currentNode)
+        case [size, filename]:
+            <span style="color:#09f;font-style:italic"># New file {filename}</span>
+            newFile <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>filename, parent<span style="color:#555">=</span>currentNode, size<span style="color:#555">=</span><span style="color:#366">int</span>(size))
+        case _:
+            <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Somehow unmatched??&#34;</span>)
+
+    <span style="color:#069;font-weight:bold">return</span> nextCurrentNode
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">printTree_7_1</span>(root:Node) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+    <span style="color:#069;font-weight:bold">for</span> pre, fill, node <span style="color:#000;font-weight:bold">in</span> RenderTree(root):
+        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>pre<span style="color:#a00">}{</span>node<span style="color:#555">.</span>name<span style="color:#a00">}{</span><span style="color:#c30">&#39; - &#39;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(node<span style="color:#555">.</span>size) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;size&#39;</span>) <span style="color:#069;font-weight:bold">else</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFile_7_1</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">==</span> <span style="color:#f60">0</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFolder_7_1</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">containedFileSize_7_1</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+    <span style="color:#069;font-weight:bold">if</span> isFile_7_1(node):
+        <span style="color:#069;font-weight:bold">return</span> node<span style="color:#555">.</span>size
+    
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(containedFileSize_7_1(n) <span style="color:#069;font-weight:bold">for</span> n <span style="color:#000;font-weight:bold">in</span> node<span style="color:#555">.</span>children)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day7_1</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day7_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solution_7_1(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day7_1-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+
+    <span style="color:#366">print</span>(solution_7_1(data))</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+    
+    
+    
+    <div id="day7_1-viz-code" data-tab-content-day7_1 class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">contextlib</span> <span style="color:#069;font-weight:bold">import</span> redirect_stdout
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">io</span> <span style="color:#069;font-weight:bold">import</span> StringIO
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree</span> <span style="color:#069;font-weight:bold">import</span> Node, RenderTree, PreOrderIter
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree.search</span> <span style="color:#069;font-weight:bold">import</span> findall
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree.render</span> <span style="color:#069;font-weight:bold">import</span> ContStyle
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day7_1</span>():    
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">local_main</span>(data):
+        <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span> 
+
+        <span style="color:#069;font-weight:bold">if</span> (root_cmd <span style="color:#555">:=</span> data[<span style="color:#f60">0</span>]) <span style="color:#555">==</span> <span style="color:#c30">&#34;$ cd /&#34;</span>:
+            root <span style="color:#555">=</span> Node(<span style="color:#c30">&#39;/&#39;</span>)
+            data <span style="color:#555">=</span> data[<span style="color:#f60">1</span>:]
+        <span style="color:#069;font-weight:bold">else</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;First command something other than cd / : </span><span style="color:#a00">{</span>root_cmd<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+        currentNode <span style="color:#555">=</span> root
+
+        <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+            currentNode <span style="color:#555">=</span> processLine_7_1(line, root, currentNode)
+
+        <span style="color:#09f;font-style:italic"># After constructing tree, pre-calculate folder sizes.</span>
+        <span style="color:#09f;font-style:italic"># A bit inefficient, but fine</span>
+        <span style="color:#069;font-weight:bold">for</span> node <span style="color:#000;font-weight:bold">in</span> PreOrderIter(root):
+            <span style="color:#069;font-weight:bold">if</span> isFolder_7_1(node) <span style="color:#000;font-weight:bold">and</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#34;folder_size&#34;</span>):
+                node<span style="color:#555">.</span>folder_size <span style="color:#555">=</span> containedFileSize_7_1(node)
+
+        small_folders <span style="color:#555">=</span> findall(root, <span style="color:#069;font-weight:bold">lambda</span> n: <span style="color:#366">hasattr</span>(n, <span style="color:#c30">&#34;folder_size&#34;</span>) <span style="color:#000;font-weight:bold">and</span> n<span style="color:#555">.</span>folder_size <span style="color:#555">&lt;=</span> <span style="color:#f60">100_000</span>)
+        display(<span style="color:#366">sum</span>(f<span style="color:#555">.</span>folder_size <span style="color:#069;font-weight:bold">for</span> f <span style="color:#000;font-weight:bold">in</span> small_folders),
+                target <span style="color:#555">=</span> <span style="color:#c30">&#34;day7_1-output&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+        
+
+        <span style="color:#069;font-weight:bold">if</span> (pre<span style="color:#555">:=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day7_1-pre&#34;</span>)) <span style="color:#000;font-weight:bold">is</span> <span style="color:#069;font-weight:bold">None</span>:
+            <span style="color:#09f;font-style:italic"># Make pre tag for output</span>
+            pre <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;pre&#34;</span>)
+            pre<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">&#34;day7_1-pre&#34;</span>
+            pre<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;bg-gray-900&#34;</span>, <span style="color:#c30">&#34;text-gray-300&#34;</span>)
+            pre<span style="color:#555">.</span>style<span style="color:#555">.</span>lineHeight <span style="color:#555">=</span> <span style="color:#c30">&#39;1.1&#39;</span>
+            container <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day7_1-viz&#34;</span>)
+            container<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#39;max-h-124&#39;</span>, <span style="color:#c30">&#39;overflow-y-auto&#39;</span>, <span style="color:#c30">&#39;my-4&#39;</span>)
+            container<span style="color:#555">.</span>appendChild(pre)
+        <span style="color:#069;font-weight:bold">else</span>:
+            pre<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#34;&#34;</span> <span style="color:#09f;font-style:italic">#clear existing output</span>
+
+        <span style="color:#069;font-weight:bold">for</span> pre, fill, node <span style="color:#000;font-weight:bold">in</span> RenderTree(root, style<span style="color:#555">=</span>ContStyle()):
+            <span style="color:#09f;font-style:italic">#if node in small_folders:</span>
+            nameSegment <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>pre<span style="color:#a00">}{</span>node<span style="color:#555">.</span>name<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+            <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;size&#39;</span>): displaySize <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span><span style="color:#c30">&#39;size:&#39;</span><span style="color:#a00">:</span><span style="color:#c30"> &gt;</span><span style="color:#a00">{</span><span style="color:#366">len</span>(<span style="color:#c30">&#39;folder size:&#39;</span>)<span style="color:#a00">}}</span><span style="color:#c30"> </span><span style="color:#a00">{</span><span style="color:#366">str</span>(node<span style="color:#555">.</span>size)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+            <span style="color:#069;font-weight:bold">elif</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;folder_size&#39;</span>): displaySize <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span><span style="color:#c30">&#39;folder size:&#39;</span><span style="color:#a00">}</span><span style="color:#c30"> </span><span style="color:#a00">{</span><span style="color:#366">str</span>(node<span style="color:#555">.</span>folder_size)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+            <span style="color:#069;font-weight:bold">else</span>: displaySize <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
+
+            contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>nameSegment<span style="color:#a00">:</span><span style="color:#c30"> &lt;60</span><span style="color:#a00">}{</span>displaySize<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+
+            <span style="color:#09f;font-style:italic">#Highlight solution lines</span>
+            <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#34;folder_size&#34;</span>) <span style="color:#000;font-weight:bold">and</span> node<span style="color:#555">.</span>folder_size <span style="color:#555">&lt;=</span> <span style="color:#f60">100_000</span>:
+                contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#39;&lt;span style=&#34;text-shadow: 0 0 8px #ffffff; color: rgb(255, 255, 255)&#34;&gt;</span><span style="color:#a00">{</span>contents<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#39;</span>
+            <span style="color:#069;font-weight:bold">else</span>:
+                contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#39;&lt;span&gt;</span><span style="color:#a00">{</span>contents<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#39;</span>
+            
+            display(HTML(contents),
+                    target <span style="color:#555">=</span> <span style="color:#c30">&#34;day7_1-pre&#34;</span>)
+      
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">processLine_7_1</span>(line: <span style="color:#366">str</span>, rootNode: Node, currentNode: Node) <span style="color:#555">-&gt;</span> Node:
+        <span style="color:#c30">&#34;&#34;&#34;
+</span><span style="color:#c30">        Processes one line of input; mutates the tree pointed to by rootNode,
+</span><span style="color:#c30">        returns the new currentNode
+</span><span style="color:#c30">        &#34;&#34;&#34;</span>
+        nextCurrentNode <span style="color:#555">=</span> currentNode
+        match line<span style="color:#555">.</span>split():
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;/&#34;</span>]:
+                <span style="color:#09f;font-style:italic"># Move out to root</span>
+                nextCurrentNode <span style="color:#555">=</span> rootNode
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;..&#34;</span>]:
+                <span style="color:#09f;font-style:italic"># Move out one level</span>
+                nextCurrentNode <span style="color:#555">=</span> currentNode<span style="color:#555">.</span>parent
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#366">dir</span>]:
+                <span style="color:#09f;font-style:italic"># Move to directory {dir}</span>
+                nextCurrentNode <span style="color:#555">=</span> [child <span style="color:#069;font-weight:bold">for</span> child <span style="color:#000;font-weight:bold">in</span> currentNode<span style="color:#555">.</span>children <span style="color:#069;font-weight:bold">if</span> child<span style="color:#555">.</span>name <span style="color:#555">==</span> <span style="color:#366">dir</span>][<span style="color:#f60">0</span>]
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;ls&#34;</span>]:
+                <span style="color:#09f;font-style:italic">#list files</span>
+                <span style="color:#069;font-weight:bold">pass</span>
+            case [<span style="color:#c30">&#34;dir&#34;</span>, dirname]:
+                <span style="color:#09f;font-style:italic"># New directory {dirname}</span>
+                newDir <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>dirname, parent <span style="color:#555">=</span> currentNode)
+            case [size, filename]:
+                <span style="color:#09f;font-style:italic"># New file {filename}</span>
+                newFile <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>filename, parent<span style="color:#555">=</span>currentNode, size<span style="color:#555">=</span><span style="color:#366">int</span>(size))
+            case _:
+                <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Somehow unmatched??&#34;</span>)
+
+        <span style="color:#069;font-weight:bold">return</span> nextCurrentNode
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">printTree_7_1</span>(root:Node) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+        <span style="color:#069;font-weight:bold">for</span> pre, fill, node <span style="color:#000;font-weight:bold">in</span> RenderTree(root):
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>pre<span style="color:#a00">}{</span>node<span style="color:#555">.</span>name<span style="color:#a00">}{</span><span style="color:#c30">&#39; - &#39;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(node<span style="color:#555">.</span>size) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;size&#39;</span>) <span style="color:#069;font-weight:bold">else</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFile_7_1</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">==</span> <span style="color:#f60">0</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFolder_7_1</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">containedFileSize_7_1</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+        <span style="color:#069;font-weight:bold">if</span> isFile_7_1(node):
+            <span style="color:#069;font-weight:bold">return</span> node<span style="color:#555">.</span>size
+        
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(containedFileSize_7_1(n) <span style="color:#069;font-weight:bold">for</span> n <span style="color:#000;font-weight:bold">in</span> node<span style="color:#555">.</span>children)
+
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day7_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+    local_main(data)</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday7_1 = document.querySelectorAll('[data-tab-target-day7_1]')
+    const tabContentsday7_1 = document.querySelectorAll('[data-tab-content-day7_1]')
+
+    tabsday7_1.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay7_1)
+            tabContentsday7_1.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday7_1.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day7_2'>Day 7: No Space Left on Device (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Another part-2 problem which requires taking the data discovered in part 1, sorting it (by some key), and finding the smallest (largest) value, possibly beyond some threshhold. Using <code>anytree.search.findall</code> makes it easy to find the folders, and <code>sorted(key = lamabda node: node.folder_size)</code> allows us to sort by the relevant key.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript viz"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day7_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day7_2-upload-input" name="day7_2-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day7_2-output"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day7_2-run-btn" py-click="main_day7_2()">RUN</button></div>
+                
+                <div>
+                    <py-script src="day7/viz_2.py"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day7_2-run-btn" py-click="viz_day7_2()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day7_2-upload-input')
+            </py-script>
+            <py-script src="day7/main_2.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day7_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day7_2="#day7_2-code" class="active tab code-title">day7_2.py</li>
+        <li data-tab-target-day7_2="#day7_2-viz-code" class="tab code-title">day7_2-viz.py</li> 
+    </ul>
+    <div id="day7_2-code" data-tab-content-day7_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">90
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree</span> <span style="color:#069;font-weight:bold">import</span> Node, RenderTree, PreOrderIter
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree.search</span> <span style="color:#069;font-weight:bold">import</span> findall
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solution_7_2</span>(data):
+    <span style="color:#069;font-weight:bold">if</span> (root_cmd <span style="color:#555">:=</span> data[<span style="color:#f60">0</span>]) <span style="color:#555">==</span> <span style="color:#c30">&#34;$ cd /&#34;</span>:
+        root <span style="color:#555">=</span> Node(<span style="color:#c30">&#39;/&#39;</span>)
+        data <span style="color:#555">=</span> data[<span style="color:#f60">1</span>:]
+    <span style="color:#069;font-weight:bold">else</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;First command something other than cd / : </span><span style="color:#a00">{</span>root_cmd<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    currentNode <span style="color:#555">=</span> root
+
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        currentNode <span style="color:#555">=</span> processLine_7_2(line, root, currentNode)
+
+    <span style="color:#069;font-weight:bold">for</span> node <span style="color:#000;font-weight:bold">in</span> PreOrderIter(root):
+        <span style="color:#069;font-weight:bold">if</span> isFolder_7_2(node) <span style="color:#000;font-weight:bold">and</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#34;folder_size&#34;</span>):
+            node<span style="color:#555">.</span>folder_size <span style="color:#555">=</span> containedFileSize_7_2(node)
+
+    size_used <span style="color:#555">=</span> root<span style="color:#555">.</span>folder_size
+    total_size <span style="color:#555">=</span> <span style="color:#f60">70_000_000</span>
+    size_available <span style="color:#555">=</span> total_size <span style="color:#555">-</span> size_used
+
+    size_needed_for_update <span style="color:#555">=</span> <span style="color:#f60">30_000_000</span>
+    minimum_delete <span style="color:#555">=</span> size_needed_for_update <span style="color:#555">-</span> size_available
+
+    <span style="color:#09f;font-style:italic"># Sort folders by size, find the smallest one larger than the needed size</span>
+    <span style="color:#069;font-weight:bold">for</span> folder <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">sorted</span>(findall(root, <span style="color:#069;font-weight:bold">lambda</span> n: <span style="color:#366">hasattr</span>(n, <span style="color:#c30">&#34;folder_size&#34;</span>)), key<span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span> n: n<span style="color:#555">.</span>folder_size):
+        <span style="color:#069;font-weight:bold">if</span> folder<span style="color:#555">.</span>folder_size <span style="color:#555">&gt;</span> minimum_delete:
+            <span style="color:#069;font-weight:bold">return</span> folder<span style="color:#555">.</span>folder_size
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">processLine_7_2</span>(line: <span style="color:#366">str</span>, rootNode: Node, currentNode: Node) <span style="color:#555">-&gt;</span> Node:
+    <span style="color:#c30">&#34;&#34;&#34;
+</span><span style="color:#c30">    Processes one line of input; mutates the tree pointed to by rootNode,
+</span><span style="color:#c30">    returns the new currentNode
+</span><span style="color:#c30">    &#34;&#34;&#34;</span>
+    nextCurrentNode <span style="color:#555">=</span> currentNode
+    match line<span style="color:#555">.</span>split():
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;/&#34;</span>]:
+            <span style="color:#09f;font-style:italic"># Move out to root</span>
+            nextCurrentNode <span style="color:#555">=</span> rootNode
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;..&#34;</span>]:
+            <span style="color:#09f;font-style:italic"># Move out one level</span>
+            nextCurrentNode <span style="color:#555">=</span> currentNode<span style="color:#555">.</span>parent
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#366">dir</span>]:
+            <span style="color:#09f;font-style:italic"># Move to directory {dir}</span>
+            nextCurrentNode <span style="color:#555">=</span> [child <span style="color:#069;font-weight:bold">for</span> child <span style="color:#000;font-weight:bold">in</span> currentNode<span style="color:#555">.</span>children <span style="color:#069;font-weight:bold">if</span> child<span style="color:#555">.</span>name <span style="color:#555">==</span> <span style="color:#366">dir</span>][<span style="color:#f60">0</span>]
+        case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;ls&#34;</span>]:
+            <span style="color:#09f;font-style:italic"># List Files</span>
+            <span style="color:#069;font-weight:bold">pass</span>
+        case [<span style="color:#c30">&#34;dir&#34;</span>, dirname]:
+            <span style="color:#09f;font-style:italic"># New directory {dirname}</span>
+            newDir <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>dirname, parent <span style="color:#555">=</span> currentNode)
+        case [size, filename]:
+            <span style="color:#09f;font-style:italic"># New file {filename}</span>
+            newFile <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>filename, parent<span style="color:#555">=</span>currentNode, size<span style="color:#555">=</span><span style="color:#366">int</span>(size))
+        case _:
+            <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Somehow unmatched??&#34;</span>)
+            <span style="color:#09f;font-style:italic"># Somehow unmatched??</span>
+
+    <span style="color:#069;font-weight:bold">return</span> nextCurrentNode
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">printTree_7_2</span>(root:Node) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+    <span style="color:#069;font-weight:bold">for</span> pre, fill, node <span style="color:#000;font-weight:bold">in</span> RenderTree(root):
+        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>pre<span style="color:#a00">}{</span>node<span style="color:#555">.</span>name<span style="color:#a00">}{</span><span style="color:#c30">&#39; - &#39;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(node<span style="color:#555">.</span>size) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;size&#39;</span>) <span style="color:#069;font-weight:bold">else</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFile_7_2</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">==</span> <span style="color:#f60">0</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFolder_7_2</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">containedFileSize_7_2</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+    <span style="color:#069;font-weight:bold">if</span> isFile_7_2(node):
+        <span style="color:#069;font-weight:bold">return</span> node<span style="color:#555">.</span>size
+    
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(containedFileSize_7_2(n) <span style="color:#069;font-weight:bold">for</span> n <span style="color:#000;font-weight:bold">in</span> node<span style="color:#555">.</span>children)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day7_2</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day7_2&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solution_7_2(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day7_2-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">else</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+
+    <span style="color:#366">print</span>(solution_7_2(data))</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+    
+    
+    
+    <div id="day7_2-viz-code" data-tab-content-day7_2 class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">contextlib</span> <span style="color:#069;font-weight:bold">import</span> redirect_stdout
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">io</span> <span style="color:#069;font-weight:bold">import</span> StringIO
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree</span> <span style="color:#069;font-weight:bold">import</span> Node, RenderTree, PreOrderIter
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree.search</span> <span style="color:#069;font-weight:bold">import</span> findall
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">anytree.render</span> <span style="color:#069;font-weight:bold">import</span> ContStyle
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day7_2</span>():    
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">local_main</span>(data):
+        <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span> 
+
+        <span style="color:#069;font-weight:bold">if</span> (root_cmd <span style="color:#555">:=</span> data[<span style="color:#f60">0</span>]) <span style="color:#555">==</span> <span style="color:#c30">&#34;$ cd /&#34;</span>:
+            root <span style="color:#555">=</span> Node(<span style="color:#c30">&#39;/&#39;</span>)
+            data <span style="color:#555">=</span> data[<span style="color:#f60">1</span>:]
+        <span style="color:#069;font-weight:bold">else</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;First command something other than cd / : </span><span style="color:#a00">{</span>root_cmd<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+        currentNode <span style="color:#555">=</span> root
+
+        <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+            currentNode <span style="color:#555">=</span> processLine_7_2(line, root, currentNode)
+
+        <span style="color:#09f;font-style:italic"># After constructing tree, pre-calculate folder sizes.</span>
+        <span style="color:#09f;font-style:italic"># A bit inefficient, but fine</span>
+        <span style="color:#069;font-weight:bold">for</span> node <span style="color:#000;font-weight:bold">in</span> PreOrderIter(root):
+            <span style="color:#069;font-weight:bold">if</span> isFolder_7_2(node) <span style="color:#000;font-weight:bold">and</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#34;folder_size&#34;</span>):
+                node<span style="color:#555">.</span>folder_size <span style="color:#555">=</span> containedFileSize_7_2(node)
+
+        size_used <span style="color:#555">=</span> root<span style="color:#555">.</span>folder_size
+        total_size <span style="color:#555">=</span> <span style="color:#f60">70_000_000</span>
+        size_available <span style="color:#555">=</span> total_size <span style="color:#555">-</span> size_used
+
+        size_needed_for_update <span style="color:#555">=</span> <span style="color:#f60">30_000_000</span>
+        minimum_delete <span style="color:#555">=</span> size_needed_for_update <span style="color:#555">-</span> size_available
+
+        <span style="color:#09f;font-style:italic"># Sort folders by size, find the smallest one larger than the needed size</span>
+        <span style="color:#069;font-weight:bold">for</span> folder <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">sorted</span>(findall(root, <span style="color:#069;font-weight:bold">lambda</span> n: <span style="color:#366">hasattr</span>(n, <span style="color:#c30">&#34;folder_size&#34;</span>)), key<span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span> n: n<span style="color:#555">.</span>folder_size):
+            <span style="color:#069;font-weight:bold">if</span> folder<span style="color:#555">.</span>folder_size <span style="color:#555">&gt;</span> minimum_delete:
+                selectedFolder <span style="color:#555">=</span> folder
+                display(folder<span style="color:#555">.</span>folder_size, target<span style="color:#555">=</span><span style="color:#c30">&#34;day7_2-output&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+                <span style="color:#069;font-weight:bold">break</span>        
+
+        <span style="color:#069;font-weight:bold">if</span> (pre<span style="color:#555">:=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day7_2-pre&#34;</span>)) <span style="color:#000;font-weight:bold">is</span> <span style="color:#069;font-weight:bold">None</span>:
+            <span style="color:#09f;font-style:italic"># Make pre tag for output</span>
+            pre <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;pre&#34;</span>)
+            pre<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">&#34;day7_2-pre&#34;</span>
+            pre<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;bg-gray-900&#34;</span>, <span style="color:#c30">&#34;text-gray-300&#34;</span>)
+            pre<span style="color:#555">.</span>style<span style="color:#555">.</span>lineHeight <span style="color:#555">=</span> <span style="color:#c30">&#39;1.1&#39;</span>
+            container <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day7_2-viz&#34;</span>)
+            container<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#39;max-h-124&#39;</span>, <span style="color:#c30">&#39;overflow-y-auto&#39;</span>, <span style="color:#c30">&#39;my-4&#39;</span>)
+            container<span style="color:#555">.</span>appendChild(pre)
+        <span style="color:#069;font-weight:bold">else</span>:
+            pre<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#34;&#34;</span> <span style="color:#09f;font-style:italic">#clear existing output</span>
+
+        runningTotal <span style="color:#555">=</span> <span style="color:#f60">0</span>
+        <span style="color:#069;font-weight:bold">for</span> pre, fill, node <span style="color:#000;font-weight:bold">in</span> RenderTree(root, style<span style="color:#555">=</span>ContStyle()):
+            <span style="color:#09f;font-style:italic">#if node in small_folders:</span>
+            nameSegment <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>pre<span style="color:#a00">}{</span>node<span style="color:#555">.</span>name<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+            <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;size&#39;</span>): displaySize <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span><span style="color:#c30">&#39;size:&#39;</span><span style="color:#a00">:</span><span style="color:#c30"> &gt;</span><span style="color:#a00">{</span><span style="color:#366">len</span>(<span style="color:#c30">&#39;folder size:&#39;</span>)<span style="color:#a00">}}</span><span style="color:#c30"> </span><span style="color:#a00">{</span><span style="color:#366">str</span>(node<span style="color:#555">.</span>size)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+            <span style="color:#069;font-weight:bold">elif</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;folder_size&#39;</span>): displaySize <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span><span style="color:#c30">&#39;folder size:&#39;</span><span style="color:#a00">}</span><span style="color:#c30"> </span><span style="color:#a00">{</span><span style="color:#366">str</span>(node<span style="color:#555">.</span>folder_size)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+            <span style="color:#069;font-weight:bold">else</span>: displaySize <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
+
+            contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>nameSegment<span style="color:#a00">:</span><span style="color:#c30"> &lt;60</span><span style="color:#a00">}{</span>displaySize<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+
+            <span style="color:#09f;font-style:italic">#Highlight solution lines</span>
+            <span style="color:#069;font-weight:bold">if</span> node <span style="color:#555">==</span> selectedFolder <span style="color:#000;font-weight:bold">or</span> (node <span style="color:#000;font-weight:bold">in</span> selectedFolder<span style="color:#555">.</span>descendants <span style="color:#000;font-weight:bold">and</span> isFile_7_2(node)):
+                <span style="color:#069;font-weight:bold">if</span> node <span style="color:#555">==</span> selectedFolder: contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>contents<span style="color:#a00">:</span><span style="color:#c30"> &lt;85</span><span style="color:#a00">}</span><span style="color:#c30"> &lt;&lt;&lt;&lt;&lt; SOLUTION&#34;</span>
+                <span style="color:#069;font-weight:bold">if</span> isFile_7_2(node):
+                    runningTotal <span style="color:#555">+=</span> node<span style="color:#555">.</span>size
+                    contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>contents<span style="color:#a00">:</span><span style="color:#c30"> &lt;85</span><span style="color:#a00">}</span><span style="color:#c30"> Running Total: </span><span style="color:#a00">{</span>runningTotal<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
+                contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#39;&lt;span style=&#34;text-shadow: 0 0 8px #ffffff; color: rgb(255, 255, 255)&#34;&gt;</span><span style="color:#a00">{</span>contents<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#39;</span>
+            <span style="color:#069;font-weight:bold">else</span>:
+                contents <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#39;&lt;span&gt;</span><span style="color:#a00">{</span>contents<span style="color:#a00">}</span><span style="color:#c30">&lt;/span&gt;&#39;</span>
+            
+            display(HTML(contents),
+                    target <span style="color:#555">=</span> <span style="color:#c30">&#34;day7_2-pre&#34;</span>)
+      
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">processLine_7_2</span>(line: <span style="color:#366">str</span>, rootNode: Node, currentNode: Node) <span style="color:#555">-&gt;</span> Node:
+        <span style="color:#c30">&#34;&#34;&#34;
+</span><span style="color:#c30">        Processes one line of input; mutates the tree pointed to by rootNode,
+</span><span style="color:#c30">        returns the new currentNode
+</span><span style="color:#c30">        &#34;&#34;&#34;</span>
+        nextCurrentNode <span style="color:#555">=</span> currentNode
+        match line<span style="color:#555">.</span>split():
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;/&#34;</span>]:
+                <span style="color:#09f;font-style:italic"># Move out to root</span>
+                nextCurrentNode <span style="color:#555">=</span> rootNode
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#c30">&#34;..&#34;</span>]:
+                <span style="color:#09f;font-style:italic"># Move out one level</span>
+                nextCurrentNode <span style="color:#555">=</span> currentNode<span style="color:#555">.</span>parent
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;cd&#34;</span>, <span style="color:#366">dir</span>]:
+                <span style="color:#09f;font-style:italic"># Move to directory {dir}</span>
+                nextCurrentNode <span style="color:#555">=</span> [child <span style="color:#069;font-weight:bold">for</span> child <span style="color:#000;font-weight:bold">in</span> currentNode<span style="color:#555">.</span>children <span style="color:#069;font-weight:bold">if</span> child<span style="color:#555">.</span>name <span style="color:#555">==</span> <span style="color:#366">dir</span>][<span style="color:#f60">0</span>]
+            case [<span style="color:#c30">&#34;$&#34;</span>, <span style="color:#c30">&#34;ls&#34;</span>]:
+                <span style="color:#09f;font-style:italic">#list files</span>
+                <span style="color:#069;font-weight:bold">pass</span>
+            case [<span style="color:#c30">&#34;dir&#34;</span>, dirname]:
+                <span style="color:#09f;font-style:italic"># New directory {dirname}</span>
+                newDir <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>dirname, parent <span style="color:#555">=</span> currentNode)
+            case [size, filename]:
+                <span style="color:#09f;font-style:italic"># New file {filename}</span>
+                newFile <span style="color:#555">=</span> Node(name<span style="color:#555">=</span>filename, parent<span style="color:#555">=</span>currentNode, size<span style="color:#555">=</span><span style="color:#366">int</span>(size))
+            case _:
+                <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Somehow unmatched??&#34;</span>)
+
+        <span style="color:#069;font-weight:bold">return</span> nextCurrentNode
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">printTree_7_2</span>(root:Node) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+        <span style="color:#069;font-weight:bold">for</span> pre, fill, node <span style="color:#000;font-weight:bold">in</span> RenderTree(root):
+            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>pre<span style="color:#a00">}{</span>node<span style="color:#555">.</span>name<span style="color:#a00">}{</span><span style="color:#c30">&#39; - &#39;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(node<span style="color:#555">.</span>size) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">hasattr</span>(node, <span style="color:#c30">&#39;size&#39;</span>) <span style="color:#069;font-weight:bold">else</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFile_7_2</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">==</span> <span style="color:#f60">0</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">isFolder_7_2</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(node<span style="color:#555">.</span>children) <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>
+
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">containedFileSize_7_2</span>(node:Node) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
+        <span style="color:#069;font-weight:bold">if</span> isFile_7_2(node):
+            <span style="color:#069;font-weight:bold">return</span> node<span style="color:#555">.</span>size
+        
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(containedFileSize_7_2(n) <span style="color:#069;font-weight:bold">for</span> n <span style="color:#000;font-weight:bold">in</span> node<span style="color:#555">.</span>children)
+
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day7_2&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+    local_main(data)</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday7_2 = document.querySelectorAll('[data-tab-target-day7_2]')
+    const tabContentsday7_2 = document.querySelectorAll('[data-tab-content-day7_2]')
+
+    tabsday7_2.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay7_2)
+            tabContentsday7_2.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday7_2.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
+
 
 <py-script class="hidden">
     import js
