@@ -78,11 +78,13 @@ def containedFileSize_7_2(node:Node) -> bool:
     return sum(containedFileSize_7_2(n) for n in node.children)
 
 if 'pyodide' in sys.modules:
-    pass
+    def main_day7_2():
+        data = get_input('day7_2').split('\n')
+        display(f"{solution_7_2(data)=}",
+            target="day7_2-output",
+            append=False)
 else:
     with open("input.txt", "r") as fp:
         data = fp.read().split('\n')
 
     print(solution_7_2(data))
-
-    
