@@ -27,6 +27,7 @@
     &lt;/div&gt;
 &lt;/div&gt;
 &lt;py-config class=&#34;hidden&#34;&gt;
+    packages = [&#39;anytree&#39;]
     [[fetch]]
     files = [&#39;utils.py&#39;]
 &lt;/py-config&gt;
@@ -2558,6 +2559,1004 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
         })
     })
 &lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day7_1&#39;&gt;Day 7: No Space Left on Device (Part 1)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;When running into a challenge like today&#39;s, the question is always: &#34;Should I implement my own data structure, or make use of a built-in/pre-existing module?&#34; Today I opted for the later, and discovered the &lt;a href=&#34;https://github.com/c0fec0de/anytree&#34;&gt;anytree package&lt;/a&gt; for the first time. It has all the functionality I could way - children/parent tracking, arbitrary attributes on Nodes, provision for walking/tranversing/searching the tree, importing/exporting dictionaries/JSON, symlinks... I suspect I&#39;m going to get a lot of use out of this.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript viz&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day7_1-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day7_1-upload-input&#34; name=&#34;day7_1-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day7_1-output&#34;&gt;&lt;/div&gt;
+                &lt;div class=&#34;grid grid-cols-1 sm:grid-cols-2 sm:space-x-2&#34;&gt;
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day7_1-run-btn&#34; py-click=&#34;main_day7_1()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div&gt;
+                    &lt;py-script src=&#34;day7/viz_1.py&#34;&gt;&lt;/py-script&gt;
+                    &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-vis-button&#34; id=&#34;day7_1-run-btn&#34; py-click=&#34;viz_day7_1()&#34;&gt;RUN VISUALIZATION&lt;/button&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day7_1-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day7/main_1.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day7_1-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day7_1=&#34;#day7_1-code&#34; class=&#34;active tab code-title&#34;&gt;day7_1.py&lt;/li&gt;
+        &lt;li data-tab-target-day7_1=&#34;#day7_1-viz-code&#34; class=&#34;tab code-title&#34;&gt;day7_1-viz.py&lt;/li&gt; 
+    &lt;/ul&gt;
+    &lt;div id=&#34;day7_1-code&#34; data-tab-content-day7_1 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;82
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; Node, RenderTree, PreOrderIter
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree.search&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; findall
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solution_7_1&lt;/span&gt;(data):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (root_cmd &lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$ cd /&amp;#34;&lt;/span&gt;:
+        root &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt;)
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;First command something other than cd / : &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;root_cmd&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; root
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data:
+        currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; processLine_7_1(line, root, currentNode)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# After constructing tree, pre-calculate folder sizes.&lt;/span&gt;
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# A bit inefficient, but fine&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; PreOrderIter(root):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFolder_7_1(node) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;):
+            node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; containedFileSize_7_1(node)
+
+    small_folders &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; findall(root, &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; n: &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(n, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;100_000&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;(f&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; f &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; small_folders)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;processLine_7_1&lt;/span&gt;(line: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, rootNode: Node, currentNode: Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; Node:
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Processes one line of input; mutates the tree pointed to by rootNode,
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    returns the new currentNode
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode
+    match line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split():
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out to root&lt;/span&gt;
+            nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; rootNode
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;..&amp;#34;&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out one level&lt;/span&gt;
+            nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;parent
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move to directory {dir}&lt;/span&gt;
+            nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [child &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; child &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; child&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;][&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;ls&amp;#34;&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#list files&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;dir&amp;#34;&lt;/span&gt;, dirname]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New directory {dirname}&lt;/span&gt;
+            newDir &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;dirname, parent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode)
+        case [size, filename]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New file {filename}&lt;/span&gt;
+            newFile &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;filename, parent&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;currentNode, size&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(size))
+        case _:
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Somehow unmatched??&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; nextCurrentNode
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;printTree_7_1&lt;/span&gt;(root:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pre, fill, node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; RenderTree(root):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;pre&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39; - &amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFile_7_1&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFolder_7_1&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;containedFileSize_7_1&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFile_7_1(node):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;(containedFileSize_7_1(n) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day7_1&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day7_1&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solution_7_1(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_1-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(solution_7_1(data))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+    
+    
+    
+    &lt;div id=&#34;day7_1-viz-code&#34; data-tab-content-day7_1 class=&#34;tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 87
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 88
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 89
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 90
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 91
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 92
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 93
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 94
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 95
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 96
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 97
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 98
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 99
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;100
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;101
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;102
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;103
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;104
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;105
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;106
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;107
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;108
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;109
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;110
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;111
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;112
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;contextlib&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; redirect_stdout
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;io&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; StringIO
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; Node, RenderTree, PreOrderIter
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree.search&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; findall
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree.render&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; ContStyle
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;viz_day7_1&lt;/span&gt;():    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;local_main&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; 
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (root_cmd &lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$ cd /&amp;#34;&lt;/span&gt;:
+            root &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt;)
+            data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;First command something other than cd / : &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;root_cmd&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+        currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; root
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data:
+            currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; processLine_7_1(line, root, currentNode)
+
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# After constructing tree, pre-calculate folder sizes.&lt;/span&gt;
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# A bit inefficient, but fine&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; PreOrderIter(root):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFolder_7_1(node) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;):
+                node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; containedFileSize_7_1(node)
+
+        small_folders &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; findall(root, &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; n: &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(n, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;100_000&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;(f&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; f &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; small_folders),
+                target &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_1-output&amp;#34;&lt;/span&gt;, append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+        
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (pre&lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_1-pre&amp;#34;&lt;/span&gt;)) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Make pre tag for output&lt;/span&gt;
+            pre &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;createElement(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;pre&amp;#34;&lt;/span&gt;)
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;id &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_1-pre&amp;#34;&lt;/span&gt;
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;classList&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;bg-gray-900&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text-gray-300&amp;#34;&lt;/span&gt;)
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;style&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;lineHeight &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;1.1&amp;#39;&lt;/span&gt;
+            container &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_1-viz&amp;#34;&lt;/span&gt;)
+            container&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;classList&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;max-h-124&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;overflow-y-auto&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;my-4&amp;#39;&lt;/span&gt;)
+            container&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;appendChild(pre)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;innerHTML &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#clear existing output&lt;/span&gt;
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pre, fill, node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; RenderTree(root, style&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;ContStyle()):
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#if node in small_folders:&lt;/span&gt;
+            nameSegment &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;pre&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size&amp;#39;&lt;/span&gt;): displaySize &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size:&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;folder size:&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#a00&#34;&gt;}}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;folder_size&amp;#39;&lt;/span&gt;): displaySize &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;folder size:&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: displaySize &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+
+            contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;nameSegment&lt;span style=&#34;color:#a00&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;lt;60&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;displaySize&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Highlight solution lines&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;100_000&lt;/span&gt;:
+                contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;lt;span style=&amp;#34;text-shadow: 0 0 8px #ffffff; color: rgb(255, 255, 255)&amp;#34;&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;contents&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;lt;/span&amp;gt;&amp;#39;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+                contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;lt;span&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;contents&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;lt;/span&amp;gt;&amp;#39;&lt;/span&gt;
+            
+            display(HTML(contents),
+                    target &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_1-pre&amp;#34;&lt;/span&gt;)
+      
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;processLine_7_1&lt;/span&gt;(line: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, rootNode: Node, currentNode: Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; Node:
+        &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        Processes one line of input; mutates the tree pointed to by rootNode,
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        returns the new currentNode
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode
+        match line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split():
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out to root&lt;/span&gt;
+                nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; rootNode
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;..&amp;#34;&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out one level&lt;/span&gt;
+                nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;parent
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move to directory {dir}&lt;/span&gt;
+                nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [child &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; child &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; child&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;][&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;ls&amp;#34;&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#list files&lt;/span&gt;
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;dir&amp;#34;&lt;/span&gt;, dirname]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New directory {dirname}&lt;/span&gt;
+                newDir &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;dirname, parent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode)
+            case [size, filename]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New file {filename}&lt;/span&gt;
+                newFile &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;filename, parent&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;currentNode, size&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(size))
+            case _:
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Somehow unmatched??&amp;#34;&lt;/span&gt;)
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; nextCurrentNode
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;printTree_7_1&lt;/span&gt;(root:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pre, fill, node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; RenderTree(root):
+            &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;pre&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39; - &amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFile_7_1&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFolder_7_1&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;containedFileSize_7_1&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFile_7_1(node):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size
+        
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;(containedFileSize_7_1(n) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children)
+
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day7_1&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+    local_main(data)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday7_1 = document.querySelectorAll(&#39;[data-tab-target-day7_1]&#39;)
+    const tabContentsday7_1 = document.querySelectorAll(&#39;[data-tab-content-day7_1]&#39;)
+
+    tabsday7_1.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay7_1)
+            tabContentsday7_1.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday7_1.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day7_2&#39;&gt;Day 7: No Space Left on Device (Part 2)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;Another part-2 problem which requires taking the data discovered in part 1, sorting it (by some key), and finding the smallest (largest) value, possibly beyond some threshhold. Using &lt;code&gt;anytree.search.findall&lt;/code&gt; makes it easy to find the folders, and &lt;code&gt;sorted(key = lamabda node: node.folder_size)&lt;/code&gt; allows us to sort by the relevant key.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript viz&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day7_2-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day7_2-upload-input&#34; name=&#34;day7_2-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day7_2-output&#34;&gt;&lt;/div&gt;
+                &lt;div class=&#34;grid grid-cols-1 sm:grid-cols-2 sm:space-x-2&#34;&gt;
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day7_2-run-btn&#34; py-click=&#34;main_day7_2()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div&gt;
+                    &lt;py-script src=&#34;day7/viz_2.py&#34;&gt;&lt;/py-script&gt;
+                    &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-vis-button&#34; id=&#34;day7_2-run-btn&#34; py-click=&#34;viz_day7_2()&#34;&gt;RUN VISUALIZATION&lt;/button&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day7_2-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day7/main_2.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day7_2-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day7_2=&#34;#day7_2-code&#34; class=&#34;active tab code-title&#34;&gt;day7_2.py&lt;/li&gt;
+        &lt;li data-tab-target-day7_2=&#34;#day7_2-viz-code&#34; class=&#34;tab code-title&#34;&gt;day7_2-viz.py&lt;/li&gt; 
+    &lt;/ul&gt;
+    &lt;div id=&#34;day7_2-code&#34; data-tab-content-day7_2 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;87
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;88
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;89
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;90
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; Node, RenderTree, PreOrderIter
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree.search&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; findall
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solution_7_2&lt;/span&gt;(data):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (root_cmd &lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$ cd /&amp;#34;&lt;/span&gt;:
+        root &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt;)
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;First command something other than cd / : &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;root_cmd&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; root
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data:
+        currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; processLine_7_2(line, root, currentNode)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; PreOrderIter(root):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFolder_7_2(node) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;):
+            node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; containedFileSize_7_2(node)
+
+    size_used &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; root&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size
+    total_size &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;70_000_000&lt;/span&gt;
+    size_available &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; total_size &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; size_used
+
+    size_needed_for_update &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;30_000_000&lt;/span&gt;
+    minimum_delete &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; size_needed_for_update &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; size_available
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Sort folders by size, find the smallest one larger than the needed size&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; folder &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sorted&lt;/span&gt;(findall(root, &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; n: &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(n, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;)), key&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; n: n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; folder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; minimum_delete:
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; folder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;processLine_7_2&lt;/span&gt;(line: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, rootNode: Node, currentNode: Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; Node:
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Processes one line of input; mutates the tree pointed to by rootNode,
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    returns the new currentNode
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode
+    match line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split():
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out to root&lt;/span&gt;
+            nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; rootNode
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;..&amp;#34;&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out one level&lt;/span&gt;
+            nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;parent
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move to directory {dir}&lt;/span&gt;
+            nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [child &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; child &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; child&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;][&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;ls&amp;#34;&lt;/span&gt;]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# List Files&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+        case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;dir&amp;#34;&lt;/span&gt;, dirname]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New directory {dirname}&lt;/span&gt;
+            newDir &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;dirname, parent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode)
+        case [size, filename]:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New file {filename}&lt;/span&gt;
+            newFile &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;filename, parent&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;currentNode, size&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(size))
+        case _:
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Somehow unmatched??&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Somehow unmatched??&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; nextCurrentNode
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;printTree_7_2&lt;/span&gt;(root:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pre, fill, node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; RenderTree(root):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;pre&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39; - &amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFile_7_2&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFolder_7_2&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;containedFileSize_7_2&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFile_7_2(node):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;(containedFileSize_7_2(n) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day7_2&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day7_2&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solution_7_2(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_2-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(solution_7_2(data))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+    
+    
+    
+    &lt;div id=&#34;day7_2-viz-code&#34; data-tab-content-day7_2 class=&#34;tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 87
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 88
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 89
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 90
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 91
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 92
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 93
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 94
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 95
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 96
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 97
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 98
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 99
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;100
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;101
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;102
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;103
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;104
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;105
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;106
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;107
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;108
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;109
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;110
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;111
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;112
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;113
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;114
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;115
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;116
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;117
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;118
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;119
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;120
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;121
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;122
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;123
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;124
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;125
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;126
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;contextlib&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; redirect_stdout
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;io&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; StringIO
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; Node, RenderTree, PreOrderIter
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree.search&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; findall
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;anytree.render&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; ContStyle
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;viz_day7_2&lt;/span&gt;():    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;local_main&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; 
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (root_cmd &lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$ cd /&amp;#34;&lt;/span&gt;:
+            root &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt;)
+            data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;First command something other than cd / : &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;root_cmd&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+        currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; root
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data:
+            currentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; processLine_7_2(line, root, currentNode)
+
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# After constructing tree, pre-calculate folder sizes.&lt;/span&gt;
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# A bit inefficient, but fine&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; PreOrderIter(root):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFolder_7_2(node) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;):
+                node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; containedFileSize_7_2(node)
+
+        size_used &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; root&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size
+        total_size &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;70_000_000&lt;/span&gt;
+        size_available &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; total_size &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; size_used
+
+        size_needed_for_update &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;30_000_000&lt;/span&gt;
+        minimum_delete &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; size_needed_for_update &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; size_available
+
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Sort folders by size, find the smallest one larger than the needed size&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; folder &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sorted&lt;/span&gt;(findall(root, &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; n: &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(n, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;folder_size&amp;#34;&lt;/span&gt;)), key&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; n: n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; folder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; minimum_delete:
+                selectedFolder &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; folder
+                display(folder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_2-output&amp;#34;&lt;/span&gt;, append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;break&lt;/span&gt;        
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (pre&lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_2-pre&amp;#34;&lt;/span&gt;)) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;is&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Make pre tag for output&lt;/span&gt;
+            pre &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;createElement(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;pre&amp;#34;&lt;/span&gt;)
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;id &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_2-pre&amp;#34;&lt;/span&gt;
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;classList&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;bg-gray-900&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text-gray-300&amp;#34;&lt;/span&gt;)
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;style&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;lineHeight &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;1.1&amp;#39;&lt;/span&gt;
+            container &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_2-viz&amp;#34;&lt;/span&gt;)
+            container&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;classList&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;max-h-124&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;overflow-y-auto&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;my-4&amp;#39;&lt;/span&gt;)
+            container&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;appendChild(pre)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+            pre&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;innerHTML &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#clear existing output&lt;/span&gt;
+
+        runningTotal &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pre, fill, node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; RenderTree(root, style&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;ContStyle()):
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#if node in small_folders:&lt;/span&gt;
+            nameSegment &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;pre&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size&amp;#39;&lt;/span&gt;): displaySize &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size:&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;folder size:&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#a00&#34;&gt;}}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;folder_size&amp;#39;&lt;/span&gt;): displaySize &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;folder size:&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;folder_size)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;: displaySize &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+
+            contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;nameSegment&lt;span style=&#34;color:#a00&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;lt;60&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;displaySize&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Highlight solution lines&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; node &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; selectedFolder &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt; (node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; selectedFolder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;descendants &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;and&lt;/span&gt; isFile_7_2(node)):
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; node &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; selectedFolder: contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;contents&lt;span style=&#34;color:#a00&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;lt;85&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt; SOLUTION&amp;#34;&lt;/span&gt;
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFile_7_2(node):
+                    runningTotal &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size
+                    contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;contents&lt;span style=&#34;color:#a00&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; &amp;lt;85&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; Running Total: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;runningTotal&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;
+                contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;lt;span style=&amp;#34;text-shadow: 0 0 8px #ffffff; color: rgb(255, 255, 255)&amp;#34;&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;contents&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;lt;/span&amp;gt;&amp;#39;&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+                contents &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;lt;span&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;contents&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;lt;/span&amp;gt;&amp;#39;&lt;/span&gt;
+            
+            display(HTML(contents),
+                    target &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day7_2-pre&amp;#34;&lt;/span&gt;)
+      
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;processLine_7_2&lt;/span&gt;(line: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, rootNode: Node, currentNode: Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; Node:
+        &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        Processes one line of input; mutates the tree pointed to by rootNode,
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        returns the new currentNode
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+        nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode
+        match line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split():
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out to root&lt;/span&gt;
+                nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; rootNode
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;..&amp;#34;&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move out one level&lt;/span&gt;
+                nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;parent
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;cd&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Move to directory {dir}&lt;/span&gt;
+                nextCurrentNode &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [child &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; child &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; currentNode&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; child&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;][&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;$&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;ls&amp;#34;&lt;/span&gt;]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#list files&lt;/span&gt;
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+            case [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;dir&amp;#34;&lt;/span&gt;, dirname]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New directory {dirname}&lt;/span&gt;
+                newDir &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;dirname, parent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; currentNode)
+            case [size, filename]:
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# New file {filename}&lt;/span&gt;
+                newFile &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Node(name&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;filename, parent&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;currentNode, size&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(size))
+            case _:
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Somehow unmatched??&amp;#34;&lt;/span&gt;)
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; nextCurrentNode
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;printTree_7_2&lt;/span&gt;(root:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pre, fill, node &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; RenderTree(root):
+            &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;pre&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;name&lt;span style=&#34;color:#a00&#34;&gt;}{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39; - &amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(node, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;size&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFile_7_2&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;isFolder_7_2&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;containedFileSize_7_2&lt;/span&gt;(node:Node) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; isFile_7_2(node):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;size
+        
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;(containedFileSize_7_2(n) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; node&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;children)
+
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day7_2&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+    local_main(data)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday7_2 = document.querySelectorAll(&#39;[data-tab-target-day7_2]&#39;)
+    const tabContentsday7_2 = document.querySelectorAll(&#39;[data-tab-content-day7_2]&#39;)
+
+    tabsday7_2.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay7_2)
+            tabContentsday7_2.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday7_2.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
+
 
 &lt;py-script class=&#34;hidden&#34;&gt;
     import js
