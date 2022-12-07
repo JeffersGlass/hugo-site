@@ -61,10 +61,10 @@ def printTree(root:Node) -> None:
         print(f"{pre}{node.name}{' - ' + str(node.size) if hasattr(node, 'size') else ''}")
 
 def isFile(node:Node) -> bool:
-    return hasattr(node, "size")
+    return len(node.children) == 0
 
 def isFolder(node:Node) -> bool:
-    return not hasattr(node, "size")
+    return len(node.children) > 0
 
 def containedFileSize(node:Node) -> bool:
     if isFile(node):
