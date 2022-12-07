@@ -3,11 +3,6 @@ import sys
 from anytree import Node, RenderTree, PreOrderIter
 from anytree.search import findall
 
-DEBUG = False
-
-def debug(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
 def solution_7_1(data):
     if (root_cmd := data[0]) == "$ cd /":
         root = Node('/')
@@ -17,60 +12,62 @@ def solution_7_1(data):
     currentNode = root
 
     for line in data:
-        currentNode = processLine(line, root, currentNode)
+        currentNode = processLine_7_1(line, root, currentNode)
 
+    # After constructing tree, pre-calculate folder sizes.
+    # A bit inefficient, but fine
     for node in PreOrderIter(root):
-        if isFolder(node) and not hasattr(node, "folder_size"):
-            node.folder_size = containedFileSize(node)
+        if isFolder_7_1(node) and not hasattr(node, "folder_size"):
+            node.folder_size = containedFileSize_7_1(node)
 
     small_folders = findall(root, lambda n: hasattr(n, "folder_size") and n.folder_size <= 100_000)
     return sum(f.folder_size for f in small_folders)
 
-def processLine(line: str, rootNode: Node, currentNode: Node) -> Node:
+def processLine_7_1(line: str, rootNode: Node, currentNode: Node) -> Node:
     """
     Processes one line of input; mutates the tree pointed to by rootNode,
     returns the new currentNode
     """
-    debug(f"{line: <30}", end = "")
     nextCurrentNode = currentNode
     match line.split():
         case ["$", "cd", "/"]:
-            debug("Move out to root")
+            # Move out to root
             nextCurrentNode = rootNode
         case ["$", "cd", ".."]:
-            debug("Move out one level")
+            # Move out one level
             nextCurrentNode = currentNode.parent
         case ["$", "cd", dir]:
-            debug(f"Move to directory {dir}")
+            # Move to directory {dir}
             nextCurrentNode = [child for child in currentNode.children if child.name == dir][0]
         case ["$", "ls"]:
-            debug("List Files")
+            #list files
+            pass
         case ["dir", dirname]:
-            debug(f"New directory {dirname}")
+            # New directory {dirname}
             newDir = Node(name=dirname, parent = currentNode)
         case [size, filename]:
-            debug(f"New file {filename}")
+            # New file {filename}
             newFile = Node(name=filename, parent=currentNode, size=int(size))
         case _:
-            debug(f"Somehow unmatched??")
+            raise ValueError(f"Somehow unmatched??")
 
     return nextCurrentNode
 
-def printTree(root:Node) -> None:
+def printTree_7_1(root:Node) -> None:
     for pre, fill, node in RenderTree(root):
         print(f"{pre}{node.name}{' - ' + str(node.size) if hasattr(node, 'size') else ''}")
 
-def isFile(node:Node) -> bool:
+def isFile_7_1(node:Node) -> bool:
     return len(node.children) == 0
 
-def isFolder(node:Node) -> bool:
+def isFolder_7_1(node:Node) -> bool:
     return len(node.children) > 0
 
-def containedFileSize(node:Node) -> bool:
-    if isFile(node):
+def containedFileSize_7_1(node:Node) -> bool:
+    if isFile_7_1(node):
         return node.size
     
-    return sum(containedFileSize(n) for n in node.children)
+    return sum(containedFileSize_7_1(n) for n in node.children)
 
 if 'pyodide' in sys.modules:
     pass
