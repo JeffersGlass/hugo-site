@@ -15,29 +15,31 @@ import rich.jupyter
 c = get_console()
 c.is_jupyter = lambda: True
 
-def display_pyscript(segments: Iterable[Segment], text: str) -> None:
-    """Allow output of raw HTML within pyscript/pyodide"""
-    html = rich.jupyter._render_segments(segments)
-    display(HTML(html), target="day8_1-viz", append=True)
-
-rich.jupyter.display = display_pyscript
-rprint_8_1_viz = get_console().print
+def get_rich_printer(target):
+    def display_pyscript(segments: Iterable[Segment], text: str) -> None:
+        """Allow output of raw HTML within pyscript/pyodide"""
+        html = rich.jupyter._render_segments(segments)
+        display(HTML(html), target=target, append=True)
+    rich.jupyter.display = display_pyscript
+    return get_console().print
 
 # Solution code:
 import js
 
 def viz_day8_1():
     prepare_day8_1_element()
-    #js.document.getElementById("day8_1-viz").innerHTML = ""
+    js.document.getElementById("day8_1-viz").innerHTML = ""
     data = get_input('day8_1').split('\n')
     display(f"{solve_viz8_1(data)=}",
         target="day8_1-output",
         append=False)
     post_day8_1_element()
 
+
 def prepare_day8_1_element():
     viz_div = js.document.getElementById("day8_1-viz")
     viz_div.classList.add("overflow-x-auto", "overflow-y-auto", "w-full", "whitespace-nowrap")
+
 
 def post_day8_1_element():
     from pyodide.ffi import to_js
@@ -46,9 +48,6 @@ def post_day8_1_element():
     for pretag in viz_div.getElementsByTagName('pre'):
         pretag.style.whiteSpace = "nowrap"
         pretag.style.display = "inline-block"
-
-    for div_tag in viz_div.getElementsByTagName('div'):
-        pass #div.style.
 
 
 def solve_viz8_1(data: list[str]):
@@ -77,8 +76,6 @@ def solve_viz8_1(data: list[str]):
         
     printVisibleTrees_viz(data, visible_trees)
 
-
-
     return(len(visible_trees))
 
 def printVisibleTrees_viz(data: list[str], visbile_trees: set[tuple[int, int]]):
@@ -93,7 +90,8 @@ def printVisibleTrees_viz(data: list[str], visbile_trees: set[tuple[int, int]]):
         row_strings.append(''.join(line_elements))
     
     for r in row_strings:
-        rprint_8_1_viz(r)
+        get_rich_printer("day8_1-viz")(r)
+        #rprint_8_1_viz(r)
 
 def find_visible_in_line_viz(line: str) -> set[int]:
     max_height_seen = -1
