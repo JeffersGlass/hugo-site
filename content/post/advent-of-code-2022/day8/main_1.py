@@ -25,7 +25,7 @@ def solution_8_1(data: list[str]):
         column = [row[column_index] for row in data][::-1]
         visible_trees |= {(len(column) - row_index - 1, column_index) for row_index in find_visible_in_line(column)}
         
-    printVisibleTrees(data, visible_trees)
+    #printVisibleTrees(data, visible_trees)
     return(f"{len(visible_trees)= }")
 
 
@@ -51,7 +51,11 @@ def find_visible_in_line(line: str) -> set[int]:
     return visible_in_line     
 
 if 'pyodide' in sys.modules:
-    pass
+    def main_day8_1():
+        data = get_input('day8_1').split('\n')
+        display(f"{solution_8_1(data)=}",
+            target="day8_1-output",
+            append=False)
 else:
     from rich import print
     with open("input.txt", "r") as fp:
