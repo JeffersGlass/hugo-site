@@ -168,7 +168,7 @@ if (!doNotTrack) {
     </div>
 </div>
 <py-config class="hidden">
-    packages = ['anytree']
+    packages = ['anytree', 'rich']
     terminal = false
     [[fetch]]
     files = ['utils.py']
@@ -3705,7 +3705,7 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
 
     </div>
     <div>
-        <div class="load-pyscript"></div>
+        <div class="load-pyscript viz"></div>
         <div class="hidden live-example">
             <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
                 <div>
@@ -3717,9 +3717,14 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
                     <input class="w-full" type="file" id="day8_1-upload-input" name="day8_1-upload">
                 </div>
                 <div class="font-mono bg-gray-200" id="day8_1-output"></div>
-                
+                <div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">
                 <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day8_1-run-btn" py-click="main_day8_1()">RUN</button></div>
                 
+                <div>
+                    <py-script src="day8/viz_1.py"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day8_1-viz-btn" py-click="viz_day8_1()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>
             </div>
             <py-script>
                 from utils import attach_upload_listener
@@ -3735,7 +3740,7 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
      
     <ul class="tabs md:col-span-2">
         <li data-tab-target-day8_1="#day8_1-code" class="active tab code-title">day8_1.py</li>
-         
+        <li data-tab-target-day8_1="#day8_1-viz-code" class="tab code-title">day8_1-viz.py</li> 
     </ul>
     <div id="day8_1-code" data-tab-content-day8_1 class="active tab-content md:col-span-2">
         <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
@@ -3874,6 +3879,230 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
 </div></div>
          <div class="text-sm post-img-caption">Scroll to see complete code</div> 
     </div>
+    
+    
+    
+    <div id="day8_1-viz-code" data-tab-content-day8_1 class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> repeat
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> Iterable
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">sys</span> <span style="color:#069;font-weight:bold">import</span> stdout
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> display, HTML
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich</span> <span style="color:#069;font-weight:bold">import</span> get_console
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.segment</span> <span style="color:#069;font-weight:bold">import</span> Segment
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.console</span> <span style="color:#069;font-weight:bold">import</span> NewLine
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.text</span> <span style="color:#069;font-weight:bold">import</span> Text
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">rich.jupyter</span>
+
+<span style="color:#09f;font-style:italic"># Patch the rich library to enable output</span>
+
+c <span style="color:#555">=</span> get_console()
+c<span style="color:#555">.</span>is_jupyter <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span>: <span style="color:#069;font-weight:bold">True</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_rich_printer</span>(target):
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display_pyscript</span>(segments: Iterable[Segment], text: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+        <span style="color:#c30">&#34;&#34;&#34;Allow output of raw HTML within pyscript/pyodide&#34;&#34;&#34;</span>
+        html <span style="color:#555">=</span> rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>_render_segments(segments)
+        display(HTML(html), target<span style="color:#555">=</span>target, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+    rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>display <span style="color:#555">=</span> display_pyscript
+    <span style="color:#069;font-weight:bold">return</span> get_console()<span style="color:#555">.</span>print
+
+<span style="color:#09f;font-style:italic"># Solution code:</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day8_1</span>():
+    prepare_day8_1_element()
+    js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day8_1-viz&#34;</span>)<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#34;&#34;</span>
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day8_1&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+    display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solve_viz8_1(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>,
+        target<span style="color:#555">=</span><span style="color:#c30">&#34;day8_1-output&#34;</span>,
+        append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+    post_day8_1_element()
+
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">prepare_day8_1_element</span>():
+    viz_div <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day8_1-viz&#34;</span>)
+    viz_div<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;overflow-x-auto&#34;</span>, <span style="color:#c30">&#34;overflow-y-auto&#34;</span>, <span style="color:#c30">&#34;w-full&#34;</span>, <span style="color:#c30">&#34;whitespace-nowrap&#34;</span>)
+
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">post_day8_1_element</span>():
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi</span> <span style="color:#069;font-weight:bold">import</span> to_js
+
+    viz_div <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day8_1-viz&#34;</span>)
+    <span style="color:#069;font-weight:bold">for</span> pretag <span style="color:#000;font-weight:bold">in</span> viz_div<span style="color:#555">.</span>getElementsByTagName(<span style="color:#c30">&#39;pre&#39;</span>):
+        pretag<span style="color:#555">.</span>style<span style="color:#555">.</span>whiteSpace <span style="color:#555">=</span> <span style="color:#c30">&#34;nowrap&#34;</span>
+        pretag<span style="color:#555">.</span>style<span style="color:#555">.</span>display <span style="color:#555">=</span> <span style="color:#c30">&#34;inline-block&#34;</span>
+
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solve_viz8_1</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>]):
+    <span style="color:#09f;font-style:italic"># (rowIndex, columnIndex)</span>
+    visible_trees: <span style="color:#366">set</span>[<span style="color:#366">tuple</span>[<span style="color:#366">int</span>, <span style="color:#366">int</span>]] <span style="color:#555">=</span> <span style="color:#366">set</span>()
+
+    <span style="color:#09f;font-style:italic">#Rows left to right</span>
+    <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data):
+        visible_trees <span style="color:#555">|=</span> {(row_index, line_index) <span style="color:#069;font-weight:bold">for</span> line_index <span style="color:#000;font-weight:bold">in</span> find_visible_in_line_viz(row)}
+        <span style="color:#069;font-weight:bold">pass</span>
+
+    <span style="color:#09f;font-style:italic">#Rows right to left</span>
+    <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>([row[::<span style="color:#555">-</span><span style="color:#f60">1</span>] <span style="color:#069;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> data]):
+        visible_trees <span style="color:#555">|=</span> {(row_index, <span style="color:#366">len</span>(row) <span style="color:#555">-</span> line_index <span style="color:#555">-</span> <span style="color:#f60">1</span>) <span style="color:#069;font-weight:bold">for</span> line_index <span style="color:#000;font-weight:bold">in</span> find_visible_in_line_viz(row)}
+        <span style="color:#069;font-weight:bold">pass</span>
+
+    <span style="color:#09f;font-style:italic">#Columns Top to Bottom:</span>
+    <span style="color:#069;font-weight:bold">for</span> column_index <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data[<span style="color:#f60">0</span>])):
+        column <span style="color:#555">=</span> [row[column_index] <span style="color:#069;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> data]
+        visible_trees <span style="color:#555">|=</span> {(row_index, column_index) <span style="color:#069;font-weight:bold">for</span> row_index <span style="color:#000;font-weight:bold">in</span> find_visible_in_line_viz(column)}
+
+    <span style="color:#09f;font-style:italic">#Columns Bottom to Top:</span>
+    <span style="color:#069;font-weight:bold">for</span> column_index <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data[<span style="color:#f60">0</span>])):
+        column <span style="color:#555">=</span> [row[column_index] <span style="color:#069;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> data][::<span style="color:#555">-</span><span style="color:#f60">1</span>]
+        visible_trees <span style="color:#555">|=</span> {(<span style="color:#366">len</span>(column) <span style="color:#555">-</span> row_index <span style="color:#555">-</span> <span style="color:#f60">1</span>, column_index) <span style="color:#069;font-weight:bold">for</span> row_index <span style="color:#000;font-weight:bold">in</span> find_visible_in_line_viz(column)}
+        
+    printVisibleTrees_viz(data, visible_trees)
+
+    <span style="color:#069;font-weight:bold">return</span>(<span style="color:#366">len</span>(visible_trees))
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">printVisibleTrees_viz</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>], visbile_trees: <span style="color:#366">set</span>[<span style="color:#366">tuple</span>[<span style="color:#366">int</span>, <span style="color:#366">int</span>]]):
+    row_strings <span style="color:#555">=</span> []
+    <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data):
+        line_elements <span style="color:#555">=</span> []
+        <span style="color:#069;font-weight:bold">for</span> column_index, char <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(row):
+            <span style="color:#069;font-weight:bold">if</span> (row_index, column_index) <span style="color:#000;font-weight:bold">in</span> visbile_trees:
+                line_elements<span style="color:#555">.</span>append(<span style="color:#c30">f</span><span style="color:#c30">&#34;[bright_white on dark_green]</span><span style="color:#a00">{</span>char<span style="color:#a00">}</span><span style="color:#c30">[/]&#34;</span>)
+            <span style="color:#069;font-weight:bold">else</span>:
+                line_elements<span style="color:#555">.</span>append(<span style="color:#c30">f</span><span style="color:#c30">&#34;[aquamarine3]</span><span style="color:#a00">{</span>char<span style="color:#a00">}</span><span style="color:#c30">[/]&#34;</span>)
+        row_strings<span style="color:#555">.</span>append(<span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join(line_elements))
+    
+    <span style="color:#069;font-weight:bold">for</span> r <span style="color:#000;font-weight:bold">in</span> row_strings:
+        get_rich_printer(<span style="color:#c30">&#34;day8_1-viz&#34;</span>)(r)
+        <span style="color:#09f;font-style:italic">#rprint_8_1_viz(r)</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">find_visible_in_line_viz</span>(line: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">set</span>[<span style="color:#366">int</span>]:
+    max_height_seen <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>
+    visible_in_line <span style="color:#555">=</span> <span style="color:#366">set</span>()
+
+    <span style="color:#069;font-weight:bold">for</span> line_index, tree <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">int</span>(tree) <span style="color:#555">&gt;</span> max_height_seen:
+            visible_in_line<span style="color:#555">.</span>add(line_index)
+            max_height_seen <span style="color:#555">=</span> <span style="color:#366">int</span>(tree)
+            <span style="color:#069;font-weight:bold">if</span> max_height_seen <span style="color:#555">==</span> <span style="color:#f60">9</span>: <span style="color:#069;font-weight:bold">break</span>
+
+    <span style="color:#069;font-weight:bold">return</span> visible_in_line     </code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
      
 
 </div>
@@ -3904,7 +4133,7 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
 
     </div>
     <div>
-        <div class="load-pyscript"></div>
+        <div class="load-pyscript viz"></div>
         <div class="hidden live-example">
             <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
                 <div>
@@ -3916,9 +4145,14 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
                     <input class="w-full" type="file" id="day8_2-upload-input" name="day8_2-upload">
                 </div>
                 <div class="font-mono bg-gray-200" id="day8_2-output"></div>
-                
+                <div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">
                 <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day8_2-run-btn" py-click="main_day8_2()">RUN</button></div>
                 
+                <div>
+                    <py-script src="day8/viz_2.py"></py-script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day8_2-viz-btn" py-click="viz_day8_2()">RUN VISUALIZATION</button></div>
+                </div>
+                </div>
             </div>
             <py-script>
                 from utils import attach_upload_listener
@@ -3934,7 +4168,7 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
      
     <ul class="tabs md:col-span-2">
         <li data-tab-target-day8_2="#day8_2-code" class="active tab code-title">day8_2.py</li>
-         
+        <li data-tab-target-day8_2="#day8_2-viz-code" class="tab code-title">day8_2-viz.py</li> 
     </ul>
     <div id="day8_2-code" data-tab-content-day8_2 class="active tab-content md:col-span-2">
         <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
@@ -4115,6 +4349,268 @@ yardType <span style="color:#555">=</span> NewType(<span style="color:#c30">&#34
         data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
     
     <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solution_8_2(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+    
+    
+    
+    <div id="day8_2-viz-code" data-tab-content-day8_2 class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> repeat
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> Iterable
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">sys</span> <span style="color:#069;font-weight:bold">import</span> stdout
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> display, HTML
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich</span> <span style="color:#069;font-weight:bold">import</span> get_console
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.segment</span> <span style="color:#069;font-weight:bold">import</span> Segment
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.console</span> <span style="color:#069;font-weight:bold">import</span> NewLine
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.text</span> <span style="color:#069;font-weight:bold">import</span> Text
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">rich.jupyter</span>
+
+<span style="color:#09f;font-style:italic"># Patch the rich library to enable output</span>
+
+c <span style="color:#555">=</span> get_console()
+c<span style="color:#555">.</span>is_jupyter <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span>: <span style="color:#069;font-weight:bold">True</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_rich_printer</span>(target):
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display_pyscript</span>(segments: Iterable[Segment], text: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
+        <span style="color:#c30">&#34;&#34;&#34;Allow output of raw HTML within pyscript/pyodide&#34;&#34;&#34;</span>
+        html <span style="color:#555">=</span> rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>_render_segments(segments)
+        display(HTML(html), target<span style="color:#555">=</span>target, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
+    rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>display <span style="color:#555">=</span> display_pyscript
+    <span style="color:#069;font-weight:bold">return</span> get_console()<span style="color:#555">.</span>print
+
+<span style="color:#09f;font-style:italic">#Solution code</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day8_2</span>():
+    prepare_day8_2_element()
+    js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day8_2-viz&#34;</span>)<span style="color:#555">.</span>innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#34;&#34;</span>
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day8_2&#39;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+    display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solution_viz8_2(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>,
+        target<span style="color:#555">=</span><span style="color:#c30">&#34;day8_2-output&#34;</span>,
+        append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+    post_day8_2_element()
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">prepare_day8_2_element</span>():
+    viz_div <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day8_2-viz&#34;</span>)
+    viz_div<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#34;overflow-x-auto&#34;</span>, <span style="color:#c30">&#34;overflow-y-auto&#34;</span>, <span style="color:#c30">&#34;w-full&#34;</span>, <span style="color:#c30">&#34;whitespace-nowrap&#34;</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">post_day8_2_element</span>():
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi</span> <span style="color:#069;font-weight:bold">import</span> to_js
+
+    viz_div <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day8_2-viz&#34;</span>)
+    <span style="color:#069;font-weight:bold">for</span> pretag <span style="color:#000;font-weight:bold">in</span> viz_div<span style="color:#555">.</span>getElementsByTagName(<span style="color:#c30">&#39;pre&#39;</span>):
+        pretag<span style="color:#555">.</span>style<span style="color:#555">.</span>whiteSpace <span style="color:#555">=</span> <span style="color:#c30">&#34;nowrap&#34;</span>
+        pretag<span style="color:#555">.</span>style<span style="color:#555">.</span>display <span style="color:#555">=</span> <span style="color:#c30">&#34;inline-block&#34;</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solution_viz8_2</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>]):
+    max_trees_visible <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    high_score_location <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>
+    visible_from_high_score <span style="color:#555">=</span> <span style="color:#366">set</span>()
+
+    <span style="color:#069;font-weight:bold">for</span> house_row_index, treehouse_row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data):
+        <span style="color:#069;font-weight:bold">for</span> house_col_index, treehouse_height <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(treehouse_row):
+        
+            visible_trees <span style="color:#555">=</span> <span style="color:#366">set</span>()
+            score <span style="color:#555">=</span> <span style="color:#f60">1</span>
+
+            <span style="color:#09f;font-style:italic">#Row left to right</span>
+            row_to_right <span style="color:#555">=</span> data[house_row_index][house_col_index<span style="color:#555">+</span><span style="color:#f60">1</span>:]
+
+            visbile_from_func <span style="color:#555">=</span> find_visible_in_line_viz8_2(row_to_right, max_height<span style="color:#555">=</span><span style="color:#366">int</span>(treehouse_height))
+            visible_trees <span style="color:#555">|=</span> {(house_row_index, line_index <span style="color:#555">+</span> house_col_index <span style="color:#555">+</span> <span style="color:#f60">1</span>) <span style="color:#069;font-weight:bold">for</span> line_index <span style="color:#000;font-weight:bold">in</span> visbile_from_func}
+            score <span style="color:#555">*=</span> <span style="color:#366">len</span>(visbile_from_func)
+            
+            <span style="color:#09f;font-style:italic">#Rows right to left</span>
+            row_to_left <span style="color:#555">=</span> <span style="color:#366">list</span>(<span style="color:#366">reversed</span>(data[house_row_index][:house_col_index]))
+            visbile_from_func <span style="color:#555">=</span> find_visible_in_line_viz8_2(row_to_left, max_height<span style="color:#555">=</span><span style="color:#366">int</span>(treehouse_height))
+            visible_trees <span style="color:#555">|=</span> {(house_row_index, house_col_index <span style="color:#555">-</span> <span style="color:#f60">1</span> <span style="color:#555">-</span> line_index) <span style="color:#069;font-weight:bold">for</span> line_index <span style="color:#000;font-weight:bold">in</span> visbile_from_func}
+            score <span style="color:#555">*=</span> <span style="color:#366">len</span>(visbile_from_func)
+
+            <span style="color:#09f;font-style:italic">#Columns Top to Bottom:</span>
+            column_down <span style="color:#555">=</span> [row[house_col_index] <span style="color:#069;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> data[house_row_index<span style="color:#555">+</span><span style="color:#f60">1</span>:]]
+            visbile_from_func <span style="color:#555">=</span> find_visible_in_line_viz8_2(column_down, max_height<span style="color:#555">=</span><span style="color:#366">int</span>(treehouse_height))
+            visible_trees <span style="color:#555">|=</span> {(house_row_index <span style="color:#555">+</span> line_index <span style="color:#555">+</span> <span style="color:#f60">1</span>, house_col_index) <span style="color:#069;font-weight:bold">for</span> line_index <span style="color:#000;font-weight:bold">in</span> visbile_from_func}
+            score <span style="color:#555">*=</span> <span style="color:#366">len</span>(visbile_from_func)
+            
+            <span style="color:#09f;font-style:italic">#Columns bottom to top:</span>
+            column_up <span style="color:#555">=</span> <span style="color:#366">list</span>(<span style="color:#366">reversed</span>([row[house_col_index] <span style="color:#069;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> data[:house_row_index]]))
+            visbile_from_func <span style="color:#555">=</span> find_visible_in_line_viz8_2(column_up, max_height<span style="color:#555">=</span><span style="color:#366">int</span>(treehouse_height))
+            visible_trees <span style="color:#555">|=</span> {(house_row_index <span style="color:#555">-</span> line_index <span style="color:#555">-</span> <span style="color:#f60">1</span>, house_col_index) <span style="color:#069;font-weight:bold">for</span> line_index <span style="color:#000;font-weight:bold">in</span> visbile_from_func}
+            score <span style="color:#555">*=</span> <span style="color:#366">len</span>(visbile_from_func)
+
+            <span style="color:#069;font-weight:bold">if</span> score <span style="color:#555">&gt;</span> max_trees_visible:
+                max_trees_visible <span style="color:#555">=</span> score
+                high_score_location <span style="color:#555">=</span> (house_row_index, house_col_index)
+                visible_from_high_score <span style="color:#555">=</span> visible_trees
+    
+    printVisibleTrees_viz_8_2(data, visible_from_high_score, special<span style="color:#555">=</span>high_score_location)
+
+    <span style="color:#069;font-weight:bold">return</span> max_trees_visible
+
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">printVisibleTrees_viz_8_2</span>(data: <span style="color:#366">list</span>[<span style="color:#366">str</span>], visbile_trees: <span style="color:#366">set</span>[<span style="color:#366">tuple</span>[<span style="color:#366">int</span>, <span style="color:#366">int</span>]], special <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>):
+    row_strings <span style="color:#555">=</span> []
+    <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data):
+        line_elements <span style="color:#555">=</span> []
+        <span style="color:#069;font-weight:bold">for</span> column_index, char <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(row):
+            <span style="color:#069;font-weight:bold">if</span> (row_index, column_index) <span style="color:#555">==</span> special:
+                line_elements<span style="color:#555">.</span>append(<span style="color:#c30">f</span><span style="color:#c30">&#34;[bright_white on dark_violet]</span><span style="color:#a00">{</span>char<span style="color:#a00">}</span><span style="color:#c30">[/]&#34;</span>)
+            <span style="color:#069;font-weight:bold">elif</span> (row_index, column_index) <span style="color:#000;font-weight:bold">in</span> visbile_trees:
+                line_elements<span style="color:#555">.</span>append(<span style="color:#c30">f</span><span style="color:#c30">&#34;[bright_white on dark_green]</span><span style="color:#a00">{</span>char<span style="color:#a00">}</span><span style="color:#c30">[/]&#34;</span>)
+            <span style="color:#069;font-weight:bold">else</span>:
+                line_elements<span style="color:#555">.</span>append(<span style="color:#c30">f</span><span style="color:#c30">&#34;[aquamarine3]</span><span style="color:#a00">{</span>char<span style="color:#a00">}</span><span style="color:#c30">[/]&#34;</span>)
+        row_strings<span style="color:#555">.</span>append(<span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join(line_elements))
+    
+    <span style="color:#069;font-weight:bold">for</span> r <span style="color:#000;font-weight:bold">in</span> row_strings:
+        get_rich_printer(<span style="color:#c30">&#34;day8_2-viz&#34;</span>)(r)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">find_visible_in_line_viz8_2</span>(line: <span style="color:#366">str</span>, max_height <span style="color:#555">=</span> <span style="color:#f60">9</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">int</span>:
+    <span style="color:#09f;font-style:italic">#print(f&#34;Visible in line {list(line)} from height {max_height}; &#34;, end = &#34;&#34;)</span>
+    visible_trees <span style="color:#555">=</span> <span style="color:#366">set</span>()
+
+    <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> line:
+        <span style="color:#09f;font-style:italic">#print(&#34;Nothing here, score 0&#34;)</span>
+        <span style="color:#069;font-weight:bold">return</span> visible_trees
+
+    <span style="color:#069;font-weight:bold">for</span> line_index, tree <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">int</span>(tree) <span style="color:#555">&gt;=</span> max_height:
+            <span style="color:#09f;font-style:italic">#print(f&#34;Score: {line_index+1}&#34;)</span>
+            <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">range</span>(<span style="color:#f60">0</span>, line_index<span style="color:#555">+</span><span style="color:#f60">1</span>)
+    <span style="color:#069;font-weight:bold">else</span>:
+        <span style="color:#09f;font-style:italic">#print(f&#34;Max length, score {len(line)}&#34;)</span>
+        <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">range</span>(<span style="color:#f60">0</span>, <span style="color:#366">len</span>(line))</code></pre></td></tr></table>
 </div>
 </div></div>
          <div class="text-sm post-img-caption">Scroll to see complete code</div> 
