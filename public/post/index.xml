@@ -3556,6 +3556,449 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     })
 &lt;/script&gt;
 
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day8_1&#39;&gt;Day 8: Treetop Tree House (Part 1)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;More parsing, more fun! I suspect there&#39;s some data structure that makes it simpler to iterate over both the rows and columns of a grid... or perhaps I should create my own, as that&#39;s the kind of thing that seems to come up often in Advent of Code.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day8_1-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day8_1-upload-input&#34; name=&#34;day8_1-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day8_1-output&#34;&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day8_1-run-btn&#34; py-click=&#34;main_day8_1()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day8_1-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day8/main_1.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day8_1-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day8_1=&#34;#day8_1-code&#34; class=&#34;active tab code-title&#34;&gt;day8_1.py&lt;/li&gt;
+         
+    &lt;/ul&gt;
+    &lt;div id=&#34;day8_1-code&#34; data-tab-content-day8_1 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solution_8_1&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;]):
+    
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# (rowIndex, columnIndex)&lt;/span&gt;
+    visible_trees: &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;tuple&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;]] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;()
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Rows left to right&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row_index, row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(data):
+        visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(row_index, line_index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; find_visible_in_line(row)}
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Rows right to left&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row_index, row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;([row[::&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data]):
+        visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(row_index, &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(row) &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; line_index &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; find_visible_in_line(row)}
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Columns Top to Bottom:&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; column_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(data[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;])):
+        column &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [row[column_index] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data]
+        visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(row_index, column_index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; find_visible_in_line(column)}
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Columns Bottom to Top:&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; column_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(data[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;])):
+        column &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [row[column_index] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data][::&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;]
+        visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(column) &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; row_index &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, column_index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; find_visible_in_line(column)}
+        
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#printVisibleTrees(data, visible_trees)&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(visible_trees)&lt;span style=&#34;color:#a00&#34;&gt;= }&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;printVisibleTrees&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;], visbile_trees: &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;tuple&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;]]):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row_index, row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; column_index, char &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(row):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (row_index, column_index) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; visbile_trees:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[green on dark_red]&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;char&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;[/]&amp;#34;&lt;/span&gt;, end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[bright_black]&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;char&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;[/]&amp;#34;&lt;/span&gt;, end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;find_visible_in_line&lt;/span&gt;(line: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;]:
+    max_height_seen &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+    visible_in_line &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;()
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index, tree &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(line):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(tree) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; max_height_seen:
+            visible_in_line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add(line_index)
+            max_height_seen &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(tree)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; max_height_seen &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;9&lt;/span&gt;: &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;break&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; visible_in_line     
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day8_1&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day8_1&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solution_8_1(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day8_1-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;rich&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+    
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solution_8_1(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday8_1 = document.querySelectorAll(&#39;[data-tab-target-day8_1]&#39;)
+    const tabContentsday8_1 = document.querySelectorAll(&#39;[data-tab-content-day8_1]&#39;)
+
+    tabsday8_1.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay8_1)
+            tabContentsday8_1.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday8_1.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day8_2&#39;&gt;Day 8: Treetop Tree House (Part 2)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;Figuring out all the indices, ranges, and &lt;a href=&#34;https://www.reddit.com/r/adventofcode/comments/zfrgul/2022_day_8_i_know_i_should_read_it_more_carefully/&#34;&gt;exactly what was being asked&lt;/a&gt; was a bit hairy in this second part, but the ultimate stumbling block for me ended up being multiplying the running score by itself, rather than by the new trees seen in a given direction. Oops!&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day8_2-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day8_2-upload-input&#34; name=&#34;day8_2-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day8_2-output&#34;&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day8_2-run-btn&#34; py-click=&#34;main_day8_2()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day8_2-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day8/main_2.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day8_2-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day8_2=&#34;#day8_2-code&#34; class=&#34;active tab code-title&#34;&gt;day8_2.py&lt;/li&gt;
+         
+    &lt;/ul&gt;
+    &lt;div id=&#34;day8_2-code&#34; data-tab-content-day8_2 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;87
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solution_8_2&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;]):
+    max_trees_visible &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+    high_score_location &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;
+    visible_from_high_score &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;()
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; house_row_index, treehouse_row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; house_col_index, treehouse_height &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(treehouse_row):
+        
+            visible_trees &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;()
+            score &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Row left to right&lt;/span&gt;
+            row_to_right &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; data[house_row_index][house_col_index&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]
+
+            visbile_from_func &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; find_visible_in_line_8_2(row_to_right, max_height&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(treehouse_height))
+            visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(house_row_index, line_index &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; house_col_index &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; visbile_from_func}
+            score &lt;span style=&#34;color:#555&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(visbile_from_func)
+            
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Rows right to left&lt;/span&gt;
+            row_to_left &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;reversed&lt;/span&gt;(data[house_row_index][:house_col_index]))
+            visbile_from_func &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; find_visible_in_line_8_2(row_to_left, max_height&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(treehouse_height))
+            visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(house_row_index, house_col_index &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; line_index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; visbile_from_func}
+            score &lt;span style=&#34;color:#555&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(visbile_from_func)
+
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Columns Top to Bottom:&lt;/span&gt;
+            column_down &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [row[house_col_index] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data[house_row_index&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]]
+            visbile_from_func &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; find_visible_in_line_8_2(column_down, max_height&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(treehouse_height))
+            visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(house_row_index &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; line_index &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, house_col_index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; visbile_from_func}
+            score &lt;span style=&#34;color:#555&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(visbile_from_func)
+            
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Columns bottom to top:&lt;/span&gt;
+            column_up &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;reversed&lt;/span&gt;([row[house_col_index] &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data[:house_row_index]]))
+            visbile_from_func &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; find_visible_in_line_8_2(column_up, max_height&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(treehouse_height))
+            visible_trees &lt;span style=&#34;color:#555&#34;&gt;|=&lt;/span&gt; {(house_row_index &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; line_index &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, house_col_index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; visbile_from_func}
+            score &lt;span style=&#34;color:#555&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(visbile_from_func)
+
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; score &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; max_trees_visible:
+                max_trees_visible &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; score
+                high_score_location &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; (house_row_index, house_col_index)
+                visible_from_high_score &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; visible_trees
+    
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#printVisibleTrees(data, visible_from_high_score, special=high_score_location)&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; max_trees_visible
+
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;printVisibleTrees&lt;/span&gt;(data: &lt;span style=&#34;color:#366&#34;&gt;list&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;], visible_trees: &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;tuple&lt;/span&gt;[&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;]], special &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;None&lt;/span&gt;):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; row_index, row &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; column_index, char &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(row):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (row_index, column_index) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; special:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[black dark_slate_gray_1]&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;char&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;[/]&amp;#34;&lt;/span&gt;, end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; (row_index, column_index) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; visible_trees:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[green on dark_red]&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;char&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;[/]&amp;#34;&lt;/span&gt;, end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[bright_black]&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;char&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;[/]&amp;#34;&lt;/span&gt;, end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;find_visible_in_line_8_2&lt;/span&gt;(line: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, max_height &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;9&lt;/span&gt;) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;:
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;Visible in line {list(line)} from height {max_height}; &amp;#34;, end = &amp;#34;&amp;#34;)&lt;/span&gt;
+    visible_trees &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;()
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; line:
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(&amp;#34;Nothing here, score 0&amp;#34;)&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; visible_trees
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index, tree &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(line):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(tree) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;=&lt;/span&gt; max_height:
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;Score: {line_index+1}&amp;#34;)&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, line_index&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;Max length, score {len(line)}&amp;#34;)&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(line))
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day8_2&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day8_2&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solution_8_2(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day8_2-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;rich&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+    
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solution_8_2(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday8_2 = document.querySelectorAll(&#39;[data-tab-target-day8_2]&#39;)
+    const tabContentsday8_2 = document.querySelectorAll(&#39;[data-tab-content-day8_2]&#39;)
+
+    tabsday8_2.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay8_2)
+            tabContentsday8_2.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday8_2.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
 
 
 &lt;py-script class=&#34;hidden&#34;&gt;
