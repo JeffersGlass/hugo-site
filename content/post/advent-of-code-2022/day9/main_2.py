@@ -1,6 +1,5 @@
-from typing import NamedTuple, Iterable
+from typing import NamedTuple
 import sys
-import itertools
 
 class Point(NamedTuple):
     x: int
@@ -18,11 +17,6 @@ direction_to_vector = {
     "D": Vector(0, -1),
 }
 
-def pairs(i: Iterable):
-    a, b = itertools.tee(i)
-    next(b, None)
-    return zip(a,b)
-
 def solve_9_2(data):
     head = Point(0, 0, Vector(0, 0))
     tails = [Point(0,0, Vector(0, 0)) for _ in range(9)]
@@ -35,7 +29,7 @@ def solve_9_2(data):
 
         for _ in range(int(quantity)):
             #print(f"Segments:  {''.join([f'({str(s.x): >2},{str(s.y): >2})' for s in [head, *tails]])}")
-            head = Point(x = head.x + head_move.x, y = head.y + head_move.y, previous=Point(head.x, head.y, None))
+            head = Point(x = head.x + head_move.x, y = head.y + head_move.y, previous=Vector(head.x, head.y))
             #print(f"Head moves by ({head_move.x},{head_move.y}) to ({head.x}, {head.y})")
 
             #move first tail
@@ -48,7 +42,7 @@ def solve_9_2(data):
                 diff =  catchup_step(tails[local_index-1], following_tail)
                 #print(f'Moving tail at index {local_index} by {diff}')
                 #print(f"({str(diff.x): >2},{str(diff.y): >2})", end = "")
-                tails[local_index] = Point(following_tail.x + diff.x, following_tail.y + diff.y, Point(following_tail.x, following_tail.y, None))
+                tails[local_index] = Point(following_tail.x + diff.x, following_tail.y + diff.y, Vector(following_tail.x, following_tail.y))
 
             tail_visited.add((tails[-1].x, tails[-1].y))
             #print(f"Segments:  {''.join([f'({str(s.x): >2},{str(s.y): >2})' for s in [head, *tails]])}")
@@ -144,7 +138,11 @@ def test_catchup_step():
     print("Tests pass")
 
 if 'pyodide' in sys.modules:
-    pass
+    def main_day9_2():
+        data = get_input('day9_2')
+        display(f"{solve_9_2(data)=}",
+            target="day9_2-output",
+            append=False)
 elif __name__ == '__main__':
     with open ("input.txt", "r") as fp:
         data = fp.read()
@@ -152,6 +150,3 @@ elif __name__ == '__main__':
     print(f"{solve_9_2(data)}")
 
     #test_catchup_step()
-
-    
-
