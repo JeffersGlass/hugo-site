@@ -23,13 +23,13 @@ def solve_9_1(data):
         for _ in range(int(quantity)):
             prev_head = head
             head = Point(head.x + diff.x, head.y + diff.y)
-            if too_far(head, tail):
+            if too_far_9_1(head, tail):
                 tail = prev_head
                 tail_visited.add(tail)
 
     return len(tail_visited)
 
-def too_far(head, tail):
+def too_far_9_1(head, tail):
     return abs(head.x - tail.x) > 1 or abs(head.y - tail.y) > 1
 
 if 'pyodide' in sys.modules:
