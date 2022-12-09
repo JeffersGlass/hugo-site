@@ -4637,6 +4637,542 @@ c<span style="color:#555">.</span>is_jupyter <span style="color:#555">=</span> <
     })
 </script>
 
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day9_1'>Day 9: Rope Bridge (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">I felt quite clever during this first part of today's problem, when I noticed that, when the tail of the rope has to move, it always moves to where the head was in the previous step. This saves a fair amount of figuring out the logic of exactly where the tail moves to in each step - it can just reuse the previous position of the head, if necessary.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day9_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day9_1-upload-input" name="day9_1-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day9_1-output"></div>
+                
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day9_1-run-btn" py-click="main_day9_1()">RUN</button></div>
+                
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day9_1-upload-input')
+            </py-script>
+            <py-script src="day9/main_1.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day9_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day9_1="#day9_1-code" class="active tab code-title">day9_1.py</li>
+         
+    </ul>
+    <div id="day9_1-code" data-tab-content-day9_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NamedTuple
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Vector</span>(NamedTuple):
+    x: <span style="color:#366">int</span>
+    y: <span style="color:#366">int</span>
+
+direction_to_vector <span style="color:#555">=</span> {
+    <span style="color:#c30">&#34;R&#34;</span>: Vector(<span style="color:#f60">1</span>, <span style="color:#f60">0</span>),
+    <span style="color:#c30">&#34;L&#34;</span>: Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>),
+    <span style="color:#c30">&#34;U&#34;</span>: Vector(<span style="color:#f60">0</span>, <span style="color:#f60">1</span>),
+    <span style="color:#c30">&#34;D&#34;</span>: Vector(<span style="color:#f60">0</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>),
+}
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solve_9_1</span>(data):
+    head <span style="color:#555">=</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)
+    tail <span style="color:#555">=</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)
+    tail_visited <span style="color:#555">=</span> {tail}
+
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>):
+        direction, quantity <span style="color:#555">=</span> line<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)
+        diff <span style="color:#555">=</span> direction_to_vector[direction]
+        <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">int</span>(quantity)):
+            prev_head <span style="color:#555">=</span> head
+            head <span style="color:#555">=</span> Vector(head<span style="color:#555">.</span>x <span style="color:#555">+</span> diff<span style="color:#555">.</span>x, head<span style="color:#555">.</span>y <span style="color:#555">+</span> diff<span style="color:#555">.</span>y)
+            <span style="color:#069;font-weight:bold">if</span> too_far_9_1(head, tail):
+                tail <span style="color:#555">=</span> prev_head
+                tail_visited<span style="color:#555">.</span>add(tail)
+
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(tail_visited)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">too_far_9_1</span>(head, tail):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">abs</span>(head<span style="color:#555">.</span>x <span style="color:#555">-</span> tail<span style="color:#555">.</span>x) <span style="color:#555">&gt;</span> <span style="color:#f60">1</span> <span style="color:#000;font-weight:bold">or</span> <span style="color:#366">abs</span>(head<span style="color:#555">.</span>y <span style="color:#555">-</span> tail<span style="color:#555">.</span>y) <span style="color:#555">&gt;</span> <span style="color:#f60">1</span>
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day9_1</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day9_1&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solve_9_1(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day9_1-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">elif</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#39;__main__&#39;</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span> (<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()
+
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solve_9_1(data)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday9_1 = document.querySelectorAll('[data-tab-target-day9_1]')
+    const tabContentsday9_1 = document.querySelectorAll('[data-tab-content-day9_1]')
+
+    tabsday9_1.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay9_1)
+            tabContentsday9_1.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday9_1.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day9_2'>Day 9: Rope Bridge (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Of course, I was being too clever by half, and the logic in part 1 doesn't hold in part two; I ended up chasing a nasty typo in the logic of determining where each tail segment moves for quite awhile. I've left my rudimentary testing code and print statements in place and commented out for illustrative purposes.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day9_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day9_2-upload-input" name="day9_2-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="day9_2-output"></div>
+                
+                <div class="col-span-1"><button class="w-full py-2 load-pyscript-button" id="day9_2-run-btn" py-click="main_day9_2()">RUN</button></div>
+                
+            </div>
+            <py-script>
+                from utils import attach_upload_listener
+                attach_upload_listener('day9_2-upload-input')
+            </py-script>
+            <py-script src="day9/main_2.py"></py-script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day9_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day9_2="#day9_2-code" class="active tab code-title">day9_2.py</li>
+         
+    </ul>
+    <div id="day9_2-code" data-tab-content-day9_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> NamedTuple
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Point</span>(NamedTuple):
+    x: <span style="color:#366">int</span>
+    y: <span style="color:#366">int</span>
+    previous: <span style="color:#366">any</span>
+
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Vector</span>(NamedTuple):
+    x: <span style="color:#366">int</span>
+    y: <span style="color:#366">int</span>
+
+direction_to_vector <span style="color:#555">=</span> {
+    <span style="color:#c30">&#34;R&#34;</span>: Vector(<span style="color:#f60">1</span>, <span style="color:#f60">0</span>),
+    <span style="color:#c30">&#34;L&#34;</span>: Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>),
+    <span style="color:#c30">&#34;U&#34;</span>: Vector(<span style="color:#f60">0</span>, <span style="color:#f60">1</span>),
+    <span style="color:#c30">&#34;D&#34;</span>: Vector(<span style="color:#f60">0</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>),
+}
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">solve_9_2</span>(data):
+    head <span style="color:#555">=</span> Point(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>, Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>))
+    tails <span style="color:#555">=</span> [Point(<span style="color:#f60">0</span>,<span style="color:#f60">0</span>, Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)) <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">9</span>)]
+    tail_visited <span style="color:#555">=</span> {(tails[<span style="color:#555">-</span><span style="color:#f60">1</span>]<span style="color:#555">.</span>x, tails[<span style="color:#555">-</span><span style="color:#f60">1</span>]<span style="color:#555">.</span>y)}
+
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>):
+        <span style="color:#09f;font-style:italic">#print(f&#34;\n{line=}&#34;)</span>
+        direction, quantity <span style="color:#555">=</span> line<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)
+        head_move <span style="color:#555">=</span> direction_to_vector[direction]
+
+        <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">int</span>(quantity)):
+            <span style="color:#09f;font-style:italic">#print(f&#34;Segments:  {&#39;&#39;.join([f&#39;({str(s.x): &gt;2},{str(s.y): &gt;2})&#39; for s in [head, *tails]])}&#34;)</span>
+            head <span style="color:#555">=</span> Point(x <span style="color:#555">=</span> head<span style="color:#555">.</span>x <span style="color:#555">+</span> head_move<span style="color:#555">.</span>x, y <span style="color:#555">=</span> head<span style="color:#555">.</span>y <span style="color:#555">+</span> head_move<span style="color:#555">.</span>y, previous<span style="color:#555">=</span>Vector(head<span style="color:#555">.</span>x, head<span style="color:#555">.</span>y))
+            <span style="color:#09f;font-style:italic">#print(f&#34;Head moves by ({head_move.x},{head_move.y}) to ({head.x}, {head.y})&#34;)</span>
+
+            <span style="color:#09f;font-style:italic">#move first tail</span>
+            diff <span style="color:#555">=</span>  catchup_step(head, tails[<span style="color:#f60">0</span>])
+            tails[<span style="color:#f60">0</span>] <span style="color:#555">=</span> Point(tails[<span style="color:#f60">0</span>]<span style="color:#555">.</span>x <span style="color:#555">+</span> diff<span style="color:#555">.</span>x, tails[<span style="color:#f60">0</span>]<span style="color:#555">.</span>y <span style="color:#555">+</span> diff<span style="color:#555">.</span>y, Vector(tails[<span style="color:#f60">0</span>]<span style="color:#555">.</span>x, tails[<span style="color:#f60">0</span>]<span style="color:#555">.</span>y))
+
+            <span style="color:#09f;font-style:italic">#Move other tails</span>
+            <span style="color:#069;font-weight:bold">for</span> index, following_tail <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(tails[<span style="color:#f60">1</span>:]):
+                local_index <span style="color:#555">=</span> index <span style="color:#555">+</span> <span style="color:#f60">1</span>
+                diff <span style="color:#555">=</span>  catchup_step(tails[local_index<span style="color:#555">-</span><span style="color:#f60">1</span>], following_tail)
+                <span style="color:#09f;font-style:italic">#print(f&#39;Moving tail at index {local_index} by {diff}&#39;)</span>
+                <span style="color:#09f;font-style:italic">#print(f&#34;({str(diff.x): &gt;2},{str(diff.y): &gt;2})&#34;, end = &#34;&#34;)</span>
+                tails[local_index] <span style="color:#555">=</span> Point(following_tail<span style="color:#555">.</span>x <span style="color:#555">+</span> diff<span style="color:#555">.</span>x, following_tail<span style="color:#555">.</span>y <span style="color:#555">+</span> diff<span style="color:#555">.</span>y, Vector(following_tail<span style="color:#555">.</span>x, following_tail<span style="color:#555">.</span>y))
+
+            tail_visited<span style="color:#555">.</span>add((tails[<span style="color:#555">-</span><span style="color:#f60">1</span>]<span style="color:#555">.</span>x, tails[<span style="color:#555">-</span><span style="color:#f60">1</span>]<span style="color:#555">.</span>y))
+            <span style="color:#09f;font-style:italic">#print(f&#34;Segments:  {&#39;&#39;.join([f&#39;({str(s.x): &gt;2},{str(s.y): &gt;2})&#39; for s in [head, *tails]])}&#34;)</span>
+            <span style="color:#09f;font-style:italic">#print(&#34;&#34;)</span>
+        
+        <span style="color:#09f;font-style:italic">#input(&#34;&#34;)</span>
+
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">len</span>(tail_visited)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">catchup_step</span>(head: Point, tail: Point) <span style="color:#555">-&gt;</span> Vector:
+    <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">abs</span>(head<span style="color:#555">.</span>x <span style="color:#555">-</span> tail<span style="color:#555">.</span>x) <span style="color:#555">&gt;</span> <span style="color:#f60">1</span> <span style="color:#000;font-weight:bold">or</span> <span style="color:#366">abs</span>(head<span style="color:#555">.</span>y <span style="color:#555">-</span> tail<span style="color:#555">.</span>y) <span style="color:#555">&gt;</span> <span style="color:#f60">1</span>:
+        xdiff <span style="color:#555">=</span> <span style="color:#f60">0</span>
+        ydiff <span style="color:#555">=</span> <span style="color:#f60">0</span>
+        
+        <span style="color:#069;font-weight:bold">if</span> head<span style="color:#555">.</span>x <span style="color:#555">&gt;</span> tail<span style="color:#555">.</span>x:
+            xdiff <span style="color:#555">=</span> <span style="color:#f60">1</span>
+        <span style="color:#069;font-weight:bold">elif</span> head<span style="color:#555">.</span>x <span style="color:#555">&lt;</span> tail<span style="color:#555">.</span>x:
+            xdiff <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>
+        
+        <span style="color:#069;font-weight:bold">if</span> head<span style="color:#555">.</span>y <span style="color:#555">&gt;</span> tail<span style="color:#555">.</span>y:
+            ydiff <span style="color:#555">=</span> <span style="color:#f60">1</span>
+        <span style="color:#069;font-weight:bold">elif</span> head<span style="color:#555">.</span>y <span style="color:#555">&lt;</span> tail<span style="color:#555">.</span>y:
+            ydiff <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>
+
+        <span style="color:#069;font-weight:bold">return</span> Vector(xdiff, ydiff)
+        
+    <span style="color:#069;font-weight:bold">return</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">test_catchup_step</span>():
+    <span style="color:#09f;font-style:italic">#Identity</span>
+    zero_vector <span style="color:#555">=</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">0</span>, y <span style="color:#555">=</span> <span style="color:#f60">0</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)
+
+    <span style="color:#09f;font-style:italic">#1 off</span>
+    <span style="color:#069;font-weight:bold">for</span> x <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">1</span>):
+        <span style="color:#069;font-weight:bold">for</span> y <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">1</span>):
+            <span style="color:#069;font-weight:bold">assert</span> catchup_step(Vector(x, y), zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">0</span>)
+
+    <span style="color:#09f;font-style:italic">#2 off</span>
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#f60">0</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#f60">0</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#f60">0</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">0</span>, y <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">0</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">0</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">0</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    <span style="color:#09f;font-style:italic">#2, 1 off</span>
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#f60">1</span>)
+    <span style="color:#09f;font-style:italic">#print(c:= catchup_step(a, zero_vector))</span>
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#f60">1</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">1</span>, y <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+    <span style="color:#09f;font-style:italic">#print(c:= catchup_step(a, zero_vector))</span>
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">1</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>, y <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">1</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    <span style="color:#09f;font-style:italic"># 2, 2 off</span>
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#f60">1</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    a <span style="color:#555">=</span> Vector(x <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>, y <span style="color:#555">=</span> <span style="color:#555">-</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">assert</span> catchup_step(a, zero_vector) <span style="color:#555">==</span> Vector(<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>)
+
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34;Tests pass&#34;</span>)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;pyodide&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day9_2</span>():
+        data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#39;day9_2&#39;</span>)
+        display(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solve_9_2(data)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>,
+            target<span style="color:#555">=</span><span style="color:#c30">&#34;day9_2-output&#34;</span>,
+            append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+<span style="color:#069;font-weight:bold">elif</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#39;__main__&#39;</span>:
+    <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span> (<span style="color:#c30">&#34;input.txt&#34;</span>, <span style="color:#c30">&#34;r&#34;</span>) <span style="color:#069;font-weight:bold">as</span> fp:
+        data <span style="color:#555">=</span> fp<span style="color:#555">.</span>read()
+
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>solve_9_2(data)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    <span style="color:#09f;font-style:italic">#test_catchup_step()</span></code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+     
+
+</div>
+<script>
+    const tabsday9_2 = document.querySelectorAll('[data-tab-target-day9_2]')
+    const tabContentsday9_2 = document.querySelectorAll('[data-tab-content-day9_2]')
+
+    tabsday9_2.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabTargetDay9_2)
+            tabContentsday9_2.forEach(tabContent => {
+                tabContent.classList.remove('active')
+            })
+            tabsday9_2.forEach(tab => {
+                tab.classList.remove('active')
+            })
+            tab.classList.add('active')
+            target.classList.add('active')
+        })
+    })
+</script>
+
 
 <py-script class="hidden">
     import js

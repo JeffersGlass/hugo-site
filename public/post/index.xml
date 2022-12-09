@@ -4496,6 +4496,542 @@ c&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;is_jupyter &lt;span style=
     })
 &lt;/script&gt;
 
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day9_1&#39;&gt;Day 9: Rope Bridge (Part 1)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;I felt quite clever during this first part of today&#39;s problem, when I noticed that, when the tail of the rope has to move, it always moves to where the head was in the previous step. This saves a fair amount of figuring out the logic of exactly where the tail moves to in each step - it can just reuse the previous position of the head, if necessary.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day9_1-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day9_1-upload-input&#34; name=&#34;day9_1-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day9_1-output&#34;&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day9_1-run-btn&#34; py-click=&#34;main_day9_1()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day9_1-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day9/main_1.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day9_1-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day9_1=&#34;#day9_1-code&#34; class=&#34;active tab code-title&#34;&gt;day9_1.py&lt;/li&gt;
+         
+    &lt;/ul&gt;
+    &lt;div id=&#34;day9_1-code&#34; data-tab-content-day9_1 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; NamedTuple
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Vector&lt;/span&gt;(NamedTuple):
+    x: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    y: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+
+direction_to_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;R&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;),
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;L&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;),
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;U&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;),
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;D&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;),
+}
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solve_9_1&lt;/span&gt;(data):
+    head &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    tail &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    tail_visited &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {tail}
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;):
+        direction, quantity &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;)
+        diff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; direction_to_vector[direction]
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; _ &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(quantity)):
+            prev_head &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; head
+            head &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; diff&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; diff&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; too_far_9_1(head, tail):
+                tail &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; prev_head
+                tail_visited&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add(tail)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(tail_visited)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;too_far_9_1&lt;/span&gt;(head, tail):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;abs&lt;/span&gt;(head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;abs&lt;/span&gt;(head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day9_1&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day9_1&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solve_9_1(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day9_1-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; __name__ &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt; (&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solve_9_1(data)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday9_1 = document.querySelectorAll(&#39;[data-tab-target-day9_1]&#39;)
+    const tabContentsday9_1 = document.querySelectorAll(&#39;[data-tab-content-day9_1]&#39;)
+
+    tabsday9_1.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay9_1)
+            tabContentsday9_1.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday9_1.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day9_2&#39;&gt;Day 9: Rope Bridge (Part 2)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;Of course, I was being too clever by half, and the logic in part 1 doesn&#39;t hold in part two; I ended up chasing a nasty typo in the logic of determining where each tail segment moves for quite awhile. I&#39;ve left my rudimentary testing code and print statements in place and commented out for illustrative purposes.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day9_2-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day9_2-upload-input&#34; name=&#34;day9_2-upload&#34;&gt;
+                &lt;/div&gt;
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day9_2-output&#34;&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 load-pyscript-button&#34; id=&#34;day9_2-run-btn&#34; py-click=&#34;main_day9_2()&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+            &lt;py-script&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day9_2-upload-input&#39;)
+            &lt;/py-script&gt;
+            &lt;py-script src=&#34;day9/main_2.py&#34;&gt;&lt;/py-script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day9_2-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day9_2=&#34;#day9_2-code&#34; class=&#34;active tab code-title&#34;&gt;day9_2.py&lt;/li&gt;
+         
+    &lt;/ul&gt;
+    &lt;div id=&#34;day9_2-code&#34; data-tab-content-day9_2 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;  9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 87
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 88
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 89
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 90
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 91
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 92
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 93
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 94
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 95
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 96
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 97
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 98
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 99
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;100
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;101
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;102
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;103
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;104
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;105
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;106
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;107
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;108
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;109
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;110
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;111
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;112
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;113
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;114
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;115
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;116
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;117
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;118
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;119
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;120
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;121
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;122
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;123
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;124
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;125
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;126
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;127
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;128
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;129
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;130
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;131
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;132
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;133
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;134
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;135
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;136
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;137
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;138
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;139
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;140
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;141
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;142
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;143
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;144
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;145
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;146
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;147
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;148
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;149
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;150
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;151
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;152
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; NamedTuple
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Point&lt;/span&gt;(NamedTuple):
+    x: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    y: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    previous: &lt;span style=&#34;color:#366&#34;&gt;any&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Vector&lt;/span&gt;(NamedTuple):
+    x: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    y: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+
+direction_to_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;R&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;),
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;L&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;),
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;U&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;),
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;D&amp;#34;&lt;/span&gt;: Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;),
+}
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;solve_9_2&lt;/span&gt;(data):
+    head &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Point(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;))
+    tails &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; [Point(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; _ &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;9&lt;/span&gt;)]
+    tail_visited &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {(tails[&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, tails[&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y)}
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;):
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;\n{line=}&amp;#34;)&lt;/span&gt;
+        direction, quantity &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; line&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;)
+        head_move &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; direction_to_vector[direction]
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; _ &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(quantity)):
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;Segments:  {&amp;#39;&amp;#39;.join([f&amp;#39;({str(s.x): &amp;gt;2},{str(s.y): &amp;gt;2})&amp;#39; for s in [head, *tails]])}&amp;#34;)&lt;/span&gt;
+            head &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Point(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; head_move&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; head_move&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y, previous&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;Vector(head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y))
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;Head moves by ({head_move.x},{head_move.y}) to ({head.x}, {head.y})&amp;#34;)&lt;/span&gt;
+
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#move first tail&lt;/span&gt;
+            diff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;  catchup_step(head, tails[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;])
+            tails[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Point(tails[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; diff&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, tails[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; diff&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y, Vector(tails[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, tails[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y))
+
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Move other tails&lt;/span&gt;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; index, following_tail &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(tails[&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:]):
+                local_index &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; index &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+                diff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;  catchup_step(tails[local_index&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;], following_tail)
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#39;Moving tail at index {local_index} by {diff}&amp;#39;)&lt;/span&gt;
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;({str(diff.x): &amp;gt;2},{str(diff.y): &amp;gt;2})&amp;#34;, end = &amp;#34;&amp;#34;)&lt;/span&gt;
+                tails[local_index] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Point(following_tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; diff&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, following_tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; diff&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y, Vector(following_tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, following_tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y))
+
+            tail_visited&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add((tails[&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x, tails[&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y))
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(f&amp;#34;Segments:  {&amp;#39;&amp;#39;.join([f&amp;#39;({str(s.x): &amp;gt;2},{str(s.y): &amp;gt;2})&amp;#39; for s in [head, *tails]])}&amp;#34;)&lt;/span&gt;
+            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(&amp;#34;&amp;#34;)&lt;/span&gt;
+        
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#input(&amp;#34;&amp;#34;)&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;len&lt;/span&gt;(tail_visited)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;catchup_step&lt;/span&gt;(head: Point, tail: Point) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; Vector:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;abs&lt;/span&gt;(head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;abs&lt;/span&gt;(head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y) &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;:
+        xdiff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+        ydiff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+        
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x:
+            xdiff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x &lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;x:
+            xdiff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+        
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y:
+            ydiff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; head&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y &lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt; tail&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;y:
+            ydiff &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; Vector(xdiff, ydiff)
+        
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;test_catchup_step&lt;/span&gt;():
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Identity&lt;/span&gt;
+    zero_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#1 off&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; x &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; y &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(Vector(x, y), zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#2 off&lt;/span&gt;
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#2, 1 off&lt;/span&gt;
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(c:= catchup_step(a, zero_vector))&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#print(c:= catchup_step(a, zero_vector))&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# 2, 2 off&lt;/span&gt;
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    a &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Vector(x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;, y &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;assert&lt;/span&gt; catchup_step(a, zero_vector) &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; Vector(&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Tests pass&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;pyodide&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; sys&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;modules:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day9_2&lt;/span&gt;():
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;day9_2&amp;#39;&lt;/span&gt;)
+        display(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solve_9_2(data)&lt;span style=&#34;color:#a00&#34;&gt;=}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;,
+            target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day9_2-output&amp;#34;&lt;/span&gt;,
+            append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; __name__ &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt; (&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; fp:
+        data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; fp&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;solve_9_2(data)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#test_catchup_step()&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+     
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday9_2 = document.querySelectorAll(&#39;[data-tab-target-day9_2]&#39;)
+    const tabContentsday9_2 = document.querySelectorAll(&#39;[data-tab-content-day9_2]&#39;)
+
+    tabsday9_2.forEach(tab =&gt; {
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            const target = document.querySelector(tab.dataset.tabTargetDay9_2)
+            tabContentsday9_2.forEach(tabContent =&gt; {
+                tabContent.classList.remove(&#39;active&#39;)
+            })
+            tabsday9_2.forEach(tab =&gt; {
+                tab.classList.remove(&#39;active&#39;)
+            })
+            tab.classList.add(&#39;active&#39;)
+            target.classList.add(&#39;active&#39;)
+        })
+    })
+&lt;/script&gt;
+
 
 &lt;py-script class=&#34;hidden&#34;&gt;
     import js
