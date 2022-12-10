@@ -15,7 +15,7 @@ class Computer():
         self.advance_instruction()
         
 
-    def run(self):
+    def run(self) -> None:
         print("Computer running")
 
         while self._current_instruction is not None:
@@ -30,13 +30,13 @@ class Computer():
         else:
             return False
 
-    def run_until_clock(self, cycles):
+    def run_until_clock(self, cycles) -> None:
         print(f"Computer running until clock is {cycles}")
 
         while self.clock_counter < cycles and self._current_instruction is not None:
             self.next()
 
-    def next(self):
+    def next(self) -> None:
         if self._current_instruction == None:
             self._current_instruction = self.parser.parse(next(self.instructions))
         
@@ -46,7 +46,7 @@ class Computer():
             
         self.clock_counter += 1
     
-    def advance_instruction(self):
+    def advance_instruction(self) -> None:
         try:
             self._current_instruction = self.parser.parse(next(self.instructions), self)
             self._instruction_index += 1
