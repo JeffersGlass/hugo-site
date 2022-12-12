@@ -10,6 +10,7 @@ class Monkey():
         items: Sequence[int],
         operation: Callable[[int], int],
         test: Callable[[int], bool],
+        test_num: int,
         true_dest: int,
         false_dest: int
     ):
@@ -17,6 +18,7 @@ class Monkey():
         self.items = deque(items)
         self.operation: Callable[[int], int] = operation
         self.test: Callable[[int], bool] = test
+        self.test_num: int = test_num
         self.true_dest: int = true_dest
         self.false_dest: int = false_dest
 
@@ -46,4 +48,4 @@ throw_count={self.throw_count}"""
         to_dest = int(re.search(r'(\d+)', lines[4]).group())
         false_dest = int(re.search(r'(\d+)', lines[5]).group())
 
-        return cls(label, starting, operation, test, to_dest, false_dest)
+        return cls(label, starting, operation, test, test_number, to_dest, false_dest)
