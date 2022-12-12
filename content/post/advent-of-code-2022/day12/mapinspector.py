@@ -84,8 +84,9 @@ class MapApp(App):
         self.show_path(self.paths_to_investigate[-1])
         if event.key == 'enter':
             self.iterate_path_one_step(self.paths_to_investigate.pop())
-            self.clearlog()
+            self.show_path(self.paths_to_investigate[-1])
             self.writelog(self.paths_to_investigate[-1])
+
         elif isinstance(self.focused, CellLabel):
             current_row = self.focused.cell.row
             current_column = self.focused.cell.column
@@ -104,11 +105,11 @@ class MapApp(App):
                 self.set_focus(self.query_one(f"#c{current_row + 1}-{current_column }"))
                 moved = True
             if moved:
-                self.clearlog()
-                self.writelog(self.paths_to_investigate[-1])
+                self.showcell(self.focused.cell)
 
     def clearlog(self):
         self.query_one("#info", TextLog).clear()
+        self.refresh()
 
     def writelog(self, s):
         self.query_one("#info", TextLog).write(s)
