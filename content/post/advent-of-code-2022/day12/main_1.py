@@ -5,7 +5,6 @@ from map import Map
 def get_valid_neighbors(cell, dead_ends, end):
     return [n for n in cell.neighbors if n not in dead_ends and n != end]
    
-
 def iterate_path_one_step(map, current_path, dead_ends, end_cell, paths_to_finish, paths_to_investigate):
     current_cell = current_path[-1]
 
