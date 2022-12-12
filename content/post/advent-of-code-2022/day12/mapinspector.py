@@ -126,8 +126,8 @@ class CellLabel(Label, can_focus=True):
         self.cell: Cell = cell
 
     def compose(self):  
-        l = Label(self.cell.name)
-        yield Label(self.cell.name)
+        l = Label(self.cell.label)
+        yield Label(self.cell.label)
 
     class CellMessage(Message):
         def __init__(self, sender: MessageTarget, cell):

@@ -45,16 +45,16 @@ class Map():
 
 class Cell():
     def __init__(self, value, row = None, column = None, up = None, left = None, right = None, down = None):
-        self.name = value
+        self.label = value
         if value == 'S': self.value = 1
         elif value == 'E': self.value = 26
         else: self.value = string.ascii_lowercase.index(value) + 1
         self.row = row
         self.column = column
-        self.up = up 
-        self.left = left
-        self.down = down
-        self.right = right
+        self.up: Cell | Map.BORDER | None = up 
+        self.left: Cell | Map.BORDER | None = left
+        self.down: Cell | Map.BORDER | None = down
+        self.right: Cell | Map.BORDER | None = right
         
     def __str__(self):
         return f"Cell {self.location}. Value: {self.value} Up:{self.up.value if self.up else 'NONE'} Left:{self.left.value if self.left else 'NONE'} Down:{self.down.value if self.down else 'NONE'} Right:{self.right.value if self.right else 'NONE'}"
