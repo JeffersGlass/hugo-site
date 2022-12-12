@@ -43,7 +43,8 @@
         {{ if isset .Params "morefiles" }}
         {{ $morefiles := split ($.Get "morefiles") ","}}
             {{ range $morefiles }}
-                {{ $id := replace . "/" "" }}
+                {{ $id := delimit (slice ($.Get "id") .) ""}}
+                {{ $id = replace $id "/" "" }}
                 {{ $id = replace $id "." "" }}
                 <li data-tab-target-{{$.Get "id" | safeHTMLAttr}}="#{{ $id }}-code" class="tab code-title">{{ . }}</li>
             {{ end }}
@@ -71,7 +72,8 @@
         {{ range $morefiles }}
             {{ $morepath := delimit (slice "content/post/advent-of-code-2022/" . ) ""}}
             {{ $morelines := len ( split ( os.ReadFile $morepath ) "\n")}}
-            {{ $id := replace . "/" "" }}
+            {{ $id := delimit (slice ($.Get "id") .) ""}}
+            {{ $id = replace $id "/" "" }}
             {{ $id = replace $id "." "" }}
             <div id="{{ $id }}-code" data-tab-content-{{$.Get "id" | safeHTMLAttr }} class="tab-content md:col-span-2">
                 <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $morepath) "python" "" }}</div>
