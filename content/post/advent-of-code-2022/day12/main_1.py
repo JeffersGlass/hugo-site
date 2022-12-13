@@ -19,9 +19,10 @@ def solve_12_1(data: list[str]):
 
     while paths_to_investigate:
         it += 1
-        if not it % 10_000:
+        if not it % 1_000:
             print_map(map, paths_to_investigate[-1])
             print(f"{len(paths_to_investigate)= } : {len(paths_to_finish)= } : High Value: {paths_to_investigate[-1][-1].label}")
+            print(f"Value {value_astar(paths_to_investigate[-1], destination=end)}")
 
 
 
@@ -44,21 +45,23 @@ def solve_12_1(data: list[str]):
         for n in new_neighbors:
             paths_to_investigate.append(current_path + [n])
 
-        paths_to_investigate.sort(key = lambda path: ord(path[-1].label))
+        paths_to_investigate.sort(key = partial(value_astar, destination=end)) #lambda path: value_astar(path[-1].label))
         
         #print_map(map, paths_to_investigate[-1])
         #print(f"{len(paths_to_investigate)= } : {len(paths_to_finish)= } ")
     
     return min(len(path) for path in paths_to_finish) - 1
 
-def astar(destination: Cell, current: Cell):
-    return -1 * ((destination.row  - current.row) ** 2 + (destination.column - current.column) ** 2)
+def value_astar(path, destination: Cell):
+    current = path[-1]
+    return -100 * ((destination.row  - current.row) ** 2 + (destination.column - current.column) ** 2) +  current.value
 
 def print_map(map: Map, path = None):
     for row in range(map.rows):
         for column in range(map.columns):
             char = Text(map.cells[(row, column)].label)
-            if path and any([(row, column) == pathcell.location for pathcell in path]): char.stylize("red")
+            if path and (row, column) == path[-1].location: char.stylize("yellow")
+            elif path and any([(row, column) == pathcell.location for pathcell in path]): char.stylize("red")
             else: char.stylize("green")
             rprint(char, end="")
         rprint("")
