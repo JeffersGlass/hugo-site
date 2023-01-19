@@ -1,19 +1,36 @@
 ---
-title: "Xterm"
+title: "Emscripten-Shell / Py-Xterm"
 date: 2023-01-19T09:11:02-06:00
 draft: true
 tags:
-- post
-description: "Description Here"
-rss_ignore: true
+- pyscript
+- python
+- pyodide
+- emscripten
+- EmShell
+description: "A prototype shell for the Emscripten Filesystem"
 ---
 <script defer src = "./build/pyscript.min.js"></script>
 <link rel="stylesheet" href="./build/pyscript.css">
+<style>
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
 <py-config>
     plugins = ['build/pyxterm.min.js']
 </py-config>
-<div class="grid grid-cols-1 lg:grid-cols-5">
-    <div class="col-span-1 lg:col-span-4">
-        <py-xterm></py-xterm>
-    </div>
+<div class="md:px-4 py-2" >
+    <py-xterm></py-xterm>
 </div>
+<p class="post-p">This is a (very rough) demo of a multilayered project called <a href="https://github.com/JeffersGlass/emscripten-shell">Emscripten Shell</a> (<span class="font-semibold">EmShell</span> for short)</p>
+<p class="post-p">Currently, the project encompasses three different levels of usage (which really should be three separate projects):
+    <ul class="post-ul">
+        <li>The <span class="font-semibold">Emscripten-Shell</span> itself, which is written in TypeScript/JavaScript and can be used with any program that uses the <a href="https://emscripten.org/docs/porting/files/file_systems_overview.html">Emscripten Filesystem</a> using the custom <code>&lt;x-term&gt;</code> element. </li>
+        <li><span class="font-semibold">py-xterm</span>, an enhancement of the Emscripten Shell for <a href="https://pyodide.org/en/stable/">Pyodide</a> that adds additional Python-specific functionality, including the <code>python</code> and <code>pip</code> commands, using the <code>&lt;py-xterm&gt;</code> element</li>
+        <li>A <span class="font-semibold">plugin</span> for <a href="https://pyscript.net/">PyScript</a> that adds the <code>&lt;py-xterm&gt;</code> element to a page using PyScript.</li>
+    </ul>
+</p>
+<p class="post-p">This project is in such early days, I hesitate to even call it an Alpha version. The shell is really more a series of hard-coded commands - things like line history, piping and redirect, variable expansion, arrow keys... none of that's here. In the long term, I think it would be interesting to try compiling an existing POSIX shell like <a href="https://github.com/emersion/mrsh">mrsh</a> with Emscripten and figuring out how to integrate that with other Emscripten-built programs.</p>
+<p class="post-p">See the <a href="https://github.com/JeffersGlass/emscripten-shell#usage-pyscript">usage section on GitHub</a> if you want to try out this early version.</p>
