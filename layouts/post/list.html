@@ -1,10 +1,11 @@
 {{ define "main" }}
 {{ partial "header.html" }}
+{{ $hiddenPages := where .Site.RegularPages ".Params.rss_ignore" true }}
 <div class="pt-16"></div>
 	<main class="px-4">
 		<h1 class="pb-4 pl-8 text-3xl">Blog Posts</h1>
 		<div class="flex flex-row flex-wrap px-8">
-			{{ range .Paginator.Pages }}
+			{{ range .Paginator.Pages | complement $hiddenPages }}
 				{{ .Render "summary" }}
 			{{ end }}
 			<!-- {{ partial "pagination.html" . }} -->
