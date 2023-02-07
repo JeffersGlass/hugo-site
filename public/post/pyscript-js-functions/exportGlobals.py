@@ -1,3 +1,3 @@
 from js import createObject
-from pyodide import create_proxy
+from pyodide.ffi import create_proxy
 createObject(create_proxy(globals()), "pyodideGlobals")
