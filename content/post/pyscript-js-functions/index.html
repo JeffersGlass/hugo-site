@@ -70,7 +70,26 @@ slug_image: pyjs_featured.jpg
 {{< /highlight >}}
 </div>
 <h2 class="text-xl font-semibold post-p">Python (Pyodide) to JavaScript</h2>
-<p class="post-p">One we've initialized the Pyodide runtime, the JS object <code class="code">pyodide.globals</code> is a mapping that represents the global Python namespace. We can use the <code class="code">get()</code> method to retrieve an object from this mapping and make use of it in JavaScript.</p>
+<p class="post-p">Just as we imported objects from the javascript global scope using the <code class="code">from js import ...</code> syntax, we can create new objects in the global scope by assigning new objects to the js "module":</p>
+<div class="mb-6">
+    {{< highlight html >}}
+    <script type="module">
+        const pyodideRuntime = await loadPyodide();
+        pyodideRuntime.runPython(`
+            import js
+            name = "Jeff" # A Python variable
+            # Define a Python function
+            def multiplyTwoNumbers(x, y):
+                return (x * y)
+            js.mult = multiplyTwoNumbers
+            js.name = name
+        `);
+        // Access and call it in JavaScript
+        console.log("Multiplying 2 and 3 in Python: " + mult(2,3));
+        console.log("You're welcome, " + name)
+    </script>
+    {{< /highlight >}}
+<p class="post-p">Alternatively, once PyScript has initialized the Pyodide runtime, the JS object <code class="code">pyodide.globals</code> is a mapping that represents the global Python namespace. We can use the <code class="code">get()</code> method to retrieve an object from this mapping and make use of it in JavaScript.</p>
 <h3 class="code-title">Python (Pyodide) to JavaScript</h3>
 <div class="mb-6">
 {{< highlight html >}}
@@ -91,16 +110,12 @@ slug_image: pyjs_featured.jpg
 </div>
 <h3 class="text-lg font-semibold">Python (PyScript) to JavaScript</h3>
 <a id="commentary"></a>
-<p class="post-p">Since <a href="https://github.com/pyscript/pyscript/issues/494">PyScript doesn't export its instance of Pyodide</a> and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags <span class="italic">"directly"</span>.</p>
-<p class="post-p">However, I've found a workaround using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval">JavaScript's eval() function</a>, which executes a string as code much like <a href="https://docs.python.org/3/library/functions.html#eval">Python's eval()</a>. First, we create a JS function <code class="code">createObject</code> which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.</p>
+<p class="post-p">Either of the methods in the Pyodide section above will work for creating JavaScript objects from within PyScript. However, if you wish to be more declarative when creating variables with specific names, you can use a more verbose method, as follows:</p>
+<p class="post-p">First, we define a javascript function which takes an object and a string, then binds that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.</p>
 {{< highlight html >}}
 <script>
     function createObject(object, variableName){
-        //Bind a variable whose name is the string variableName
-        // to the object called 'object'
-        let execString = variableName + " = object"
-        console.log("Running `" + execString + "`");
-        eval(execString)
+        globalThis[variableName] = object
     }
 </script>
 {{< /highlight >}}
@@ -132,6 +147,7 @@ slug_image: pyjs_featured.jpg
 {{< highlight-js-tag assignButtons.js 1>}}
 <h3 class="mt-4 text-lg font-semibold">A Deeper Dive</h3>
 <p class="post-p">We don't have to export the entire Python global namespace as an object if we don't want to. The example below shows exporting a single list and a lambda function as JavaScript variables, using the same <code class="code">createObject</code> function above.</p>
+<p class="info-banner">Again, this method is significantly more verbose than simple assigning to the <code class="code">js</code> module; however, you may find it useful if you wish to expand/extend the behavior of <code class="code">createObject()</code></p>
 <p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly (<code>'names'</code> and <code>'names_js'</code>, <code>'mutliplier'</code> and <code>'multiplier_js'</code>) for readability.</p>
 <span class="code-title">Python (PyScript) to JavaScript</span>
 {{< highlight python "linenostart=10">}}
@@ -168,11 +184,11 @@ slug_image: pyjs_featured.jpg
     </div>
 </div>
 
-<py-env>
-    - faker
-</py-env>
-<script defer src="https://pyscript.net/releases/2022.06.1/pyscript.js"></script>
-<link rel="stylesheet" href="https://pyscript.net/releases/2022.06.1/pyscript.css" />
+<py-config>
+    packages = ['faker']
+</py-config>
+<script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
 
 <script src="createObject.js"></script>
 <py-script src="registerJsObjects.py"></py-script>
