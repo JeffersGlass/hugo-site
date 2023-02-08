@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>serial on Jeff Glass</title>
+    <link>https://jeff.glass/tags/serial/</link>
+    <description>Recent content in serial on Jeff Glass</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 08 Feb 2023 07:51:57 -0600</lastBuildDate><atom:link href="https://jeff.glass/tags/serial/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Webserial in PyScript</title>
+      <link>https://jeff.glass/post/pyscript-webserial/</link>
+      <pubDate>Wed, 08 Feb 2023 07:51:57 -0600</pubDate>
+      
+      <guid>https://jeff.glass/post/pyscript-webserial/</guid>
+      <description>&lt;p class=&#34;post-p&#34;&gt;A user came along the &lt;a href=&#34;https://github.com/pyscript/pyscript/discussions&#34;&gt;PyScipt GitHub Discussions&lt;/a&gt; the other day with an interesting question - &lt;a href=&#34;https://github.com/pyscript/pyscript/discussions/1152&#34;&gt;can you use PySerial (or similar) in PyScript?&lt;/a&gt; That got my wheels a turning; this post is the answer to that question.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The short answer is &lt;span class=&#34;font-semibod&#34;&gt;no, PySerial doesn&#39;t work in PyScript&lt;/span&gt; - PySerial and other serial libraries rely on low-level features of their host operating systems which just aren&#39;t present in the browser window.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;But just because PySerial doesn&#39;t work, doesn&#39;t mean that &lt;span class=&#34;italic&#34;&gt;serial connections&lt;/span&gt; can&#39;t work. Using the new-ish &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API&#34;&gt;WebSerial Browser API&lt;/a&gt;, we can ask web users for permission to access their local serial devices. If it&#39;s granted, we can access those devices via a serial connection. And if you&#39;d like to try it out live in your browser, hit the &lt;span style=&#34;&#34;&gt;load PyScript&lt;/span&gt; button below:&lt;/p&gt;
+&lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+&lt;div class=&#34;justify-center hidden w-auto h-auto py-1 my-2 border-2 border-blue-200 live-example md:mx-4 rounded-xl md:h-full&#34;&gt;
+    &lt;div class=&#34;flex flex-row space-x-2 &#34;&gt;
+        &lt;py-script src=&#34;webSerialDemo.py&#34;&gt;&lt;/py-script&gt;
+        &lt;button py-click=&#34;sm.askForSerial()&#34; id=&#34;open&#34; class=&#34;p-2 border-2 border-gray-500 rounded-lg&#34;&gt;Open a Serial Port&lt;/button&gt;
+        &lt;br&gt;&lt;button py-click =&#34;sendValueFromInputBox(sm)&#34; id=&#34;write&#34; class=&#34;p-2 border-2 border-gray-500 rounded-lg&#34;&gt;Write to the serial port:&lt;/button&gt;
+        &lt;input type=&#34;text&#34; id=&#34;text&#34;&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;overflow-y-scroll max-h-76&#34;&gt;
+        &lt;py-terminal auto&gt;&lt;/py-terminal&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;italic post-p&#34;&gt;This isn&#39;t a particularly full-featured demo. As you&#39;ll see in the code below, it doesn&#39;t contain much provision for error handling, and only the barest of UI. But it does work!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Below are three source files for a working demo using WebSerial in PyScript. The first (&lt;code class=&#34;code&#34;&gt;webPageSerial.html&lt;/code&gt;) is a (minimally formatted) HTML page with two buttons - &#34;Open a Serial Port&#34; and &#34;Write to the Serial Port&#34; - as well as an input box. Clicking the &#34;Open&#34; button prompts the user (if their browser supports WebSerial) to select an available serial port, connects to it, and begins listening for incoming bytes on that port. Once the port is open, when the user clicks the &#34;write&#34; button, the contents of the text box are written to the open serial port.&lt;/p&gt;
+&lt;div class=&#34;my-4&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;webSerialPage.html&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span style=&#34;color:#099&#34;&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;html&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;lang&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;en&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;head&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;meta&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;charset&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;UTF-8&amp;#34;&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;title&lt;/span&gt;&amp;gt;WebSerial Demo&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;title&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;https://pyscript.net/releases/2022.12.1/pyscript.js&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;link&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;rel&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;stylesheet&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;href&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;https://pyscript.net/releases/2022.12.1/pyscript.css&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;head&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;body&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;webserialdemo.py&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-script&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;py-click&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;sm.askForSerial()&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;open&amp;#34;&lt;/span&gt;&amp;gt;Open a Serial Port&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;br&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;py-click &lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;sendValueFromInputBox(sm)&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;write&amp;#34;&lt;/span&gt;&amp;gt;Write to the serial port:&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt;&amp;gt;
+    &amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;body&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;html&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The second file (&lt;code class=&#34;code&#34;&gt;webSerialDemo.py&lt;/code&gt;) contains the actual Python/PyScript code that makes this demo work. It wraps the WebSerial API in a new class, &lt;code class=&#34;code&#34;&gt;SerialManager&lt;/code&gt;, for the purpose of managing the state of the serial connection. It also creates an instance of this class, called &lt;code class=&#34;code&#34;&gt;sm&lt;/code&gt;, which is referenced by the &lt;code class=&#34;code&#34;&gt;py-click&lt;/code&gt; attributes in the above HTML document.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Finally, a single helper function &lt;code class=&#34;code&#34;&gt;sendValueFromInputBox()&lt;/code&gt; is defined, which is used by the &#34;Write&#34; button - it fetches the contents of the input box, asks the SerialManager to write that value to the serial port, then clears the input box.&lt;/p&gt;
+&lt;div class=&#34;my-4&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;webSerialDemo.py&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;overflow-y-scroll h-124&#34;&gt;
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; navigator
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyodide.ffi&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; to_js
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyodide.ffi.wrappers&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; add_event_listener
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Utility function for converting py dicts to JS objects&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;j&lt;/span&gt;(obj):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; to_js(obj, dict_converter&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;Object&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;fromEntries)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;SerialManager&lt;/span&gt;():
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&amp;#39;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Class for managing reads and writes to/from a serial port
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Not very clean! No error handling, no way to stop listening etc.
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;askForSerial&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&amp;#39;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        Request that the user select a serial port, and initialize
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        the reader/writer streams with it
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;hasattr&lt;/span&gt;(navigator, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;serial&amp;#39;&lt;/span&gt;):
+            warning &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;This browser does not support WebSerial; see https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility for a list of compatible browsers.&amp;#34;&lt;/span&gt;
+            &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(warning)
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;NotImplementedError&lt;/span&gt;(warning)
+        
+        self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;port &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; navigator&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;serial&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;requestPort()
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;port&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;open(j({&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;baudRate&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;9600&lt;/span&gt;}))
+        js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;console&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;OPENED PORT&amp;#34;&lt;/span&gt;)
+
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Set up encoder to write to port&lt;/span&gt;
+        self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;encoder &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;TextEncoderStream&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;new()
+        outputDone &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;encoder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;readable&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pipeTo(self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;port&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;writable)
+
+        &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Set up listening for incoming bytes&lt;/span&gt;
+        self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;decoder &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;TextDecoderStream&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;new()
+        inputDone &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;port&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;readable&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pipeTo(self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;decoder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;writable)
+        inputStream &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;decoder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;readable
+
+        self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;reader &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; inputStream&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getReader();
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;listenAndEcho()
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;writeToSerial&lt;/span&gt;(self, data):
+        &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&amp;#39;Write to the serial port&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        outputWriter &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;encoder&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;writable&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getWriter()
+        outputWriter&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;write(data &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;)
+        outputWriter&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;releaseLock()
+        js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;console&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;log(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Wrote to stream: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;data&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;listenAndEcho&lt;/span&gt;(self):
+        &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&amp;#39;Loop forever, echoing values received on the serial port to the JS console&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        receivedValues &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;):
+            response &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; self&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;reader&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+            value, done &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; response&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value, response&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;done
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\r&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; value &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; value):
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Output whole line and clear buffer when a newline is received&lt;/span&gt;
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Received from Serial: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;join(receivedValues)&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+                receivedValues &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; (value):
+                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Output individual characters as they come in&lt;/span&gt;
+                &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Received Char: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;value&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+                receivedValues&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(value)
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#Create an instance of the SerialManager class when this script runs&lt;/span&gt;
+sm &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; SerialManager()
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;#A helper function - to point the py-click attribute of one of our buttons to&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;sendValueFromInputBox&lt;/span&gt;(sm: SerialManager):
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&amp;#39;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Get the value of the input box and write it to serial
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Also clears the input box
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+    textInput &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; js&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;)
+    value &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; textInput&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value
+    textInput&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Writing to Serial Port: &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;value&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; sm&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;writeToSerial(value)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+    &lt;/div&gt;
+    &lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Finally, because a serial demo isn&#39;t all that exciting without something to actually communicate with, the final bit of code is an &lt;a href=&#34;https://docs.arduino.cc/&#34;&gt;Arduino&lt;/a&gt; Sketch. When run on an Arduino Uno or similar, the code simply echos back what it receives on its serial port, with a slight delay.&lt;/p&gt;
+&lt;div class=&#34;my-4&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;arduinoSerialEcho.ino&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;// Echos back whatever is written to the serial port, with a small delay
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#078;font-weight:bold&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;setup&lt;/span&gt;() {
+  Serial.begin(&lt;span style=&#34;color:#f60&#34;&gt;9600&lt;/span&gt;);
+}
+
+&lt;span style=&#34;color:#078;font-weight:bold&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;loop&lt;/span&gt;() {
+  &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (Serial.available() &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;){
+    &lt;span style=&#34;color:#078;font-weight:bold&#34;&gt;int&lt;/span&gt; incomingByte &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Serial.read();
+    delay(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;);
+    Serial.print(&lt;span style=&#34;color:#078;font-weight:bold&#34;&gt;char&lt;/span&gt;(incomingByte));
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;    
+    //Create Load PyScript buttons:
+    document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+        btn_locations = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(btn_locations).forEach(div =&gt; {
+            div.classList.add(&#39;my-2&#39;, &#39;md:mx-4&#39;, &#39;border-2&#39;, &#39;border-blue-200&#39;, &#39;p-2&#39;, &#39;grid&#39;, &#39;grid-cols-1&#39;, &#39;rounded-xl&#39;, &#39;flex&#39;, &#39;flex-row&#39;, &#39;justify-center&#39;, &#39;w-auto&#39;, &#34;py-1&#34;, &#39;h-auto&#39;, &#39;md:h-full&#39;)
+            let p = document.createElement(&#39;p&#39;)
+            p.classList.add(&#39;my-auto&#39;, &#39;mr-4&#39;, &#39;italic&#39;, &#39;text-center&#39;)
+            p.innerHTML = &#34;Want to run this demo live in your browser?&#34;
+            if (div.classList.contains(&#34;viz&#34;)){
+                p.innerHTML += &#39; &lt;p class=&#34;font-semibold text-green-600&#34;&gt;This example includes a visualization.&lt;/p&gt;&#39;
+            }
+            div.appendChild(p)
+            //button
+            let btn = document.createElement(&#39;button&#39;)
+            btn.innerText = &#34;Load PyScript&#34;
+            btn.classList.add(&#39;load-pyscript-button&#39;, &#39;h-12&#39;)
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    function loadPyScript() {        
+        //load css
+        css_link = document.createElement(&#34;link&#34;)
+        css_link.rel = &#34;stylesheet&#34;
+        css_link.type = &#34;text/css&#34;
+        css_link.href = &#34;https://pyscript.net/releases/2022.12.1/pyscript.css&#34;
+        document.getElementsByTagName(&#39;head&#39;)[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement(&#39;script&#39;)
+        script_tag.src = &#34;https://pyscript.net/releases/2022.12.1/pyscript.js&#34;
+        document.body.append(script_tag)        
+    }
+    document.addEventListener(&#39;pyscript_ready&#39;, () =&gt; {
+        static = document.getElementsByClassName(&#39;static-example&#39;)
+        live = document.getElementsByClassName(&#39;live-example&#39;)
+        Array.from(static).forEach(div =&gt; {
+            div.classList.add(&#39;hidden&#39;)
+        })
+        Array.from(live).forEach(div =&gt; {
+            div.classList.remove(&#39;hidden&#39;)
+        })
+        load_buttons = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(load_buttons).forEach(elem =&gt; {
+            elem.classList.add(&#39;hidden&#39;)
+        })
+    })
+&lt;/script&gt;
+&lt;py-script class=&#34;hidden&#34;&gt;
+    import js
+    loaded_event = js.Event.new(&#39;pyscript_ready&#39;)
+    js.document.dispatchEvent(loaded_event)
+&lt;/py-script&gt;
+</description>
+      &lt;
+    </item>
+    
+  </channel>
+</rss>

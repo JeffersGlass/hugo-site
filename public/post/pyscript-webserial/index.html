@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Webserial in PyScript</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/pyscript-webserial/webserial_py_featured.png"/>
+<meta name="twitter:title" content="Webserial in PyScript"/>
+<meta name="twitter:description" content="Connect to Physical Devices via Serial in PyScript"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Webserial in PyScript</h1>
+				<p>Published February 8, 2023</p>
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+					<a href="../../tags/serial">serial</a>
+					
+					<a href="../../tags/webserial">webserial</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					<p class="post-p">A user came along the <a href="https://github.com/pyscript/pyscript/discussions">PyScipt GitHub Discussions</a> the other day with an interesting question - <a href="https://github.com/pyscript/pyscript/discussions/1152">can you use PySerial (or similar) in PyScript?</a> That got my wheels a turning; this post is the answer to that question.</p>
+<p class="post-p">The short answer is <span class="font-semibod">no, PySerial doesn't work in PyScript</span> - PySerial and other serial libraries rely on low-level features of their host operating systems which just aren't present in the browser window.</p>
+<p class="post-p">But just because PySerial doesn't work, doesn't mean that <span class="italic">serial connections</span> can't work. Using the new-ish <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API">WebSerial Browser API</a>, we can ask web users for permission to access their local serial devices. If it's granted, we can access those devices via a serial connection. And if you'd like to try it out live in your browser, hit the <span style="">load PyScript</span> button below:</p>
+<div class="load-pyscript"></div>
+<div class="justify-center hidden w-auto h-auto py-1 my-2 border-2 border-blue-200 live-example md:mx-4 rounded-xl md:h-full">
+    <div class="flex flex-row space-x-2 ">
+        <py-script src="webSerialDemo.py"></py-script>
+        <button py-click="sm.askForSerial()" id="open" class="p-2 border-2 border-gray-500 rounded-lg">Open a Serial Port</button>
+        <br><button py-click ="sendValueFromInputBox(sm)" id="write" class="p-2 border-2 border-gray-500 rounded-lg">Write to the serial port:</button>
+        <input type="text" id="text">
+    </div>
+    <div class="overflow-y-scroll max-h-76">
+        <py-terminal auto></py-terminal>
+    </div>
+</div>
+<p class="italic post-p">This isn't a particularly full-featured demo. As you'll see in the code below, it doesn't contain much provision for error handling, and only the barest of UI. But it does work!</p>
+<p class="post-p">Below are three source files for a working demo using WebSerial in PyScript. The first (<code class="code">webPageSerial.html</code>) is a (minimally formatted) HTML page with two buttons - "Open a Serial Port" and "Write to the Serial Port" - as well as an input box. Clicking the "Open" button prompts the user (if their browser supports WebSerial) to select an available serial port, connects to it, and begins listening for incoming bytes on that port. Once the port is open, when the user clicks the "write" button, the contents of the text box are written to the open serial port.</p>
+<div class="my-4"><div>
+    <p class="code-title">webSerialPage.html</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#099">&lt;!DOCTYPE html&gt;</span>
+&lt;<span style="color:#309;font-weight:bold">html</span> <span style="color:#309">lang</span><span style="color:#555">=</span><span style="color:#c30">&#34;en&#34;</span>&gt;
+&lt;<span style="color:#309;font-weight:bold">head</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">meta</span> <span style="color:#309">charset</span><span style="color:#555">=</span><span style="color:#c30">&#34;UTF-8&#34;</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">title</span>&gt;WebSerial Demo&lt;/<span style="color:#309;font-weight:bold">title</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">defer</span> <span style="color:#309">src</span><span style="color:#555">=</span><span style="color:#c30">&#34;https://pyscript.net/releases/2022.12.1/pyscript.js&#34;</span>&gt;&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">link</span> <span style="color:#309">rel</span><span style="color:#555">=</span><span style="color:#c30">&#34;stylesheet&#34;</span> <span style="color:#309">href</span><span style="color:#555">=</span><span style="color:#c30">&#34;https://pyscript.net/releases/2022.12.1/pyscript.css&#34;</span>&gt;
+&lt;/<span style="color:#309;font-weight:bold">head</span>&gt;
+&lt;<span style="color:#309;font-weight:bold">body</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">py-script</span> <span style="color:#309">src</span><span style="color:#555">=</span><span style="color:#c30">&#34;webserialdemo.py&#34;</span>&gt;&lt;/<span style="color:#309;font-weight:bold">py-script</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">button</span> <span style="color:#309">py-click</span><span style="color:#555">=</span><span style="color:#c30">&#34;sm.askForSerial()&#34;</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;open&#34;</span>&gt;Open a Serial Port&lt;/<span style="color:#309;font-weight:bold">button</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">br</span>&gt;&lt;<span style="color:#309;font-weight:bold">button</span> <span style="color:#309">py-click </span><span style="color:#555">=</span><span style="color:#c30">&#34;sendValueFromInputBox(sm)&#34;</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;write&#34;</span>&gt;Write to the serial port:&lt;/<span style="color:#309;font-weight:bold">button</span>&gt;
+    &lt;<span style="color:#309;font-weight:bold">input</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;text&#34;</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;text&#34;</span>&gt;
+&lt;/<span style="color:#309;font-weight:bold">body</span>&gt;
+&lt;/<span style="color:#309;font-weight:bold">html</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div></div>
+<p class="post-p">The second file (<code class="code">webSerialDemo.py</code>) contains the actual Python/PyScript code that makes this demo work. It wraps the WebSerial API in a new class, <code class="code">SerialManager</code>, for the purpose of managing the state of the serial connection. It also creates an instance of this class, called <code class="code">sm</code>, which is referenced by the <code class="code">py-click</code> attributes in the above HTML document.</p>
+<p class="post-p">Finally, a single helper function <code class="code">sendValueFromInputBox()</code> is defined, which is used by the "Write" button - it fetches the contents of the input box, asks the SerialManager to write that value to the serial port, then clears the input box.</p>
+<div class="my-4"><div>
+    <p class="code-title">webSerialDemo.py</p>
+    
+    
+    <div class="overflow-y-scroll h-124">
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> navigator
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi</span> <span style="color:#069;font-weight:bold">import</span> to_js
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi.wrappers</span> <span style="color:#069;font-weight:bold">import</span> add_event_listener
+
+<span style="color:#09f;font-style:italic">#Utility function for converting py dicts to JS objects</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">j</span>(obj):
+    <span style="color:#069;font-weight:bold">return</span> to_js(obj, dict_converter<span style="color:#555">=</span>js<span style="color:#555">.</span>Object<span style="color:#555">.</span>fromEntries)
+
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">SerialManager</span>():
+    <span style="color:#c30">&#39;&#39;&#39;
+</span><span style="color:#c30">    Class for managing reads and writes to/from a serial port
+</span><span style="color:#c30">    Not very clean! No error handling, no way to stop listening etc.
+</span><span style="color:#c30">    &#39;&#39;&#39;</span>
+    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">askForSerial</span>(self):
+        <span style="color:#c30">&#39;&#39;&#39;
+</span><span style="color:#c30">        Request that the user select a serial port, and initialize
+</span><span style="color:#c30">        the reader/writer streams with it
+</span><span style="color:#c30">        &#39;&#39;&#39;</span>
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#366">hasattr</span>(navigator, <span style="color:#c30">&#39;serial&#39;</span>):
+            warning <span style="color:#555">=</span> <span style="color:#c30">&#34;This browser does not support WebSerial; see https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility for a list of compatible browsers.&#34;</span>
+            <span style="color:#366">print</span>(warning)
+            <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">NotImplementedError</span>(warning)
+        
+        self<span style="color:#555">.</span>port <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">await</span> navigator<span style="color:#555">.</span>serial<span style="color:#555">.</span>requestPort()
+        <span style="color:#069;font-weight:bold">await</span> self<span style="color:#555">.</span>port<span style="color:#555">.</span>open(j({<span style="color:#c30">&#34;baudRate&#34;</span>: <span style="color:#f60">9600</span>}))
+        js<span style="color:#555">.</span>console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;OPENED PORT&#34;</span>)
+
+        <span style="color:#09f;font-style:italic"># Set up encoder to write to port</span>
+        self<span style="color:#555">.</span>encoder <span style="color:#555">=</span> js<span style="color:#555">.</span>TextEncoderStream<span style="color:#555">.</span>new()
+        outputDone <span style="color:#555">=</span> self<span style="color:#555">.</span>encoder<span style="color:#555">.</span>readable<span style="color:#555">.</span>pipeTo(self<span style="color:#555">.</span>port<span style="color:#555">.</span>writable)
+
+        <span style="color:#09f;font-style:italic"># Set up listening for incoming bytes</span>
+        self<span style="color:#555">.</span>decoder <span style="color:#555">=</span> js<span style="color:#555">.</span>TextDecoderStream<span style="color:#555">.</span>new()
+        inputDone <span style="color:#555">=</span> self<span style="color:#555">.</span>port<span style="color:#555">.</span>readable<span style="color:#555">.</span>pipeTo(self<span style="color:#555">.</span>decoder<span style="color:#555">.</span>writable)
+        inputStream <span style="color:#555">=</span> self<span style="color:#555">.</span>decoder<span style="color:#555">.</span>readable
+
+        self<span style="color:#555">.</span>reader <span style="color:#555">=</span> inputStream<span style="color:#555">.</span>getReader();
+        <span style="color:#069;font-weight:bold">await</span> self<span style="color:#555">.</span>listenAndEcho()
+
+    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">writeToSerial</span>(self, data):
+        <span style="color:#c30">&#39;&#39;&#39;Write to the serial port&#39;&#39;&#39;</span>
+        outputWriter <span style="color:#555">=</span> self<span style="color:#555">.</span>encoder<span style="color:#555">.</span>writable<span style="color:#555">.</span>getWriter()
+        outputWriter<span style="color:#555">.</span>write(data <span style="color:#555">+</span> <span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
+        outputWriter<span style="color:#555">.</span>releaseLock()
+        js<span style="color:#555">.</span>console<span style="color:#555">.</span>log(<span style="color:#c30">f</span><span style="color:#c30">&#34;Wrote to stream: </span><span style="color:#a00">{</span>data<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">listenAndEcho</span>(self):
+        <span style="color:#c30">&#39;&#39;&#39;Loop forever, echoing values received on the serial port to the JS console&#39;&#39;&#39;</span>
+        receivedValues <span style="color:#555">=</span> []
+        <span style="color:#069;font-weight:bold">while</span> (<span style="color:#069;font-weight:bold">True</span>):
+            response <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">await</span> self<span style="color:#555">.</span>reader<span style="color:#555">.</span>read()
+            value, done <span style="color:#555">=</span> response<span style="color:#555">.</span>value, response<span style="color:#555">.</span>done
+            <span style="color:#069;font-weight:bold">if</span> (<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\r</span><span style="color:#c30">&#39;</span> <span style="color:#000;font-weight:bold">in</span> value <span style="color:#000;font-weight:bold">or</span> <span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span> <span style="color:#000;font-weight:bold">in</span> value):
+                <span style="color:#09f;font-style:italic">#Output whole line and clear buffer when a newline is received</span>
+                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Received from Serial: </span><span style="color:#a00">{</span><span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join(receivedValues)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+                receivedValues <span style="color:#555">=</span> []
+            <span style="color:#069;font-weight:bold">elif</span> (value):
+                <span style="color:#09f;font-style:italic">#Output individual characters as they come in</span>
+                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Received Char: </span><span style="color:#a00">{</span>value<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+                receivedValues<span style="color:#555">.</span>append(value)
+
+<span style="color:#09f;font-style:italic">#Create an instance of the SerialManager class when this script runs</span>
+sm <span style="color:#555">=</span> SerialManager()
+
+<span style="color:#09f;font-style:italic">#A helper function - to point the py-click attribute of one of our buttons to</span>
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">sendValueFromInputBox</span>(sm: SerialManager):
+    <span style="color:#c30">&#39;&#39;&#39;
+</span><span style="color:#c30">    Get the value of the input box and write it to serial
+</span><span style="color:#c30">    Also clears the input box
+</span><span style="color:#c30">    &#39;&#39;&#39;</span>
+    textInput <span style="color:#555">=</span> js<span style="color:#555">.</span>document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;text&#34;</span>)
+    value <span style="color:#555">=</span> textInput<span style="color:#555">.</span>value
+    textInput<span style="color:#555">.</span>value <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Writing to Serial Port: </span><span style="color:#a00">{</span>value<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
+
+    <span style="color:#069;font-weight:bold">await</span> sm<span style="color:#555">.</span>writeToSerial(value)</code></pre></td></tr></table>
+</div>
+</div>
+    
+    </div>
+    <p class="post-img-caption">Scroll to see complete code</p>
+    
+</div></div>
+<p class="post-p">Finally, because a serial demo isn't all that exciting without something to actually communicate with, the final bit of code is an <a href="https://docs.arduino.cc/">Arduino</a> Sketch. When run on an Arduino Uno or similar, the code simply echos back what it receives on its serial port, with a slight delay.</p>
+<div class="my-4"><div>
+    <p class="code-title">arduinoSerialEcho.ino</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#09f;font-style:italic">// Echos back whatever is written to the serial port, with a small delay
+</span><span style="color:#09f;font-style:italic"></span><span style="color:#078;font-weight:bold">void</span> <span style="color:#c0f">setup</span>() {
+  Serial.begin(<span style="color:#f60">9600</span>);
+}
+
+<span style="color:#078;font-weight:bold">void</span> <span style="color:#c0f">loop</span>() {
+  <span style="color:#069;font-weight:bold">if</span> (Serial.available() <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>){
+    <span style="color:#078;font-weight:bold">int</span> incomingByte <span style="color:#555">=</span> Serial.read();
+    delay(<span style="color:#f60">100</span>);
+    Serial.print(<span style="color:#078;font-weight:bold">char</span>(incomingByte));
+  }
+}</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div></div>
+<script>    
+    //Create Load PyScript buttons:
+    document.addEventListener('DOMContentLoaded', () => {
+        btn_locations = document.getElementsByClassName('load-pyscript')
+        Array.from(btn_locations).forEach(div => {
+            div.classList.add('my-2', 'md:mx-4', 'border-2', 'border-blue-200', 'p-2', 'grid', 'grid-cols-1', 'rounded-xl', 'flex', 'flex-row', 'justify-center', 'w-auto', "py-1", 'h-auto', 'md:h-full')
+            let p = document.createElement('p')
+            p.classList.add('my-auto', 'mr-4', 'italic', 'text-center')
+            p.innerHTML = "Want to run this demo live in your browser?"
+            if (div.classList.contains("viz")){
+                p.innerHTML += ' <p class="font-semibold text-green-600">This example includes a visualization.</p>'
+            }
+            div.appendChild(p)
+            //button
+            let btn = document.createElement('button')
+            btn.innerText = "Load PyScript"
+            btn.classList.add('load-pyscript-button', 'h-12')
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    function loadPyScript() {        
+        //load css
+        css_link = document.createElement("link")
+        css_link.rel = "stylesheet"
+        css_link.type = "text/css"
+        css_link.href = "https://pyscript.net/releases/2022.12.1/pyscript.css"
+        document.getElementsByTagName('head')[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement('script')
+        script_tag.src = "https://pyscript.net/releases/2022.12.1/pyscript.js"
+        document.body.append(script_tag)        
+    }
+    document.addEventListener('pyscript_ready', () => {
+        static = document.getElementsByClassName('static-example')
+        live = document.getElementsByClassName('live-example')
+        Array.from(static).forEach(div => {
+            div.classList.add('hidden')
+        })
+        Array.from(live).forEach(div => {
+            div.classList.remove('hidden')
+        })
+        load_buttons = document.getElementsByClassName('load-pyscript')
+        Array.from(load_buttons).forEach(elem => {
+            elem.classList.add('hidden')
+        })
+    })
+</script>
+<py-script class="hidden">
+    import js
+    loaded_event = js.Event.new('pyscript_ready')
+    js.document.dispatchEvent(loaded_event)
+</py-script>
+
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>
