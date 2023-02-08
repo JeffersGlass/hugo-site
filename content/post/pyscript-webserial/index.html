@@ -1,0 +1,90 @@
+---
+title: "Webserial in PyScript"
+date: 2023-02-08T07:51:57-06:00
+draft: false
+tags:
+- python
+- pyscript
+- serial
+- webserial
+description: "Connect to Physical Devices via Serial in PyScript"
+slug_image: webserial_py_featured.png
+---
+<p class="post-p">A user came along the <a href="https://github.com/pyscript/pyscript/discussions">PyScipt GitHub Discussions</a> the other day with an interesting question - <a href="https://github.com/pyscript/pyscript/discussions/1152">can you use PySerial (or similar) in PyScript?</a> That got my wheels a turning; this post is the answer to that question.</p>
+<p class="post-p">The short answer is <span class="font-semibod">no, PySerial doesn't work in PyScript</span> - PySerial and other serial libraries rely on low-level features of their host operating systems which just aren't present in the browser window.</p>
+<p class="post-p">But just because PySerial doesn't work, doesn't mean that <span class="italic">serial connections</span> can't work. Using the new-ish <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API">WebSerial Browser API</a>, we can ask web users for permission to access their local serial devices. If it's granted, we can access those devices via a serial connection. And if you'd like to try it out live in your browser, hit the <span style="">load PyScript</span> button below:</p>
+<div class="load-pyscript"></div>
+<div class="justify-center hidden w-auto h-auto py-1 my-2 border-2 border-blue-200 live-example md:mx-4 rounded-xl md:h-full">
+    <div class="flex flex-row space-x-2 ">
+        <py-script src="webSerialDemo.py"></py-script>
+        <button py-click="sm.askForSerial()" id="open" class="p-2 border-2 border-gray-500 rounded-lg">Open a Serial Port</button>
+        <br><button py-click ="sendValueFromInputBox(sm)" id="write" class="p-2 border-2 border-gray-500 rounded-lg">Write to the serial port:</button>
+        <input type="text" id="text">
+    </div>
+    <div class="overflow-y-scroll max-h-76">
+        <py-terminal auto></py-terminal>
+    </div>
+</div>
+<p class="italic post-p">This isn't a particularly full-featured demo. As you'll see in the code below, it doesn't contain much provision for error handling, and only the barest of UI. But it does work!</p>
+<p class="post-p">Below are three source files for a working demo using WebSerial in PyScript. The first (<code class="code">webPageSerial.html</code>) is a (minimally formatted) HTML page with two buttons - "Open a Serial Port" and "Write to the Serial Port" - as well as an input box. Clicking the "Open" button prompts the user (if their browser supports WebSerial) to select an available serial port, connects to it, and begins listening for incoming bytes on that port. Once the port is open, when the user clicks the "write" button, the contents of the text box are written to the open serial port.</p>
+<div class="my-4">{{< showcode "content/post/pyscript-webserial/webSerialPage.html" "html" >}}</div>
+<p class="post-p">The second file (<code class="code">webSerialDemo.py</code>) contains the actual Python/PyScript code that makes this demo work. It wraps the WebSerial API in a new class, <code class="code">SerialManager</code>, for the purpose of managing the state of the serial connection. It also creates an instance of this class, called <code class="code">sm</code>, which is referenced by the <code class="code">py-click</code> attributes in the above HTML document.</p>
+<p class="post-p">Finally, a single helper function <code class="code">sendValueFromInputBox()</code> is defined, which is used by the "Write" button - it fetches the contents of the input box, asks the SerialManager to write that value to the serial port, then clears the input box.</p>
+<div class="my-4">{{< showcode "content/post/pyscript-webserial/webSerialDemo.py" "python3" >}}</div>
+<p class="post-p">Finally, because a serial demo isn't all that exciting without something to actually communicate with, the final bit of code is an <a href="https://docs.arduino.cc/">Arduino</a> Sketch. When run on an Arduino Uno or similar, the code simply echos back what it receives on its serial port, with a slight delay.</p>
+<div class="my-4">{{< showcode "content/post/pyscript-webserial/arduinoSerialEcho.ino" "cpp" >}}</div>
+<script>    
+    //Create Load PyScript buttons:
+    document.addEventListener('DOMContentLoaded', () => {
+        btn_locations = document.getElementsByClassName('load-pyscript')
+        Array.from(btn_locations).forEach(div => {
+            div.classList.add('my-2', 'md:mx-4', 'border-2', 'border-blue-200', 'p-2', 'grid', 'grid-cols-1', 'rounded-xl', 'flex', 'flex-row', 'justify-center', 'w-auto', "py-1", 'h-auto', 'md:h-full')
+            let p = document.createElement('p')
+            p.classList.add('my-auto', 'mr-4', 'italic', 'text-center')
+            p.innerHTML = "Want to run this demo live in your browser?"
+            if (div.classList.contains("viz")){
+                p.innerHTML += ' <p class="font-semibold text-green-600">This example includes a visualization.</p>'
+            }
+            div.appendChild(p)
+            //button
+            let btn = document.createElement('button')
+            btn.innerText = "Load PyScript"
+            btn.classList.add('load-pyscript-button', 'h-12')
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    function loadPyScript() {        
+        //load css
+        css_link = document.createElement("link")
+        css_link.rel = "stylesheet"
+        css_link.type = "text/css"
+        css_link.href = "https://pyscript.net/releases/2022.12.1/pyscript.css"
+        document.getElementsByTagName('head')[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement('script')
+        script_tag.src = "https://pyscript.net/releases/2022.12.1/pyscript.js"
+        document.body.append(script_tag)        
+    }
+    document.addEventListener('pyscript_ready', () => {
+        static = document.getElementsByClassName('static-example')
+        live = document.getElementsByClassName('live-example')
+        Array.from(static).forEach(div => {
+            div.classList.add('hidden')
+        })
+        Array.from(live).forEach(div => {
+            div.classList.remove('hidden')
+        })
+        load_buttons = document.getElementsByClassName('load-pyscript')
+        Array.from(load_buttons).forEach(elem => {
+            elem.classList.add('hidden')
+        })
+    })
+</script>
+<py-script class="hidden">
+    import js
+    loaded_event = js.Event.new('pyscript_ready')
+    js.document.dispatchEvent(loaded_event)
+</py-script>
