@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+</head>
+<body>
+    <script>
+        async function main() {
+            let pyodide = await loadPyodide();            
+            console.log(pyodide.runPython(`
+                import js
+                from pyodide.code import run_js
+                
+                class Triangle():
+                    def __init__(self, a, b):
+                        self.a = a
+                        self.b = b
+
+                    hypo = run_js("function h() {return Math.hypot(this.a, this.b);} h")
+                
+                c = Triangle(a=3, b=4)
+                print(f"The hypotenuse is {c.hypo()}")
+            `));
+        };
+        main();
+    </script>
+    
+</body>
+</html>

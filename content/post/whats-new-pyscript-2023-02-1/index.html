@@ -1,6 +1,6 @@
 ---
 title: "What's New in Pyscript 2023.03.1"
-date: 2022-12-21T15:01:29-06:00
+date: 2022-03-06T15:01:29-06:00
 draft: true
 tags:
 - pyscript
@@ -78,10 +78,11 @@ slug_image: py_2023_03_1_featured.png
     cursor: pointer;
     background: transparent;
     border: none;
-}
+    }
+    
 </style>
 <p class="post-p">The PyScript team is absolutely steamrolling ahead in the past few months, working toward a new version of the PyScript open source library and <span class="italic">some other developments</span> that'll will become visible in the near future. (I hate to be a tease, but this isn't my piñata to pop). What follows is a writeup of the new improvements, features, and deprecations since <a href="../whats-new-pyscript-2022-12-1">the last PyScript release</a>.</p>
-<p class="post-">What's <span class="italic">not</span> listed here are bugfixes, and they have been several nice ones since the last release. For that kind of granular information, see the newly-added <a href="https://github.com/pyscript/pyscript/blob/main/docs/changelog.md">changelog document</a></p>
+<p class="post-">What's <span class="italic">not</span> listed here are bugfixes, and they have been several nice ones since the last release. For that kind of granular information, see the newly-added <a href="https://github.com/pyscript/pyscript/blob/main/docs/changelog.md">changelog document</a>.</p>
 <p class="post-p">As always, for help, discussion, and bleeding-edge development on PyScript, come join us on <a href="https://discord.gg/Y5MFvW5hbs">The Discord Server</a>.</p>
 <div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
     <span>Jump To: <span>
@@ -89,8 +90,6 @@ slug_image: py_2023_03_1_featured.png
     <a href="#plugins">Plugins</a> • 
     <a href="#pyodide">Pyodide</a> • 
     <a href="#documentation">Documentation</a> • 
-    <a href="#examples">Examples</a> • 
-    <a href="#community">Community</a> • 
     <a href="#whatsnext">What's Next?</a>
 </div>
 <h2 class="post-h2" id="pyscript">PyScript</h2>
@@ -107,15 +106,16 @@ slug_image: py_2023_03_1_featured.png
 {{< /highlight >}}
     </div>
     <div class="px-2 my-2 bg-gray-200">
-        <p class="ml-2 text-sm text-gray-700">#some-div</p>
-        <p><code>Hello world!</code></p>
-        <p><code>This output should go somewhere</code></p>
+        <p class="mb-2 ml-2 text-sm text-gray-600">#some-div</p>
+        <p class="ml-2 font-mono">Hello world!</p>
+        <p class="ml-2 font-mono">This output should go somewhere</p>
     </div>
 </div>
-<p class="post-p">Users who are writing code <span class="italic">specifically for PyScript</span> can use the <a href="https://docs.pyscript.net/latest/reference/API/display.html">display()</a> function to route their output (whether text or rich MIME types) to a specific place on the DOM. The <code>output</code> attribute is meant to allow the use of libraries which output directly to <code>stdout</code>, like <a href="https://github.com/Textualize/rich">Rich</a> or <a href="https://pygments.org/">Pygments</a>.</p>
-<h4 class="post-h4 md:border-b-2 md:border-gray-200"><code>runtime</code> is now <code>interpreter</code></h4>
+<p class="post-p">Users who are writing code <span class="italic">specifically for PyScript</span> can use the <a href="https://docs.pyscript.net/latest/reference/API/display.html">display()</a> function to route their output (whether text or rich MIME types) to a specific place on the DOM. The <code>output</code> attribute is meant to allow the use of libraries which output directly to <code>stdout</code>, like <a href="https://github.com/Textualize/rich">Rich</a> or <a href="https://pygments.org/">Pygments</a>. Or so, you know, <code>print("Hello World")</code> doesn't have to print in the same location as the <code>&lt;py-script&gt;</code> tag.</p>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">"<code>runtime</code>" is now "<code>interpreter</code>"</h4>
 <p class="post-p">The attribute of the PyScript object which represents the internal Python interpreter has been renamed from <code>runtime</code> to <code>interpreter</code>. (<a href="https://github.com/pyscript/pyscript/pull/1082">#1082</a>) This is largely an internal PyScript naming change, but it does have ramifications for some users who were making use of this key access attributes of the runtime, as in:</p>
 <div>
+    <span class="bg-red-600">XXXXXXXXXXXXXXXXXXXXXXXXXX Script tag!</span>
 {{< highlight "html" "linenostart=1">}}
 <scrip>
 {{< /highlight >}}
@@ -135,45 +135,266 @@ slug_image: py_2023_03_1_featured.png
 {{< /highlight >}}
 </div>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Hiding the Splashscreen</h4>
-<p class="post-p">Severeal users have <a href="https://github.com/pyscript/pyscript/issues/900">requested</a> the ability to hide the default splashscreen that's displayed while PyScript is loading. And we heard you! The <code>&lt;py-config&gt;</code> tag now accepts a <code>splashscreen.enabled</code> property (defaults to True). If set to false, the default loading screen will not be shown. (<a href="https://github.com/pyscript/pyscript/pull/1138">#1138</a>)</p>
+<p class="post-p">Severeal users have <a href="https://github.com/pyscript/pyscript/issues/900">requested</a> the ability to hide the default splashscreen that's displayed while PyScript is loading. And we heard you! The <code>&lt;py-config&gt;</code> tag now accepts a <code>splashscreen.enabled</code> property (defaults to <code>True</code>). If set to <code>False</code>, the default loading screen will not be shown. (<a href="https://github.com/pyscript/pyscript/pull/1138">#1138</a>)</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Auto-IDs for <code>py-[event]</code></h4>
 <p class="post-p">A small but very handy update to the <code>py-[event]</code> behavior: users no longer need to specify an ID when adding this attribute to an HTML element. Under the hood, an ID is stilll necessary, but if the user doesn't provide one, PyScript now adds an auto-generated UUID as the ID. (<a href="https://github.com/pyscript/pyscript/pull/1122">#1122</a>)</p>
+<div class="m-2">
+{{< highlight "html" "linenostart=1">}}
+<!-- The 'id' attribute was required in previous versions-->
+<button py-click="someFunction()" id="old">Click me!</button>"
+
+<!-- In verison 2023.03.1 and later, an ID will be auto-generated for you -->
+<button py-click="someFunction()">Click me!</button>"
+{{< /highlight >}}
+</div>
+
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">So Long, <code>&lt;py-box&gt;</code>, <code>&lt;py-title&gt;</code>, <code>&lt;py-inputbox&gt;</code>, and <code>&lt;py-button&gt;</code></h4>
 <p class="post-p">As previously promised, these elements (which were deprecated in version 2022.12.1) have been removed in version 2023.02.1. (<a href="https://github.com/pyscript/pyscript/pull/1084">#1084</a>). If you were still making use of these custom elements, check out the <a href="../whats-new-pyscript-2022-12-1#widgetdeprecation">2022.12.1 release post</a> for suggested plain HTML elements to use instead.</p>
 
 <h2 class="post-h2" id="plugins">Plugins</h2>
+<p class="post-p"><span class="font-semibold">What are Plugins? </span>Plugins are <span class="bg-red-500">XXXXXXXXX</span></p>
+<p class="post-p">So if they're so powerful, why isn't there more documentation on Plugins? The honest answer is that <span class="font-semibold">the API is rapidly changing</span>, both in naming conventions and scope, and there's some understandable reticence at putting out a significant amount of functionality that users might rely on, only for the names and conventions to entirely change in the next release. XXXXXXXX</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Plugins Can Now be Fetched from URLs</h4>
 <p class="post-p">Where in version 2022.12.1 plugin files could only be referenced from specific <code>.py</code> files, a plugin can now be fetch'd from any URL. (<a href="https://github.com/pyscript/pyscript/pull/1065">#1065</a>). What's more, plugins can be written either in Python or in JavaScript.</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">PyScript Tag Lifecycle Hooks</h4>
 <p class="post-p">In addition to the hooks which happen at specific points in PyScript's loading process, we've added a couple of hooks which are called immediately before and after any <code>&lt;py-script&gt;</code> tags on the page, allowing plugins to check, for example, whether the source code adheres to certain guidelines, or whether the result was of a desired type.</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Plugin Method are Now Optional</h4>
 <p class="post-p">Previously, any and all plugins had to be implemented for every plugin, or an error would be thrown. Now, plugins can implement any subset of the plugin methods (or none of them, although then what would be the point?). (<a href="https://github.com/pyscript/pyscript/pull/1134">#1134</a>) </p>
-<h4 class="post-h4 md:border-b-2 md:border-gray-200">Examples inspector plugin</h4>
-<p class="post-p">XXXXXXXXXX (<a href="https://github.com/pyscript/pyscript/pull/1040">#1040</a>)</p>
-<p class="post-p">Fixed error where Python plugins were being registered with PluginManager twice (<a href="https://github.com/pyscript/pyscript/pull/1064">#1064</a>)</p>
-<p class="post-p"></p>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">No Duplicate Plugin Calls</h4>
+<p class="post-p">I know I said I wasn't going to delve into bugfixes here, but this is one that was plaguing a couple of users with specific issues. In PyScript 2022.12.1, any Python plugins were being added to the list of managed plugins <span class="italic">twice</span>, meaning each of their methods was called twice. This was causing some specific tricky issues where a plugin method (which should only run once) would run once, suceed, then appear to fail... tricksy indeed. That's no longer happening.(<a href="https://github.com/pyscript/pyscript/pull/1064">#1064</a>)</p>
 
 <h2 class="post-h2" id="pyodide">Pyodide</h2>
 <p class="post-p"><a href="https://pyodide.org">Pyodide</a>, the CPython-interpreter-in-WASM project that forms the primary runtime for PyScript at the moment, has had a couple of releases in recent months; This release brings PyScript up-to-date with <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-22-1">Pyodide 0.22.1</a>, which brings a host of new and nifty features.</p>
 <p class="post-p">Pyodide's own <a href="https://blog.pyodide.org/posts/0.22-release/">release notes for version 0.22.0</a> provide a great overview and insight into these changes, but they're so exciting that I can't help but feature them here as well:</p>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">JS Module Typeshed</h4>
+<p class="post-p">Many of PyScript's most powerful features rely on Pyodide's ability to <code>import ... from js</code> to get objects from the JavaScript global namespace. But it does get a little tiring to stare at a squiggy red line underneath every instance of  <span class='rl-outer'><span class='rl-inner'><code>pyodide.ffi.create_proxy</code></span></span> or <span class='rl-outer'><span class='rl-inner'><code>js.documnet.getElementById</code></span></span>. The Pyodide team have added a <a href="https://mypy.readthedocs.io/en/stable/stubs.html">stub (.pyi) file</a> to make things a little better! Simply download a copy of the most recent <a href="https://github.com/pyodide/pyodide/blob/main/src/py/js.pyi">js.pyi</a> file and place in your IDE or project's location for stub files (<a href="https://code.visualstudio.com/docs/python/settings-reference">VS Code</a>, <a href="https://www.jetbrains.com/help/pycharm/stubs.html#quick-navigation">PyCharm</a>) or simply adjacent to your <code>.py</code> file for simply projects. And like magic, intellisense will start filling in common attributes from the JS module! (<a href="https://github.com/pyscript/pyscript/pull/3298">#3298</a>)</p>
+<img src="autocomplete.gif" alt="" class="m-auto p-img">
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">New Packages</h4>
 <p class="post-p">A litany of new packages have been added to Pyodide, including:</p>
 <p class="mx-4 post-p ">pycryptodome (<a href="https://github.com/pyodide/pyodide/pull/2965">#2965</a>), coverage-py (<a href="https://github.com/pyodide/pyodide/pull/3053">#3053</a>), bcrypt (<a href="https://github.com/pyodide/pyodide/pull/3125">#3125</a>), lightgbm (<a href="https://github.com/pyodide/pyodide/pull/3138">#3138</a>), pyheif, pillow_heif, libheif, libde265 (<a href="https://github.com/pyodide/pyodide/pull/3161">#3161</a>), wordcloud (<a href="https://github.com/pyodide/pyodide/pull/3173">#3173</a>), gdal, fiona, geopandas (<a href="https://github.com/pyodide/pyodide/pull/3213">#3213</a>), the standard library _hashlib module (<a href="https://github.com/pyodide/pyodide/pull/3206 ">#3206</a>), pyinstrument (<a href="https://github.com/pyodide/pyodide/pull/3258">#3258</a>), gensim (<a href="https://github.com/pyodide/pyodide/pull/3326">#3326</a>), smart_open (<a href="https://github.com/pyodide/pyodide/pull/3326">#3326</a>), pyodide-http (<a href="https://github.com/pyodide/pyodide/pull/3355">#3355</a>) </p>
-<h4 class="post-h4 md:border-b-2 md:border-gray-200">Pyodide Typeshed</h4>
-<p class="post-p">(<a href="https://github.com/pyscript/pyscript/pull/3298">#3298</a>)</p>
-
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Improved Python Collections APIS</h4>
-<p class="post-p">MutableSequence (<a href="https://github.com/pyodide/pyodide/pull/2970">#2970</a>), MutableMapping (<a href="https://github.com/pyodide/pyodide/pull/3275">#3275</a>), <code>as_object_map</code> (<a href="https://github.com/pyodide/pyodide/pull/3273">#3273</a>), <code>Generators</code>(<a href="https://github.com/pyodide/pyodide/pull/3294">#3294</a>)</p>
-<h4 class="post-h4 md:border-b-2 md:border-gray-200">Destructuring with python <code>match</code></h4>
-<p class="post-p"></p>
-<h4 class="post-h4 md:border-b-2 md:border-gray-200">Python <code>Futures</code> Can be used like JS <code>Promises</code></h4>
-<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/2997">#2997</a>)</p>
+<p class="post-p">The process by which JavaScript objects are transmogrified (proxied) into Python continues to get more sophisticated - JS objects that feel like they <span class="italic">should</span> behave like the correpsonding Python collections now generally do. For instance, JavaScript arrays now implement <code>reverse</code>, <code>__reversed__</code>, <code>count</code>, <code>index</code>, <code>append</code>, and <code>pop</code>, so that they implement the <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableSequence">MutableSequence API</a> (<a href="https://github.com/pyodide/pyodide/pull/2970">#2970</a>). This allows us to treat JavaScript arrays much more like a Python list (or other mutable sequence), eliminating the need to manually convert from one type to another. For instance, this is now possible:</p>
+<div class="mx-6 my-2">
+<span class="bg-red-600">XXXXXXXXXXXXXXXXXXXXXXXXXX Script tag!</span>
+{{< highlight "html" "linenostart=1">}}
+<scrip>
+{{< /highlight >}}
+{{< highlight "js" "linenostart=2">}}
+    var mymap = new Map()
+    mymap.set('a', 1);
+    mymap.set('b', 2);
+    mymap.set('c', 3);
+{{< /highlight >}}
+{{< highlight "html" "linenostart=6">}}
+</script>
+{{< /highlight >}}
+{{< highlight "html" "linenostart=7">}}
+<py-script>
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=8">}}
+    from js import mymap
+    print(list(mymap.keys()))
+    for key, value in mymap.items():
+        print(f"{key}: {value}")
+{{< /highlight >}}
+{{< highlight "html" "linenostart=12">}}
+</py-script>
+{{< /highlight >}}
+<div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
+    <pre>['a', 'b', 'c']
+a: 1
+b: 2
+c: 3</pre>
+</div>
+</div>
+
+<p class="post-p">Similarly, Map-like JS objects now implement <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping">MutableMapping</a> (<a href="https://github.com/pyodide/pyodide/pull/3275">#3275</a>),
+    
+<div class="mx-6 my-2">
+<span class="bg-red-600">XXXXXXXXXXXXXXXXXXXXXXXXXX Script tag!</span>
+{{< highlight "html" "linenostart=1">}}
+<scrip>
+{{< /highlight >}}
+{{< highlight "js" "linenostart=2">}}
+    var myarray = ["PyScript", "and", "Pyodide", "and", "JavaScript", "Are", "Awesome"]
+{{< /highlight >}}
+{{< highlight "html" "linenostart=3">}}
+</script>
+{{< /highlight >}}
+{{< highlight "html" "linenostart=4">}}
+<py-script>
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=5">}}
+    from js import myarray
+    item = myarray.pop()
+    print(item)
+    myarray.append("Super!")
+    print(" ".join(myarray))
+    print(myarray.count("and"))
+{{< /highlight >}}
+{{< highlight "html" "linenostart=11">}}
+</py-script>
+{{< /highlight >}}
+<div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
+<pre>
+Awesome
+PyScript and Pyodide and JavaScript Are Super!
+2
+</p>
+</div>
+</div>
+
+<code>Generators</code>(<a href="https://github.com/pyodide/pyodide/pull/3294">Pyodide  #3294</a>)</p>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">Destructuring JS Objects with python <code>match</code></h4>
+<p class="post-p">Here's a neat one, combining the features of Python >3.10's <code>match</code> statement with JavaScripts (relatively simple) <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object structure</a>. (<a href="https://github.com/pyodide/pyodide/pull/3273">Pyodide #3273</a>)</p>
+<p class="post-p">If you have some JavaScript object that you've imported into Python, it will (unless it's a very simple object) be a <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.JsProxy">JsProxy object</a> that behaves like a Pythonic "interpretation" of the JavaScript object, with a few additional attributes and methods related to the proxy-ing behavior itself. One of these additional methods is the <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.JsProxy.as_object_map">as_object_map()</a> function, which, as the Pyodide docs say: <span class="italic">returns a new JsProxy that treats the object as a map</span>. This can be useful in several circumstances, but one in particular is using it with the match statement, as follows:</p>
+<div class="mx-6 my-2">
+<span class="bg-red-600">XXXXXXXXXXXXXXXXXXXXXXXXXX Script tag!</span>
+{{< highlight "html" "linenostart=1">}}
+<scrip>
+{{< /highlight >}}
+{{< highlight "js" "linenostart=2">}}
+    var actor = {
+        name: "Keanu",
+        role: "Neo",
+        action: () => {
+            console.log("I know kung foo")
+        }
+    }
+{{< /highlight >}}
+{{< highlight "html" "linenostart=9">}}
+</script>
+{{< /highlight >}}
+{{< highlight "html" "linenostart=10">}}
+<py-script>
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=11">}}
+    import js
+    pyActor = js.actor.as_object_map()
+    for key, value in pyActor.items():
+        print(f"{key}: {value}")
+
+    match pyActor:
+        case {"name": name, "role": role}:
+            print(f"This actor is named {name} in the role {role}")
+        case _:
+            print("No match")
+{{< /highlight >}}
+{{< highlight "html" "linenostart=21">}}
+</py-script>
+{{< /highlight >}}
+<div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
+<pre>
+name: Keanu
+role: Neo
+action: () => {
+            console.log("I know kung foo")
+        }
+This actor is named Keanu in the role Neo
+</p>
+</div>
+</div>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">JS <code>Promises</code> are <code>thenable</code> in Python</h4>
+<p class="post-p">For users coming from the JavaScript world, it's perfectly natural to create a <a href="https://masteringjs.io/tutorials/fundamentals/thenable">chain of thenables</a> - that is, a sequence of objects that have a <code>then()</code> method, each calling its next one when its promise resolves. This makes it easy to write out a succession of functions, each one returning a promise that should be awaited, in a reasonable way.</p>
+<p class="post-p">Now, it's possible to do the same kind of then-ing directly in Python: (<a href="https://github.com/pyodide/pyodide/pull/2997">Pyodide #2997</a>)</p>
+<div class="mx-6 my-2">
+<span class="bg-red-600">XXXXXXXXXXXXXXXXXXXXXXXXXX Script tag!</span>
+{{< highlight "html" "linenostart=1">}}
+<scrip>
+{{< /highlight >}}
+{{< highlight "js" "linenostart=2">}}
+    var actor = {
+        name: "Keanu",
+        role: "Neo",
+        action: () => {
+            console.log("I know kung foo")
+        }
+    }
+{{< /highlight >}}
+{{< highlight "html" "linenostart=9">}}
+</script>
+{{< /highlight >}}
+{{< highlight "html" "linenostart=1">}}
+<py-script>
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=2">}}
+    #Example borrowed from the Pyodide tests
+    import asyncio
+
+    async def fetch_demo():
+        from js import fetch
+
+        name = (
+            await fetch("https://pypi.org/pypi/pytest/json")
+            .then(lambda x: x.json())
+            .then(lambda x: x.info.name)
+        )
+        print(name)
+        
+    asyncio.ensure_future(fetch_demo())
+{{< /highlight >}}
+{{< highlight "html" "linenostart=16">}}
+</py-script>
+{{< /highlight >}}
+<div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
+<pre>
+pytest
+</p>
+</div>
+</div>
+
+
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">JS Proxy Descriptors (Using JS Functions as Python Methods)</h4>
-<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/3130">#3130</a>)</p>
+<p class="post-p">At a recent PyScript team gathering, I was musing with Pyodide core dev <a href="https://github.com/hoodmane">Hood</a> about the possibilty of subclassing a JavaScript object in Python, so that one could write the "JavaScripty" behaviors of one's class in JavaScript and subclass it into Python to handle the "Pythony" bits. Hood kindly let me know that that way probably lies madness, but that it <span class="italic">is</span> now possible to use JavaScript functions as Python methods, which accomplished much of the same thing. (<a href="https://github.com/pyodide/pyodide/pull/3130">#3130</a>). And if the function is defined within the Python class statement, the <code>this</code> object references the current Python object (like <code>self</code>):</p>
+
+<div class="mx-6 my-2">
+<span class="bg-red-600">XXXXXXXXXXXXXXXXXXXXXXXXXX Script tag!</span>
+{{< highlight "html" "linenostart=1">}}
+<scrip>
+{{< /highlight >}}
+{{< highlight "js" "linenostart=2">}}
+    var area = (a, b) => {
+        return .5 * a * b
+    }
+{{< /highlight >}}
+{{< highlight "html" "linenostart=5">}}
+</script>
+{{< /highlight >}}
+{{< highlight "html" "linenostart=6">}}
+<py-script>
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=7">}}
+    import js
+    from pyodide.code import run_js
+
+    class Triangle():
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+        area = js.area
+        hypo = run_js("function h() {return Math.hypot(this.a, this.b);} h")
+        
+    c = Triangle(a=3, b=4)
+    print(f"Area is: {c.area(c.a, c.b)}")
+    print(f"The hypotenuse is {c.hypo()}")
+{{< /highlight >}}
+{{< highlight "html" "linenostart=21">}}
+</py-script>
+{{< /highlight >}}
+<div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
+<pre>
+Area is: 6
+The hypotenuse is 5
+</p>
+</div>
+</div>
+
+
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Mounting the Native Filesystem</h4>
-<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/2987">#2987</a>)</p>
+<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/2987">Pyodide #2987</a>)</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Pyodide Stream Handler API</h4>
-<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/3268">#3268</a>)</p>
+<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/3268">Pyodide  #3268</a>)</p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Package Loading Improvements</h4>
 <p class="post-p"></p>
 <p class="post-p">For more details, see the <a href="https://pyodide.org/en/stable/project/changelog.html#id1">Package Loading section</a> of the Pyodide changelog.</p>
@@ -203,6 +424,5 @@ slug_image: py_2023_03_1_featured.png
 <h2 class="post-h2" id="examples">Examples</h2>
 <p class="post-p"><a href="https://github.com/romankehr">GitHub User romankehr</a> contributed a new example to the PyScript repository for uploading a CSV file into PyScript and loading it into a Pandas dataframe (<a href="https://github.com/pyscript/pyscript/pull/1067">#1067</a>). For those looking to data-sciency things with Python in the browser, this is a great place to start.</p>
 
-<h2 class="post-h2" id="community">Community</h2>
-
 <h2 class="post-h2" id="whatsnext">What's Next?</h2>
+
