@@ -112,19 +112,19 @@ slug_image: py_2023_03_1_featured.png
         css_link = document.createElement("link")
         css_link.rel = "stylesheet"
         css_link.type = "text/css"
-        css_link.href = "https://pyscript.net/releases/2022.12.1/pyscript.css"
-        //css_link.href = "https://pyscript.net/unstable/pyscript.css"
+        //css_link.href = "https://pyscript.net/releases/2022.12.1/pyscript.css"
+        css_link.href = "https://pyscript.net/unstable/pyscript.css"
         //css_link.href = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.css"
         //css_link.href = "./pyscript.css"
         document.getElementsByTagName('head')[0].appendChild(css_link)
 
         //load cs
         script_tag = document.createElement('script')
-        script_tag.src = "https://pyscript.net/releases/2022.12.1/pyscript.js"
-        //script_tag.src = "https://pyscript.net/unstable/pyscript.js"
+        //script_tag.src = "https://pyscript.net/releases/2022.12.1/pyscript.js"
+        script_tag.src = "https://pyscript.net/unstable/pyscript.js"
         //script_tag.src = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.js"
         //script_tag.src = "./pyscript.js"
-        document.body.append(script_tag)        
+        document.body.append(script_tag) 
     }
     document.addEventListener('pyscript_ready', () => {
         static = document.getElementsByClassName('static-example')
@@ -528,6 +528,7 @@ The hypotenuse is 5
             print(os.listdir('/mount_dir'))
     </py-script>
     <div class="flex justify-center w-full mt-3 align-center"><button id="btn1" py-click="requestAndPrintFolder()" class="w-full px-4 py-2 bg-yellow-300 border-2 rounded-md md:w-1/2">Click to request folder</button></div>
+    <py-terminal></py-terminal>
 </div>
 <p class="post-p"></p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Package Loading Improvements</h4>
@@ -585,6 +586,61 @@ The hypotenuse is 5
 <button py-click="print('Hello, world!')">Click me to print Hell Worldo</button> 
 {{< /highlight >}}
 <p class="post-p">Just to say it one more time - this syntax is <span class="font-semibold">coming soon</span> and is <span class="italic">not</span> a part of this release. We're getting close though.</p>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">Pyxel in Pyodide</h4>
+<p class="post-p">Pyodide core dev <a href="https://github.com/ryanking13">Gyeongjae Choi</a> has <a href="https://github.com/pyodide/pyodide/pull/3508">a development branch</a> in the works that I'm personally very excited about - it compiled Pyodide with Emscripten support for SDL (<a href="https://www.libsdl.org/">Simple DirectMedia Layer</a>), a cross-platform graphics library. It powers lots of desktop-oriented graphics software, like <a href="https://www.pygame.org/news">Pygame</a> and <a href="https://github.com/kitao/pyxel">Pyxel</a>. The branch is specifically working on integrating Pyxel, since it's written mostly in Python and Rust, which Pyodide has been increasingly included as a supported language to build against.</p>
+<p class="post-p">Now, Pyxel already has a <a href="https://github.com/kitao/pyxel#web">build-to-web</a> option which compiles the requisite components into Web Assembly and spits out an html file that wraps it. But with Pyodide integation, we get all the nifty browser and JS interoperability features that we've come to love in PyScript. For example, we can not only run games in the browser, but we can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">LocalStorage</a> to save user data, add HTML control or display elements <span class="italic">outside</span> of the game, respond to window events, or even allow game objects to be <span class="italic">directly scripted  by Python, in realtime, in the browser.</span>. How cool is that?></p>
+<p class="post-p">So cool I had to build a little demo, that's how cool.</p>
+<p-post>To be clear, this is all still experimental - the following demo is built against a version of Pyodide that doesn't exist in the wild, that I built from Gyeongjae's dev branch. But I got so excited about the possibilities that I just had to try it out.</p-post>
+<p class="post-p">As an example of what's possible with Pyxel in the browser, try putting focus on another browser window - you'll see that the game detects the window event and automatically pauses. Additionally, this demo uses the browser's local storage to keep track of your best time.</p>
+<div class="mb-2 text-center">
+    <p class=""><span class="font-semibold">CONTROLS</span> Move: Left/Right      Jump: Up or Space     Pause: P </p>
+</div>
+<py-config class="hidden">
+    packages = ['pyxel']
 
-<h4 class="post-h4 md:border-b-2 md:border-gray-200">Coming Soon...</h4>
+    [[fetch]]
+    files = ['animated.py', 'collision.py', 'frame.py', 'images.pyxres', 'level.py', 'main.py', 'protocols.py', 'sounds.pyxres', 'wabbit-wesources.pyxres', 'wabbit.py', 'objects/coin.py']
+    from = 'https://dev.jeff.glass/wasm-wabbit-game/src'
+
+    [[fetch]]
+    files = ['level_1.pyxres', 'level_2.pyxres', 'level_3.pyxres']
+    from = 'https://dev.jeff.glass/wasm-wabbit-game/src/levels'
+    to_folder = 'levels'
+
+    [[interpreters]]
+    src = "https://jeff-glass-dev.s3.amazonaws.com/pyodide-pyxel/pyodide.js"
+    name = "pyodide-0.22.1-pyxelbuild"
+    lang = "python"
+</py-config>
+<py-script class="hidden">
+    import pyodide.code
+
+    pyodide.code.run_js(
+        """
+        pyscript.interpreter._remote.interface._module.canvas = document.querySelector("canvas#canvas");
+
+        _virtualGamepadStates = [
+            false, // Up
+            false, // Down
+            false, // Left
+            false, // Right
+            false, // A
+            false, // B
+            false, // X
+            false, // Y
+        ];
+        """
+    )
+    from main import App
+    App()
+</py-script>
+<div class="relative static-example" onclick="loadPyScript()">
+    <img src="./wabbit-cover.png" alt="" class="w-full p-2 m-auto border-2 rounded-lg lg:w-1/2 md:w-3/4" style="cursor: pointer">
+    <div class="absolute px-8 py-2 text-4xl font-semibold border-2 border-gray-900 rounded-lg load-pyscript-button" style="top:60%; left:50%; transform: translateX(-50%); background-color: #fda703; color: #2C2E34; cursor: pointer;" >Load Demo</div>
+</div>
+
+<div class="">
+    <canvas id="canvas" tabindex="-1" class="hidden live-example"></canvas>
+</div>
+<h4 class="post-h4 md:border-b-2 md:border-gray-200">And more...</h4>
 <p class="post-p">As I <a href="#tease">teased</a> about 3500 words ago, there are some very cool things coming soon for PyScript; if you want to be the first to hear about them, come join us on <a href="https://discord.gg/Y5MFvW5hbs">The Discord Server</a> </p>
