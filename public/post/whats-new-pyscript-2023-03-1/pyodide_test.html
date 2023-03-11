@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+</head>
+<body>
+    <button onclick="mountAndShow()">Click to load a directory</button>
+    <script>
+        let pyodide
+        async function main() {
+            pyodide = await loadPyodide();       
+        }
+        main();
+
+        async function mountAndShow(){     
+            console.log(window)
+            const dirHandle = await showDirectoryPicker();
+            if ((await dirHandle.queryPermission({ mode: "readwrite" })) !== "granted") {
+            if (
+                (await dirHandle.requestPermission({ mode: "readwrite" })) !== "granted"
+            ) {
+                throw Error("Unable to read and write directory");
+            }
+            }
+            const nativefs = await pyodide.mountNativeFS("/mount_dir", dirHandle);
+            pyodide.runPython(`
+            import os
+            print(os.listdir('/mount_dir'))
+            `);
+        };
+    </script>
+    
+</body>
+</html>
