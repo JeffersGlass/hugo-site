@@ -265,42 +265,44 @@ slug_image: py_2023_03_1_featured.png
 <p class="mx-4 post-p ">pycryptodome (<a href="https://github.com/pyodide/pyodide/pull/2965">#2965</a>), coverage-py (<a href="https://github.com/pyodide/pyodide/pull/3053">#3053</a>), bcrypt (<a href="https://github.com/pyodide/pyodide/pull/3125">#3125</a>), lightgbm (<a href="https://github.com/pyodide/pyodide/pull/3138">#3138</a>), pyheif, pillow_heif, libheif, libde265 (<a href="https://github.com/pyodide/pyodide/pull/3161">#3161</a>), wordcloud (<a href="https://github.com/pyodide/pyodide/pull/3173">#3173</a>), gdal, fiona, geopandas (<a href="https://github.com/pyodide/pyodide/pull/3213">#3213</a>), the standard library _hashlib module (<a href="https://github.com/pyodide/pyodide/pull/3206 ">#3206</a>), pyinstrument (<a href="https://github.com/pyodide/pyodide/pull/3258">#3258</a>), gensim (<a href="https://github.com/pyodide/pyodide/pull/3326">#3326</a>), smart_open (<a href="https://github.com/pyodide/pyodide/pull/3326">#3326</a>), pyodide-http (<a href="https://github.com/pyodide/pyodide/pull/3355">#3355</a>) </p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Improved Python Collections APIS</h4>
 <p class="post-p">The process by which JavaScript objects are transmogrified (proxied) into Python continues to get more sophisticated - JS objects that feel like they <span class="italic">should</span> behave like the corresponding Python collections now generally do. For instance, JavaScript arrays now implement <code>reverse</code>, <code>__reversed__</code>, <code>count</code>, <code>index</code>, <code>append</code>, and <code>pop</code>, so that they implement the <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableSequence">MutableSequence API</a> (<a href="https://github.com/pyodide/pyodide/pull/2970">#2970</a>). This allows us to treat JavaScript arrays much more like a Python list (or other mutable sequence), eliminating the need to manually convert from one type to another. For instance, this is now possible:</p>
+
+
 <div class="mx-6 my-2">
 <span class="bg-red-600"></span>
 {{< highlight "html" "linenostart=1">}}
 <script>
 {{< /highlight >}}
 {{< highlight "js" "linenostart=2">}}
-    var mymap = new Map()
-    mymap.set('a', 1);
-    mymap.set('b', 2);
-    mymap.set('c', 3);
+    var myarray = ["PyScript", "and", "Pyodide", "and", "JavaScript", "Are", "Awesome"]
 {{< /highlight >}}
-{{< highlight "html" "linenostart=6">}}
+{{< highlight "html" "linenostart=3">}}
 </script>
 {{< /highlight >}}
-{{< highlight "html" "linenostart=7">}}
+{{< highlight "html" "linenostart=4">}}
 <py-script>
 {{< /highlight >}}
-{{< highlight "python3" "linenostart=8">}}
-    from js import mymap
-    print(list(mymap.keys()))
-    for key, value in mymap.items():
-        print(f"{key}: {value}")
+{{< highlight "python3" "linenostart=5">}}
+    from js import myarray
+    item = myarray.pop()
+    print(item)
+    myarray.append("Super!")
+    print(" ".join(myarray))
+    print(myarray.count("and"))
 {{< /highlight >}}
-{{< highlight "html" "linenostart=12">}}
+{{< highlight "html" "linenostart=11">}}
 </py-script>
 {{< /highlight >}}
 <div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
-    <pre>['a', 'b', 'c']
-a: 1
-b: 2
-c: 3</pre>
+<pre>
+Awesome
+PyScript and Pyodide and JavaScript Are Super!
+2
+</p>
 </div>
 </div>
 
 <p class="post-p">Similarly, Map-like JS objects now implement <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping">MutableMapping</a> (<a href="https://github.com/pyodide/pyodide/pull/3275">#3275</a>),
-    
+
 <div class="mx-6 my-2">
 <span class="bg-red-600"></span>
 {{< highlight "html" "linenostart=1">}}
