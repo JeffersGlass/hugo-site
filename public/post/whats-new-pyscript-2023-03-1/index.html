@@ -463,6 +463,8 @@ if (!doNotTrack) {
 <p class="mx-4 post-p ">pycryptodome (<a href="https://github.com/pyodide/pyodide/pull/2965">#2965</a>), coverage-py (<a href="https://github.com/pyodide/pyodide/pull/3053">#3053</a>), bcrypt (<a href="https://github.com/pyodide/pyodide/pull/3125">#3125</a>), lightgbm (<a href="https://github.com/pyodide/pyodide/pull/3138">#3138</a>), pyheif, pillow_heif, libheif, libde265 (<a href="https://github.com/pyodide/pyodide/pull/3161">#3161</a>), wordcloud (<a href="https://github.com/pyodide/pyodide/pull/3173">#3173</a>), gdal, fiona, geopandas (<a href="https://github.com/pyodide/pyodide/pull/3213">#3213</a>), the standard library _hashlib module (<a href="https://github.com/pyodide/pyodide/pull/3206 ">#3206</a>), pyinstrument (<a href="https://github.com/pyodide/pyodide/pull/3258">#3258</a>), gensim (<a href="https://github.com/pyodide/pyodide/pull/3326">#3326</a>), smart_open (<a href="https://github.com/pyodide/pyodide/pull/3326">#3326</a>), pyodide-http (<a href="https://github.com/pyodide/pyodide/pull/3355">#3355</a>) </p>
 <h4 class="post-h4 md:border-b-2 md:border-gray-200">Improved Python Collections APIS</h4>
 <p class="post-p">The process by which JavaScript objects are transmogrified (proxied) into Python continues to get more sophisticated - JS objects that feel like they <span class="italic">should</span> behave like the corresponding Python collections now generally do. For instance, JavaScript arrays now implement <code>reverse</code>, <code>__reversed__</code>, <code>count</code>, <code>index</code>, <code>append</code>, and <code>pop</code>, so that they implement the <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableSequence">MutableSequence API</a> (<a href="https://github.com/pyodide/pyodide/pull/2970">#2970</a>). This allows us to treat JavaScript arrays much more like a Python list (or other mutable sequence), eliminating the need to manually convert from one type to another. For instance, this is now possible:</p>
+
+
 <div class="mx-6 my-2">
 <span class="bg-red-600"></span>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
@@ -476,20 +478,14 @@ if (!doNotTrack) {
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">    <span style="color:#069;font-weight:bold">var</span> mymap <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">new</span> Map()
-    mymap.set(<span style="color:#c30">&#39;a&#39;</span>, <span style="color:#f60">1</span>);
-    mymap.set(<span style="color:#c30">&#39;b&#39;</span>, <span style="color:#f60">2</span>);
-    mymap.set(<span style="color:#c30">&#39;c&#39;</span>, <span style="color:#f60">3</span>);</code></pre></td></tr></table>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">    <span style="color:#069;font-weight:bold">var</span> myarray <span style="color:#555">=</span> [<span style="color:#c30">&#34;PyScript&#34;</span>, <span style="color:#c30">&#34;and&#34;</span>, <span style="color:#c30">&#34;Pyodide&#34;</span>, <span style="color:#c30">&#34;and&#34;</span>, <span style="color:#c30">&#34;JavaScript&#34;</span>, <span style="color:#c30">&#34;Are&#34;</span>, <span style="color:#c30">&#34;Awesome&#34;</span>]</code></pre></td></tr></table>
 </div>
 </div>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
@@ -497,7 +493,7 @@ if (!doNotTrack) {
 </div>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">py-script</span>&gt;</code></pre></td></tr></table>
@@ -505,36 +501,41 @@ if (!doNotTrack) {
 </div>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> mymap
-    <span style="color:#366">print</span>(<span style="color:#366">list</span>(mymap<span style="color:#555">.</span>keys()))
-    <span style="color:#069;font-weight:bold">for</span> key, value <span style="color:#000;font-weight:bold">in</span> mymap<span style="color:#555">.</span>items():
-        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>key<span style="color:#a00">}</span><span style="color:#c30">: </span><span style="color:#a00">{</span>value<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)</code></pre></td></tr></table>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3">    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> myarray
+    item <span style="color:#555">=</span> myarray<span style="color:#555">.</span>pop()
+    <span style="color:#366">print</span>(item)
+    myarray<span style="color:#555">.</span>append(<span style="color:#c30">&#34;Super!&#34;</span>)
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34; &#34;</span><span style="color:#555">.</span>join(myarray))
+    <span style="color:#366">print</span>(myarray<span style="color:#555">.</span>count(<span style="color:#c30">&#34;and&#34;</span>))</code></pre></td></tr></table>
 </div>
 </div>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">py-script</span>&gt;</code></pre></td></tr></table>
 </div>
 </div>
 <div class="p-2 pl-4 mt-4 text-white bg-black text-mono">
-    <pre>['a', 'b', 'c']
-a: 1
-b: 2
-c: 3</pre>
+<pre>
+Awesome
+PyScript and Pyodide and JavaScript Are Super!
+2
+</p>
 </div>
 </div>
 
 <p class="post-p">Similarly, Map-like JS objects now implement <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping">MutableMapping</a> (<a href="https://github.com/pyodide/pyodide/pull/3275">#3275</a>),
-    
+
 <div class="mx-6 my-2">
 <span class="bg-red-600"></span>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
