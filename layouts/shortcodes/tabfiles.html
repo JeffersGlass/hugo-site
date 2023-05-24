@@ -1,0 +1,72 @@
+<style>
+    .code-container {
+        border-width: 2px;
+    }
+</style>
+{{ if isset .Params "title" }}
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
+{{ end }}
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        {{ .Inner }}
+    </div>
+
+    <ul class="tabs md:col-span-2">
+        {{ $morefiles := split ($.Get "morefiles") ","}}
+        {{ range $index, $value := $morefiles }}
+            {{ $id := delimit (slice ($.Get "id") .) ""}}
+            {{ $id = replace $id "/" "" }}
+            {{ $id = replace $id "." "" }}
+            <li data-tab-target-{{$.Get "id" | safeHTMLAttr}}="#{{ $id }}-code" class="{{ if (eq $index 0) }}active{{ end }} tab code-title">{{ . }}</li>
+        {{ end }}
+    </ul>
+
+    {{/* Additional files */}}
+
+    {{ $thispage := .Page.RelPermalink }}
+    {{ if isset .Params "morefiles" }}
+        {{ $morefiles := split (.Get "morefiles") ","}}
+        {{ range $index, $value:= $morefiles }}
+            {{ $morepath := delimit (slice $thispage . ) ""}}
+            {{ $morelines := len ( split ( os.ReadFile $morepath ) "\n")}}
+            {{ $id := delimit (slice ($.Get "id") .) ""}}
+            {{ $id = replace $id "/" "" }}
+            {{ $id = replace $id "." "" }}
+            {{ $suffix := last 1 ( split . "." ) }}  
+            {{ $suf_one := delimit $suffix "" }}
+            {{ $suf_str :=  printf "%v" $suf_one}}
+            <div id="{{ $id }}-code" data-tab-content-{{$.Get "id" | safeHTMLAttr }} class="{{ if (eq $index 0) }}active{{ end }} tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $morepath) $suf_str  "" }}</div>
+                {{ if ge $morelines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+            </div>
+        {{ end }}
+
+    {{ end }}
+
+</div>
+<script>
+    const tabs{{.Get "id" | safeJS }} = document.querySelectorAll('[data-tab-target-{{.Get "id" | safeJS }}]')
+    const tabContents{{.Get "id" | safeJS }} = document.querySelectorAll('[data-tab-content-{{.Get "id" | safeJS}}]')
+
+    tabs{{.Get "id" | safeJS }}.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTarget{{.Get "id" | title | safeJS }}
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContents{{.Get "id" | safeJS }}.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabs{{.Get "id" | safeJS}}.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
