@@ -7,10 +7,6 @@
 <h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
 {{ end }}
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
-    <div>
-        {{ .Inner }}
-    </div>
-
     <ul class="tabs md:col-span-2">
         {{ $morefiles := split ($.Get "morefiles") ","}}
         {{ range $index, $value := $morefiles }}
@@ -38,12 +34,12 @@
             {{ $suf_str :=  printf "%v" $suf_one}}
             <div id="{{ $id }}-code" data-tab-content-{{$.Get "id" | safeHTMLAttr }} class="{{ if (eq $index 0) }}active{{ end }} tab-content md:col-span-2">
                 <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $morepath) $suf_str  "" }}</div>
-                {{ if ge $morelines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+                {{ if ge $morelines 13 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
             </div>
         {{ end }}
 
     {{ end }}
-
+    
 </div>
 <script>
     const tabs{{.Get "id" | safeJS }} = document.querySelectorAll('[data-tab-target-{{.Get "id" | safeJS }}]')
