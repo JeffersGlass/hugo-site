@@ -17,7 +17,8 @@
             {{ $id := delimit (slice ($.Get "id") .) ""}}
             {{ $id = replace $id "/" "" }}
             {{ $id = replace $id "." "" }}
-            <li data-tab-target-{{$.Get "id" | safeHTMLAttr}}="#{{ $id }}-code" class="{{ if (eq $index 0) }}active{{ end }} tab code-title">{{ . }}</li>
+            {{ $name:= delimit (first 1 (split . ".")) ""}}
+            <li data-tab-target-{{$.Get "id" | safeHTMLAttr}}="#{{ $id }}-code" class="{{ if (eq $index 0) }}active{{ end }} tab code-title">{{ printf "%v" $name }}</li>
         {{ end }}
     </ul>
 
