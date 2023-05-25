@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Realtime Updates in PyScript/Pyodide</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/pyscript-realtime-page-updates/pyscript_realtime_featured.png"/>
+<meta name="twitter:title" content="Realtime Updates in PyScript/Pyodide"/>
+<meta name="twitter:description" content="Making PyScript Cede Control of the Browser Thread"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Realtime Updates in PyScript/Pyodide</h1>
+				<p>Published May 24, 2023</p>
+				
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/asyncio">asyncio</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					<style>
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-py):not(.language-python):not(.language-js):not(.language-html){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<link rel="stylesheet" href="../../tabs/tabs.css">   
+<p class="post-p">When writing Python code to run in the Browser (whether in PyScript or Pyodide), one common desire is to print something out to the page as the program progresses. Maybe it's status messages from phases of execution, or warning messages, or informational updates. In their simplest form, they might look like: </p>
+<div class="mb-4"><div>
+    <p class="code-title">button.html</p>
+    
+    
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">div</span> <span style="color:#309">id</span><span style="color:#555">=</span><span style="color:#c30">&#34;myDiv&#34;</span>&gt;&lt;/<span style="color:#309;font-weight:bold">div</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+    
+</div></div>
+<style>
+    .code-container {
+        border-width: 2px;
+    }
+</style>
+
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <ul class="tabs md:col-span-2">
+        
+        
+            
+            
+            
+            
+            <li data-tab-target-first="#firstPyScript1py-code" class="active tab code-title">PyScript</li>
+        
+            
+            
+            
+            
+            <li data-tab-target-first="#firstPyodide1py-code" class=" tab code-title">Pyodide</li>
+        
+    </ul>
+
+    
+
+    
+    
+        
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            <div id="firstPyScript1py-code" data-tab-content-first class="active tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">100</span>):
+    display(i, target<span style="color:#555">=</span><span style="color:#c30">&#34;myDiv&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+                
+            </div>
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            <div id="firstPyodide1py-code" data-tab-content-first class=" tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> document
+
+<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">100</span>):
+    <span style="color:#366">print</span>(i)
+    document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;myDiv&#34;</span>)<span style="color:#555">.</span>textContent <span style="color:#555">=</span> i</code></pre></td></tr></table>
+</div>
+</div></div>
+                
+            </div>
+        
+
+    
+    
+</div>
+<script>
+    const tabsfirst = document.querySelectorAll('[data-tab-target-first]')
+    const tabContentsfirst = document.querySelectorAll('[data-tab-content-first]')
+
+    tabsfirst.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetFirst
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsfirst.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsfirst.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+<p class="post-p">However, when running the code, it appears that only the final number <code>99</code> appears on the page, when we'd expect to see the number <code>0</code> to <code>99</code> appear, one after another.</p>
+<p class="post-p">The issue isn't that the textContent isn't being changed; the issue is that there's no opportunity for the screen to update to actually display the change. The solution is to use a coroutine.</p>
+<h2 class="post-h2">Confirming that Changes Do Happen</h2>
+<p class="post-p">To observe that the <code>textContent</code> of our targeted <code>&lt;div&gt;</code> is indeed changing, we can add a small <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver">Mutation Observer</a> to the very top of the HTML page. A Mutation Observer is just what it sounds like - it watches for any mutations (changes) on a specified element, and runs some user-defined code in response. This particular mutatio will log the observed Element to the <a href="https://balsamiq.com/support/faqs/browserconsole/">browser dev console</a> whenever any change is made:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">    <span style="color:#069;font-weight:bold">function</span> callback(mutationList, observer){
+        mutationList.forEach(record =&gt; console.log(record.target))
+    }
+    <span style="color:#069;font-weight:bold">const</span> MO <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">new</span> MutationObserver(callback)
+    MO.observe(<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;myDiv&#34;</span>), {attributes<span style="color:#555">:</span> <span style="color:#069;font-weight:bold">true</span> })</code></pre></td></tr></table>
+</div>
+</div>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<p class="post-p">With this added code, the console fills with <code>0,</code> <code>1,</code> ..., <code>98</code>, <code>99</code>. So the textContent of our target Div is, in fact, changing with each call to <code>print</code>/<code>display</code>/<code>textContent=</code>. So why can't we see that on the page?</p>
+<h2 class="post-h2">Slowing Things Down to Human Speed</h2>
+<p class="post-p">One might think that the code is simply proceeding too fast for you eyes to see the numbers change, but that's not exactly happening either. Let's slow things down by modifying the <code>for</code> loop:</p>
+<style>
+    .code-container {
+        border-width: 2px;
+    }
+</style>
+
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <ul class="tabs md:col-span-2">
+        
+        
+            
+            
+            
+            
+            <li data-tab-target-second="#secondPyScript2py-code" class="active tab code-title">PyScript</li>
+        
+            
+            
+            
+            
+            <li data-tab-target-second="#secondPyodide2py-code" class=" tab code-title">Pyodide</li>
+        
+    </ul>
+
+    
+
+    
+    
+        
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            <div id="secondPyScript2py-code" data-tab-content-second class="active tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">100</span>):
+    display(i, target<span style="color:#555">=</span><span style="color:#c30">&#34;myDiv&#34;</span>, append <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>)
+    <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">1_000_000</span>):
+        _ <span style="color:#555">=</span> <span style="color:#f60">1</span></code></pre></td></tr></table>
+</div>
+</div></div>
+                
+            </div>
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            <div id="secondPyodide2py-code" data-tab-content-second class=" tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">100</span>):
+    <span style="color:#366">print</span>(i)
+    document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;myDiv&#34;</span>)<span style="color:#555">.</span>textContent <span style="color:#555">=</span> i
+    <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">1_000_000</span>):
+        _ <span style="color:#555">=</span> <span style="color:#f60">1</span></code></pre></td></tr></table>
+</div>
+</div></div>
+                
+            </div>
+        
+
+    
+    
+</div>
+<script>
+    const tabssecond = document.querySelectorAll('[data-tab-target-second]')
+    const tabContentssecond = document.querySelectorAll('[data-tab-content-second]')
+
+    tabssecond.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetSecond
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentssecond.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabssecond.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+<p class="post-p">Now the loop has to "do a little useless work" before it advances to the next number. (You may need to change <code>1_000_000</code> to a larger or smaller number, depending on your system's capabilities.) Opening the dev console again   , the numbers still appear, just at a more measured pace. But the text on the page doesn't update until the Python code has finished. So what gives?</p>
+<h2 class="post-h2">The Real Issue</h2>
+<p class="post-p">The issue is that while updates to the DOM are synchronous (i.e. no further code will be executed until the DOM update is complete), updates to the screen are asynchronous. What's more, the entire call to runPython() is synchronous, so no updates to the screen will occur until the runPython terminates. Essentially, the call to runPython is a blocking call, and nothing else can happen on the page - screen updates and repainting, other JavaScript calls, etc - until runPython returns.</p>
+<p><a href="https://www.macarthur.me/posts/when-dom-updates-appear-to-be-asynchronous">This blog post</a> gives a good high-level explanation of the interaction between synchronous code and visible changes on screen.</p>
+<h2 class="post-h2">The Solution</h2>
+<p class="post-p">So, if the screen can't update until our synchronous code call terminates, what can we do? Make our code asynchronous! By turning our code into a coroutine which occasionally yields back to the browser's event loop to do some work (i.e. update the screen), we can see the updates visibly as they happen.</p>
+<p class="post-p">Pyodide has a nifty utility for this in the form of the <a href="https://pyodide.org/en/stable/usage/api/js-api.html">runPythonAsync</a> function, which allows you to write async code without resorting to wrapping your code into a coroutine. Here's a <a href="https://jeff.glass/post/pyscript-asyncio/#implicitasync">description of this feature and its purpose</a>, which is demonstrated in the final sample code below.</p>
+<p class="post-p">PyScript requires the user to be slightly more explicit about creating and scheduling coroutines and awaitables, and top-level <code>await</code> is not permitted. Instead, we'll write our code as a coroutine using <code>async def</code>, and schedule it using <code>asyncio.ensure_future</code> Here's an <a href="https://jeff.glass/post/pyscript-asyncio/">Overview of Asyncio in PyScript</a>.</p>
+<p class="post-p">Finally, here's the required code. The "useless slowdown loop" is still present so that the results are visible, but there's no need for it to be there in production.</p>
+<style>
+    .code-container {
+        border-width: 2px;
+    }
+</style>
+
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <ul class="tabs md:col-span-2">
+        
+        
+            
+            
+            
+            
+            <li data-tab-target-third="#thirdPyScript3py-code" class="active tab code-title">PyScript</li>
+        
+            
+            
+            
+            
+            <li data-tab-target-third="#thirdPyodide3py-code" class=" tab code-title">Pyodide</li>
+        
+    </ul>
+
+    
+
+    
+    
+        
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            <div id="thirdPyScript3py-code" data-tab-content-third class="active tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> document
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">asyncio</span> <span style="color:#069;font-weight:bold">import</span> sleep
+
+<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">count</span>():
+    <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">100</span>):
+        <span style="color:#366">print</span>(i)
+        display(i, target<span style="color:#555">=</span><span style="color:#c30">&#34;myDiv&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
+        <span style="color:#069;font-weight:bold">await</span> sleep(<span style="color:#f60">0.01</span>)
+        <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">1_000_000</span>):
+            _ <span style="color:#555">=</span> <span style="color:#f60">1</span>
+
+fut <span style="color:#555">=</span> asyncio<span style="color:#555">.</span>ensure_future(count())</code></pre></td></tr></table>
+</div>
+</div></div>
+                
+            </div>
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            <div id="thirdPyodide3py-code" data-tab-content-third class=" tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">pyodide<span style="color:#555">.</span>runPythonAsync(<span style="color:#a00;background-color:#faa">`</span>
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">asyncio</span> <span style="color:#069;font-weight:bold">import</span> sleep
+
+    <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">100</span>):
+        <span style="color:#366">print</span>(i)
+        document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;myDiv&#34;</span>)<span style="color:#555">.</span>textContent <span style="color:#555">=</span> i
+        <span style="color:#069;font-weight:bold">await</span> sleep(<span style="color:#f60">0.01</span>) <span style="color:#09f;font-style:italic"># Top level await is permitted by runPythonAsync</span>
+        <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">1_000_000</span>):
+            _ <span style="color:#555">=</span> <span style="color:#f60">1</span>
+    <span style="color:#a00;background-color:#faa">`</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+                
+            </div>
+        
+
+    
+    
+</div>
+<script>
+    const tabsthird = document.querySelectorAll('[data-tab-target-third]')
+    const tabContentsthird = document.querySelectorAll('[data-tab-content-third]')
+
+    tabsthird.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetThird
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsthird.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsthird.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+<p class="post-p">Now, go forth, and let all your intermediate results be visible!</p>
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>
