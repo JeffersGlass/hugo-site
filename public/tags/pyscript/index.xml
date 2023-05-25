@@ -7,7 +7,454 @@
     <description>Recent content in PyScript on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 May 2023 09:43:07 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 May 2023 13:21:29 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Realtime Updates in PyScript/Pyodide</title>
+      <link>https://jeff.glass/post/pyscript-realtime-page-updates/</link>
+      <pubDate>Wed, 24 May 2023 13:21:29 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/pyscript-realtime-page-updates/</guid>
+      <description>&lt;style&gt;
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-py):not(.language-python):not(.language-js):not(.language-html){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;../../tabs/tabs.css&#34;&gt;   
+&lt;p class=&#34;post-p&#34;&gt;When writing Python code to run in the Browser (whether in PyScript or Pyodide), one common desire is to print something out to the page as the program progresses. Maybe it&#39;s status messages from phases of execution, or warning messages, or informational updates. In their simplest form, they might look like: &lt;/p&gt;
+&lt;div class=&#34;mb-4&#34;&gt;&lt;div&gt;
+    &lt;p class=&#34;code-title&#34;&gt;button.html&lt;/p&gt;
+    
+    
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;div&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    
+&lt;/div&gt;&lt;/div&gt;
+&lt;style&gt;
+    .code-container {
+        border-width: 2px;
+    }
+&lt;/style&gt;
+
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        
+        
+            
+            
+            
+            
+            &lt;li data-tab-target-first=&#34;#firstPyScript1py-code&#34; class=&#34;active tab code-title&#34;&gt;PyScript&lt;/li&gt;
+        
+            
+            
+            
+            
+            &lt;li data-tab-target-first=&#34;#firstPyodide1py-code&#34; class=&#34; tab code-title&#34;&gt;Pyodide&lt;/li&gt;
+        
+    &lt;/ul&gt;
+
+    
+
+    
+    
+        
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            &lt;div id=&#34;firstPyScript1py-code&#34; data-tab-content-first class=&#34;active tab-content md:col-span-2&#34;&gt;
+                &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;):
+    display(i, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;, append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            &lt;div id=&#34;firstPyodide1py-code&#34; data-tab-content-first class=&#34; tab-content md:col-span-2&#34;&gt;
+                &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;):
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(i)
+    document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;textContent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; i&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+        
+
+    
+    
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsfirst = document.querySelectorAll(&#39;[data-tab-target-first]&#39;)
+    const tabContentsfirst = document.querySelectorAll(&#39;[data-tab-content-first]&#39;)
+
+    tabsfirst.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetFirst
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsfirst.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsfirst.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+&lt;p class=&#34;post-p&#34;&gt;However, when running the code, it appears that only the final number &lt;code&gt;99&lt;/code&gt; appears on the page, when we&#39;d expect to see the number &lt;code&gt;0&lt;/code&gt; to &lt;code&gt;99&lt;/code&gt; appear, one after another.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The issue isn&#39;t that the textContent isn&#39;t being changed; the issue is that there&#39;s no opportunity for the screen to update to actually display the change. The solution is to use a coroutine.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;Confirming that Changes Do Happen&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;To observe that the &lt;code&gt;textContent&lt;/code&gt; of our targeted &lt;code&gt;&amp;lt;div&amp;gt;&lt;/code&gt; is indeed changing, we can add a small &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver&#34;&gt;Mutation Observer&lt;/a&gt; to the very top of the HTML page. A Mutation Observer is just what it sounds like - it watches for any mutations (changes) on a specified element, and runs some user-defined code in response. This particular mutatio will log the observed Element to the &lt;a href=&#34;https://balsamiq.com/support/faqs/browserconsole/&#34;&gt;browser dev console&lt;/a&gt; whenever any change is made:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;function&lt;/span&gt; callback(mutationList, observer){
+        mutationList.forEach(record =&amp;gt; console.log(record.target))
+    }
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; MO &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;new&lt;/span&gt; MutationObserver(callback)
+    MO.observe(&lt;span style=&#34;color:#366&#34;&gt;document&lt;/span&gt;.getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;), {attributes&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;true&lt;/span&gt; })&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;With this added code, the console fills with &lt;code&gt;0,&lt;/code&gt; &lt;code&gt;1,&lt;/code&gt; ..., &lt;code&gt;98&lt;/code&gt;, &lt;code&gt;99&lt;/code&gt;. So the textContent of our target Div is, in fact, changing with each call to &lt;code&gt;print&lt;/code&gt;/&lt;code&gt;display&lt;/code&gt;/&lt;code&gt;textContent=&lt;/code&gt;. So why can&#39;t we see that on the page?&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;Slowing Things Down to Human Speed&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;One might think that the code is simply proceeding too fast for you eyes to see the numbers change, but that&#39;s not exactly happening either. Let&#39;s slow things down by modifying the &lt;code&gt;for&lt;/code&gt; loop:&lt;/p&gt;
+&lt;style&gt;
+    .code-container {
+        border-width: 2px;
+    }
+&lt;/style&gt;
+
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        
+        
+            
+            
+            
+            
+            &lt;li data-tab-target-second=&#34;#secondPyScript2py-code&#34; class=&#34;active tab code-title&#34;&gt;PyScript&lt;/li&gt;
+        
+            
+            
+            
+            
+            &lt;li data-tab-target-second=&#34;#secondPyodide2py-code&#34; class=&#34; tab code-title&#34;&gt;Pyodide&lt;/li&gt;
+        
+    &lt;/ul&gt;
+
+    
+
+    
+    
+        
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            &lt;div id=&#34;secondPyScript2py-code&#34; data-tab-content-second class=&#34;active tab-content md:col-span-2&#34;&gt;
+                &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;):
+    display(i, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;, append &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; j &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;1_000_000&lt;/span&gt;):
+        _ &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            &lt;div id=&#34;secondPyodide2py-code&#34; data-tab-content-second class=&#34; tab-content md:col-span-2&#34;&gt;
+                &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;):
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(i)
+    document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;textContent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; i
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; j &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;1_000_000&lt;/span&gt;):
+        _ &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+        
+
+    
+    
+&lt;/div&gt;
+&lt;script&gt;
+    const tabssecond = document.querySelectorAll(&#39;[data-tab-target-second]&#39;)
+    const tabContentssecond = document.querySelectorAll(&#39;[data-tab-content-second]&#39;)
+
+    tabssecond.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetSecond
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentssecond.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabssecond.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+&lt;p class=&#34;post-p&#34;&gt;Now the loop has to &#34;do a little useless work&#34; before it advances to the next number. (You may need to change &lt;code&gt;1_000_000&lt;/code&gt; to a larger or smaller number, depending on your system&#39;s capabilities.) Opening the dev console again   , the numbers still appear, just at a more measured pace. But the text on the page doesn&#39;t update until the Python code has finished. So what gives?&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;The Real Issue&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;The issue is that while updates to the DOM are synchronous (i.e. no further code will be executed until the DOM update is complete), updates to the screen are asynchronous. What&#39;s more, the entire call to runPython() is synchronous, so no updates to the screen will occur until the runPython terminates. Essentially, the call to runPython is a blocking call, and nothing else can happen on the page - screen updates and repainting, other JavaScript calls, etc - until runPython returns.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.macarthur.me/posts/when-dom-updates-appear-to-be-asynchronous&#34;&gt;This blog post&lt;/a&gt; gives a good high-level explanation of the interaction between synchronous code and visible changes on screen.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;The Solution&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;So, if the screen can&#39;t update until our synchronous code call terminates, what can we do? Make our code asynchronous! By turning our code into a coroutine which occasionally yields back to the browser&#39;s event loop to do some work (i.e. update the screen), we can see the updates visibly as they happen.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Pyodide has a nifty utility for this in the form of the &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/js-api.html&#34;&gt;runPythonAsync&lt;/a&gt; function, which allows you to write async code without resorting to wrapping your code into a coroutine. Here&#39;s a &lt;a href=&#34;https://jeff.glass/post/pyscript-asyncio/#implicitasync&#34;&gt;description of this feature and its purpose&lt;/a&gt;, which is demonstrated in the final sample code below.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript requires the user to be slightly more explicit about creating and scheduling coroutines and awaitables, and top-level &lt;code&gt;await&lt;/code&gt; is not permitted. Instead, we&#39;ll write our code as a coroutine using &lt;code&gt;async def&lt;/code&gt;, and schedule it using &lt;code&gt;asyncio.ensure_future&lt;/code&gt; Here&#39;s an &lt;a href=&#34;https://jeff.glass/post/pyscript-asyncio/&#34;&gt;Overview of Asyncio in PyScript&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Finally, here&#39;s the required code. The &#34;useless slowdown loop&#34; is still present so that the results are visible, but there&#39;s no need for it to be there in production.&lt;/p&gt;
+&lt;style&gt;
+    .code-container {
+        border-width: 2px;
+    }
+&lt;/style&gt;
+
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        
+        
+            
+            
+            
+            
+            &lt;li data-tab-target-third=&#34;#thirdPyScript3py-code&#34; class=&#34;active tab code-title&#34;&gt;PyScript&lt;/li&gt;
+        
+            
+            
+            
+            
+            &lt;li data-tab-target-third=&#34;#thirdPyodide3py-code&#34; class=&#34; tab code-title&#34;&gt;Pyodide&lt;/li&gt;
+        
+    &lt;/ul&gt;
+
+    
+
+    
+    
+        
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            &lt;div id=&#34;thirdPyScript3py-code&#34; data-tab-content-third class=&#34;active tab-content md:col-span-2&#34;&gt;
+                &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;asyncio&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; sleep
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;count&lt;/span&gt;():
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(i)
+        display(i, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;, append&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt;)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; sleep(&lt;span style=&#34;color:#f60&#34;&gt;0.01&lt;/span&gt;)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; j &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;1_000_000&lt;/span&gt;):
+            _ &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+
+fut &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; asyncio&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;ensure_future(count())&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+        
+            
+            
+            
+            
+            
+              
+            
+            
+            &lt;div id=&#34;thirdPyodide3py-code&#34; data-tab-content-third class=&#34; tab-content md:col-span-2&#34;&gt;
+                &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;pyodide&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;runPythonAsync(&lt;span style=&#34;color:#a00;background-color:#faa&#34;&gt;`&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;asyncio&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; sleep
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;100&lt;/span&gt;):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(i)
+        document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;myDiv&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;textContent &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; i
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; sleep(&lt;span style=&#34;color:#f60&#34;&gt;0.01&lt;/span&gt;) &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Top level await is permitted by runPythonAsync&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; j &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;1_000_000&lt;/span&gt;):
+            _ &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+    &lt;span style=&#34;color:#a00;background-color:#faa&#34;&gt;`&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+                
+            &lt;/div&gt;
+        
+
+    
+    
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsthird = document.querySelectorAll(&#39;[data-tab-target-third]&#39;)
+    const tabContentsthird = document.querySelectorAll(&#39;[data-tab-content-third]&#39;)
+
+    tabsthird.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetThird
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsthird.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsthird.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+&lt;p class=&#34;post-p&#34;&gt;Now, go forth, and let all your intermediate results be visible!&lt;/p&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Why Does PyScript Need a Local Server?</title>
       <link>https://jeff.glass/post/pyscript-need-a-server/</link>
@@ -3069,6 +3516,7 @@ display(data[&amp;#39;fact&amp;#39;])
     const tabContentsday0 = document.querySelectorAll(&#39;[data-tab-content-day0]&#39;)
 
     tabsday0.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay0
             console.log(`Activating element with selector ${selector}`)
@@ -3300,6 +3748,7 @@ display(data[&amp;#39;fact&amp;#39;])
     const tabContentsday1_1 = document.querySelectorAll(&#39;[data-tab-content-day1_1]&#39;)
 
     tabsday1_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay1_1
             console.log(`Activating element with selector ${selector}`)
@@ -3398,6 +3847,7 @@ display(data[&amp;#39;fact&amp;#39;])
     const tabContentsday1_2 = document.querySelectorAll(&#39;[data-tab-content-day1_2]&#39;)
 
     tabsday1_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay1_2
             console.log(`Activating element with selector ${selector}`)
@@ -3546,6 +3996,7 @@ display(data[&amp;#39;fact&amp;#39;])
     const tabContentsday2_1 = document.querySelectorAll(&#39;[data-tab-content-day2_1]&#39;)
 
     tabsday2_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay2_1
             console.log(`Activating element with selector ${selector}`)
@@ -3694,6 +4145,7 @@ display(data[&amp;#39;fact&amp;#39;])
     const tabContentsday2_2 = document.querySelectorAll(&#39;[data-tab-content-day2_2]&#39;)
 
     tabsday2_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay2_2
             console.log(`Activating element with selector ${selector}`)
@@ -4026,6 +4478,7 @@ charValue &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {s: index &lt;sp
     const tabContentsday3_1 = document.querySelectorAll(&#39;[data-tab-content-day3_1]&#39;)
 
     tabsday3_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay3_1
             console.log(`Activating element with selector ${selector}`)
@@ -4181,6 +4634,7 @@ charValue &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {s: index &lt;sp
     const tabContentsday3_2 = document.querySelectorAll(&#39;[data-tab-content-day3_2]&#39;)
 
     tabsday3_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay3_2
             console.log(`Activating element with selector ${selector}`)
@@ -4315,6 +4769,7 @@ charValue &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {s: index &lt;sp
     const tabContentsday4_1 = document.querySelectorAll(&#39;[data-tab-content-day4_1]&#39;)
 
     tabsday4_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay4_1
             console.log(`Activating element with selector ${selector}`)
@@ -4452,6 +4907,7 @@ charValue &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {s: index &lt;sp
     const tabContentsday4_2 = document.querySelectorAll(&#39;[data-tab-content-day4_2]&#39;)
 
     tabsday4_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay4_2
             console.log(`Activating element with selector ${selector}`)
@@ -5204,6 +5660,7 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     const tabContentsday5_1 = document.querySelectorAll(&#39;[data-tab-content-day5_1]&#39;)
 
     tabsday5_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay5_1
             console.log(`Activating element with selector ${selector}`)
@@ -5425,6 +5882,7 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     const tabContentsday5_2 = document.querySelectorAll(&#39;[data-tab-content-day5_2]&#39;)
 
     tabsday5_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay5_2
             console.log(`Activating element with selector ${selector}`)
@@ -5554,6 +6012,7 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     const tabContentsday6_1 = document.querySelectorAll(&#39;[data-tab-content-day6_1]&#39;)
 
     tabsday6_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay6_1
             console.log(`Activating element with selector ${selector}`)
@@ -5681,6 +6140,7 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     const tabContentsday6_2 = document.querySelectorAll(&#39;[data-tab-content-day6_2]&#39;)
 
     tabsday6_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay6_2
             console.log(`Activating element with selector ${selector}`)
@@ -6171,6 +6631,7 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     const tabContentsday7_1 = document.querySelectorAll(&#39;[data-tab-content-day7_1]&#39;)
 
     tabsday7_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay7_1
             console.log(`Activating element with selector ${selector}`)
@@ -6705,6 +7166,7 @@ yardType &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; NewType(&lt;span 
     const tabContentsday7_2 = document.querySelectorAll(&#39;[data-tab-content-day7_2]&#39;)
 
     tabsday7_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay7_2
             console.log(`Activating element with selector ${selector}`)
@@ -7147,6 +7609,7 @@ c&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;is_jupyter &lt;span style=
     const tabContentsday8_1 = document.querySelectorAll(&#39;[data-tab-content-day8_1]&#39;)
 
     tabsday8_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay8_1
             console.log(`Activating element with selector ${selector}`)
@@ -7673,6 +8136,7 @@ c&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;is_jupyter &lt;span style=
     const tabContentsday8_2 = document.querySelectorAll(&#39;[data-tab-content-day8_2]&#39;)
 
     tabsday8_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay8_2
             console.log(`Activating element with selector ${selector}`)
@@ -7848,6 +8312,7 @@ direction_to_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
     const tabContentsday9_1 = document.querySelectorAll(&#39;[data-tab-content-day9_1]&#39;)
 
     tabsday9_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay9_1
             console.log(`Activating element with selector ${selector}`)
@@ -8237,6 +8702,7 @@ direction_to_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
     const tabContentsday9_2 = document.querySelectorAll(&#39;[data-tab-content-day9_2]&#39;)
 
     tabsday9_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay9_2
             console.log(`Activating element with selector ${selector}`)
@@ -8806,6 +9272,7 @@ direction_to_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
     const tabContentsday10_1 = document.querySelectorAll(&#39;[data-tab-content-day10_1]&#39;)
 
     tabsday10_1.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay10_1
             console.log(`Activating element with selector ${selector}`)
@@ -9448,6 +9915,7 @@ direction_to_vector &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
     const tabContentsday10_2 = document.querySelectorAll(&#39;[data-tab-content-day10_2]&#39;)
 
     tabsday10_2.forEach(tab =&gt; {
+        console.log(tab)
         tab.addEventListener(&#39;click&#39;, () =&gt; {
             let selector = tab.dataset.tabTargetDay10_2
             console.log(`Activating element with selector ${selector}`)
