@@ -1,0 +1,52 @@
+---
+title: "Pyscript Realtime Page Updates"
+date: 2023-05-24T13:21:29-05:00
+draft: true
+tags:
+- pyscript
+- python
+- asyncio
+description: "Making PyScript Cede Control of the Browser Thread"
+---
+<style>
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-py):not(.language-python):not(.language-js):not(.language-html){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<link rel="stylesheet" href="/tabs/tabs.css">
+<h2 class="post-h2">The Issue: Changes Aren't Visible</h2>
+<p class="post-p">When writing some Python code to run in the Browser (whether in PyScript or Pyodide), one common impulse is to write something out to the page as the program progresses. Maybe its status messages as a multi-step program progresses, status or error messages, or informational updates. In their simplest form, they might look like: </p>
+<div class="mb-4">{{< showcode "content/post/pyscript-realtime-page-updates/button.html" "html" >}}</div>
+{{< tabfiles id="first" morefiles="PyScript.1.py,Pyodide.1.py" >}}
+<p class="post-p">However, when running the code, it appears that only the final number <code>99</code> appears on the page, when we'd expect to see the number <code>0</code> to <code>99</code> appear, one after another.</p>
+<p class="post-p">The issue isn't that the textContent isn't being changed; the issue is that there's no opportunity for the screen to update to actually display the change. The solution is to use a coroutine.</p>
+<h2 class="post-h2">Confirming that Changes Do Happen</h2>
+<p class="post-p">To observe that the textContent is indeed changing, we can add a small <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver">Mutation Observer</a> to the very top of the HTML page. This will log to the <a href="https://balsamiq.com/support/faqs/browserconsole/">browser dev console</a> observed DOM node:</p>
+{{< highlight "html" "linenostart=1">}}
+<script>
+{{< /highlight >}}
+    {{< highlight "js" "linenostart=2">}}
+    function callback(mutationList, observer){
+        mutationList.forEach(mutation => console.log(record.target))
+    }
+    const MO = new MutationObserver(callback)
+    MO.observe(document.getElementById("myDiv"), {attributes: true }){{< /highlight >}}
+{{< highlight "html" "linenostart=7">}}
+</script>
+{{< /highlight >}}
+<p class="post-p">With this added code, the console fills with <code>0,</code> <code>1,</code> ..., <code>98</code>, <code>99</code>. So the textContent of our target Div is, in fact, changing, which is good.</p>
+<h2 class="post-h2">Slowing Things Down to Human Speed</h2>
+<p class="post-p">One might think that the code is simply proceeding too fast for you eyes to see the numbers change, but that's not what's happening either. Let's slow things down by modifying the for loop:</p>
+{{< tabfiles id="second" morefiles="PyScript.2.py,Pyodide.2.py" >}}
+<p class="post-p">Now the loop has to "do a little useless work" before it advances to the next number. (You may need to change 1_000_000 to a larger or smaller number, depending on your system.) And opening the dev console, the numbers still appear, just at a more measured pace. But the text on the page doesn't update until the Python code has finished. So what gives?</p>
+<h2 class="post-h2">The Real Issue</h2>
+<p class="post-p">The issue is that while updates to the DOM are synchronous (i.e. no further code will be executed until the DOM update is complete), updates to the screen are asynchronous. What's more, the entire call to runPython() is synchronous, so no updates to the screen will occur until the runPython terminates. Essentially, the call to runPython is a blocking call, and nothing else can happen on the page - screen updates and repainting, other JavaScript calls, etc - until runPython returns.</p>
+<p><a href="https://www.macarthur.me/posts/when-dom-updates-appear-to-be-asynchronous">This blog post</a> gives a good high-level explanation of the interaction between synchronous code and visible changes on screen.</p>
+<h2 class="post-h2">The Solution</h2>
+<p class="post-p">So, if the screen can't update until our synchronous code call terminates, what can we do? Make our code asynchronous! By turning our code into a coroutine which occasionally yields back to the browser's event loop to do some work (i.e. update the screen), we can see the updates visibly as they happen.</p>
+<p class="post-p">Pyodide has a nifty utility for this in the form of the <a href="https://pyodide.org/en/stable/usage/api/js-api.html">runPythonAsync</a> function, which allows you to write async code without resorting to wrapping your code into a coroutine. Here's a <a href="https://jeff.glass/post/pyscript-asyncio/#implicitasync">description of this feature and its purpose</a>.</p>
+<p class="post-p">PyScript requires the user to be slightly more explicit about creating and scheduling coroutines and awaitables. Here's an <a href="https://jeff.glass/post/pyscript-asyncio/">Overview of Asyncio in PyScript</a>.</p>
+<p class="post-p">Finally, here's the required code. The "useless slowdown loop" is still present so that the results are visible, but there's no need for it to be there in production.</p>
+{{< tabfiles id="third" morefiles="PyScript.3.py,Pyodide.3.py" >}}

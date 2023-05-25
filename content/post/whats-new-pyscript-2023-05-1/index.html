@@ -35,6 +35,8 @@ Missing between 1284 and 1306?? possibly missed push?
 <p class="post-p">Adds a new <code>docked</code> configuration option for <code>py-terminal</code> in <code>&lt;py-config&gt;</code>, which defaults to <code>"docked"</code>. When this is set, the py-terminal is fixed as a bar at the bottom of the page, leaving the page underneath scrollable. (<a href="https://github.com/pyscript/pyscript/pull/1284">#1284</a>)</p>
 <h4 class="post-h4"><code>&lt;py-repl&gt;</code> attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code></h4>
 <p class="post-p">Users can now add the <code>output</code>, <code>output-mode</code>, <code>stderr</code> to their PyRepl. Output controls where <code>stdout</code> and <code>stderr</code> go, <code>stderr</code> controls where just stderr goes, <code>output-mode == 'append'</code> means the output location is not cleared before writing. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<h4 class="post-h4">All Plugin Methods are <code>await</code>ed</h4>
+<p class="post-p">While in previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, now all the JS plugins are executed at once via <code>Promise.all([collect of js method for this plugin])</code>, following by all the Python plugin methods via Promise.all([collect of Py method for this plugin]) (<a href="https://github.com/pyscript/pyscript/pull/1467">#1467</a>)</p>
 <h4 class="post-h4">No More ID on py-repl run button</h4>
 <p class="post-p">Every REPL had the id #runButton out of spec. The run buttons no longer share this, and instead all share the class <code>py-repl-run-button</code>. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
 <h4 class="post-h4"><code>pys-on*</code> and <code>py-on*</code> attributes are removed</h4>
@@ -43,6 +45,9 @@ Missing between 1284 and 1306?? possibly missed push?
 <p class="post-p">Pyodide is now included into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This should impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
 <h4 class="post-h4">No more 'Python Initialization Complete' Message</h4>
 <p class="post-p">In its early stages, PyScript used the message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed - if your implementation relied on looking at the logs for that specific message, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
+
+<h2 class="post-h2" id="pyodide">Pyodide 0.23.2</h2>
+<p class="post-p">PyScript now runs on Pyodide 0.23.2 (<a href="https://github.com/pyscript/pyscript/pull/1347">#1347</a>)</p>
 
 
 <h2 class="post-h2" id="plugins">Plugins</h2>
