@@ -1,5 +1,5 @@
 ---
-title: "Pyscript Realtime Page Updates"
+title: "Realtime Updates in PyScript/Pyodide"
 date: 2023-05-24T13:21:29-05:00
 draft: true
 tags:
@@ -7,6 +7,7 @@ tags:
 - python
 - asyncio
 description: "Making PyScript Cede Control of the Browser Thread"
+slug_image: pyscript_realtime_featured.png
 ---
 <style>
     /* Code tags not in highlight blocks */
@@ -46,7 +47,7 @@ description: "Making PyScript Cede Control of the Browser Thread"
 <h2 class="post-h2">The Solution</h2>
 <p class="post-p">So, if the screen can't update until our synchronous code call terminates, what can we do? Make our code asynchronous! By turning our code into a coroutine which occasionally yields back to the browser's event loop to do some work (i.e. update the screen), we can see the updates visibly as they happen.</p>
 <p class="post-p">Pyodide has a nifty utility for this in the form of the <a href="https://pyodide.org/en/stable/usage/api/js-api.html">runPythonAsync</a> function, which allows you to write async code without resorting to wrapping your code into a coroutine. Here's a <a href="https://jeff.glass/post/pyscript-asyncio/#implicitasync">description of this feature and its purpose</a>, which is demonstrated in the final sample code below.</p>
-<p class="post-p">PyScript requires the user to be slightly more explicit about creating and scheduling coroutines and awaitables, and top-evel <code>await</code> is not permitted. Instead, we'll write our code as a coroutine using <code>async def</code>, and schedule it using <code>asyncio.ensure_future</code> Here's an <a href="https://jeff.glass/post/pyscript-asyncio/">Overview of Asyncio in PyScript</a>.</p>
+<p class="post-p">PyScript requires the user to be slightly more explicit about creating and scheduling coroutines and awaitables, and top-level <code>await</code> is not permitted. Instead, we'll write our code as a coroutine using <code>async def</code>, and schedule it using <code>asyncio.ensure_future</code> Here's an <a href="https://jeff.glass/post/pyscript-asyncio/">Overview of Asyncio in PyScript</a>.</p>
 <p class="post-p">Finally, here's the required code. The "useless slowdown loop" is still present so that the results are visible, but there's no need for it to be there in production.</p>
 {{< tabfiles id="third" morefiles="PyScript.3.py,Pyodide.3.py" >}}
 <p class="post-p">Now, go forth, and let all your intermediate results be visible!</p>
