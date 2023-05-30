@@ -21,6 +21,16 @@ description: "What's New in PyScript 2023.05.1"
         background-color: black;
         color: white;
     }
+    .invisible{
+        visibility: hidden;
+    }
+    .control-button{
+        padding: 0.5rem; 
+        background-color: #E5E7EB; 
+        border-radius: 0.375rem; 
+        border-width: 2px; 
+        border-color: #D1D5DB; 
+    }
 </style>
 Last PR: 1306?? 3/20/23
 Missing between 1284 and 1306?? possibly missed push?
@@ -36,8 +46,11 @@ Missing between 1284 and 1306?? possibly missed push?
 <h4 class="post-h4">The <code>@when</code> decorator</h4>
 <p class="post-p">For building interactive and web-friendly pages in Python, one wants a Python way to hookup Python event handler functions to respond to <a href="https://developer.mozilla.org/en-US/docs/web/api/event">Events</a> that occur on the page. Thus, in addition to the existing <a href="https://docs.pyscript.net/latest/tutorials/py-click.html"><code>py-*</code></a> syntax, there's a way to hookup event handlers directly in one's python code: the <code>@when</code> decorator.</p>
 <p class="post-p">The <code>@when</code> decorator takes two arguments, both as strings: the type of the event to listen for, and a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">css selector</a> to match Elements to tie the event handler to. The decorated function can take 0 or 1 arguments; if the function takes zero arguments, it will simply be called when the matching event is dispatched. If it takes one argument, it will be called and passed the correpsonding Event.</p>
+<p class="post-p">The combination of selectors and the ability to utilize the event object can create powerful interfaces with just a little bit of code. Consider the <code>add_number</code> example below, which uses only one decorated function to handle many buttons.</p>
+<p class="post-p">The event listeners are added exactly once, when the <code>@when</code> decorator executes. That is, even if other elements are added to the DOM later that match the given selector, they will not have the event listener attached. Currently, there is no API for removing these event listeners. (Both are noted as desired features for the near future.)</p>
+<p class="post-p">You can decorate the same function with multiple instances of the <code>@when</code> decorator, to attach the same listener across multiple events or css selectors.</p>
 <div class="load-pyscript"></div>
-<grid class="grid grid-cols-1 md:grid-cols-2">
+<grid class="grid grid-cols-1 md:grid-cols-2 gap-y-4">
     <div>
         <div class="code-title">@When Decorator, Function takes no Arguments</div>
         <div>
@@ -49,9 +62,9 @@ def red():
     print("I love the color red"){{< /highlight >}}
         </div>
     </div>
-    <div class="live-example hidden flex center-content justify-center">
+    <div class="live-example invisible flex center-content justify-center">
         <button id="my_button" class="my-2 p-2 border-2 rounded-lg center border-blue-600 bg-blue-50">Do you like the color red?</button>
-        <py-script>
+        <py-script output="red">
             from pyscript import when
             @when('click', '#my_button')
             def red():
@@ -59,33 +72,112 @@ def red():
         </py-script>
     </div>
     <div class="py-terminal live-example hidden col-span-2" id="red"></div>
+
+    <div>
+        <div class="code-title">@When Decorator, Function takes One Argument</div>
+        <div>
+{{< highlight "python3" >}}
+from pyscript import when
+
+@when('mouseenter', 'p.colorful')
+def say_my_color(event):
+    print(event.target.innerText){{< /highlight >}}
+        </div>
+    </div>
+
+    <div class="live-example invisible">
+        <div class="w-full mx-2 my-4">
+            <div class="colorful bg-red-200 w-full">This paragraph is red</div>
+            <div class="colorful bg-green-200 w-full">This paragraph is green</div>
+            <div class="colorful bg-blue-200 w-full">This paragraph is blue</div>
+        </div>
+        <py-script>
+            from pyscript import when
+
+            @when('mouseover', 'div.colorful')
+            def say_my_color(event):
+                display(event.target.innerText, target="colorful", append=True)
+        </py-script>
+    </div>
+    <div class="py-terminal live-example hidden col-span-2" id="colorful"></div>
+
+    <div>
+        <div class="code-title">@When Decorator, Many Buttons</div>
+        <div>
+{{< highlight "python3" >}}
+from pyscript import when
+
+value = 0
+
+@when('click', 'div#controls button')
+    global value
+    addend = int(event.target.getAttribute("data-value"))
+    new_value = value + addend
+    print(f"{value} + {addend} = {new_value}")
+    value = new_value{{< /highlight >}}
+        </div>
+    </div>
+
+    <div class="live-example invisible">
+        <div class="w-full mx-2 my-4 border-2 border-blue-600 rounded-md" id="controls">
+            <p class="text-sm text-blue-600">#controls</p>
+            <div class="grid grid-cols-3 m-2 gap-x-2 gap-y-1">
+                <button class="control-button" data-value="1">1</button>
+                <button class="control-button" data-value="2">2</button>
+                <button class="control-button" data-value="3">3</button>
+                <button class="control-button" data-value="4">4</button>
+                <button class="control-button" data-value="5">5</button>
+                <button class="control-button" data-value="6">6</button>
+                <button class="control-button" data-value="7">7</button>
+                <button class="control-button" data-value="8">8</button>
+                <button class="control-button" data-value="9">9</button>
+            </div>
+        </div>
+        <py-script>
+            from pyscript import when
+
+            value = 0
+
+            @when('click', 'div#controls button')
+            def add_number(event):
+                global value
+                addend = int(event.target.getAttribute("data-value"))
+                new_value = value + addend
+                display(f"{value} + {addend} = {new_value}", target="value", append=True)
+                value = new_value
+        </py-script>
+    </div>
+    <div class="py-terminal live-example hidden col-span-2" id="value"></div>
 </grid>
 
-<h4 class="post-h4"><code>src</code> attribute for <code>&lt;py-repl&gt;</code></h4>
-<p class="post-p">The <code>&lt;py-repl&gt;</code> tag now accepts a <code>src</code> attribute, just like a <code>&lt;py-script&gt;</code> tag. When changed or set, it will set the contents of the repl's code to the provided value (<a href="https://github.com/pyscript/pyscript/pull/1292">#1292</a>). See the added documentation (<a href="https://github.com/pyscript/pyscript/pull/1353">#1353</a>)</p>
-
-<h4 class="post-h4">Synclink Integration</h4>
-<p class="post-p">The first step to bringing PyScript to web workers! (<a href="https://github.com/pyscript/pyscript/pull/1258">#1258</a>)</p>
-<p class="post-p">Followed by Web Worker support! (<a href="https://github.com/pyscript/pyscript/pull/1333">#1333</a>) - very provisional, doesn't have DOM access at this stage.</p>
-<p class="post-p">And now pyscript will let your know if your CORS headers are wrong for using workers (<a href="https://github.com/pyscript/pyscript/pull/1374">#1374</a>)</p>
-<h4 class="post-h4">XTermjs Option</h4>
-<p class="post-p">Users can now add the <code>xterm = True</code> option to their <code>&lt;py-config&gt;</code> to turn the <code>&lt;py-terminal&gt;</code> into an xterm.js terminal (<a href="https://github.com/pyscript/pyscript/pull/1317">#1317</a>)</p>
 <h4 class="post-h4"><code>py-[event]</code>s are now updated when changed</h4>
 <p class="post-p">Previously, PyScript event handlers (the <code>py-[event]</code> snytax) were processed exactly once, at load time. Now, those handlers are updated whenever the correspnding attribute is changed. (<a href="https://github.com/pyscript/pyscript/pull/1435">#1435</a>)</p>
-
-
-<h4 class="post-h4">Auto-Docked <code>&lt;py-terminal&gt;</code></h4>
-<p class="post-p">Adds a new <code>docked</code> configuration option for <code>py-terminal</code> in <code>&lt;py-config&gt;</code>, which defaults to <code>"docked"</code>. When this is set, the py-terminal is fixed as a bar at the bottom of the page, leaving the page underneath scrollable. (<a href="https://github.com/pyscript/pyscript/pull/1284">#1284</a>)</p>
-<h4 class="post-h4"><code>&lt;py-repl&gt;</code> attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code></h4>
-<p class="post-p">Users can now add the <code>output</code>, <code>output-mode</code>, <code>stderr</code> to their PyRepl. Output controls where <code>stdout</code> and <code>stderr</code> go, <code>stderr</code> controls where just stderr goes, <code>output-mode == 'append'</code> means the output location is not cleared before writing. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
-<h4 class="post-h4">All Plugin Methods are <code>await</code>ed</h4>
-<p class="post-p">While in previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, now all the JS plugins are executed at once via <code>Promise.all([collect of js method for this plugin])</code>, following by all the Python plugin methods via Promise.all([collect of Py method for this plugin]) (<a href="https://github.com/pyscript/pyscript/pull/1467">#1467</a>)</p>
-<h4 class="post-h4">No More ID on py-repl run button</h4>
-<p class="post-p">Every REPL had the id #runButton out of spec. The run buttons no longer share this, and instead all share the class <code>py-repl-run-button</code>. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
 <h4 class="post-h4">Dynamically Import Pyodide</h4>
 <p class="post-p">Pyodide is now included into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This should impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
 <h4 class="post-h4">No more 'Python Initialization Complete' Message</h4>
 <p class="post-p">In its early stages, PyScript used the message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed - if your implementation relied on looking at the logs for that specific message, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
+
+<h2 class="post-h2"><code>&lt;py-repl&gt;</code></h2>
+<h4 class="post-h4"><code>src</code> attribute for <code>&lt;py-repl&gt;</code></h4>
+<p class="post-p">The <code>&lt;py-repl&gt;</code> tag now accepts a <code>src</code> attribute, whose value is a URL represented by a string. When changed or set, the text content from that URL is loaded as the code content of the REPL.  (<a href="https://github.com/pyscript/pyscript/pull/1292">#1292</a>). See the added documentation (<a href="https://github.com/pyscript/pyscript/pull/1353">#1353</a>)</p>
+<p class="post-p">The motivation for this feature (at least for the author of the PR) was being able to use a singular on-page REPL to present many differnt code samples. We've seen a number of folks interested in making their own Python code tutor site with PyScript, to whom this feature may also be useful.</p>
+<h4 class="post-h4"><code>&lt;py-repl&gt;</code> attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code></h4>
+<p class="post-p">Users can now add the <code>output</code>, <code>output-mode</code>, <code>stderr</code> to their PyRepl. Output controls where <code>stdout</code> and <code>stderr</code> go, <code>stderr</code> controls where just stderr goes, <code>output-mode == 'append'</code> means the output location is not cleared before writing. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<h4 class="post-h4">No More ID on py-repl run button</h4>
+<p class="post-p">Every REPL had the id #runButton out of spec. The run buttons no longer share this, and instead all share the class <code>py-repl-run-button</code>. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
+
+<h2 class="post-h2"><code>&lt;py-terminal&gt;</code></h2>
+<h4 class="post-h4">XTermjs Option</h4>
+<p class="post-p">Users can now add the <code>xterm = True</code> option to their <code>&lt;py-config&gt;</code> to turn the <code>&lt;py-terminal&gt;</code> into an xterm.js terminal (<a href="https://github.com/pyscript/pyscript/pull/1317">#1317</a>)</p>
+<h4 class="post-h4">Auto-Docked <code>&lt;py-terminal&gt;</code></h4>
+<p class="post-p">Adds a new <code>docked</code> configuration option for <code>py-terminal</code> in <code>&lt;py-config&gt;</code>, which defaults to <code>"docked"</code>. When this is set, the py-terminal is fixed as a bar at the bottom of the page, leaving the page underneath scrollable. (<a href="https://github.com/pyscript/pyscript/pull/1284">#1284</a>)</p>
+
+<h2 class="post-h2">Infrastructure</h2>
+<h4 class="post-h4">Synclink Integration</h4>
+<p class="post-p">The first step to bringing PyScript to web workers! (<a href="https://github.com/pyscript/pyscript/pull/1258">#1258</a>)</p>
+<p class="post-p">Followed by Web Worker support! (<a href="https://github.com/pyscript/pyscript/pull/1333">#1333</a>) - very provisional, doesn't have DOM access at this stage.</p>
+<p class="post-p">And now pyscript will let your know if your CORS headers are wrong for using workers (<a href="https://github.com/pyscript/pyscript/pull/1374">#1374</a>)</p>
+
 
 <h2 class="post-h2">Deprecation and Removals</h2>
 <h4 class="post-h4"><code>pys-on*</code> and <code>py-on*</code> attributes are removed</h4>
@@ -102,6 +194,8 @@ def red():
 <h2 class="post-h2" id="plugins">Plugins</h2>
 <h4 class="post-h4">Add <code>&lt;py-repl&gt;</code> plugin hooks</h4>
 <p class="post-p">Add <code>beforePyReplExec()</code>, <code>afterPyReplExec()</code> plugin hooks for doing this with repls (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<h4 class="post-h4">All Plugin Methods are <code>await</code>ed</h4>
+<p class="post-p">While in previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, now all the JS plugins are executed at once via <code>Promise.all([collect of js method for this plugin])</code>, following by all the Python plugin methods via Promise.all([collect of Py method for this plugin]) (<a href="https://github.com/pyscript/pyscript/pull/1467">#1467</a>)</p>
 <h2 class="post-h2" id="infrastructure">Infrastructure</h2>
 <h4 class="post-h4">Pull Request Template</h4>
 <p class="post-p">PyScript now has a Pull Request template, to help contributors supply context and complete information with their PRs (<a href="https://github.com/pyscript/pyscript/pull/1279">#1279</a>)</p>
@@ -162,6 +256,7 @@ def red():
         })
         Array.from(live).forEach(div => {
             div.classList.remove('hidden')
+            div.classList.remove('invisible')
         })
         load_buttons = document.getElementsByClassName('load-pyscript')
         Array.from(load_buttons).forEach(elem => {
@@ -174,3 +269,6 @@ def red():
     loaded_event = js.Event.new('pyscript_ready')
     js.document.dispatchEvent(loaded_event)
 </py-script>
+<py-config class="hidden">
+    
+</py-config>
