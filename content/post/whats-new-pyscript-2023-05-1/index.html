@@ -31,6 +31,11 @@ description: "What's New in PyScript 2023.05.1"
         border-width: 2px; 
         border-color: #D1D5DB; 
     }
+    .post-h2{
+        border-bottom-width: 2px; 
+        border-color: #F9FAFB; 
+        border-style: solid;
+    }
 </style>
 Last PR: 1306?? 3/20/23
 Missing between 1284 and 1306?? possibly missed push?
@@ -149,22 +154,54 @@ value = 0
     </div>
     <div class="py-terminal live-example hidden col-span-2" id="value"></div>
 </grid>
+<h4 class="post-h4"><code>py-[event]</code> Attributes now Dynamically Updated</h4>
+<p class="post-p">Continuing the theme of an improved events API, <code>py-[event]</code> attributes, which were previously only assigned once at PyScript load time, are now updated dynamically whenever the attribute changes.</p>
+<p class="post-p">As a reminder of what that syntax is: any HTML element can be given an attribute of the form <code>py-[event]="some code"</code>, where "event" is the type of some <a href="https://developer.mozilla.org/en-US/docs/web/api/event">DOM Event</a>. When the given even is observed on that element, the string of <code>"some code"</code> will be executed in the global namespace.</p>
+<p class="post-p">The term "executed" in the preceding paragraph is not incidental: the code is processed in a way that ultimately redounds to <a href="https://docs.python.org/3/library/functions.html#exec">exec()</a>. This means you can use multiple expressions separated by commas or newline characters if desired; while not necessarily the cleanest code practice, it does allow for inlining simple things like imports. See the examples below for some ideas.</p>
+<div class="load-pyscript"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-4">
+    <div>
+        <div class="code-title">index.html</div>
+        <div>
+{{< highlight "html" >}}<button py-click="print('Hello, world!')">Click to Say Hi</button>{{< /highlight >}}
+        </div>
+    </div>
+    <div class="live-example invisible flex center-content justify-center">
+        <button py-click="display('Hello, world!', target='hello')" class="my-2 p-2 border-2 rounded-lg center border-blue-600 bg-blue-50">Click to Say Hi</button>
+    </div>
+    <div class="py-terminal live-example hidden col-span-2" id="hello"></div>
 
-<h4 class="post-h4"><code>py-[event]</code>s are now updated when changed</h4>
-<p class="post-p">Previously, PyScript event handlers (the <code>py-[event]</code> snytax) were processed exactly once, at load time. Now, those handlers are updated whenever the correspnding attribute is changed. (<a href="https://github.com/pyscript/pyscript/pull/1435">#1435</a>)</p>
+    <div>
+        <div class="code-title">index.html</div>
+        <div>
+{{< highlight "html" >}}<label for="yourname">What is your name?</label>
+<input type="text" name="yourname" id="yourname" py-input="import js; elem = js.document.getElementById('yourname'); print(elem.value)">  {{< /highlight >}}
+        </div>
+    </div>
+    <div class="live-example invisible flex center-content justify-center">
+        <label for="yourname">What is your name?</label>
+        <input type="text" name="yourname" id="yourname" py-input="import js; elem = js.document.getElementById('yourname'); display(elem.value, target='nameoutput')">
+    </div>
+    <div class="py-terminal live-example hidden col-span-2" id="nameoutput"></div>
+    </div>
+</div>
+
 <h4 class="post-h4">Dynamically Import Pyodide</h4>
-<p class="post-p">Pyodide is now included into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This should impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
+<p class="post-p">One of the things that happens early in the PyScript lifecylce is the loading of the actual Python runtime that will be executing code. Currently, this is simply the Pyodide runtime. Pyodide is now imported into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This shouldn't impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
 <h4 class="post-h4">No more 'Python Initialization Complete' Message</h4>
-<p class="post-p">In its early stages, PyScript used the message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed - if your implementation relied on looking at the logs for that specific message, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
+<p class="post-p">In its early stages, PyScript used the message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed from PyScript as well - if you relied on looking at the logs for that specific message for some reason, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
 
 <h2 class="post-h2"><code>&lt;py-repl&gt;</code></h2>
 <h4 class="post-h4"><code>src</code> attribute for <code>&lt;py-repl&gt;</code></h4>
 <p class="post-p">The <code>&lt;py-repl&gt;</code> tag now accepts a <code>src</code> attribute, whose value is a URL represented by a string. When changed or set, the text content from that URL is loaded as the code content of the REPL.  (<a href="https://github.com/pyscript/pyscript/pull/1292">#1292</a>). See the added documentation (<a href="https://github.com/pyscript/pyscript/pull/1353">#1353</a>)</p>
 <p class="post-p">The motivation for this feature (at least for the author of the PR) was being able to use a singular on-page REPL to present many differnt code samples. We've seen a number of folks interested in making their own Python code tutor site with PyScript, to whom this feature may also be useful.</p>
 <h4 class="post-h4"><code>&lt;py-repl&gt;</code> attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code></h4>
-<p class="post-p">Users can now add the <code>output</code>, <code>output-mode</code>, <code>stderr</code> to their PyRepl. Output controls where <code>stdout</code> and <code>stderr</code> go, <code>stderr</code> controls where just stderr goes, <code>output-mode == 'append'</code> means the output location is not cleared before writing. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<p class="post-p">Users can now add the <code>output</code>, <code>output-mode</code>, <code>stderr</code> to their PyRepl, all of which are strings. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<p class="post-p">The <code>output</code> attribute specifies the ID of an element in the DOM where writes to <a href="https://docs.python.org/3/library/sys.html#sys.stdout"><code>stdout</code> and <code>stderr</code></a> should also be printed, in addition to being written to the <code>&lt;py-terminal&gt;</code>(s). The <code>stderr</code> attribute behaves similarly, but only writes to <code>sys.stderr</code> will be written there (again, in addition to going to the <code>&lt;py-terminal&gt;</code>).</p>
+<p class="post-p">Setting <code>output-mode == 'append'</code> as the attribute of a <code>&lt;py-repl&gt;</code> means the output location for the REPL is not cleared before writing. This leads to decidedly un-notebook-like behavior, but it may be desirable for some demos or applications.</p>
+<p class="post-">The motivation for this feature was to restore notebook-like behavior of a series of REPL cells on a page. It was enabled by the addition of <a href="#repl-plugins">two new  plugin hooks for REPLs</a>, which you can read about elsewhere in this post.</p>
 <h4 class="post-h4">No More ID on py-repl run button</h4>
-<p class="post-p">Every REPL had the id #runButton out of spec. The run buttons no longer share this, and instead all share the class <code>py-repl-run-button</code>. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
+<p class="post-p">Previously, every REPL run-button had the same id of <code>#runButton</code>, which is a violation of the specified usage of the id attribute. No longer share this one id, and instead all share the class <code>py-repl-run-button</code>. If you need a programatic way to cause of <code>&lt;py-repl&gt;</code> to execute, using a CSS selector or XPath to grab objects with this class (possibly inside a known parent) is the way to go. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
 
 <h2 class="post-h2"><code>&lt;py-terminal&gt;</code></h2>
 <h4 class="post-h4">XTermjs Option</h4>
