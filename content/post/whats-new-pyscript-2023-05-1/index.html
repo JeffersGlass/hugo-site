@@ -1,26 +1,69 @@
 ---
-title: "Whats New Pyscript 2023.04.1"
-date: 2023-03-19T19:33:00-05:00
+title: "Whats New Pyscript 2023.05.1"
+date: 2023-05-19T19:33:00-05:00
 draft: true
-tags:
 tags:
 - pyscript
 - python
 - pyodide
 - javascript
-description: "Description Here"
+description: "What's New in PyScript 2023.05.1"
 ---
 
+<style>
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+    .py-terminal{
+        font-family: 'Courier New', Courier, monospace;
+        min-height: 4em;
+        background-color: black;
+        color: white;
+    }
+</style>
 Last PR: 1306?? 3/20/23
 Missing between 1284 and 1306?? possibly missed push?
 
+<p class="post-p">Between the big push to <a href="https://us.pycon.org/2023/">PyconUS 2023</a>, the ensuing sprints and the following flurry of enthusiasm, it's been a busy couple of months for <a href="https://github.com/pyscript/pyscript">PyScript</a>.</p>
+<p class="bg-red-600">XXXXXXXX</p>
 
 <h2 class="post-h2">PyScript</h2>
+<h4 class="post-h4"><code>&lt;script type="py"&gt; == &lt;py-script&gt;</code></h4>
+<p class="post-p"><code>&lt;script type="py"&gt;</code> is now a synonym for <code>&lt;py-script&gt;</code> , as are <code>&lt;script type="pyscript"&gt;</code> and <code>&lt;script type="py-script"&gt;</code> (<a href="https://github.com/pyscript/pyscript/pull/1396">#1396</a>). But why have four tags, when we've been getting along fine with just one?</p>
+
+<p class="post-p">The truth is, we haven't quite been getting along. HTML Custom Elements (of which <code>&lt;py-script&gt;</code> is one) are treated just like any other displayable element - their contents are parsed as text, and that text is displayed on the screen, until and unless some styling specifies not to. This means that any characters that have special meaning to the HTML parser like <code>&lt;</code> or <code>&gt;</code> will be parsed like HTML tags, and our Python code becomes a mess. Currently, the only way around this is to make use of the special treatmean the browser affords the <code>&lt;script&gt;</code> tag, whose contents are left alone and are not displayed. So if you are running into funky issues with <code>&lt;</code> and <code>&gt;</code> in your code, or code visible on your page in a way you don't want, converting your code to use <code>&lt;script type="py"&gt;</code> may do the trick.</p>
 <h4 class="post-h4">The <code>@when</code> decorator</h4>
-<h4 class="post-h4"><code>&lt;script type="py"&gt;</code></h4>
-<p class="post-p">To work around some errors in formatting and parsing, <code>&lt;script type="py"&gt;</code> is now a synonym for <code>&lt;py-script&gt;</code>(<a href="https://github.com/pyscript/pyscript/pull/1326">#1326</a>)</p>
+<p class="post-p">For building interactive and web-friendly pages in Python, one wants a Python way to hookup Python event handler functions to respond to <a href="https://developer.mozilla.org/en-US/docs/web/api/event">Events</a> that occur on the page. Thus, in addition to the existing <a href="https://docs.pyscript.net/latest/tutorials/py-click.html"><code>py-*</code></a> syntax, there's a way to hookup event handlers directly in one's python code: the <code>@when</code> decorator.</p>
+<p class="post-p">The <code>@when</code> decorator takes two arguments, both as strings: the type of the event to listen for, and a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">css selector</a> to match Elements to tie the event handler to. The decorated function can take 0 or 1 arguments; if the function takes zero arguments, it will simply be called when the matching event is dispatched. If it takes one argument, it will be called and passed the correpsonding Event.</p>
+<div class="load-pyscript"></div>
+<grid class="grid grid-cols-1 md:grid-cols-2">
+    <div>
+        <div class="code-title">@When Decorator, Function takes no Arguments</div>
+        <div>
+{{< highlight "python3" >}}
+from pyscript import when
+
+@when('click', '#my_button')
+def red():
+    print("I love the color red"){{< /highlight >}}
+        </div>
+    </div>
+    <div class="live-example hidden flex center-content justify-center">
+        <button id="my_button" class="my-2 p-2 border-2 rounded-lg center border-blue-600 bg-blue-50">Do you like the color red?</button>
+        <py-script>
+            from pyscript import when
+            @when('click', '#my_button')
+            def red():
+                display("I love the color red", target="red", append=True)
+        </py-script>
+    </div>
+    <div class="py-terminal live-example hidden col-span-2" id="red"></div>
+</grid>
+
 <h4 class="post-h4"><code>src</code> attribute for <code>&lt;py-repl&gt;</code></h4>
 <p class="post-p">The <code>&lt;py-repl&gt;</code> tag now accepts a <code>src</code> attribute, just like a <code>&lt;py-script&gt;</code> tag. When changed or set, it will set the contents of the repl's code to the provided value (<a href="https://github.com/pyscript/pyscript/pull/1292">#1292</a>). See the added documentation (<a href="https://github.com/pyscript/pyscript/pull/1353">#1353</a>)</p>
+
 <h4 class="post-h4">Synclink Integration</h4>
 <p class="post-p">The first step to bringing PyScript to web workers! (<a href="https://github.com/pyscript/pyscript/pull/1258">#1258</a>)</p>
 <p class="post-p">Followed by Web Worker support! (<a href="https://github.com/pyscript/pyscript/pull/1333">#1333</a>) - very provisional, doesn't have DOM access at this stage.</p>
@@ -29,10 +72,8 @@ Missing between 1284 and 1306?? possibly missed push?
 <p class="post-p">Users can now add the <code>xterm = True</code> option to their <code>&lt;py-config&gt;</code> to turn the <code>&lt;py-terminal&gt;</code> into an xterm.js terminal (<a href="https://github.com/pyscript/pyscript/pull/1317">#1317</a>)</p>
 <h4 class="post-h4"><code>py-[event]</code>s are now updated when changed</h4>
 <p class="post-p">Previously, PyScript event handlers (the <code>py-[event]</code> snytax) were processed exactly once, at load time. Now, those handlers are updated whenever the correspnding attribute is changed. (<a href="https://github.com/pyscript/pyscript/pull/1435">#1435</a>)</p>
-<h4 class="post-h4"><code>py-mount</code> is deprecated</h4>
-<p class="post-p">This little-documented (and little-used) attribute had been available for "automatically" created proxies in Python for associated HTML elements. It's fallen out of step with the current recommended APIs, and since it wasn't much documented or recommended anyway, there were no qualms about deprecating it. It will be removed in a future release.</p>
-<h4 class="post-h4">Py-Widget has Been Removed</h4>
-<p class="post-p">The little known <code>&lt;py-register-widget&gt;</code> tag has been removed; this allowed for registering a named Python class as a custom HTML element. This ability is currently captured by the Plugins api (<a href="https://github.com/pyscript/pyscript/pull/1452">#1452</a>)</p>
+
+
 <h4 class="post-h4">Auto-Docked <code>&lt;py-terminal&gt;</code></h4>
 <p class="post-p">Adds a new <code>docked</code> configuration option for <code>py-terminal</code> in <code>&lt;py-config&gt;</code>, which defaults to <code>"docked"</code>. When this is set, the py-terminal is fixed as a bar at the bottom of the page, leaving the page underneath scrollable. (<a href="https://github.com/pyscript/pyscript/pull/1284">#1284</a>)</p>
 <h4 class="post-h4"><code>&lt;py-repl&gt;</code> attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code></h4>
@@ -41,12 +82,18 @@ Missing between 1284 and 1306?? possibly missed push?
 <p class="post-p">While in previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, now all the JS plugins are executed at once via <code>Promise.all([collect of js method for this plugin])</code>, following by all the Python plugin methods via Promise.all([collect of Py method for this plugin]) (<a href="https://github.com/pyscript/pyscript/pull/1467">#1467</a>)</p>
 <h4 class="post-h4">No More ID on py-repl run button</h4>
 <p class="post-p">Every REPL had the id #runButton out of spec. The run buttons no longer share this, and instead all share the class <code>py-repl-run-button</code>. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
-<h4 class="post-h4"><code>pys-on*</code> and <code>py-on*</code> attributes are removed</h4>
-<p class="post-p">Existing from the very earliest days of py-script, these attributes are gone (<a href="https://github.com/pyscript/pyscript/pull/1361">#1361</a>)</p>
 <h4 class="post-h4">Dynamically Import Pyodide</h4>
 <p class="post-p">Pyodide is now included into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This should impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
 <h4 class="post-h4">No more 'Python Initialization Complete' Message</h4>
 <p class="post-p">In its early stages, PyScript used the message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed - if your implementation relied on looking at the logs for that specific message, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
+
+<h2 class="post-h2">Deprecation and Removals</h2>
+<h4 class="post-h4"><code>pys-on*</code> and <code>py-on*</code> attributes are removed</h4>
+<p class="post-p">Existing from the very earliest days of py-script, these attributes are gone (<a href="https://github.com/pyscript/pyscript/pull/1361">#1361</a>)</p>
+<h4 class="post-h4">Py-Widget has Been Removed</h4>
+<p class="post-p">The little known <code>&lt;py-register-widget&gt;</code> tag has been removed; this allowed for registering a named Python class as a custom HTML element. This ability is currently captured by the Plugins api (<a href="https://github.com/pyscript/pyscript/pull/1452">#1452</a>)</p>
+<h4 class="post-h4"><code>py-mount</code> is deprecated</h4>
+<p class="post-p">This little-documented (and little-used) attribute had been available for "automatically" created proxies in Python for associated HTML elements. It's fallen out of step with the current recommended APIs, and since it wasn't much documented or recommended anyway, there were no qualms about deprecating it. It will be removed in a future release.</p>
 
 <h2 class="post-h2" id="pyodide">Pyodide 0.23.2</h2>
 <p class="post-p">PyScript now runs on Pyodide 0.23.2 (<a href="https://github.com/pyscript/pyscript/pull/1347">#1347</a>)</p>
@@ -61,7 +108,69 @@ Missing between 1284 and 1306?? possibly missed push?
 <h4 class="post-h4">Typescript 5</h4>
 <p class="post-p">PyScript is now built using TypeScript 5 (<a href="https://github.com/pyscript/pyscript/pull/1377">#1377</a>)</p>
 
+
 <h2 class="post-h2" id="community">Community / Core</h2>
 <h4 class="post-h4">PyConUS 2023</h4>
 <h4 class="post-h4">New Core Contributor: Andrea Giammarchi</h4>
 <p class="post-p">Andrea's on the team! (<a href="https://github.com/pyscript/pyscript/pull/1450">#1450</a>)</p>
+
+<script>    
+    //Create Load PyScript buttons:
+    document.addEventListener('DOMContentLoaded', () => {
+        btn_locations = document.getElementsByClassName('load-pyscript')
+        Array.from(btn_locations).forEach(elem => {
+            elem.classList.add('my-2', 'mx-8', 'border-blue-200', 'rounded-xl', 'flex', 'flex-row', 'justify-center', 'w-auto', "py-1")
+            let p = document.createElement('p')
+            p.classList.add('my-auto', 'mr-4', 'italic')
+            p.innerText = "Want to run these examples live in your browser?"
+            elem.appendChild(p)
+            //button
+            let btn = document.createElement('button')
+            btn.innerText = "Load PyScript"
+            btn.classList.add('load-pyscript-button')
+            btn.onclick = loadPyScript
+            elem.appendChild(btn)
+        });
+    })
+    function setupLoadButtons(){
+
+    }
+    function loadPyScript() {
+        //load css
+        css_link = document.createElement("link")
+        css_link.rel = "stylesheet"
+        css_link.type = "text/css"
+        //css_link.href = "https://pyscript.net/releases/2022.12.1/pyscript.css"
+        css_link.href = "https://pyscript.net/unstable/pyscript.css"
+        //css_link.href = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.css"
+        //css_link.href = "./pyscript.css"
+        document.getElementsByTagName('head')[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement('script')
+        //script_tag.src = "https://pyscript.net/releases/2022.12.1/pyscript.js"
+        script_tag.src = "https://pyscript.net/unstable/pyscript.js"
+        //script_tag.src = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.js"
+        //script_tag.src = "./pyscript.js"
+        document.body.append(script_tag)        
+    }
+    document.addEventListener('pyscript_ready', () => {
+        static = document.getElementsByClassName('static-example')
+        live = document.getElementsByClassName('live-example')
+        Array.from(static).forEach(div => {
+            div.classList.add('hidden')
+        })
+        Array.from(live).forEach(div => {
+            div.classList.remove('hidden')
+        })
+        load_buttons = document.getElementsByClassName('load-pyscript')
+        Array.from(load_buttons).forEach(elem => {
+            elem.classList.add('hidden')
+        })
+    })
+</script>
+<py-script class="hidden">
+    import js
+    loaded_event = js.Event.new('pyscript_ready')
+    js.document.dispatchEvent(loaded_event)
+</py-script>
