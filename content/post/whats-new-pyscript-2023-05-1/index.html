@@ -37,21 +37,30 @@ description: "What's New in PyScript 2023.05.1"
         border-style: solid;
     }
 </style>
-Last PR: 1306?? 3/20/23
-Missing between 1284 and 1306?? possibly missed push?
 
-<p class="post-p">Between the big push to <a href="https://us.pycon.org/2023/">PyconUS 2023</a>, the ensuing sprints and the following flurry of enthusiasm, it's been a busy couple of months for <a href="https://github.com/pyscript/pyscript">PyScript</a>.</p>
-<p class="bg-red-600">XXXXXXXX</p>
-
-<h2 class="post-h2">PyScript</h2>
+<p class="post-p">Between the big push to <a href="https://us.pycon.org/2023/">PyconUS 2023</a>, the ensuing sprints and the following flurry of enthusiasm, it's been a busy couple of months for <a href="https://github.com/pyscript/pyscript">PyScript</a>. There's been some significant bonuses to functionality, in parallel with a backend overhaul that'll be dropping in a future version.</p>
+<p class="post-p">As always, you can see a <a href="https://docs.pyscript.net/latest/changelog.html">Published Changelog</a> for additoinal changes and bugfixes. But let's dive into the major changes in this PyScript release:</p>
+<div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
+    <span>Jump To: <span>
+    <a href="#pyscript">PyScript</a> • 
+    <a href="#repl">Py-Repl</a> • 
+    <a href="#terminal">Py-Terminal</a> • 
+    <a href="#plugins">Plugins</a> • 
+    <a href="#deprecations">Deprecations and Removals</a> • 
+    <a href="#pyodide">Pyodide</a> • 
+    <a href="#community">Community & Core</a> • 
+    <a href="#next">What's Next?</a>
+</div>
+<h2 class="post-h2" id="pyscript">PyScript</h2>
 <h4 class="post-h4"><pre>&lt;script type="py"&gt; == &lt;py-script&gt;</pre></h4>
 <p class="post-p"><code>&lt;script type="py"&gt;</code> is now a synonym for <code>&lt;py-script&gt;</code> , as are <code>&lt;script type="pyscript"&gt;</code> and <code>&lt;script type="py-script"&gt;</code> (<a href="https://github.com/pyscript/pyscript/pull/1396">#1396</a>). But why have four tags, when we've been getting along fine with just one?</p>
 
-<p class="post-p">The truth is, we haven't quite been getting along. HTML Custom Elements (of which <code>&lt;py-script&gt;</code> is one) are treated just like any other displayable element - their contents are parsed as text, and that text is displayed on the screen, until and unless some styling specifies not to. This means that any characters that have special meaning to the HTML parser like <code>&lt;</code> or <code>&gt;</code> will be parsed like HTML tags, and our Python code becomes a mess. Currently, the only way around this is to make use of the special treatmean the browser affords the <code>&lt;script&gt;</code> tag, whose contents are left alone and are not displayed. So if you are running into funky issues with <code>&lt;</code> and <code>&gt;</code> in your code, or code visible on your page in a way you don't want, converting your code to use <code>&lt;script type="py"&gt;</code> may do the trick.</p>
+<p class="post-p">The truth is, we haven't quite been getting along. HTML Custom Elements (of which <code>&lt;py-script&gt;</code> is one) are treated just like any other displayable element - their contents are parsed as text, and that text is displayed on the screen, until and unless some styling specifies not to. This means that any characters that have special meaning to the HTML parser like <code>&lt;</code> or <code>&gt;</code> will be parsed like HTML tags, and our Python code becomes a mess. Currently, the only way around this is to make use of the special treatmean the browser affords the <code>&lt;script&gt;</code> tag, whose contents are left alone and are not displayed.</p>
+<p class="post-p">So if you are running into funky issues with <code>&lt;</code> and <code>&gt;</code> in your code, or code visible on your page in a way you don't want, converting your code to use <code>&lt;script type="py"&gt;</code> may do the trick.</p>
 <h4 class="post-h4">The <code>@when</code> decorator</h4>
-<p class="post-p">For building interactive and web-friendly pages in Python, one wants a Python way to hookup Python event handler functions to respond to <a href="https://developer.mozilla.org/en-US/docs/web/api/event">Events</a> that occur on the page. Thus, in addition to the existing <a href="https://docs.pyscript.net/latest/tutorials/py-click.html"><code>py-*</code></a> syntax, there's a way to hookup event handlers directly in one's python code: the <code>@when</code> decorator.</p>
-<p class="post-p">The <code>@when</code> decorator takes two arguments, both as strings: the type of the event to listen for, and a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">css selector</a> to match Elements to tie the event handler to. The decorated function can take 0 or 1 arguments; if the function takes zero arguments, it will simply be called when the matching event is dispatched. If it takes one argument, it will be called and passed the correpsonding Event.</p>
-<p class="post-p">The combination of selectors and the ability to utilize the event object can create powerful interfaces with just a little bit of code. Consider the <code>add_number</code> example below, which uses only one decorated function to handle many buttons.</p>
+<p class="post-p">For building interactive and web-friendly pages in Python, one wants a Python way to hookup Python event handler functions to respond to <a href="https://developer.mozilla.org/en-US/docs/web/api/event">Events</a> that occur on the page. Thus, in addition to the existing <a href="https://docs.pyscript.net/latest/tutorials/py-click.html"><code>py-*</code></a> syntax, there's now a new way to hookup event handlers directly in one's python code: the <code>@when</code> decorator.</p>
+<p class="post-p">The <code>@when</code> decorator takes two arguments, both strings: the <a href="https://developer.mozilla.org/en-US/docs/Web/Events">type</a> of the event to listen for, and a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">css selector</a> to match Elements to tie the event handler to. The decorated function can take 0 or 1 arguments; if the function takes zero arguments, it will simply be called when the matching event is dispatched. If it takes one argument, it will be called and passed the correpsonding Event object.</p>
+<p class="post-p">The combination of selectors and the ability to utilize the event object can create powerful interfaces with just a little bit of code. Consider the <code>add_number</code> example below, which uses only one decorated function to handle many buttons. In general, if you're using the <code>@when</code> decorator, consider how you can use containers, structure, and careful matching to minimize the number of decorators you need to apply.</p>
 <p class="post-p">The event listeners are added exactly once, when the <code>@when</code> decorator executes. That is, even if other elements are added to the DOM later that match the given selector, they will not have the event listener attached. Currently, there is no API for removing these event listeners. (Both are noted as desired features for the near future.)</p>
 <p class="post-p">You can decorate the same function with multiple instances of the <code>@when</code> decorator, to attach the same listener across multiple events or css selectors.</p>
 <div class="load-pyscript"></div>
@@ -155,7 +164,7 @@ value = 0
     <div class="py-terminal live-example hidden col-span-2" id="value"></div>
 </grid>
 <h4 class="post-h4"><code>py-[event]</code> Attributes now Dynamically Updated</h4>
-<p class="post-p">Continuing the theme of an improved events API, <code>py-[event]</code> attributes, which were previously only assigned once at PyScript load time, are now updated dynamically whenever the attribute changes.</p>
+<p class="post-p">Continuing the theme of an improved events API, <code>py-[event]</code> attributes, which were previously only assigned once at PyScript load time, are now updated dynamically whenever the attribute changes. This brings them closer to the behavior of the browser's native <code>on[event]=...</code> syntax, and allows for page interfaces to be dynamically hooked to Python events.</p>
 <p class="post-p">As a reminder of what that syntax is: any HTML element can be given an attribute of the form <code>py-[event]="some code"</code>, where "event" is the type of some <a href="https://developer.mozilla.org/en-US/docs/web/api/event">DOM Event</a>. When the given even is observed on that element, the string of <code>"some code"</code> will be executed in the global namespace.</p>
 <p class="post-p">The term "executed" in the preceding paragraph is not incidental: the code is processed in a way that ultimately redounds to <a href="https://docs.python.org/3/library/functions.html#exec">exec()</a>. This means you can use multiple expressions separated by commas or newline characters if desired; while not necessarily the cleanest code practice, it does allow for inlining simple things like imports. See the examples below for some ideas.</p>
 <div class="load-pyscript"></div>
@@ -175,7 +184,10 @@ value = 0
         <div class="code-title">index.html</div>
         <div>
 {{< highlight "html" >}}<label for="yourname">What is your name?</label>
-<input type="text" name="yourname" id="yourname" py-input="import js; elem = js.document.getElementById('yourname'); print(elem.value)">  {{< /highlight >}}
+<input type="text"
+ name="yourname"
+ id="yourname"
+ py-input="import js; elem = js.document.getElementById('yourname'); print(elem.value)">  {{< /highlight >}}
         </div>
     </div>
     <div class="live-example invisible flex center-content justify-center">
@@ -186,49 +198,86 @@ value = 0
     </div>
 </div>
 
-<h4 class="post-h4">Dynamically Import Pyodide</h4>
-<p class="post-p">One of the things that happens early in the PyScript lifecylce is the loading of the actual Python runtime that will be executing code. Currently, this is simply the Pyodide runtime. Pyodide is now imported into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This shouldn't impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
+<h4 class="post-h4">Dynamically Imported Pyodide</h4>
+<p class="post-p">Early in PyScript's lifecycle, it needs to load the actual CPython interpretter/runtime that's going to be executing Python code in the Browser.. Currently, this is soely the Pyodide runtime. Pyodide is now imported into the current page via an <code>import()</code> statement instead of by adding a <code>&lt;script&gt;</code> tag to the page. This shouldn't impact end-user behavior, but if you were doing something like using the presence of that <code>&lt;script&gt;</code> tag to signal something, you'll have to find a new (better) method. (<a href="https://github.com/pyscript/pyscript/pull/1306">#1306</a>)</p>
 <h4 class="post-h4">No more 'Python Initialization Complete' Message</h4>
-<p class="post-p">In its early stages, PyScript used the message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed from PyScript as well - if you relied on looking at the logs for that specific message for some reason, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
+<p class="post-p">In its early stages, PyScript used the console log message "Python Initialization Complete" from Pyodide to signal when all of the user's scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed from PyScript as well - if you relied on looking at the logs for that specific message for some reason, you will need to find a workaround. (<a href="https://github.com/pyscript/pyscript/pull/1373">#1373</a>)</p>
 
-<h2 class="post-h2"><pre>&lt;py-repl&gt;</pre></h2>
+<h2 class="post-h2" id="repl"><pre>&lt;py-repl&gt;</pre></h2>
 <h4 class="post-h4"><code>src</code> attribute for <code>&lt;py-repl&gt;</code></h4>
-<p class="post-p">The <code>&lt;py-repl&gt;</code> tag now accepts a <code>src</code> attribute, whose value is a URL represented by a string. When changed or set, the text content from that URL is loaded as the code content of the REPL.  (<a href="https://github.com/pyscript/pyscript/pull/1292">#1292</a>). See the added documentation (<a href="https://github.com/pyscript/pyscript/pull/1353">#1353</a>)</p>
-<p class="post-p">The motivation for this feature (at least for the author of the PR) was being able to use a singular on-page REPL to present many differnt code samples. We've seen a number of folks interested in making their own Python code tutor site with PyScript, to whom this feature may also be useful.</p>
+<p class="post-p">The <code>&lt;py-repl&gt;</code> tag now accepts a <code>src</code> attribute, whose value is a URL represented by a string. When changed or set, the text content from that URL is loaded as the code content of the REPL. This brings the behavior closer in line with the <code>&lt;py-script&gt;</code> tag, and allows for simpler pre-loading of REPL contents. (<a href="https://github.com/pyscript/pyscript/pull/1292">#1292</a>). See also the added documentation (<a href="https://github.com/pyscript/pyscript/pull/1353">#1353</a>)</p>
+<p class="post-p">The motivation for this feature (at least for the author of the PR) was being able to use a singular on-page REPL to present many differnt code samples. We've seen a number of folks interested in making their own Python code tutor site with PyScript, to whom this feature may also be useful. And just to say it again: the <code>src</code> attribute of a <code>&lt;py-repl&gt;</code> tag is a <b>URL</b>, which points to a resource containing the desired code, just like the <code>src</code> attribute of the <code>&lt;py-script&gt;</code></p>
 <h4 class="post-h4"><code>&lt;py-repl&gt;</code> attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code></h4>
-<p class="post-p">Users can now add the <code>output</code>, <code>output-mode</code>, <code>stderr</code> to their PyRepl, all of which are strings. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<p class="post-p"><code>&lt;py-repl&gt;</code> now accept three addition attributes: <code>output</code>, <code>output-mode</code>, <code>stderr</code>, all of which are strings. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
 <p class="post-p">The <code>output</code> attribute specifies the ID of an element in the DOM where writes to <a href="https://docs.python.org/3/library/sys.html#sys.stdout"><code>stdout</code> and <code>stderr</code></a> should also be printed, in addition to being written to the <code>&lt;py-terminal&gt;</code>(s). The <code>stderr</code> attribute behaves similarly, but only writes to <code>sys.stderr</code> will be written there (again, in addition to going to the <code>&lt;py-terminal&gt;</code>).</p>
 <p class="post-p">Setting <code>output-mode == 'append'</code> as the attribute of a <code>&lt;py-repl&gt;</code> means the output location for the REPL is not cleared before writing. This leads to decidedly un-notebook-like behavior, but it may be desirable for some demos or applications.</p>
 <p class="post-">The motivation for this feature was to restore notebook-like behavior of a series of REPL cells on a page. It was enabled by the addition of <a href="#repl-plugins">two new  plugin hooks for REPLs</a>, which you can read about elsewhere in this post.</p>
+
 <h4 class="post-h4">No More ID on py-repl run button</h4>
 <p class="post-p">Previously, every REPL run-button had the same id of <code>#runButton</code>, which is a violation of the specified usage of the id attribute. No longer share this one id, and instead all share the class <code>py-repl-run-button</code>. If you need a programatic way to cause of <code>&lt;py-repl&gt;</code> to execute, using a CSS selector or XPath to grab objects with this class (possibly inside a known parent) is the way to go. (<a href="https://github.com/pyscript/pyscript/pull/1296">#1296</a>)</p>
 
-<h2 class="post-h2"><pre>&lt;py-terminal&gt;</pre></h2>
+<h2 class="post-h2" id="terminal"><pre>&lt;py-terminal&gt;</pre></h2>
 <h4 class="post-h4">XTermjs Option</h4>
 <p class="post-p">By default, a <code>&lt;py-terminal&gt;</code> is a very lightweight piece of content - just a <code>&lt;pre&gt;</code> tag with some css to style it. But many applications benefit from richer console output, and PyScript aims to be useful to those users as well.</p>
 <p class="post-p">To that end, Users can now add the <code>xterm = True</code> option to their <code>&lt;py-config&gt;</code> to turn the <code>&lt;py-terminal&gt;</code> into an <a href="http://xtermjs.org/">xterm.js terminal</a>, a fully in-browser terminal implemented in JavaScript. When loaded, the xterm is an output-only page element, but users can implement their own input functionality and extensions by targetting the <code>&lt;py-terminal&gt;</code>'s <code>xterm</code> attribute, which is a reference to the <a href="http://xtermjs.org/docs/api/terminal/classes/terminal/">Terminal object</a> itself (<a href="https://github.com/pyscript/pyscript/pull/1317">#1317</a>)</p>
 <h4 class="post-h4">Auto-Docked <code>&lt;py-terminal&gt;</code></h4>
 <p class="post-p">This release also changes the default placement of the <code>&lt;py-terminal&gt;</code>; rather than being stuck at the end of the DOM if the user doesn't specify a location, the terminal will appear "docked" at the bottom of the browser window. A new <code>docked</code> configuration option in <code>&lt;py-config&gt;</code> (default to 'docked') can be set to False to revert to the previous behavior. (<a href="https://github.com/pyscript/pyscript/pull/1284">#1284</a>)</p>
 
-<h2 class="post-h2">Infrastructure</h2>
-<p class="bg-red-600">XXXXXXXX</p>
-<h4 class="post-h4">Synclink Integration</h4>
-<p class="post-p">The first step to bringing PyScript to web workers! (<a href="https://github.com/pyscript/pyscript/pull/1258">#1258</a>)</p>
-<p class="post-p">Followed by Web Worker support! (<a href="https://github.com/pyscript/pyscript/pull/1333">#1333</a>) - very provisional, doesn't have DOM access at this stage.</p>
-<p class="post-p">And now pyscript will let your know if your CORS headers are wrong for using workers (<a href="https://github.com/pyscript/pyscript/pull/1374">#1374</a>)</p>
+<h2 class="post-h2" id="plugins">Plugins</h2>
+<h4 class="post-h4">Add <code>&lt;py-repl&gt;</code> plugin hooks</h4>
+<p class="post-p">The <code>2023.05.1</code> PyScript release adds two new Plugin Hooks: <code>beforePyReplExec()</code> and <code>afterPyReplExec()</code>. Plugin objects will have these methods called (if the exist) immediately before the execution of code by a <code>&lt;py-repl&gt;</code> and immediately after, allowing developers to inspect users' code before it executes, and respond to its results after the fact. (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
+<p class="post-p">The signaures of these plugin methods, in both Python and JavaScript, are:</p>
+<div class="code-title">JS</div>
+{{< highlight "js" >}}
+/**
+*
+* @param options.interpreter  The interpreter object that will be used to evaluated the Python source code
+* @param options.src  {string} The Python source code to be evaluated
+* @param options.outEl  The element that the result of the REPL evaluation will be output to.
+* @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation
+* @param options.result The result of evaluating the Python (if any)
+*/
 
+beforePyReplExec(options: {
+   interpreter: InterpreterClient;
+   src: string;
+   outEl: HTMLElement;
+   pyReplTag: PyReplTag;
+})
 
-<h2 class="post-h2">Deprecation and Removals</h2>
+afterPyReplExec(options: {
+   interpreter: InterpreterClient;
+   src: string;
+   outEl: HTMLElement;
+   pyReplTag: PyReplTag;
+   result: any;
+})
+{{< /highlight >}}
+<div class="h-4"></div>
+<div class="code-title">Python</div>
+{{< highlight "python3" >}}
+def beforePyReplExec(self, interpreter: Interpreter, src: str, outEl: HTMLElement, pyReplTag: PyReplTag):
+    pass
+
+def afterPyReplExec(self, interpreter: Interpreter, src: str, outEl: HTMLElement, pyReplTag: PyReplTag, result: any):
+    pass
+{{< /highlight >}}
+<p class="post-p">As a brand-new plugin method that's been much requested on <a href="https://discord.gg/Y5MFvW5hbs">Community Discord</a> and in the GitHub Discussions, we're excited to be releasing these. If there are extra parameters, features, or questions about these new methods, please let the team know!.</p>
+
+<h4 class="post-h4">All Plugin Methods are <code>await</code>ed</h4>
+<p class="post-p">In previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, in the order the Plugins were originally added. As of this release, all JS plugins are executed at once via <code>Promise.all([collect of js method for this plugin])</code>, followed by all the Python plugin methods via Promise.all([collection of Py method for this plugin]) (<a href="https://github.com/pyscript/pyscript/pull/1467">#1467</a>)</p>
+<p class="post-p">This shouldn't have too much impact on the functionality of plugins themselves, we think - but the team will be interested to hear whether anyone was indeed relying on plugins executing in a specific order. That wasn't a guarenteed feature of the interface, but having a deterministic execution order API for plugins is something we've bandied about a bit - if that would be useful, we'd love to hear about it.</p>
+
+<h2 class="post-h2" id="deprecations">Deprecation and Removals</h2>
 <h4 class="post-h4"><code>pys-on*</code> and <code>py-on*</code> attributes are removed</h4>
 <p class="post-p">Existing from the very earliest days of py-script, the long-since-deprecated <code>pys-onClick</code>, <code>py-onClick</code>, <code>py-onKeyDown</code> and <code>pys-onKeyDown</code> HTML attributes have finally been removed from PyScript all together. They were superceded by the <code>py-[event]</code> syntax for hooking up event handlers. (<a href="https://github.com/pyscript/pyscript/pull/1361">#1361</a>)</p>
 <h4 class="post-h4">Py-Widget has Been Removed</h4>
-<p class="post-p">The little known <code>&lt;py-register-widget&gt;</code> tag has been removed; this allowed for registering a named Python class as a custom HTML element. This ability is currently captured by the Plugins api (<a href="https://github.com/pyscript/pyscript/pull/1452">#1452</a>)</p>
+<p class="post-p">The little known <code>&lt;py-register-widget&gt;</code> tag has been removed; this allowed for registering a named Python class as a custom HTML element. This ability is currently captured by the Plugins API (<a href="https://github.com/pyscript/pyscript/pull/1452">#1452</a>)</p>
 <h4 class="post-h4"><code>py-mount</code> is deprecated</h4>
-<p class="post-p">This little-documented (and little-used) attribute had been available for "automatically" created proxies in Python for associated HTML elements. It's fallen out of step with the current recommended APIs, and since it wasn't much documented or recommended anyway, there were no qualms about deprecating it. It will be removed in a future release.</p>
+<p class="post-p">This little-documented (and little-used) attribute had been available for "automatically" created proxies in Python for associated HTML elements. It's fallen out of step with the current recommended APIs, and since it wasn't much documented or recommended anyway, there were no qualms from the team about deprecating it. It will be removed in a future release.</p>
 
 <h2 class="post-h2" id="pyodide">Pyodide 0.23.2</h2>
-<p class="post-p">PyScript now runs on Pyodide 0.23.2! As usual for a downstream project, PyScript basks in the glorious rays of Pyodide upstream, and the many improvements it has received.(<a href="https://github.com/pyscript/pyscript/pull/1347">#1347</a>)</p>
-<p class="post-p">While the Pyodide team wrote up an <a href="https://blog.pyodide.org/posts/0.23-release/">excellent post</a> for the release of Pyodide 0.23, I do want to take a moment to highlight some of the larger and more exciting changes:</p>
+<p class="post-p">PyScript now runs on Pyodide 0.23.2! As usual for a downstream project, PyScript basks in the glorious rays of Pyodide upstream, and the many improvements it has received.(<a href="https://github.com/pyscript/pyscript/pull/1347">#1347</a>). While the Pyodide team wrote up an <a href="https://blog.pyodide.org/posts/0.23-release/">excellent post</a> for the release of Pyodide 0.23, I do want to take a moment to highlight some of the larger and more exciting changes:</p>
 <h4 class="post-h4">Python 3.11.2</h4>
 <p class="post-p">Pyodide 0.23 is pinned to Python version 3.11.2, an upgrade from the 3.10.6 that had previously been bundled. With it come <a href="https://www.python.org/downloads/release/python-3110/">myriad improvements</a>, including:
     <ul class="post-ul">
@@ -248,22 +297,30 @@ value = 0
 <h4 class="post-h4">Removed Deprecated Object Nmaes</h4>
 <p class="post-p">Many key functions of the Pyodide Python API, like <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.create_proxy">create_proxy()</a>, <a href="https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.to_js">to_js()</a>, and <a href="https://pyodide.org/en/stable/usage/api/python-api/code.html#pyodide.code.eval_code">eval_code()</a>, used to be accessbile directly from the pyodide root package, but were moved to individual submodules in version 0.21 and showed a deprecation warning if imported from root. Now, those functions and many, many others truly can only be accessed from their appropriate submodules (<code>pyodide.ffi.create_proxy()</code>, <code>pyodide.ffi.to_js()</code>, and <code>pyodide.code.eval_code()</code>, for example). (<a href="https://github.com/pyodide/pyodide/pull/3677">#3677</a>)</p>
 
-<h2 class="post-h2" id="plugins">Plugins</h2>
-<h4 class="post-h4">Add <code>&lt;py-repl&gt;</code> plugin hooks</h4>
-<p class="post-p">Add <code>beforePyReplExec()</code>, <code>afterPyReplExec()</code> plugin hooks for doing this with repls (<a href="https://github.com/pyscript/pyscript/pull/1106">#1106</a>)</p>
-<h4 class="post-h4">All Plugin Methods are <code>await</code>ed</h4>
-<p class="post-p">While in previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, now all the JS plugins are executed at once via <code>Promise.all([collect of js method for this plugin])</code>, following by all the Python plugin methods via Promise.all([collect of Py method for this plugin]) (<a href="https://github.com/pyscript/pyscript/pull/1467">#1467</a>)</p>
 <h2 class="post-h2" id="infrastructure">Infrastructure</h2>
 <h4 class="post-h4">Pull Request Template</h4>
-<p class="post-p">PyScript now has a Pull Request template, to help contributors supply context and complete information with their PRs (<a href="https://github.com/pyscript/pyscript/pull/1279">#1279</a>)</p>
+<p class="post-p">PyScript now has a Pull Request template, to help contributors supply context and complete information with their PRs (<a href="https://github.com/pyscript/pyscript/pull/1279">#1279</a>).</p>
 <h4 class="post-h4">Typescript 5</h4>
-<p class="post-p">PyScript is now built using TypeScript 5 (<a href="https://github.com/pyscript/pyscript/pull/1377">#1377</a>)</p>
+<p class="post-p">PyScript is now built using TypeScript 5 (<a href="https://github.com/pyscript/pyscript/pull/1377">#1377</a>). While we're not making use of many of <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html">it's powerful new features</a> yet, we're glad to be using the latest release.</p>
 
 
 <h2 class="post-h2" id="community">Community / Core</h2>
 <h4 class="post-h4">PyConUS 2023</h4>
+<p class="post-p">A bunch of folks from the PyScript team attended <a href="https://us.pycon.org/2023/">PyCon</a> in Salt Lake City in April, and what a delight it was! Between a tutorial session and three additional PyScript-centric talks, and even more PyScript adjacent presentations by team members, it was a roller coaster of a weekend, but a joyous one. You should really check out the <a href="/post/come-see-pyscript-at-pycon-2023/">full list of PyScript talks</a> from this year. (Now with Video!)</p>
+<p class="post-p">I won't pretend to speak for PyScript as a project here, nor even the team, but just for myself, here were some key takeaways from my experience at PyCon:
+    <ul class="post-ul">
+        <li>People want to make things for the Web, and they want to write Python to do it. PyScript is hardly the only player in this space, with folks like <a href="https://anvil.works/">Anvil</a> and <a href="https://pynecone.io/">Pynecone</a> both having great showings in their "write Python and we'll turn it into a front- and/or back-end" offerings.</li>
+        <li>The Web is a strange place for Pythonistas, the Browser in particular. Without a cozy command line, synchrnous file system, and threads, web limitations are like a foreign langauge to Python users.</li>
+        <li>Ease of deployment is a huge feature. Users love the ability to write some code and give it to/run it for someone else with minimal additional setup.</li>
+    </ul>
+</p>
 <h4 class="post-h4">New Core Contributor: Andrea Giammarchi</h4>
-<p class="post-p">Andrea's on the team! (<a href="https://github.com/pyscript/pyscript/pull/1450">#1450</a>)</p>
+<p class="post-p">The PyScript team is delighted to have <a href="https://github.com/WebReflection">Andrea Giammarchi</a> as a new core contributor and Anaconda staff member. He has a long history of building web tools, working with Web Standards, and hacking together JavaScript solutions and polyfills for the betterment of the Web. Andrea brings with him a deep fluidity in JavaScript, which is fortifying PyScript's technical bedrock at a frankly astonishing pace. His <a href="https://webreflection.medium.com/">Medium Blog</a> is well worth a read and a follow as well. (<a href="https://github.com/pyscript/pyscript/pull/1450">#1450</a>)</p>
+
+<h2 class="post-h2" id="next">What's Next? <i>PyScript Next</i></h2>
+<p class="post-p">As alluded to earlier, the PyScript team is in the midst of a massive overhaul of the PyScript codebase. The goal is to streamline the PyScript lifecycle, bring it more in line with web standards, and allow for faster and cleaner expansion of the PyScript with new features (and potentially new languages). Take a peak at the <a href="https://github.com/pyscript/pyscript/tree/next">PyScript:next</a> branch to check out the work that's been happening there (in the <code>pyscript.core</code> folder).</p>
+<p class="post-">Since this work is proceding forward at lightspeed, I'd hate to share any firm predictions of what's coming out next for PyScript, as it's very possible I could be wrong in the direction the bullet train is heading. But I'm excited by where it's been and where it lands.</p>
+
 
 <script>    
     //Create Load PyScript buttons:
