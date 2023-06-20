@@ -7,7 +7,481 @@
     <description>Recent content in Blog Posts on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 May 2023 13:21:29 -0500</lastBuildDate><atom:link href="https://jeff.glass/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 Jun 2023 07:33:00 -0500</lastBuildDate><atom:link href="https://jeff.glass/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What&#39;s New in Pyscript 2023.05.1</title>
+      <link>https://jeff.glass/post/whats-new-pyscript-2023-05-1/</link>
+      <pubDate>Tue, 20 Jun 2023 07:33:00 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/whats-new-pyscript-2023-05-1/</guid>
+      <description>
+&lt;style&gt;
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+    .py-terminal{
+        font-family: &#39;Courier New&#39;, Courier, monospace;
+        min-height: 4em;
+        background-color: black;
+        color: white;
+    }
+    .invisible{
+        visibility: hidden;
+    }
+    .control-button{
+        padding: 0.5rem; 
+        background-color: #E5E7EB; 
+        border-radius: 0.375rem; 
+        border-width: 2px; 
+        border-color: #D1D5DB; 
+    }
+    .post-h2{
+        border-bottom-width: 2px; 
+        border-color: #F9FAFB; 
+        border-style: solid;
+    }
+&lt;/style&gt;
+
+&lt;p class=&#34;post-p&#34;&gt;&lt;a href=&#34;https://pyscript.net&#34;&gt;PyScript&lt;/a&gt; has released &lt;a href=https://github.com/pyscript/pyscript/releases/tag/2023.05.1&#34;&gt;version 2023.03.1&lt;/a&gt; today! Between the big push to &lt;a href=&#34;https://us.pycon.org/2023/&#34;&gt;PyconUS 2023&lt;/a&gt;, the ensuing sprints and the following flurry of enthusiasm, it&#39;s been a busy couple of months. There&#39;s been some significant bonuses to functionality, in parallel with a backend overhaul that&#39;ll be dropping in a future version.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As always, you can see a &lt;a href=&#34;https://docs.pyscript.net/latest/changelog.html&#34;&gt;Published Changelog&lt;/a&gt; for additional changes and bugfixes. But let&#39;s dive into the major changes in this PyScript release:&lt;/p&gt;
+&lt;div id=&#34;TOC&#34; class=&#34;grid justify-center p-1 m-auto bg-gray-200&#34;&gt;
+    &lt;span&gt;Jump To: &lt;span&gt;
+    &lt;a href=&#34;#pyscript&#34;&gt;PyScript&lt;/a&gt; • 
+    &lt;a href=&#34;#repl&#34;&gt;Py-Repl&lt;/a&gt; • 
+    &lt;a href=&#34;#terminal&#34;&gt;Py-Terminal&lt;/a&gt; • 
+    &lt;a href=&#34;#plugins&#34;&gt;Plugins&lt;/a&gt; • 
+    &lt;a href=&#34;#deprecations&#34;&gt;Deprecations and Removals&lt;/a&gt; • 
+    &lt;a href=&#34;#pyodide&#34;&gt;Pyodide&lt;/a&gt; • 
+    &lt;a href=&#34;#community&#34;&gt;Community &amp; Core&lt;/a&gt; • 
+    &lt;a href=&#34;#next&#34;&gt;What&#39;s Next?&lt;/a&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;pyscript&#34;&gt;PyScript&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;pre&gt;&amp;lt;script type=&#34;py&#34;&amp;gt; == &amp;lt;py-script&amp;gt;&lt;/pre&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; is now a synonym for &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt; , as are &lt;code&gt;&amp;lt;script type=&#34;pyscript&#34;&amp;gt;&lt;/code&gt; and &lt;code&gt;&amp;lt;script type=&#34;py-script&#34;&amp;gt;&lt;/code&gt; (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1396&#34;&gt;#1396&lt;/a&gt;). But why have four tags, when we&#39;ve been getting along fine with just one?&lt;/p&gt;
+
+&lt;p class=&#34;post-p&#34;&gt;The truth is, we haven&#39;t quite been getting along. HTML Custom Elements (of which &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt; is one) are treated just like any other displayable element - their contents are parsed as text, and that text is displayed on the screen, until and unless some styling specifies not to. This means that any characters that have special meaning to the HTML parser like &lt;code&gt;&amp;lt;&lt;/code&gt; or &lt;code&gt;&amp;gt;&lt;/code&gt; will be parsed like HTML tags, and our Python code becomes a mess. Currently, the only way around this is to make use of the special treatmean the browser affords the &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt; tag, whose contents are left alone and are not displayed.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So if you are running into funky issues with &lt;code&gt;&amp;lt;&lt;/code&gt; and &lt;code&gt;&amp;gt;&lt;/code&gt; in your code, or code visible on your page in a way you don&#39;t want, converting your code to use &lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; may do the trick.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;The &lt;code&gt;@when&lt;/code&gt; decorator&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;For building interactive and web-friendly pages in Python, one wants a Python way to hookup Python event handler functions to respond to &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/web/api/event&#34;&gt;Events&lt;/a&gt; that occur on the page. Thus, in addition to the existing &lt;a href=&#34;https://docs.pyscript.net/latest/tutorials/py-click.html&#34;&gt;&lt;code&gt;py-*&lt;/code&gt;&lt;/a&gt; syntax, there&#39;s now a new way to hookup event handlers directly in one&#39;s python code: the &lt;code&gt;@when&lt;/code&gt; decorator.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;code&gt;@when&lt;/code&gt; decorator takes two arguments, both strings: the &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/Events&#34;&gt;type&lt;/a&gt; of the event to listen for, and a &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors&#34;&gt;css selector&lt;/a&gt; to match Elements to tie the event handler to. The decorated function can take 0 or 1 arguments; if the function takes zero arguments, it will simply be called when the matching event is dispatched. If it takes one argument, it will be called and passed the correpsonding Event object.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The combination of selectors and the ability to utilize the event object can create powerful interfaces with just a little bit of code. Consider the &lt;code&gt;add_number&lt;/code&gt; example below, which uses only one decorated function to handle many buttons. In general, if you&#39;re using the &lt;code&gt;@when&lt;/code&gt; decorator, consider how you can use containers, structure, and careful matching to minimize the number of decorators you need to apply.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The event listeners are added exactly once, when the &lt;code&gt;@when&lt;/code&gt; decorator executes. That is, even if other elements are added to the DOM later that match the given selector, they will not have the event listener attached. Currently, there is no API for removing these event listeners. (Both are noted as desired features for the near future.)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can decorate the same function with multiple instances of the &lt;code&gt;@when&lt;/code&gt; decorator, to attach the same listener across multiple events or css selectors.&lt;/p&gt;
+&lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+&lt;grid class=&#34;grid grid-cols-1 md:grid-cols-2 gap-y-4&#34;&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;code-title&#34;&gt;@When Decorator, Function takes no Arguments&lt;/div&gt;
+        &lt;div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; when
+
+&lt;span style=&#34;color:#99f&#34;&gt;@when&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;click&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;#my_button&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;red&lt;/span&gt;():
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;I love the color red&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;flex justify-center invisible live-example center-content&#34;&gt;
+        &lt;button id=&#34;my_button&#34; class=&#34;p-2 my-2 border-2 border-blue-600 rounded-lg center bg-blue-50&#34;&gt;Do you like the color red?&lt;/button&gt;
+        &lt;py-script output=&#34;red&#34;&gt;
+            from pyscript import when
+            @when(&#39;click&#39;, &#39;#my_button&#39;)
+            def red():
+                display(&#34;I love the color red&#34;, target=&#34;red&#34;, append=True)
+        &lt;/py-script&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;hidden col-span-2 py-terminal live-example&#34; id=&#34;red&#34;&gt;&lt;/div&gt;
+
+    &lt;div&gt;
+        &lt;div class=&#34;code-title&#34;&gt;@When Decorator, Function takes One Argument&lt;/div&gt;
+        &lt;div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; when
+
+&lt;span style=&#34;color:#99f&#34;&gt;@when&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;mouseenter&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;p.colorful&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;say_my_color&lt;/span&gt;(event):
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(event&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;target&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;innerText)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;invisible live-example&#34;&gt;
+        &lt;div class=&#34;w-full mx-2 my-4&#34;&gt;
+            &lt;div class=&#34;w-full bg-red-200 colorful&#34;&gt;This paragraph is red&lt;/div&gt;
+            &lt;div class=&#34;w-full bg-green-200 colorful&#34;&gt;This paragraph is green&lt;/div&gt;
+            &lt;div class=&#34;w-full bg-blue-200 colorful&#34;&gt;This paragraph is blue&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;py-script&gt;
+            from pyscript import when
+
+            @when(&#39;mouseover&#39;, &#39;div.colorful&#39;)
+            def say_my_color(event):
+                display(event.target.innerText, target=&#34;colorful&#34;, append=True)
+        &lt;/py-script&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;hidden col-span-2 py-terminal live-example&#34; id=&#34;colorful&#34;&gt;&lt;/div&gt;
+
+    &lt;div&gt;
+        &lt;div class=&#34;code-title&#34;&gt;@When Decorator, Many Buttons&lt;/div&gt;
+        &lt;div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; when
+
+value &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+&lt;span style=&#34;color:#99f&#34;&gt;@when&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;click&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;div#controls button&amp;#39;&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;global&lt;/span&gt; value
+    addend &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(event&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;target&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getAttribute(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;data-value&amp;#34;&lt;/span&gt;))
+    new_value &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; value &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; addend
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;value&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; + &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;addend&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt; = &lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;{&lt;/span&gt;new_value&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+    value &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; new_value&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;invisible live-example&#34;&gt;
+        &lt;div class=&#34;w-full mx-2 my-4 border-2 border-blue-600 rounded-md&#34; id=&#34;controls&#34;&gt;
+            &lt;p class=&#34;text-sm text-blue-600&#34;&gt;#controls&lt;/p&gt;
+            &lt;div class=&#34;grid grid-cols-3 m-2 gap-x-2 gap-y-1&#34;&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;1&#34;&gt;1&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;2&#34;&gt;2&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;3&#34;&gt;3&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;4&#34;&gt;4&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;5&#34;&gt;5&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;6&#34;&gt;6&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;7&#34;&gt;7&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;8&#34;&gt;8&lt;/button&gt;
+                &lt;button class=&#34;control-button&#34; data-value=&#34;9&#34;&gt;9&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;py-script&gt;
+            from pyscript import when
+
+            value = 0
+
+            @when(&#39;click&#39;, &#39;div#controls button&#39;)
+            def add_number(event):
+                global value
+                addend = int(event.target.getAttribute(&#34;data-value&#34;))
+                new_value = value + addend
+                display(f&#34;{value} + {addend} = {new_value}&#34;, target=&#34;value&#34;, append=True)
+                value = new_value
+        &lt;/py-script&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;hidden col-span-2 py-terminal live-example&#34; id=&#34;value&#34;&gt;&lt;/div&gt;
+&lt;/grid&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;code&gt;py-[event]&lt;/code&gt; Attributes now Dynamically Updated&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Continuing the theme of an improved events API, &lt;code&gt;py-[event]&lt;/code&gt; attributes, which were previously only assigned once at PyScript load time, are now updated dynamically whenever the attribute changes. This brings them closer to the behavior of the browser&#39;s native &lt;code&gt;on[event]=...&lt;/code&gt; syntax, and allows for page interfaces to be dynamically hooked to Python events.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As a reminder of what that syntax is: any HTML element can be given an attribute of the form &lt;code&gt;py-[event]=&#34;some code&#34;&lt;/code&gt;, where &#34;event&#34; is the type of some &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/web/api/event&#34;&gt;DOM Event&lt;/a&gt;. When the given even is observed on that element, the string of &lt;code&gt;&#34;some code&#34;&lt;/code&gt; will be executed in the global namespace.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The term &#34;executed&#34; in the preceding paragraph is not incidental: the code is processed in a way that ultimately redounds to &lt;a href=&#34;https://docs.python.org/3/library/functions.html#exec&#34;&gt;exec()&lt;/a&gt;. This means you can use multiple expressions separated by commas or newline characters if desired; while not necessarily the cleanest code practice, it does allow for inlining simple things like imports. See the examples below for some ideas.&lt;/p&gt;
+&lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 gap-y-4&#34;&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;code-title&#34;&gt;index.html&lt;/div&gt;
+        &lt;div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;py-click&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;print(&amp;#39;Hello, world!&amp;#39;)&amp;#34;&lt;/span&gt;&amp;gt;Click to Say Hi&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;flex justify-center invisible live-example center-content&#34;&gt;
+        &lt;button py-click=&#34;display(&#39;Hello, world!&#39;, target=&#39;hello&#39;)&#34; class=&#34;p-2 my-2 border-2 border-blue-600 rounded-lg center bg-blue-50&#34;&gt;Click to Say Hi&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;hidden col-span-2 py-terminal live-example&#34; id=&#34;hello&#34;&gt;&lt;/div&gt;
+
+    &lt;div&gt;
+        &lt;div class=&#34;code-title&#34;&gt;index.html&lt;/div&gt;
+        &lt;div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;label&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;yourname&amp;#34;&lt;/span&gt;&amp;gt;What is your name?&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;label&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;
+ &lt;span style=&#34;color:#309&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;yourname&amp;#34;&lt;/span&gt;
+ &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;yourname&amp;#34;&lt;/span&gt;
+ &lt;span style=&#34;color:#309&#34;&gt;py-input&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;import js; elem = js.document.getElementById(&amp;#39;yourname&amp;#39;); print(elem.value)&amp;#34;&lt;/span&gt;&amp;gt;  &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;flex justify-center invisible live-example center-content&#34;&gt;
+        &lt;label for=&#34;yourname&#34;&gt;What is your name?&lt;/label&gt;
+        &lt;input type=&#34;text&#34; name=&#34;yourname&#34; id=&#34;yourname&#34; py-input=&#34;import js; elem = js.document.getElementById(&#39;yourname&#39;); display(elem.value, target=&#39;nameoutput&#39;)&#34;&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;hidden col-span-2 py-terminal live-example&#34; id=&#34;nameoutput&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h4 class=&#34;post-h4&#34;&gt;Dynamically Imported Pyodide&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Early in PyScript&#39;s lifecycle, it needs to load the actual CPython interpreter/runtime that&#39;s going to be executing Python code in the Browser.. Currently, this is soely the Pyodide runtime. Pyodide is now imported into the current page via an &lt;code&gt;import()&lt;/code&gt; statement instead of by adding a &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt; tag to the page. This shouldn&#39;t impact end-user behavior, but if you were doing something like using the presence of that &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt; tag to signal something, you&#39;ll have to find a new (better) method. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1306&#34;&gt;#1306&lt;/a&gt;)&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;No more &#39;Python Initialization Complete&#39; Message&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;In its early stages, PyScript used the console log message &#34;Python Initialization Complete&#34; from Pyodide to signal when all of the user&#39;s scripts were run. In Pyodide 0.22, this message was removed, but PyScript added it into its own process to keep tests executing smoothly for the time being. That message has been removed from PyScript as well - if you relied on looking at the logs for that specific message for some reason, you will need to find a workaround. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1373&#34;&gt;#1373&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;repl&#34;&gt;&lt;pre&gt;&amp;lt;py-repl&amp;gt;&lt;/pre&gt;&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;code&gt;src&lt;/code&gt; attribute for &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; tag now accepts a &lt;code&gt;src&lt;/code&gt; attribute, whose value is a URL represented by a string. When changed or set, the text content from that URL is loaded as the code content of the REPL. This brings the behavior closer in line with the &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt; tag, and allows for simpler pre-loading of REPL contents. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1292&#34;&gt;#1292&lt;/a&gt;). See also the added documentation (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1353&#34;&gt;#1353&lt;/a&gt;)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The motivation for this feature (at least for the author of the PR) was being able to use a singular on-page REPL to present many different code samples. We&#39;ve seen a number of folks interested in making their own Python code tutor site with PyScript, to whom this feature may also be useful. And just to say it again: the &lt;code&gt;src&lt;/code&gt; attribute of a &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; tag is a &lt;b&gt;URL&lt;/b&gt;, which points to a resource containing the desired code, just like the &lt;code&gt;src&lt;/code&gt; attribute of the &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; attributes: &lt;code&gt;output&lt;/code&gt;, &lt;code&gt;output-mode&lt;/code&gt;, &lt;code&gt;stderr&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; now accept three addition attributes: &lt;code&gt;output&lt;/code&gt;, &lt;code&gt;output-mode&lt;/code&gt;, &lt;code&gt;stderr&lt;/code&gt;, all of which are strings. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1106&#34;&gt;#1106&lt;/a&gt;)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;code&gt;output&lt;/code&gt; attribute specifies the ID of an element in the DOM where writes to &lt;a href=&#34;https://docs.python.org/3/library/sys.html#sys.stdout&#34;&gt;&lt;code&gt;stdout&lt;/code&gt; and &lt;code&gt;stderr&lt;/code&gt;&lt;/a&gt; should also be printed, in addition to being written to the &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt;(s). The &lt;code&gt;stderr&lt;/code&gt; attribute behaves similarly, but only writes to &lt;code&gt;sys.stderr&lt;/code&gt; will be written there (again, in addition to going to the &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt;).&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Setting &lt;code&gt;output-mode == &#39;append&#39;&lt;/code&gt; as the attribute of a &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; means the output location for the REPL is not cleared before writing. This leads to decidedly un-notebook-like behavior, but it may be desirable for some demos or applications.&lt;/p&gt;
+&lt;p class=&#34;post-&#34;&gt;The motivation for this feature was to restore notebook-like behavior of a series of REPL cells on a page. It was enabled by the addition of &lt;a href=&#34;#repl-plugins&#34;&gt;two new  plugin hooks for REPLs&lt;/a&gt;, which you can read about elsewhere in this post.&lt;/p&gt;
+
+&lt;h4 class=&#34;post-h4&#34;&gt;No More ID on py-repl run button&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Previously, every REPL run-button had the same id of &lt;code&gt;#runButton&lt;/code&gt;, which is a violation of the specified usage of the id attribute. No longer share this one id, and instead all share the class &lt;code&gt;py-repl-run-button&lt;/code&gt;. If you need a programmatic way to cause of &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; to execute, using a CSS selector or XPath to grab objects with this class (possibly inside a known parent) is the way to go. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1296&#34;&gt;#1296&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;terminal&#34;&gt;&lt;pre&gt;&amp;lt;py-terminal&amp;gt;&lt;/pre&gt;&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;XTermjs Option&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;By default, a &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt; is a very lightweight piece of content - just a &lt;code&gt;&amp;lt;pre&amp;gt;&lt;/code&gt; tag with some css to style it. But many applications benefit from richer console output, and PyScript aims to be useful to those users as well.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To that end, Users can now add the &lt;code&gt;xterm = True&lt;/code&gt; option to their &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; to turn the &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt; into an &lt;a href=&#34;http://xtermjs.org/&#34;&gt;xterm.js terminal&lt;/a&gt;, a fully in-browser terminal implemented in JavaScript. When loaded, the xterm is an output-only page element, but users can implement their own input functionality and extensions by targeting the &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt;&#39;s &lt;code&gt;xterm&lt;/code&gt; attribute, which is a reference to the &lt;a href=&#34;http://xtermjs.org/docs/api/terminal/classes/terminal/&#34;&gt;Terminal object&lt;/a&gt; itself (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1317&#34;&gt;#1317&lt;/a&gt;)&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Auto-Docked &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;This release also changes the default placement of the &lt;code&gt;&amp;lt;py-terminal&amp;gt;&lt;/code&gt;; rather than being stuck at the end of the DOM if the user doesn&#39;t specify a location, the terminal will appear &#34;docked&#34; at the bottom of the browser window. A new &lt;code&gt;docked&lt;/code&gt; configuration option in &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; (default to &#39;docked&#39;) can be set to False to revert to the previous behavior. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1284&#34;&gt;#1284&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;plugins&#34;&gt;Plugins&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Add &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; plugin hooks&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;code&gt;2023.05.1&lt;/code&gt; PyScript release adds two new Plugin Hooks: &lt;code&gt;beforePyReplExec()&lt;/code&gt; and &lt;code&gt;afterPyReplExec()&lt;/code&gt;. Plugin objects will have these methods called (if the exist) immediately before the execution of code by a &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; and immediately after, allowing developers to inspect users&#39; code before it executes, and respond to its results after the fact. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1106&#34;&gt;#1106&lt;/a&gt;)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The signaures of these plugin methods, in both Python and JavaScript, are:&lt;/p&gt;
+&lt;div class=&#34;code-title&#34;&gt;JS&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;/**
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;*
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;* @param options.interpreter  The interpreter object that will be used to evaluated the Python source code
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;* @param options.src  {string} The Python source code to be evaluated
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;* @param options.outEl  The element that the result of the REPL evaluation will be output to.
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;* @param options.pyReplTag  The &amp;lt;py-repl&amp;gt; HTML tag the originated the evaluation
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;* @param options.result The result of evaluating the Python (if any)
+&lt;/span&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;*/&lt;/span&gt;
+
+beforePyReplExec(options&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; {
+   interpreter&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; InterpreterClient;
+   src&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; string;
+   outEl&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; HTMLElement;
+   pyReplTag&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; PyReplTag;
+})
+
+afterPyReplExec(options&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; {
+   interpreter&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; InterpreterClient;
+   src&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; string;
+   outEl&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; HTMLElement;
+   pyReplTag&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; PyReplTag;
+   result&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; any;
+})&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;h-4&#34;&gt;&lt;/div&gt;
+&lt;div class=&#34;code-title&#34;&gt;Python&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;beforePyReplExec&lt;/span&gt;(self, interpreter: Interpreter, src: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, outEl: HTMLElement, pyReplTag: PyReplTag):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;afterPyReplExec&lt;/span&gt;(self, interpreter: Interpreter, src: &lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;, outEl: HTMLElement, pyReplTag: PyReplTag, result: &lt;span style=&#34;color:#366&#34;&gt;any&lt;/span&gt;):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;As a brand-new plugin method that&#39;s been much requested on &lt;a href=&#34;https://discord.gg/Y5MFvW5hbs&#34;&gt;Community Discord&lt;/a&gt; and in the GitHub Discussions, we&#39;re excited to be releasing these. If there are extra parameters, features, or questions about these new methods, please let the team know!.&lt;/p&gt;
+
+&lt;h4 class=&#34;post-h4&#34;&gt;All Plugin Methods are &lt;code&gt;await&lt;/code&gt;ed&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;In previous version of PyScript, plugin methods (both JavaScript and Python) were executed sequentially one after another, in the order the Plugins were originally added. As of this release, all JS plugins are executed at once via &lt;code&gt;Promise.all([collect of js method for this plugin])&lt;/code&gt;, followed by all the Python plugin methods via Promise.all([collection of Py method for this plugin]) (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1467&#34;&gt;#1467&lt;/a&gt;)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This shouldn&#39;t have too much impact on the functionality of plugins themselves, we think - but the team will be interested to hear whether anyone was indeed relying on plugins executing in a specific order. That wasn&#39;t a guaranteed feature of the interface, but having a deterministic execution order API for plugins is something we&#39;ve bandied about a bit - if that would be useful, we&#39;d love to hear about it.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;deprecations&#34;&gt;Deprecation and Removals&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;code&gt;pys-on*&lt;/code&gt; and &lt;code&gt;py-on*&lt;/code&gt; attributes are removed&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Existing from the very earliest days of py-script, the long-since-deprecated &lt;code&gt;pys-onClick&lt;/code&gt;, &lt;code&gt;py-onClick&lt;/code&gt;, &lt;code&gt;py-onKeyDown&lt;/code&gt; and &lt;code&gt;pys-onKeyDown&lt;/code&gt; HTML attributes have finally been removed from PyScript all together. They were superseded by the &lt;code&gt;py-[event]&lt;/code&gt; syntax for hooking up event handlers. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1361&#34;&gt;#1361&lt;/a&gt;)&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Py-Widget has Been Removed&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The little known &lt;code&gt;&amp;lt;py-register-widget&amp;gt;&lt;/code&gt; tag has been removed; this allowed for registering a named Python class as a custom HTML element. This ability is currently captured by the Plugins API (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1452&#34;&gt;#1452&lt;/a&gt;)&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;code&gt;py-mount&lt;/code&gt; is deprecated&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;This little-documented (and little-used) attribute had been available for &#34;automatically&#34; created proxies in Python for associated HTML elements. It&#39;s fallen out of step with the current recommended APIs, and since it wasn&#39;t much documented or recommended anyway, there were no qualms from the team about deprecating it. It will be removed in a future release.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;pyodide&#34;&gt;Pyodide 0.23.2&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript now runs on Pyodide 0.23.2! As usual for a downstream project, PyScript basks in the glorious rays of Pyodide upstream, and the many improvements it has received.(&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1347&#34;&gt;#1347&lt;/a&gt;). While the Pyodide team wrote up an &lt;a href=&#34;https://blog.pyodide.org/posts/0.23-release/&#34;&gt;excellent post&lt;/a&gt; for the release of Pyodide 0.23, I do want to take a moment to highlight some of the larger and more exciting changes:&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Python 3.11.2&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Pyodide 0.23 is pinned to Python version 3.11.2, an upgrade from the 3.10.6 that had previously been bundled. With it come &lt;a href=&#34;https://www.python.org/downloads/release/python-3110/&#34;&gt;myriad improvements&lt;/a&gt;, including:
+    &lt;ul class=&#34;post-ul&#34;&gt;
+        &lt;li&gt;Improved error messages in Exceptions and Tracebacks (&lt;a href=&#39;https://peps.python.org/pep-0657/&#39;&gt;PEP 657&lt;/a&gt;)&lt;/li&gt;
+        &lt;li&gt;Exception Groups (&lt;a href=&#39;https://peps.python.org/pep-0654/&#39;&gt;PEP 654&lt;/a&gt;)&lt;/li&gt;
+        &lt;li&gt;Adding &lt;code&gt;tomllib&lt;/code&gt; to the standard library (&lt;a href=&#39;https://peps.python.org/pep-0680/&#39;&gt;PEP 680&lt;/a&gt;)&lt;/li&gt;
+        &lt;li&gt;The &lt;a href=&#34;https://docs.python.org/3.11/whatsnew/3.11.html#faster-cpython&#34;&gt;Faster CPython project&lt;/a&gt; has been making some strides in speeding up Python generally!&lt;/li&gt;
+        &lt;li&gt;Many improvements to typing and the type system&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;New Packages&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Many new packages have been pre-built by the Pyodide team to work with Pyodide, with their C/Rust/Fortran extensions pre-compiled, including: &lt;code&gt;fastparquet&lt;/code&gt;, &lt;code&gt;cramjam&lt;/code&gt;, &lt;code&gt;pynacl&lt;/code&gt;, &lt;code&gt;pyxel&lt;/code&gt;, &lt;code&gt;mypy&lt;/code&gt;, &lt;code&gt;multidict&lt;/code&gt;, &lt;code&gt;yarl&lt;/code&gt;, &lt;code&gt;idna&lt;/code&gt;, and &lt;code&gt;cbor-diag&lt;/code&gt; .&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;A particularly fun one, in my personal opinion, is the &lt;a href=&#34;https://github.com/kitao/pyxel&#34;&gt;pyxel&lt;/a&gt; game engine package. This retro-framework allows users to write games in pure Python, in the style of early-90s compturs (16-colors and 4 sounds at a time being the chief limitations). The Pyxel and Pyodide teams have both been working to make this engine work out of the box in the browser, and It&#39;s built on top of the &lt;a href=&#34;https://github.com/emscripten-ports/SDL2&#34;&gt;SDL2 Support in Emscripten&lt;/a&gt;. &lt;a href=&#34;../post/whats-new-pyscript-2023-03-1#pyxel&#34;&gt;From personal experience,&lt;/a&gt; the ability to run serverless web games right in the user&#39;s browser window, written in pure Python, is electric.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Efforts on Download Size&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The Pyodide team is aware (as in the PyScript team) of the onus that download-size has on the viability of Python in the Browser, and has been &lt;a href=&#34;https://blog.pyodide.org/posts/0.23-release/#load-time-and-size-optimizations&#34;&gt;making efforts&lt;/a&gt; to reduce their download size wherever possible. These efforts are, of course, offset by the continually growing nature of the Python standard library, so the overall download size hasn&#39;t changed much. But looked at another way, it&#39;s gained more functionality while staying about the same size, which isn&#39;t nothing.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;One experimental effort includes an option to use &lt;a href=&#34;https://github.com/pyodide/pyodide/pull/3701&#34;&gt;a version of the Pyodide runtime&lt;/a&gt; that pre-compiles the Pyodide packages and the standard library to &lt;code&gt;.pyc&lt;/code&gt; files. You can point your &lt;code&gt;runtimes&lt;/code&gt; variable in &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; to &lt;code&gt;https://cdn.jsdelivr.net/pyodide/v0.23.0/pyc/pyodide.js&lt;/code&gt; to give it a try! Note that, because the deployment doesn&#39;t include the standardlib source code, tracebacks and error messages will not look great, but for some applications this may be acceptable.&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Removed Deprecated Object Nmaes&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Many key functions of the Pyodide Python API, like &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.create_proxy&#34;&gt;create_proxy()&lt;/a&gt;, &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/ffi.html#pyodide.ffi.to_js&#34;&gt;to_js()&lt;/a&gt;, and &lt;a href=&#34;https://pyodide.org/en/stable/usage/api/python-api/code.html#pyodide.code.eval_code&#34;&gt;eval_code()&lt;/a&gt;, used to be accessibile directly from the pyodide root package, but were moved to individual submodules in version 0.21 and showed a deprecation warning if imported from root. Now, those functions and many, many others truly can only be accessed from their appropriate submodules (&lt;code&gt;pyodide.ffi.create_proxy()&lt;/code&gt;, &lt;code&gt;pyodide.ffi.to_js()&lt;/code&gt;, and &lt;code&gt;pyodide.code.eval_code()&lt;/code&gt;, for example). (&lt;a href=&#34;https://github.com/pyodide/pyodide/pull/3677&#34;&gt;#3677&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;infrastructure&#34;&gt;Infrastructure&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Pull Request Template&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript now has a Pull Request template, to help contributors supply context and complete information with their PRs (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1279&#34;&gt;#1279&lt;/a&gt;).&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;Typescript 5&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript is now built using TypeScript 5 (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1377&#34;&gt;#1377&lt;/a&gt;). While we&#39;re not making use of many of &lt;a href=&#34;https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html&#34;&gt;it&#39;s powerful new features&lt;/a&gt; yet, we&#39;re glad to be using the latest release.&lt;/p&gt;
+
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;community&#34;&gt;Community / Core&lt;/h2&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;PyConUS 2023&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;A bunch of folks from the PyScript team attended &lt;a href=&#34;https://us.pycon.org/2023/&#34;&gt;PyCon&lt;/a&gt; in Salt Lake City in April, and what a delight it was! Between a tutorial session and three additional PyScript-centric talks, and even more PyScript adjacent presentations by team members, it was a roller coaster of a weekend, but a joyous one. You should really check out the &lt;a href=&#34;../post/come-see-pyscript-at-pycon-2023/&#34;&gt;full list of PyScript talks&lt;/a&gt; from this year. (Now with Video!)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I won&#39;t pretend to speak for PyScript as a project here, nor even the team, but just for myself, here were some key takeaways from my experience at PyCon:
+    &lt;ul class=&#34;post-ul&#34;&gt;
+        &lt;li&gt;People want to make things for the Web, and they want to write Python to do it. PyScript is hardly the only player in this space, with folks like &lt;a href=&#34;https://anvil.works/&#34;&gt;Anvil&lt;/a&gt; and &lt;a href=&#34;https://pynecone.io/&#34;&gt;Pynecone&lt;/a&gt; both having great showings in their &#34;write Python and we&#39;ll turn it into a front- and/or back-end&#34; offerings.&lt;/li&gt;
+        &lt;li&gt;The Web is a strange place for Pythonistas, the Browser in particular. Without a cozy command line, synchrnous file system, and threads, web limitations are like a foreign language to Python users.&lt;/li&gt;
+        &lt;li&gt;Ease of deployment is a huge feature. Users love the ability to write some code and give it to/run it for someone else with minimal additional setup.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;New Core Contributor: Andrea Giammarchi&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The PyScript team is delighted to have &lt;a href=&#34;https://github.com/WebReflection&#34;&gt;Andrea Giammarchi&lt;/a&gt; as a new core contributor and Anaconda staff member. He has a long history of building web tools, working with Web Standards, and hacking together JavaScript solutions and polyfills for the betterment of the Web. Andrea brings with him a deep fluidity in JavaScript, which is fortifying PyScript&#39;s technical bedrock at a frankly astonishing pace. His &lt;a href=&#34;https://webreflection.medium.com/&#34;&gt;Medium Blog&lt;/a&gt; is well worth a read and a follow as well. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1450&#34;&gt;#1450&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;next&#34;&gt;What&#39;s Next? &lt;i&gt;PyScript Next&lt;/i&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;As alluded to earlier, the PyScript team is in the midst of a massive overhaul of the PyScript codebase. The goal is to streamline the PyScript lifecycle, bring it more in line with web standards, and allow for faster and cleaner expansion of the PyScript with new features (and potentially new languages). Take a peak at the &lt;a href=&#34;https://github.com/pyscript/pyscript/tree/next&#34;&gt;PyScript:next&lt;/a&gt; branch to check out the work that&#39;s been happening there (in the &lt;code&gt;pyscript.core&lt;/code&gt; folder).&lt;/p&gt;
+&lt;p class=&#34;post-&#34;&gt;Since this work is proceeding forward at lightspeed, I&#39;d hate to share any firm predictions of what&#39;s coming out next for PyScript, as it&#39;s very possible I could be wrong in the direction the bullet train is heading. But I&#39;m excited by where it&#39;s been and where it lands.&lt;/p&gt;
+
+
+&lt;script&gt;    
+    //Create Load PyScript buttons:
+    document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+        btn_locations = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(btn_locations).forEach(elem =&gt; {
+            elem.classList.add(&#39;my-2&#39;, &#39;mx-8&#39;, &#39;border-blue-200&#39;, &#39;rounded-xl&#39;, &#39;flex&#39;, &#39;flex-row&#39;, &#39;justify-center&#39;, &#39;w-auto&#39;, &#34;py-1&#34;)
+            let p = document.createElement(&#39;p&#39;)
+            p.classList.add(&#39;my-auto&#39;, &#39;mr-4&#39;, &#39;italic&#39;)
+            p.innerText = &#34;Want to run these examples live in your browser?&#34;
+            elem.appendChild(p)
+            //button
+            let btn = document.createElement(&#39;button&#39;)
+            btn.innerText = &#34;Load PyScript&#34;
+            btn.classList.add(&#39;load-pyscript-button&#39;)
+            btn.onclick = loadPyScript
+            elem.appendChild(btn)
+        });
+    })
+    function setupLoadButtons(){
+
+    }
+    function loadPyScript() {
+        //load css
+        css_link = document.createElement(&#34;link&#34;)
+        css_link.rel = &#34;stylesheet&#34;
+        css_link.type = &#34;text/css&#34;
+        //css_link.href = &#34;https://pyscript.net/releases/2022.12.1/pyscript.css&#34;
+        css_link.href = &#34;https://pyscript.net/unstable/pyscript.css&#34;
+        //css_link.href = &#34;http://127.0.0.1:5501/pyscriptjs/build/pyscript.css&#34;
+        //css_link.href = &#34;./pyscript.css&#34;
+        document.getElementsByTagName(&#39;head&#39;)[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement(&#39;script&#39;)
+        //script_tag.src = &#34;https://pyscript.net/releases/2022.12.1/pyscript.js&#34;
+        script_tag.src = &#34;https://pyscript.net/unstable/pyscript.js&#34;
+        //script_tag.src = &#34;http://127.0.0.1:5501/pyscriptjs/build/pyscript.js&#34;
+        //script_tag.src = &#34;./pyscript.js&#34;
+        document.body.append(script_tag)        
+    }
+    document.addEventListener(&#39;pyscript_ready&#39;, () =&gt; {
+        static = document.getElementsByClassName(&#39;static-example&#39;)
+        live = document.getElementsByClassName(&#39;live-example&#39;)
+        Array.from(static).forEach(div =&gt; {
+            div.classList.add(&#39;hidden&#39;)
+        })
+        Array.from(live).forEach(div =&gt; {
+            div.classList.remove(&#39;hidden&#39;)
+            div.classList.remove(&#39;invisible&#39;)
+        })
+        load_buttons = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(load_buttons).forEach(elem =&gt; {
+            elem.classList.add(&#39;hidden&#39;)
+        })
+    })
+&lt;/script&gt;
+&lt;py-script class=&#34;hidden&#34;&gt;
+    import js
+    loaded_event = js.Event.new(&#39;pyscript_ready&#39;)
+    js.document.dispatchEvent(loaded_event)
+&lt;/py-script&gt;
+&lt;py-config class=&#34;hidden&#34;&gt;
+&lt;/py-config&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Realtime Updates in PyScript/Pyodide</title>
       <link>https://jeff.glass/post/pyscript-realtime-page-updates/</link>
