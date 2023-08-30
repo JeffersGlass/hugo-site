@@ -1,0 +1,81 @@
+---
+title: "Pyscript Next Release"
+date: 2023-08-30T11:30:42-05:00
+draft: true
+tags:
+- pyscript
+- python
+- pyscript-next
+description: "Description Here"
+---
+<p class="post-p">Today marks the release of <span class="font-bold">PyScript Next</span>, a ground-up total-rewrite of PyScript that adds a wide swath of new functionality, smaller file sizes, faster loading, and so much more. This post (and really, this release) is a doozy, so get your brains in gear.</p>
+<p class="post-p">Right off the bat, it's worth highlighting that this is a <span class="italic font-bold">fully breaking release</span>. While a lot of the features and concepts remain the</p>
+<p class="post-p">To differentiate between this brave new world and previous releases of PyScript, we've been calling all previous versions of PyScript from Alpha (2022.05.1) through 2023.05.1 <span class="font-semibold">"PyScript Classic"</span>. Personally, I'm not sure this will stick as an official name, but it's a useful way to distinguish the previous codebase from what we release today.</p>
+<h2 class="post-h2">Script Tags and Attributes</h2>
+<h3 class="post-h3">Script Tags</h3>
+<p class="post-p">To run Python code in the browser, wrap it in a <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag:</p>
+{{< highlight "html" >}}
+<py-script>
+    print("Hello, world!")
+</py-script>
+{{< /highlight >}}
+<br>
+{{< highlight "html" >}}
+<script type="py">
+    for i in range(5):
+        print(i)
+</script>
+{{< /highlight >}}
+
+<p class="post-p">This will execute code in the browser with no backend using <a href="https://pyodide.org/en/stable/">Pyodide</a>.</p>
+
+<h3 class="post-h3">Tag Attributes</h3>
+<h4 class="font-mono text-green-800 post-h4">src</h4>
+<p class="post-p">The <code>src</code> attribute is a URL pointing to an external Python file to be used as the source code to execute. If included, any source written inside the actual <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is ignored.</p>
+
+<h4 class="font-mono text-green-800 post-h4">config</h4>
+<p class="post-p">The <code>config</code> attribute can either</p>
+
+<h4 class="font-mono text-green-800 post-h4">async</h4>
+<p class="post-p">Adding the <code>async</code> tag will run the Python code with <a href="/post/pyscript-asyncio#implicitasync">top level await</a> enabled. This allows users to use the <a href="https://docs.python.org/3/reference/compound_stmts.html#coroutines"><code>await</code>, <code>async for</code>, and <code>async with</code></a> statements at the top level of a module (i.e. not inside a coroutine/<code>async def</code> block). This allows users to, in essence, write coroutines which are automatically scheduled into an event loopw without using <code>asyncio.ensure_future</code> or similar.</p>
+
+{{< highlight "html" >}}
+<script type="py" async>
+{{< /highlight >}}
+{{< highlight "python3" >}}
+    import asyncio
+    
+    print("Hello")
+    await asyncio.sleep(1) # Normally top-level 'await' is forbidden, but allowed with 'async' tag attribute
+    print("world")
+{{< /highlight >}}
+{{< highlight "html" >}}
+</script>
+{{< /highlight >}}
+<style>
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+    .py-terminal{
+        font-family: 'Courier New', Courier, monospace;
+        min-height: 4em;
+        background-color: black;
+        color: white;
+    }
+    .invisible{
+        visibility: hidden;
+    }
+    .control-button{
+        padding: 0.5rem; 
+        background-color: #E5E7EB; 
+        border-radius: 0.375rem; 
+        border-width: 2px; 
+        border-color: #D1D5DB; 
+    }
+    .post-h2{
+        border-bottom-width: 2px; 
+        border-color: #F9FAFB; 
+        border-style: solid;
+    }
+</style>
