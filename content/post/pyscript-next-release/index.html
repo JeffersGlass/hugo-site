@@ -12,7 +12,7 @@ description: "Description Here"
 <p class="post-p">Right off the bat, it's worth highlighting that this is a <span class="italic font-bold">fully breaking release</span>. While a lot of the features and concepts remain the same as in 'PyScript Classic' (our internal shorthand for all releases from Alpha/2022.05.1 through 2023.05.1), many features have been changed, tweaked, and added, there are also features that have either been removed from scope or have been temporarily removed as lower-priority in the name of getting this release out. As such, any articles and tutorials about PyScript prior to today should be taken as <span class="italic">potentially</span> deprecated.</p>
 <p class="post-p">That said, much of the underpinnings of PyScript are still the same. It's still built on top of the <a href="https://pyodide.org">Pyodide Runtime</a>, it still allows users to run Python code directly in the browser using the CPython interpreter compiled to WASM etc. What's changed is how PyScript delivers that experience, in a way that's faster, lighter, and more web friendly.</p>
 <p class="post-p">As this is a different kind of release from any of the previous ones, this Release Post also looks quite different. Rather than meticulously cateloging and demoing every single change and new feature, this post will:
-    <ul class="post-u">
+    <ul class="post-ul">
         <li>Explore the major new features and attributes</li>
         <li>Expand on the performance and size differences</li>
         <li>Touch a little on the new structural differences and what PyScript Next is built on top of</li>
@@ -22,13 +22,13 @@ description: "Description Here"
 <p class="post-p">In the coming days and weeks, we'll take a closer look at PyScript Next's new features - in the meantime, here's the roaring headlines:</p>
 
 <h2 class="post-h2">Running Code with PyScript</h2>
-<p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Instead of using a custom address at <code class="pyscript.net"></code>, PyScript now makes use of existing web architectures and CDNs. Either of the following will work, or other CDNs that mirror NPM like <code class="code">jsdelvr</code> etc.</p>
+<p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Instead of using a custom address at <code class="code">pyscript.net></code>, PyScript now makes use of existing web architectures and CDNs. Either of the following will work, or other CDNs that mirror NPM like <code class="code">jsdelivr</code> etc. Trickly, some of these CDN's do <a href="https://github.com/pyscript/pyscript/issues/1688">some magic to try to help</a> which currently breaks some of PyScript's distribution - we recommend <code class="code">unpkg</code> as it seems to do the least modification of the file structure:</p>
 {{< highlight "html" >}}
-<script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script>
-{{< /highlight >}}
-<p class="post-p">or</p>
-{{< highlight "html" >}}
+<!-- Latest Version -->
 <script type="module" src="https://unpkg.com/@pyscript/core"></script>
+
+<!-- Specific Version -->
+<script type="module" src="https://unpkg.com/@pyscript/core@0.1.15"></script>
 {{< /highlight >}}
 <p class="post-p">Note that the Pyodide runtime is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide bootstrap process only happens when the first tag appears on the page.</p>
 
@@ -53,10 +53,24 @@ description: "Description Here"
 <h3 class="post-h3">Tag Attributes</h3>
 <h4 class="font-mono text-green-800 post-h4">src</h4>
 <p class="post-p">The <code>src</code> attribute is a URL pointing to an external Python file to be used as the source code to execute. If included, any source written inside the actual <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is ignored.</p>
+{{< highlight "python3" >}}
+# /some/url/my_module.py
+
+print("Hello, world!")
+{{< /highlight >}}
+<br>
+{{< highlight "html" >}}
+<!-- index.html -->
+<script type="py" src="/some/url/my_module.py"></script>
+{{< /highlight >}}
 
 <h4 class="font-mono text-green-800 post-h4">config</h4>
 <p class="post-p">The <code>config</code> attribute defines the <span class="italic">configuration</span> to be used with a particular script tag. This can either be a URL (relative or fully qualified), or a string of JSON specifying the configuration directly. The options available to specify in a configuration are:</p>
 XXXXXXXXXXXXXXXX
+
+<h4 class="font-mono text-green-800 post-h4">env</h4>
+<p class="post-p">The <code>env</code> attribute is a string which names a specific instance of the Pyodide interpreter to use to execute the specified code. Each Pyodide interpreter contains its own copy of the CPython runtime, its own filesystem, packages, etc. This provides full isolation between multiple blocks of code if they use separate <span class="italic">environments</span>, at the cost of additional memory usage. Each time a new script tag is encountered with a new or previously-unseen value for <code>env</code>, a new Pyodide interpreter is initialized to run that code. </p>
+XXXXXXX Env Example
 
 <h4 class="font-mono text-green-800 post-h4">async</h4>
 <p class="post-p">Adding the <code>async</code> tag will run the Python code with <a href="/post/pyscript-asyncio#implicitasync">top level await</a> enabled. This allows users to use the <a href="https://docs.python.org/3/reference/compound_stmts.html#coroutines"><code>await</code>, <code>async for</code>, and <code>async with</code></a> statements at the top level of a module (i.e. not inside a coroutine/<code>async def</code> block). This allows users to, in essence, write coroutines which are automatically scheduled into an event loopw without using <code>asyncio.ensure_future</code> or similar.</p>
@@ -80,12 +94,12 @@ XXXXXXXXXXXXXXXX
 <p class="post-p">Code running in a worker also accepts the <code>async</code> and <code>config</code> attributes, but XXXXX not an ENV?</p>
 XXXXXX Worker Example
 
-<h4 class="font-mono text-green-800 post-h4">env</h4>
-<p class="post-p">The <code>env</code> attribute is a string which names a specific instance of the Pyodide interpreter to use to execute the specified code. Each Pyodide interpreter contains its own copy of the CPython runtime, its own filesystem, packages, etc. This provides full isolation between multiple blocks of code if they use separate <span class="italic">environments</span>, at the cost of additional memory usage. Each time a new script tag is encountered with a new or previously-unseen value for <code>env</code>, a new Pyodide interpreter is initialized to run that code. </p>
-XXXXXXX Env Example
-
 <h4 class="font-mono text-green-800 post-h4">target</h4>
 <p class="post-p">Specifies the ID of an element in the DOM that calls to <code>display()</code> in this script tag should write their values to.</p>
+XXXXXX Target Example
+
+<h4 class="font-mono text-green-800 post-h4">version</h4>
+<p class="post-p"></p>
 XXXXXX Target Example
 
 
