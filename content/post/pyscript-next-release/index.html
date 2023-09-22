@@ -25,10 +25,12 @@ description: "Description Here"
 <p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Instead of using a custom address at <code class="code">pyscript.net></code>, PyScript now makes use of existing web architectures and CDNs. Either of the following will work, or other CDNs that mirror NPM like <code class="code">jsdelivr</code> etc. Trickly, some of these CDN's do <a href="https://github.com/pyscript/pyscript/issues/1688">some magic to try to help</a> which currently breaks some of PyScript's distribution - we recommend <code class="code">unpkg</code> as it seems to do the least modification of the file structure:</p>
 {{< highlight "html" >}}
 <!-- Latest Version -->
+<script type="module" src="https://pyscript.net/releases/2023.09.1/core.js"></script>
+
 <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core"></script>
 
 <!-- Specific Version -->
-<script type="module" src="https://unpkg.com/@pyscript/core@0.2.1"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core@0.2.1"></script>
 {{< /highlight >}}
 <p class="post-p">Note that the Pyodide runtime is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide bootstrap process only happens when the first tag appears on the page.</p>
 
@@ -71,23 +73,25 @@ XXXXXXXXXXXXXXXX
 <h4 class="font-mono text-green-800 post-h4">async</h4>
 <p class="post-p">Adding the <code>async</code> tag will run the Python code with <a href="/post/pyscript-asyncio#implicitasync">top level await</a> enabled. This allows users to use the <a href="https://docs.python.org/3/reference/compound_stmts.html#coroutines"><code>await</code>, <code>async for</code>, and <code>async with</code></a> statements at the top level of a module (i.e. not inside a coroutine/<code>async def</code> block). This allows users to, in essence, write coroutines which are automatically scheduled into an event loopw without using <code>asyncio.ensure_future</code> or similar.</p>
 
-{{< highlight "html" >}}
+{{< highlight "html" "linenostart=1" >}}
 <script type="py" async>
 {{< /highlight >}}
-{{< highlight "python3" >}}
+{{< highlight "python3" "linenostart=2" >}}
     import asyncio
     
     print("Hello")
     await asyncio.sleep(1) # Normally top-level 'await' is forbidden, but allowed with 'async' tag attribute
     print("world")
 {{< /highlight >}}
-{{< highlight "html" >}}
+{{< highlight "html" "linenostart=7" >}}
 </script>
 {{< /highlight >}}
 
+<h4 class="post-h4">config</h4>
+
 <h4 class="font-mono text-green-800 post-h4">worker</h4>
 <p class="post-p">Adding the <code>worker</code> attribute to a script tag causes the Python code to be executed in a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">JS Web Worker</a>. The code can either be included in-line, or in an external file specified by the <code class="code">src</code> attribute. Note that each tag with the <code class="code">work</code> attribute runs in its own isolated worker thread - in the example below, the second <code class="code">worker</code> tag does not have access to the <code class="code">x</code> variable defined in the first tag, as they are running in separate interpreters/threads.</p>
-<p class="post-p">Code running in a worker also accepts the <code>async</code> and <code>config</code> attributes, but XXXXX not an ENV?</p>
+<p class="post-p">Code running in a worker also accepts the <code>async</code> and <code>config</code> attributes. 
 
 {{< highlight "html" "linenostart=1" >}}
 <script type="py">
