@@ -13,13 +13,17 @@ description: "Description Here"
 <p class="post-p">That said, much of the underpinnings of PyScript are still the same. It's still built on top of the <a href="https://pyodide.org">Pyodide Runtime</a>, it still allows users to run Python code directly in the browser using the CPython interpreter compiled to WASM etc. What's changed is how PyScript delivers that experience, in a way that's faster, lighter, and more web friendly.</p>
 <p class="post-p">As this is a different kind of release from any of the previous ones, this Release Post also looks quite different. Rather than meticulously cateloging and demoing every single change and new feature, this post will:
     <ul class="post-ul">
-        <li>Explore the major new features and attributes</li>
+        <li>Explore the major features and attributes</li>
+        <li>Discuss migration and major changes</li>
         <li>Expand on the performance and size differences</li>
         <li>Touch a little on the new structural differences and what PyScript Next is built on top of</li>
-        <li>Highlight what's been left out of this release, that will (or won't) come back in future releases</li>
     </ul>
 </p>
 <p class="post-p">In the coming days and weeks, we'll take a closer look at PyScript Next's new features - in the meantime, here's the roaring headlines:</p>
+<h2 class="post-h2">CPython and Micropython</h2>
+<p class="post-p">You can now choose whether to use CPython (via <a href="https://pyodide.org/en/stable/">Pyodide</a>) or <a href="https://micropython.org/">Micropython</a> to execute your code. For those unfamiliar with the latter, Micropython is a very lean Python interpreter originally written for use on microcontrollers, which has since been used <a href="https://www.youtube.com/watch?v=Vh_5Lz1mLq8">in space</a>, <a href="https://www.youtube.com/watch?v=YovngSLXoxw">in the lab</a>, and <a href="https://store.micropython.org/">in hobbyists' hands</a>. It's a reimplementation of (almost) all of Python with keen eyes toward memory usage and startup time, which makes it a very attractive tool on the web where milliseconds matter.</p>
+<p class="post-p">Note that while writing Micropython feels almost exactly like writing Python, they are <span class="italic">not</span> the same langauge and don't have the same underlying object model. This means that packages written for one generally don't work in the other - no <code>numpy</code>, <code>matplotlib</code>, or <code>scikit</code> in Micropython, for instance. For a list of the differences between the two languages, see <a href="https://docs.micropython.org/en/latest/genrst/index.html">Micropython Differences from CPython</a> from their documentation. </p>
+<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is.</p>
 
 <h2 class="post-h2">Running Code with PyScript</h2>
 <p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Instead of using a custom address at <code class="code">pyscript.net></code>, PyScript now makes use of existing web architectures and CDNs. Either of the following will work, or other CDNs that mirror NPM like <code class="code">jsdelivr</code> etc. Trickly, some of these CDN's do <a href="https://github.com/pyscript/pyscript/issues/1688">some magic to try to help</a> which currently breaks some of PyScript's distribution - we recommend <code class="code">unpkg</code> as it seems to do the least modification of the file structure:</p>
@@ -32,7 +36,7 @@ description: "Description Here"
 <!-- Specific Version -->
 <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core@0.2.1"></script>
 {{< /highlight >}}
-<p class="post-p">Note that the Pyodide runtime is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide bootstrap process only happens when the first tag appears on the page.</p>
+<p class="post-p">Note that the specific Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide bootstrap process only happens when the first tag appears on the page.</p>
 
 <h2 class="post-h2">Script Tags and Attributes</h2>
 <h3 class="post-h3">Script Tags</h3>
@@ -46,11 +50,13 @@ description: "Description Here"
 {{< highlight "html" >}}
 <script type="py">
     for i in range(5):
-        print(i)
+        print(i)    
 </script>
 {{< /highlight >}}
 
-<p class="post-p">This will execute code in the browser with no backend using the <a href="https://pyodide.org/en/stable/">Pyodide</a> runtime. The two types of tags (<code>&lt;script type="py"&gt;</code> and <code>&lt;py-script&gt;</code> are equivalent from PyScript's point of view, and I will use <code>&lt;script type="py"&gt;</code> for the rest of this post. The <code class="code">script</code> tag has the advantage of not pre-parsing its context as text prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a <code class="code">py-script</code> tag.</p>
+<p class="post-p">This will execute code in the browser with no backend using the <a href="https://pyodide.org/en/stable/">Pyodide</a> runtime. The two types of tags (<code>&lt;script type="py"&gt;</code> and <code>&lt;py-script&gt;</code> are mostly* equivalent from PyScript's point of view, and I will use <code>&lt;script type="py"&gt;</code> for the rest of this post. The <code class="code">script</code> tag has the advantage of not pre-parsing its context as text prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a <code class="code">py-script</code> tag.</p>
+<h4 class="post-h4">Micropython</h4>
+<p class="post-p">To run code using Micropython, use either <code>&lt;mpy-script&gt;</code> or <code>&lt;script type="mpy"&gt;</code>. In general, these tags function exactly like their Pyodide counterparts. For brevity, I'll only illustrate the examples below with Pyodide tags; swap <code>type="py"</code> for <code>type="mpy"</code> in any of the code samples below to use Micropython.</p>
 
 <h3 class="post-h3">Tag Attributes</h3>
 <h4 class="font-mono text-green-800 post-h4">src</h4>
@@ -67,8 +73,7 @@ print("Hello, world!")
 {{< /highlight >}}
 
 <h4 class="font-mono text-green-800 post-h4">config</h4>
-<p class="post-p">The <code>config</code> attribute defines the <span class="italic">configuration</span> to be used with a particular script tag. This can either be a URL (relative or fully qualified), or a string of JSON specifying the configuration directly. The options available to specify in a configuration are:</p>
-XXXXXXXXXXXXXXXX
+<p class="post-p">The <code>config</code> attribute defines the <span class="italic">configuration</span> to be used with a particular script tag. This can either be a URL (relative or fully qualified), or a string of JSON specifying the configuration directly. More info is given in the <a href="#config">config section</a> below.</p>
 
 <h4 class="font-mono text-green-800 post-h4">async</h4>
 <p class="post-p">Adding the <code>async</code> tag will run the Python code with <a href="/post/pyscript-asyncio#implicitasync">top level await</a> enabled. This allows users to use the <a href="https://docs.python.org/3/reference/compound_stmts.html#coroutines"><code>await</code>, <code>async for</code>, and <code>async with</code></a> statements at the top level of a module (i.e. not inside a coroutine/<code>async def</code> block). This allows users to, in essence, write coroutines which are automatically scheduled into an event loopw without using <code>asyncio.ensure_future</code> or similar.</p>
@@ -87,11 +92,10 @@ XXXXXXXXXXXXXXXX
 </script>
 {{< /highlight >}}
 
-<h4 class="post-h4">config</h4>
-
 <h4 class="font-mono text-green-800 post-h4">worker</h4>
+xxxxxxx check this after 1743 lands or doesn't
 <p class="post-p">Adding the <code>worker</code> attribute to a script tag causes the Python code to be executed in a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">JS Web Worker</a>. The code can either be included in-line, or in an external file specified by the <code class="code">src</code> attribute. Note that each tag with the <code class="code">work</code> attribute runs in its own isolated worker thread - in the example below, the second <code class="code">worker</code> tag does not have access to the <code class="code">x</code> variable defined in the first tag, as they are running in separate interpreters/threads.</p>
-<p class="post-p">Code running in a worker also accepts the <code>async</code> and <code>config</code> attributes. 
+<p class="post-p">Code running in a worker also accepts the <code>async</code> and <code>config</code> attributes. Note that each worker can have its own config. If no <code>config</code> is specified, the worker will use a copy of the config being used by the main thread script tags.
 
 {{< highlight "html" "linenostart=1" >}}
 <script type="py">
@@ -123,15 +127,91 @@ XXXXXXXXXXXXXXXX
 </script>
 {{< /highlight >}}
 
-<p class="post-p">The use of worker threads via <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">PolyScript's XWorker Utility</a> is an advanced but hugely powerful topic that deserves its own post. For the curious, see the <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">PolyScript Documentation</a> as a place to get started.</p>
+<p class="post-p">The use of worker threads via <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">PolyScript's XWorker Utility</a> is an advanced but hugely powerful topic that deserves its own post. For the curious, see the <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">PolyScript Documentation</a> as a place to get started. But note that your server must either provide the appropriate headers/permissions (COEP and CORP at least), or you can use a shim like <a href="https://github.com/WebReflection/mini-coi">mini-coi</a> to provide them for you in a service worker.</p>
 
 <h4 class="font-mono text-green-800 post-h4">target</h4>
-<p class="post-p">Specifies the ID of an element in the DOM that calls to <code>display()</code> in this script tag should write their values to.</p>
-XXXXXX Target Example
+<p class="post-p">Specifies the ID of an element in the DOM that calls to store as a js variable called "<code>display()</code> in this script tag should write their values to.</p>
+{{< highlight "html" "linenostart=1">}}
+<div id="foo"></div>
+<p>Some text to keep things separated.</p>
+<div id="bar"></div>
+<script type="py" target="#foo">
+{{< /highlight >}}
+{{< highlight "python" "linenostart=5">}}
+    from pyscript import display, current_target
+    display("This appears up at the top, in the div with id 'foo'")
+    display("This appears in the div with id 'bar'", target="bar")
+{{< /highlight >}}
+{{< highlight "html" "linenostart=8">}}
+</script>
+{{< /highlight >}}
 
-<h4 class="font-mono text-green-800 post-h4">version</h4>
-<p class="post-p"></p>
-XXXXXX Target Example
+<h2 class="post-h2" id="config">Configuration</h2>
+xxxxxxx mpy config???
+<p class="post-p">A number of runtime options can be configured by including them inside a <code>&lt;py-config&gt;</code> tag, or as the <code>config</code> attribute to one of the script tags on the page. These options are largely the same as those from the previous release.</p>
+<p class="post-p">Note that only one <code>&lt;py-config&gt;</code> tag can be used - if multiple are present, all but the first will be ignored. Similarly, the first main-thread (i.e. nonworker) script tag with <code>config</code> attribute will be used, and all others will be ignored. The <code>&lt;py-config&gt;</code> tag takes precedence over any <code>config</code> attributes.</p>
+<p class="post-p">A config in a <code>&lt;py-config&gt;</code> tag can be written in JSON or TOML. Specify the <code>type</code> attribute for which language you're using. The config can also be sourced from an external file using the <code>src</code> attribute; in this case, PyScript will attempt to infer the language from the ending of the file name (<code>.json</code> or <code>.toml</code>).</p>
+<p class="post-p">The config supplied with the <code>config</code> attribute of a script tag can be either a URL referencing an external JSON or TOML file, or an inline config written in JSON within the attribute itself.</p>
+<p class="post-p">The configuration supports the following keys:</p>
+<h3 class="post-h3"><code>packages</code></h3>
+<p class="post-p">A list of Python packes to install from PYPI or the <a href="https://pyodide.org/en/0.23.2/usage/packages-in-pyodide.html">the list of packages pre-built for Pyodide</a>. Additionally, the list may include URLs of <code>.whl</code> files to load and install.</p>
+{{< highlight "html" "linenostart=1">}}
+<py-config>
+    packages=['numpy']
+</py-config>
+<script type="py">
+{{< /highlight >}}
+{{< highlight "python" "linenostart=5">}}
+    from pyscript import display
+    import numpy as np
+    a = np.arange(15).reshape(3, 5)
+    display(a)
+{{< /highlight >}}
+{{< highlight "html" "linenostart=9">}}
+</script>
+{{< /highlight >}}
+<h3 class="post-h3"><code>fetch</code></h3>
+<p class="post-p">Loads external resources at various URLs into the virtual filesystem where Pyodide can interact with them. I previously detailed <a href="/post/whats-new-pyscript-2022-12-1/#paths">how <code>[[fetch]]</code> configurations work</a> in my release notes from version 2022.12.1; their usage has not changed.</p>
+<h3 class="post-h3"><code>plugins</code></h3>
+<p class="post-p">A list of plugins, used to specif which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
+<h2 class="post-h2">Migration and Major Differences</h2>
+xxxxxxxxxxxxxxxxxxxx
+<h2 class="post-h2">Performance and Size</h2>
+<h3 class="post-h3">Startup Time</h3> 
+<p class="post-p">Here's a short PyScript page which measures the time between (roughly) the start of paging loading and when Python code starts being executed:</p>
+{{< highlight "html" "linenostart=1">}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        var startTime=Date.now()
+    </script>
+    <!-- Uncomment only one of the following two lines to compare performance -->
+    <!-- <script type="module" src="https://pyscript.net/snapshots/2023.09.1.RC1/core.js"></script> -->
+    <script defer src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
+</head>
+<body>
+
+<script type="py">
+{{< /highlight >}}
+{{< highlight "html" "linenostart=14">}}
+    import js
+    js.console.log("Ellapsed Time:", js.Date.now() - js.startTime)
+{{< /highlight >}}
+{{< highlight "html" "linenostart=16">}}
+</script>
+</body>
+</html>
+{{< /highlight >}}
+<p class="post-p">Of course, teh specifics of the timing will vary widely from machine-to-machine and connection-to-connection. But for this informal test (on my particular laptop, on my particular Wifi, at this particular spot on my couch, on a Sunday afternoon), I found that the previous <code>2023.05.1</code> release averaged about 4.9 seconds, where the new <code>2023.09.1</code> release averaged around 3.4 seconds. That's roughly a 30% decrease in initialization time just for upgrading to the new version. Not bad!</p>
+<h3 class="post-h3">Transfer Size</h3>
+<p class="post-p">There isn't an enormous difference in the total file size transferred to the browser between this release and the previous one: 5.4 MB previously vs. 5.2MB now. This makes some sense though - PyScript is still transferring the entire CPython interpreter (compiled to Web Assembly) to the browser; compared to that, the entire PyScript codebase is tiny in either case. But where both of the above metrics get blown out of the water is with...</p>
+<h3 class="post-h3">Micropython</h3>
+<p class="post-p">Take the above example, and replace <code>script type="py"</code> with <code>script type="mpy"</code> to switch to using Micropython. Now the transfer size drops to <span class="font-semibold italic">just over 250Kb</span> and the average startup time plummets to <span class="font-semibold italic">~200ms</span>. That's 200 milliseconds from page-load to start-of-script-execution. In relative terms (again, in my informal experiment), that's a transfer that's ~4% of the one needed for CPython/Pyodide, with roughly 6% of the loading time. Like I mentioned earlier - if you don't need additonal CPython packages or deep needs from the standard library, it's worth giving Micropython a try.</p>
+<h2 class="post-h2">The PyScript Stack</h2>
+xxxxxxxxxxxxxxxxxx
+<h2 class="post-h2">What's Next?</h2>
+xxxxxxxxxxxxxxxx
 
 
 <style>
