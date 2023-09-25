@@ -23,9 +23,10 @@ description: "Description Here"
 <h2 class="post-h2">CPython and Micropython</h2>
 <p class="post-p">You can now choose whether to use CPython (via <a href="https://pyodide.org/en/stable/">Pyodide</a>) or <a href="https://micropython.org/">Micropython</a> to execute your code. For those unfamiliar with the latter, Micropython is a very lean Python interpreter originally written for use on microcontrollers, which has since been used <a href="https://www.youtube.com/watch?v=Vh_5Lz1mLq8">in space</a>, <a href="https://www.youtube.com/watch?v=YovngSLXoxw">in the lab</a>, and <a href="https://store.micropython.org/">in hobbyists' hands</a>. It's a reimplementation of (almost) all of Python with keen eyes toward memory usage and startup time, which makes it a very attractive tool on the web where milliseconds matter.</p>
 <p class="post-p">Note that while writing Micropython feels almost exactly like writing Python, they are <span class="italic">not</span> the same langauge and don't have the same underlying object model. This means that packages written for one generally don't work in the other - no <code>numpy</code>, <code>matplotlib</code>, or <code>scikit</code> in Micropython, for instance. For a list of the differences between the two languages, see <a href="https://docs.micropython.org/en/latest/genrst/index.html">Micropython Differences from CPython</a> from their documentation. </p>
-<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is.</p>
+<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is. See the <a href="micropython-size">performnace and size</a> section below for more details.</p>
 
 <h2 class="post-h2">Running Code with PyScript</h2>
+xxxxxxxxxxxxxxxxxxxxxxx revise CDN links?
 <p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Instead of using a custom address at <code class="code">pyscript.net></code>, PyScript now makes use of existing web architectures and CDNs. Either of the following will work, or other CDNs that mirror NPM like <code class="code">jsdelivr</code> etc. Trickly, some of these CDN's do <a href="https://github.com/pyscript/pyscript/issues/1688">some magic to try to help</a> which currently breaks some of PyScript's distribution - we recommend <code class="code">unpkg</code> as it seems to do the least modification of the file structure:</p>
 {{< highlight "html" >}}
 <!-- Latest Version -->
@@ -175,7 +176,55 @@ xxxxxxx mpy config???
 <h3 class="post-h3"><code>plugins</code></h3>
 <p class="post-p">A list of plugins, used to specif which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
 <h2 class="post-h2">Migration and Major Differences</h2>
-xxxxxxxxxxxxxxxxxxxx
+<p class="post-p">So you have an existing PyScript application that you've built on top of the previous build, and your wondering how to adapt and change. While not a formal migration guide, here's a few informal pointers.</p>
+<p class="post-p">First, if you're not making use of any of the new major features (Micropython or Workers specifically), you're unlikely to notice major breaking changes in how your Python code runs. The core tags (<code>&lt;py-script&gt;</code> and <code>&lt;script type="py"&gt;</code>) have been rebuilt to almost entirely mimic their previous behavior.</p>
+<h3 class="post-h3"><code>&lt;py-terminal&gt;</code></h3>
+<p class="post-p">That said, there are existing <span class="italic">visual</span> differences between the version. The docked/in-DOM <code>py-terminal</code> with its <code class="p-1" style="background-color: black; color: darkgray;">black background and monospace font</code> has been removed, at least for now. This does mean that a basic <code>print("Hello world")</code> only shows output in the <a href="https://balsamiq.com/support/faqs/browserconsole/">developer tools</a>, but it emphasizes that PyScript strongly encourages the use of the <a href="https://docs.pyscript.net/2023.09.1/user-guide/#pyscriptdisplay"><code>display()</code> function</a> to output content to the page. (Note that <code>display</code> now must be imported from the <code>pyscript</code> package.</p>
+<p class="post-p">The roadmap for the <code>py-terminal</code> is much more exciting. Much like the previous release <a href="/post/whats-new-pyscript-2023-05-1/#terminal">included the option</a> to use an <a href="http://xtermjs.org/">xtermjs</a> as a terminal, the goal is to re-introduce this functionality in an upcoming release of PyScript next. But now that we have the option to easily run Python code inside a worker thread with true blocking operations, we can do some truly awesome things. PyScript core developer and longtime compiler/debugger enthusiast Antonio Cuni has been working on this feature, and recently showed off demos of:
+    <ul class="post-ul">
+        <li>Using <code>input()</code> as a blocking function, enabling <a href="https://antocuni.pyscriptapps.com/pyterminal-poc/v1/">using pdb or pdb++ in the browser.</a></li>
+        <li>Running <a href="https://antocuni.pyscriptapps.com/pytest-in-pyterminal/v1/">an entire PyTest session</a> in the browser.</li>
+        <li>Crafting a <a href="https://antocuni.pyscriptapps.com/gui-debugger/v1/">GUI Debugger in the browser</a> with all the visual options browser layouts allow.</li>
+    </ul>
+</p>
+<p class="post-p">The dance with the worker threads and blocking operations is not all that complicated, but creating a sensible public-facing API for PyScript around these options is not something that wants rushing into. Look for more progress on that front in the near future.</p>
+<h3 class="post-h3">Style and Import Recommendations</h3>
+<p class="post-p">There's no getting around the fact that the browser's <a href="https://developer.mozilla.org/en-US/docs/Glossary/Main_thread">main thread</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">worker threads</a> are fundamentally different. Even with <a href="https://github.com/WebReflection/coincident">coincident</a> under the hood making passing proxies back and forth relatively painless, and Polyscript's Pythonic <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">XWorker wrapper</a> around it, there are things which are only permitted in one environment or the other. This could lead to pain points, where every PyScript code sample from now on could need to specify whether it's meant to run in the main thread, a worker, or either.</p>
+<p class="post-p"><a href="https://pyodide.org/en/0.23.2/usage/type-conversions.html#type-translations-using-js-obj-from-py"><code>import js</code></a> is one such sticking point. This statement uses some Pyodide (and now Micropython) magic to import JavaScript objects from the current global scope and proxy them as Python objects. But the main thread local scope gets access to lots of useful goodies - specifically the DOM itself and DOM events - that aren't available in worker threads. So something simple like <code>from js import document</code> works in the main thread, but will break in a worker thread which has no access to the document.</p>
+<p class="post-p">To help smooth out this particular difficulty, a couple more (slightly) magically imports have been added - <code>from pyscript import window</code> and <code>from pyscript import document</code>, both of which refer to the <span class="font-semibold">main thread's</span> global scope and document, respectively, regardless of whether your code is running in the main thread or a worker. For this reason, in PyScript specifically, I recommend using <code>from pyscript import window</code> instead of <code>import js</code> most of the time - whenever you're working with DOM manipulation or events for sure. Of course, if you need access to the <span class="italic">worker thread's global JavaScript scope</span>, you can use <code>import js</code> as usual.</p>
+<p class="post-p">To illustrate - the first script below works identically with or without the <code>worker</code> attribute; the second script only works on the main thread:</p>
+<div class="m-4 p-2 bg-green-300 rounded-lg">
+<p class="text-sm text-green-700">Works in main thread or worker</p>
+{{< highlight "html" "linenostart=1">}}
+<script type="py">
+{{< /highlight >}}
+{{< highlight "python" "linenostart=2">}}
+    from pyscript import window
+    p  = window.document.createElement("p")
+    p.innerText = "Hello, world"
+    window.document.body.appendChild(p)
+{{< /highlight >}}
+{{< highlight "html" "linenostart=6">}}
+</script>
+{{< /highlight >}}
+</div>
+
+<div class="m-4 p-2 bg-yellow-300 rounded-lg">
+<p class="text-sm text-yellow-700">Only works in main thread</p>
+{{< highlight "html" "linenostart=1">}}
+<script type="py">
+{{< /highlight >}}
+{{< highlight "python" "linenostart=2">}}
+    import js
+    p  = js.document.createElement("p")
+    p.innerText = "Hello, world"
+    js.document.body.appendChild(p)
+{{< /highlight >}}
+{{< highlight "html" "linenostart=6">}}
+</script>
+{{< /highlight >}}
+</div>
+
 <h2 class="post-h2">Performance and Size</h2>
 <h3 class="post-h3">Startup Time</h3> 
 <p class="post-p">Here's a short PyScript page which measures the time between (roughly) the start of paging loading and when Python code starts being executed:</p>
@@ -206,7 +255,7 @@ xxxxxxxxxxxxxxxxxxxx
 <p class="post-p">Of course, teh specifics of the timing will vary widely from machine-to-machine and connection-to-connection. But for this informal test (on my particular laptop, on my particular Wifi, at this particular spot on my couch, on a Sunday afternoon), I found that the previous <code>2023.05.1</code> release averaged about 4.9 seconds, where the new <code>2023.09.1</code> release averaged around 3.4 seconds. That's roughly a 30% decrease in initialization time just for upgrading to the new version. Not bad!</p>
 <h3 class="post-h3">Transfer Size</h3>
 <p class="post-p">There isn't an enormous difference in the total file size transferred to the browser between this release and the previous one: 5.4 MB previously vs. 5.2MB now. This makes some sense though - PyScript is still transferring the entire CPython interpreter (compiled to Web Assembly) to the browser; compared to that, the entire PyScript codebase is tiny in either case. But where both of the above metrics get blown out of the water is with...</p>
-<h3 class="post-h3">Micropython</h3>
+<h3 class="post-h3" id="micropython-size">Micropython</h3>
 <p class="post-p">Take the above example, and replace <code>script type="py"</code> with <code>script type="mpy"</code> to switch to using Micropython. Now the transfer size drops to <span class="font-semibold italic">just over 250Kb</span> and the average startup time plummets to <span class="font-semibold italic">~200ms</span>. That's 200 milliseconds from page-load to start-of-script-execution. In relative terms (again, in my informal experiment), that's a transfer that's ~4% of the one needed for CPython/Pyodide, with roughly 6% of the loading time. Like I mentioned earlier - if you don't need additonal CPython packages or deep needs from the standard library, it's worth giving Micropython a try.</p>
 <h2 class="post-h2">The PyScript Stack</h2>
 xxxxxxxxxxxxxxxxxx
