@@ -35,7 +35,7 @@ slug_image: 'py_2023_10_1_featured.png'
 <h2 class="post-h2" id="cpython-and-micropython">CPython and Micropython</h2>
 <p class="post-p">You can now choose whether to use CPython (via <a href="https://pyodide.org/en/stable/">Pyodide</a>) or <a href="https://micropython.org/">Micropython</a> to execute your code. For those unfamiliar with the latter, Micropython is a very lean Python interpreter originally written for use on microcontrollers, which has since been used <a href="https://www.youtube.com/watch?v=Vh_5Lz1mLq8">in space</a>, <a href="https://www.youtube.com/watch?v=YovngSLXoxw">in the lab</a>, and <a href="https://store.micropython.org/">in hobbyists' hands</a>. It's a reimplementation of (almost) all of Python with keen eyes toward memory usage and startup time, which makes it a very attractive tool on the web where milliseconds matter.</p>
 <p class="post-p">Note that while writing Micropython feels almost exactly like writing Python, they are <span class="italic">not</span> the same langauge and don't have the same underlying object model. This means that packages written for one generally don't work in the other - no <code>numpy</code>, <code>matplotlib</code>, or <code>scikit</code> in Micropython, for instance. For a list of the differences between the two languages, see <a href="https://docs.micropython.org/en/latest/genrst/index.html">Micropython Differences from CPython</a> from their documentation. </p>
-<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is. See the <a href="micropython-size">performnace and size</a> section below for more details.</p>
+<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is. See the <a href="#micropython-size">performnace and size</a> section below for more details.</p>
 
 <h2 class="post-h2" id="running-code">Running Code with PyScript</h2>
 <p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but specifying a <code>type</code> of <code>module</code> is. Note too that the name of the file has changed from <code>pyscript.js</code> to <code>core.js</code>:</p>
@@ -206,6 +206,22 @@ print("Hello, world!")
 <p class="post-p">Another, simpler way to load external files in Loads external resources at various URLs into the virtual file system. This <span class="font-semibold">added feature in this release has a much simpler interface than the (quite verbose) <code>[[fetch]]</code> syntax. See the <a href="https://docs.pyscript.net/2023.09.1.RC2/user-guide/#files">official documentation</a> for more details.</span></p>
 <h3 class="post-h3"><code>plugins</code></h3>
 <p class="post-p">A list of plugins, used to specif which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
+
+<h3 class="post-h3" id="events">Event Handling</h3>
+<p class="post-p">The syntax for event handling has shifted in this release. Any HTML element on the page can be assigned an attribute of <code>py-[event]</code> (or <code>mp-[event]</code>), where <code>[event]</code> is any of the <a href="https://developer.mozilla.org/en-US/docs/Web/Events">browser events</a> or a user-defined <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent">Custom Event</a>. The handler will be passed the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event">Event Object</a> representing that event.</p> 
+{{< highlight "html" "linenostart=1">}}
+<button id="one" py-click="foo">One</button>
+<button id="two" py-click="foo">Two</button>
+<script type="py">
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=4">}}
+    def foo(event):
+        print(f"I got called by the element with id: {event.target.id}")
+{{< /highlight >}}
+{{< highlight "html" "linenostart=6">}}
+</script>
+{{< /highlight >}}
+
 <h2 class="post-h2" id="migration">Migration and Major Differences</h2>
 <p class="post-p">So you have an existing PyScript application that you've built on top of the previous build, and your wondering how to adapt and change. While not a formal migration guide, here's a few informal pointers.</p>
 <p class="post-p">First, if you're not making use of any of the new major features (Micropython or Workers specifically), you're unlikely to notice major breaking changes in how your Python code runs. The core tags (<code>&lt;py-script&gt;</code> and <code>&lt;script type="py"&gt;</code>) have been rebuilt to almost entirely mimic their previous behavior.</p>
@@ -219,12 +235,49 @@ print("Hello, world!")
     </ul>
 </p>
 <p class="post-p">The dance with the worker threads and blocking operations is not all that complicated, but creating a sensible public-facing API for PyScript around these options is not something that wants rushing into. Look for more progress on that front in the near future.</p>
+
 <h3 class="post-h3" id="py-repl"><code>&lt;py-repl&gt;</code> is on Haitus</h3>
 <p class="post-p">This version of PyScript is releasing without the <code>&lt;py-repl&gt;</code> tag, which is busy getting a makeover in the background. The name <code>py-repl</code>, while catchy, didn't really capture what the component was, which was much closer to the cell of a Jupyter notebook. With the py-terminal getting overhauled in a way that would <span class="italic">let it run an actual Python REPL</span>, it was time to retire the former <code>&lt;py-repl&gt;</code>component. Currently, the plan is for that element to rise again as the <code>&lt;py-cell&gt;</code> tag (perhaps contained inside a <code>&lt;py-notebook&gt;</code> tag as well), but that will have to wait for a future release.</p>
+
+<h3 class="post-h3" id="events">Events are Different</h3>
+<p class="post-p">As discussed in the <a href="#events">events</a> section of this post, inline event handlers work differently than how they used to. Previously, inline event attributes were strings of Python code, which were <code>exec()</code>'d when the handler was invoked. Now, they're the name of a function in the Python global namespace to be called, and passed an Event object.</p>
+<p class="post-p">The one usage pattern that this doesn't accomodate (yet) is something like the following:</p>
+{{< highlight "html" >}}
+<button py-click="select_color('red')">Red</button>
+<button py-click="select_color('green')">Green</button>
+<button py-click="select_color('blue')">Blue</button>
+<script type="py">
+{{< /highlight >}}  
+{{< highlight "python3" "linenostart=5">}}
+    def select_color(color_name):
+        ... # ???
+{{< /highlight >}}
+{{< highlight "html" "linenostart=7" >}}
+</script>
+{{< /highlight >}}
+<p class="post-p">That said, there are some web-ish ways to continue to pass element specific information to your functions, like embedding that information in a data-attribute:</p>
+{{< highlight "html" >}}
+<button data-color='red' py-click="select_color">Red</button>
+<button data-color='green' py-click="select_color">Green</button>
+<button data-color='blue' py-click="select_color">Blue</button>
+<script type="py">
+{{< /highlight >}}
+{{< highlight "python3" "linenostart=5" >}}
+    def select_color(event):
+        print(f"Setting color to: {event.target.getAttribute('data-color')}")
+{{< /highlight >}}
+{{< highlight "html" "linenostart=7">}}
+</script>
+{{< /highlight >}}
 
 <h3 class="post-h3">Plugins</h3>
 <p class="post-p">The plugins system has been overhauled from the ground up, with an entirely different set of named hooks and actions. If you've written any plugins for PyScript Classic - and to be honest, because of the interim and relatively undocumented nature of that API, I'd be shocked if there were that many in the wild - you'll need to re-write re-adapt them going forward.</p>
 <p class="post-p">That said, if you <span class="italic">have</span> written a plugin that you found usfeul and would like to keep using, the PyScript team would love to hear from you and what you'd find useful in the API as it evolves!</p>    
+
+<h3 class="post-h3"><code>import js</code> vs <code>from pyscript import window</code></h3>
+<p class="post-p">One of the niftiest things about Pyodide (and now Micropython+Wasm) is it's ability to semalessly <a href="https://pyodide.org/en/stable/usage/type-conversions.html#">proxy objects from JavaScript to Python</a> and back.</p>
+XXXXXXXXXXXX
+https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py
 
 <h3 class="post-h3">Style and Import Recommendations</h3>
 <p class="post-p">There's no getting around the fact that the browser's <a href="https://developer.mozilla.org/en-US/docs/Glossary/Main_thread">main thread</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">worker threads</a> are fundamentally different. Even with <a href="https://github.com/WebReflection/coincident">coincident</a> under the hood making passing proxies back and forth relatively painless, and Polyscript's Pythonic <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">XWorker wrapper</a> around it, there are things which are only permitted in one environment or the other. This could lead to pain points, where every PyScript code sample from now on could need to specify whether it's meant to run in the main thread, a worker, or either.</p>
