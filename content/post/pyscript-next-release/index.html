@@ -26,7 +26,7 @@ slug_image: 'py_2023_10_1_featured.png'
     <a href="#cpython-and-micropython">Python Versions</a> • 
     <a href="#running-code">Running Code</a> • 
     <a href="#tags-and-attributes">Script Tags and Attributes</a> • 
-    <a href="#config">Configuratino</a> • 
+    <a href="#config">Configuration</a> • 
     <a href="#migration">Migration Guide</a> • 
     <a href="#performance">Performance and Size</a> • 
     <a href="#announcements">A Teaser</a>
@@ -34,8 +34,8 @@ slug_image: 'py_2023_10_1_featured.png'
 
 <h2 class="post-h2" id="cpython-and-micropython">CPython and Micropython</h2>
 <p class="post-p">You can now choose whether to use CPython (via <a href="https://pyodide.org/en/stable/">Pyodide</a>) or <a href="https://micropython.org/">Micropython</a> to execute your code. For those unfamiliar with the latter, Micropython is a very lean Python interpreter originally written for use on microcontrollers, which has since been used <a href="https://www.youtube.com/watch?v=Vh_5Lz1mLq8">in space</a>, <a href="https://www.youtube.com/watch?v=YovngSLXoxw">in the lab</a>, and <a href="https://store.micropython.org/">in hobbyists' hands</a>. It's a reimplementation of (almost) all of Python with keen eyes toward memory usage and startup time, which makes it a very attractive tool on the web where milliseconds matter.</p>
-<p class="post-p">Note that while writing Micropython feels almost exactly like writing Python, they are <span class="italic">not</span> the same langauge and don't have the same underlying object model. This means that packages written for one generally don't work in the other - no <code>numpy</code>, <code>matplotlib</code>, or <code>scikit</code> in Micropython, for instance. For a list of the differences between the two languages, see <a href="https://docs.micropython.org/en/latest/genrst/index.html">Micropython Differences from CPython</a> from their documentation. </p>
-<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is. See the <a href="#micropython-size">performnace and size</a> section below for more details.</p>
+<p class="post-p">Note that while writing Micropython feels almost exactly like writing Python, they are <span class="italic">not</span> the same language and don't have the same underlying object model. This means that packages written for one generally don't work in the other - no <code>numpy</code>, <code>matplotlib</code>, or <code>scikit</code> in Micropython, for instance. For a list of the differences between the two languages, see <a href="https://docs.micropython.org/en/latest/genrst/index.html">Micropython Differences from CPython</a> from their documentation. </p>
+<p class="post-p">That said, if what you're interested in is writing Python code to manipulate data on the web and you don't need to dip too deeply into the standard library or PYPI's resources, I'd encourage you to give Micropython a shot - I was personally stunned at how fast the startup time is, and how small the download for its core is. See the <a href="#micropython-size">performance and size</a> section below for more details.</p>
 
 <h2 class="post-h2" id="running-code">Running Code with PyScript</h2>
 <p class="post-p">Just like in PyScript Classic, you can use PyScript on your page by adding a <code>&lt;script&gt;</code> tag that points to a specific url. Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but specifying a <code>type</code> of <code>module</code> is. Note too that the name of the file has changed from <code>pyscript.js</code> to <code>core.js</code>:</p>
@@ -43,7 +43,7 @@ slug_image: 'py_2023_10_1_featured.png'
 <!-- This Release -->
 <script type="module" src="https://pyscript.net/releases/2023.10.1/core.js"></script>
 {{< /highlight >}}
-<p class="post-p">Note that the specific Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodidea nd Micropoython only actually are downloaded/loaded in the browser when the first tag appears on the page.</p>
+<p class="post-p">Note that the specific Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide and Micropoython only actually are downloaded/loaded in the browser when the first tag appears on the page.</p>
 
 <h2 class="post-h2" id="tags-and-attributes">Script Tags and Attributes</h2>
 <h3 class="post-h3">Script Tags</h3>
@@ -205,11 +205,11 @@ print("Hello, world!")
 <h3 class="post-h3" id="files-config"><code>files</code></h3>
 <p class="post-p">Another, simpler way to load external files in Loads external resources at various URLs into the virtual file system. This <span class="font-semibold">added feature in this release has a much simpler interface than the (quite verbose) <code>[[fetch]]</code> syntax. See the <a href="https://docs.pyscript.net/2023.09.1.RC2/user-guide/#files">official documentation</a> for more details.</span></p>
 <h3 class="post-h3" id="plugins-config"><code>plugins</code></h3>
-<p class="post-p">A list of plugins, used to specif which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
+<p class="post-p">A list of plugins, used to specify which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
 <h3 class="post-h3" id="interpreter-config"><code>interpreter</code></h3>
 <p class="post-p">The release version of the interpreter (Pyodide or Micropython) to use; or, a URL pointing to a version of that runtime, which allows you to link to your own custom or local builds.</p>
 
-<h3 class="post-h3" id="events">Event Handling</h3>
+<h2 class="post-h2" id="events">Event Handling</h3>
 <p class="post-p">The syntax for event handling has shifted in this release. Any HTML element on the page can be assigned an attribute of <code>py-[event]</code> (or <code>mp-[event]</code>), where <code>[event]</code> is any of the <a href="https://developer.mozilla.org/en-US/docs/Web/Events">browser events</a> or a user-defined <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent">Custom Event</a>. The handler will be passed the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event">Event Object</a> representing that event.</p> 
 {{< highlight "html" "linenostart=1">}}
 <button id="one" py-click="foo">One</button>
@@ -243,7 +243,7 @@ print("Hello, world!")
 
 <h3 class="post-h3" id="events">Events are Different</h3>
 <p class="post-p">As discussed in the <a href="#events">events</a> section of this post, inline event handlers work differently than how they used to. Previously, inline event attributes were strings of Python code, which were <code>exec()</code>'d when the handler was invoked. Now, they're the name of a function in the Python global namespace to be called, and passed an Event object.</p>
-<p class="post-p">The one usage pattern that this doesn't accomodate (yet) is something like the following, since there's no way to directly pass arguments.</p>
+<p class="post-p">The one usage pattern that this doesn't accommodate (yet) is something like the following, since there's no way to directly pass arguments.</p>
 {{< highlight "html" >}}
 <button py-click="select_color('red')">Red</button>
 <button py-click="select_color('green')">Green</button>
@@ -320,7 +320,7 @@ print("Hello, world!")
 </div>
 
 <h3 class="post-h3">No <code>output</code> or <code>stderr</code> attributes</h3>
-<p class="post-p">The <a href="http://localhost:1313/post/whats-new-pyscript-2023-03-1/#output"><code>output and stderr</code></a> attributes of <code>&lt;py-script&gt;</code> (or <code>&lt;script type="py"&gt;</code> tags are not implemented in this release. We had included them in previous releases to accomodate use cases of using desktop-style code (i.e. that relies on <code>print</code> for output) to still output to somewhere on the page. I (personally) expect we'll re-implement them sometime soon, but there's some additional underlying architecture to be investigated first.</p>
+<p class="post-p">The <a href="http://localhost:1313/post/whats-new-pyscript-2023-03-1/#output"><code>output and stderr</code></a> attributes of <code>&lt;py-script&gt;</code> (or <code>&lt;script type="py"&gt;</code> tags are not implemented in this release. We had included them in previous releases to accommodate use cases of using desktop-style code (i.e. that relies on <code>print</code> for output) to still output to somewhere on the page. I (personally) expect we'll re-implement them sometime soon, but there's some additional underlying architecture to be investigated first.</p>
 
 <h3 class="post-h3">No More Magic Names</h3>
 <p class="post-p">In an effort to keep things cleaner, more predictable, and better-behaved with IDEs and linters, PyScript no longer imports any names into the Python namespace for you. This differs from the previous release, where the names <code>js</code>, <code>pyscript</code>, <code>Element</code>, <code>display</code>, and <code>HTML</code> were treated a bit like builtins, and imported prior to any user-written code.</p>
@@ -345,18 +345,18 @@ print("Hello, world!")
 {{< /highlight >}}
 {{< highlight "html" "linenostart=14">}}
     import js
-    js.console.log("Ellapsed Time:", js.Date.now() - js.startTime)
+    js.console.log("Elapsed Time:", js.Date.now() - js.startTime)
 {{< /highlight >}}
 {{< highlight "html" "linenostart=16">}}
 </script>
 </body>
 </html>
 {{< /highlight >}}
-<p class="post-p">Of course, teh specifics of the timing will vary widely from machine-to-machine and connection-to-connection. But for this informal test (on my particular laptop, on my particular Wifi, at this particular spot on my couch, on a Sunday afternoon), I found that the previous <code>2023.05.1</code> release averaged about 4.9 seconds, where the new <code>2023.09.1</code> release averaged around 3.4 seconds. That's roughly a 30% decrease in initialization time just for upgrading to the new version. Not bad!</p>
+<p class="post-p">Of course, the specifics of the timing will vary widely from machine-to-machine and connection-to-connection. But for this informal test (on my particular laptop, on my particular Wifi, at this particular spot on my couch, on a Sunday afternoon), I found that the previous <code>2023.05.1</code> release averaged about 4.9 seconds, where the new <code>2023.09.1</code> release averaged around 3.4 seconds. That's roughly a 30% decrease in initialization time just for upgrading to the new version. Not bad!</p>
 <h3 class="post-h3">Transfer Size</h3>
 <p class="post-p">There isn't an enormous difference in the total file size transferred to the browser between this release and the previous one: 5.4 MB previously vs. 5.2MB now. This makes some sense though - PyScript is still transferring the entire CPython interpreter (compiled to Web Assembly) to the browser; compared to that, the entire PyScript codebase is tiny in either case. But where both of the above metrics get blown out of the water is with...</p>
 <h3 class="post-h3" id="micropython-size">Micropython</h3>
-<p class="post-p">Take the above example, and replace <code>script type="py"</code> with <code>script type="mpy"</code> to switch to using Micropython. Now the transfer size drops to <span class="italic font-semibold">just over 250Kb</span> and the average startup time plummets to <span class="italic font-semibold">~200ms</span>. That's 200 milliseconds from page-load to start-of-script-execution. In relative terms (again, in my informal experiment), that's a transfer that's ~4% of the one needed for CPython/Pyodide, with roughly 6% of the loading time. Like I mentioned earlier - if you don't need additonal CPython packages or deep needs from the standard library, it's worth giving Micropython a try.</p>
+<p class="post-p">Take the above example, and replace <code>script type="py"</code> with <code>script type="mpy"</code> to switch to using Micropython. Now the transfer size drops to <span class="italic font-semibold">just over 250Kb</span> and the average startup time plummets to <span class="italic font-semibold">~200ms</span>. That's 200 milliseconds from page-load to start-of-script-execution. In relative terms (again, in my informal experiment), that's a transfer that's ~4% of the one needed for CPython/Pyodide, with roughly 6% of the loading time. Like I mentioned earlier - if you don't need additional CPython packages or deep needs from the standard library, it's worth giving Micropython a try.</p>
 <h2 class="post-h2" id="announcements">Two More Announcements - A Teaser</h2>
 <p class="post-p">In the next two weeks, I'm excited that I'll be able to share a couple of PyScript-based projects I've been working on for some time! The first is aimed at helping PyScript users get acclimated to its features and uses as quickly as possible. The second integrates PyScript on top of another existing platform, to bring the power of Python on the Web to even more users.</post-p>
 <p class="post-p">But it wouldn't be much of <span class="italic">teaser</span> if I just told you what they were, would it? Watch this space!</p>
