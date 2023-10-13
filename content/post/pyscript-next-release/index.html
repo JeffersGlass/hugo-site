@@ -200,12 +200,14 @@ print("Hello, world!")
 {{< highlight "html" "linenostart=9">}}
 </script>
 {{< /highlight >}}
-<h3 class="post-h3"><code>fetch</code></h3>
+<h3 class="post-h3" id="fetch-config"><code>fetch</code></h3>
 <p class="post-p">Loads external resources at various URLs into the virtual filesystem where Pyodide can interact with them. I previously detailed <a href="/post/whats-new-pyscript-2022-12-1/#paths">how <code>[[fetch]]</code> configurations work</a> in my release notes from version 2022.12.1; their usage has not changed.</p>
-<h3 class="post-h3"><code>files</code></h3>
+<h3 class="post-h3" id="files-config"><code>files</code></h3>
 <p class="post-p">Another, simpler way to load external files in Loads external resources at various URLs into the virtual file system. This <span class="font-semibold">added feature in this release has a much simpler interface than the (quite verbose) <code>[[fetch]]</code> syntax. See the <a href="https://docs.pyscript.net/2023.09.1.RC2/user-guide/#files">official documentation</a> for more details.</span></p>
-<h3 class="post-h3"><code>plugins</code></h3>
+<h3 class="post-h3" id="plugins-config"><code>plugins</code></h3>
 <p class="post-p">A list of plugins, used to specif which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
+<h3 class="post-h3" id="interpreter-config"><code>interpreter</code></h3>
+<p class="post-p">The release version of the interpreter (Pyodide or Micropython) to use; or, a URL pointing to a version of that runtime, which allows you to link to your own custom or local builds.</p>
 
 <h3 class="post-h3" id="events">Event Handling</h3>
 <p class="post-p">The syntax for event handling has shifted in this release. Any HTML element on the page can be assigned an attribute of <code>py-[event]</code> (or <code>mp-[event]</code>), where <code>[event]</code> is any of the <a href="https://developer.mozilla.org/en-US/docs/Web/Events">browser events</a> or a user-defined <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent">Custom Event</a>. The handler will be passed the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event">Event Object</a> representing that event.</p> 
@@ -241,7 +243,7 @@ print("Hello, world!")
 
 <h3 class="post-h3" id="events">Events are Different</h3>
 <p class="post-p">As discussed in the <a href="#events">events</a> section of this post, inline event handlers work differently than how they used to. Previously, inline event attributes were strings of Python code, which were <code>exec()</code>'d when the handler was invoked. Now, they're the name of a function in the Python global namespace to be called, and passed an Event object.</p>
-<p class="post-p">The one usage pattern that this doesn't accomodate (yet) is something like the following:</p>
+<p class="post-p">The one usage pattern that this doesn't accomodate (yet) is something like the following, since there's no way to directly pass arguments.</p>
 {{< highlight "html" >}}
 <button py-click="select_color('red')">Red</button>
 <button py-click="select_color('green')">Green</button>
@@ -270,16 +272,17 @@ print("Hello, world!")
 </script>
 {{< /highlight >}}
 
-<h3 class="post-h3">Plugins</h3>
+<h3 class="post-h3" id="plugins">Plugins</h3>
 <p class="post-p">The plugins system has been overhauled from the ground up, with an entirely different set of named hooks and actions. If you've written any plugins for PyScript Classic - and to be honest, because of the interim and relatively undocumented nature of that API, I'd be shocked if there were that many in the wild - you'll need to re-write re-adapt them going forward.</p>
 <p class="post-p">That said, if you <span class="italic">have</span> written a plugin that you found usfeul and would like to keep using, the PyScript team would love to hear from you and what you'd find useful in the API as it evolves!</p>    
 
-<h3 class="post-h3"><code>import js</code> vs <code>from pyscript import window</code></h3>
-<p class="post-p">One of the niftiest things about Pyodide (and now Micropython+Wasm) is it's ability to semalessly <a href="https://pyodide.org/en/stable/usage/type-conversions.html#">proxy objects from JavaScript to Python</a> and back.</p>
-XXXXXXXXXXXX
-https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py
+<h3 class="post-h3" id="import-js"><code>import js</code> vs <code>from pyscript import window</code></h3>
+<p class="post-p">One of the niftiest things about Pyodide (and now Micropython+Wasm) is it's ability to semalessly <a href="https://pyodide.org/en/stable/usage/type-conversions.html#">proxy objects from JavaScript to Python</a> and back. With Pyodide, the simplest way to do this is using the <a href="https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py"><code>import js</code></a> syntax, which imports objects from the JavaScript global namespace.</p>
+<p class="post-p">The things is, <code>from js import ...</code> always imports from the global namespace of the javascript environment where the Python interpreter is running, whether that's in the main thread or in a worker. But several key JavaScript objects, like the <code>document</code> and its access to the DOM, only exist in the main thread.</p>
+<p class="post-p">For that reason, PyScript has added a bit of magic in the form of <code>from pyscript import window</code> and <code>from pyscript import document</code>, which always return a reference to the <span class="italic">main thread's</span> global scope and document, respectively. In general, I'd encourage users who don't want to think too deeply about whether their code will be running in the main thread or in a worker to us <code>from pyscript import window</code> over <code>import js</code>, since your code will then (generally) run in either thread just fine.</p>
+<p class="post-p">Of course, there is some overhead in proxying to the main thread and back, so if you don't actually need access to the main thread's scope, you can continue using <code>import js</code> in typical pyodide fashion.</p>
 
-<h3 class="post-h3">Style and Import Recommendations</h3>
+<h3 class="post-h3" id="style-recs">Style and Import Recommendations</h3>
 <p class="post-p">There's no getting around the fact that the browser's <a href="https://developer.mozilla.org/en-US/docs/Glossary/Main_thread">main thread</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">worker threads</a> are fundamentally different. Even with <a href="https://github.com/WebReflection/coincident">coincident</a> under the hood making passing proxies back and forth relatively painless, and Polyscript's Pythonic <a href="https://github.com/pyscript/polyscript/tree/main/docs#xworker">XWorker wrapper</a> around it, there are things which are only permitted in one environment or the other. This could lead to pain points, where every PyScript code sample from now on could need to specify whether it's meant to run in the main thread, a worker, or either.</p>
 <p class="post-p"><a href="https://pyodide.org/en/0.23.2/usage/type-conversions.html#type-translations-using-js-obj-from-py"><code>import js</code></a> is one such sticking point. This statement uses some Pyodide (and now Micropython) magic to import JavaScript objects from the current global scope and proxy them as Python objects. But the main thread local scope gets access to lots of useful goodies - specifically the DOM itself and DOM events - that aren't available in worker threads. So something simple like <code>from js import document</code> works in the main thread, but will break in a worker thread which has no access to the document.</p>
 <p class="post-p">To help smooth out this particular difficulty, a couple more (slightly) magically imports have been added - <code>from pyscript import window</code> and <code>from pyscript import document</code>, both of which refer to the <span class="font-semibold">main thread's</span> global scope and document, respectively, regardless of whether your code is running in the main thread or a worker. For this reason, in PyScript specifically, I recommend using <code>from pyscript import window</code> instead of <code>import js</code> most of the time - whenever you're working with DOM manipulation or events for sure. Of course, if you need access to the <span class="italic">worker thread's global JavaScript scope</span>, you can use <code>import js</code> as usual.</p>
