@@ -1,13 +1,27 @@
 ---
-title: "Web Assembly, Python, and the Input() Challenge"
-date: 2023-07-25T10:06:07-05:00
+title: "Web Assembly, Python, and the Input Challenge"
+date: 2023-10-10T10:06:07-05:00
 draft: true
 tags:
 - post
+- python
 description: "Description Here"
 ---
-<p class="post-p">... especially new users <a href="https://docs.python.org/3/tutorial/controlflow.html#if-statements"><code>Section 4 - More Control Code Tools</code></a>, the same place the <code>if</code> statement is introduced.</p>
-<p class="post-p">Unfortunately, this doesn't translate well to the web.</p>
+<p class="post-p">One of the challenges in translating Python to the web is this very simple piece of example code, pulled <a href="https://docs.python.org/3/tutorial/controlflow.html#if-statements">straight from the Python docs:</a></p>
+{{< highlight "python3" "linenostart=1" >}}
+x = int(input("Please enter an integer: "))
+
+if x < 0:
+    x = 0
+    print('Negative changed to zero')
+elif x == 0:
+    print('Zero')
+...
+{{< /highlight >}}
+
+<p class="post-p">The problem is with the <code class="code">input</code> statement, which essentially tells the Python interpreter's thread to block (i.e. lock up, freeze, do nothing) until it receives data from an external source (the terminal) that it can respond it.</p>
+<p class="post-p">Unfortunately, this doesn't translate well to the web. The idea of 'block the interpreter thread until something else wakes it up' is that, in the Browser, there is only one thread*! Hence, there's no 'something else' to come along and wake the interpreter's thread back up. Nor is there any equivalent of "ctrl+c", no way to "kill" that thread from within the browser - something would have to be listening for that singal and reach out and kill the thread with the interpreter... and again, there's only one thread.</p>
+
 
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
