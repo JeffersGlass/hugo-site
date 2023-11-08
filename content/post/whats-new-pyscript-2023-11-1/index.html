@@ -47,7 +47,7 @@ slug_image: 'py_2023_11_1_featured.png'
 {{< highlight "html" "linenosstart=1">}}
 <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
 {{< /highlight >}}
-<p class="warning-banner mt-4">Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but <span class="font-semibold underline">specifying a <code class="nocode">type</code> of <code class="nocode">module</code> is</span>. If you forget to add the <code>module</code> type, you'll see an error like:  <code style="color:darkred">Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules</code>:</p>
+<p class="mt-4 warning-banner">Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but <span class="font-semibold underline">specifying a <code class="nocode">type</code> of <code class="nocode">module</code> is</span>. If you forget to add the <code>module</code> type, you'll see an error like:  <code style="color:darkred">Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules</code>:</p>
 <p class="post-p">Note too that the name of the file has changed from <code>pyscript.js</code> to <code>core.js</code>.</p>
 <p class="post-p">One optimization: the Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide and Micropython only actually are downloaded/loaded in the browser when the first tag appears on the page.</p>
 
@@ -70,6 +70,21 @@ slug_image: 'py_2023_11_1_featured.png'
 <p class="post-p">This will execute code in the browser with no backend using the <a href="https://pyodide.org/en/stable/">Pyodide</a> runtime. The two types of tags (<code>&lt;script type="py"&gt;</code> and <code>&lt;py-script&gt;</code> are mostly* equivalent from PyScript's point of view, and I will use <code>&lt;script type="py"&gt;</code> for the rest of this post. The <code class="code">script</code> tag has the advantage of not pre-parsing its context as text prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a <code class="code">py-script</code> tag. <span class="font-semibold">In general, using <code>&lt;script type="py"&gt;</code> is preferred.</span></p>
 <h4 class="post-h4" id="run-micropython">Micropython</h4>
 <p class="post-p">To run code using <a href="#cpython-and-micropython">Micropython</a>, use either <code>&lt;mpy-script&gt;</code> or <code>&lt;script type="mpy"&gt;</code>. In general, these tags function exactly like their Pyodide counterparts. For brevity, I'll only illustrate the examples below with Pyodide tags; swap <code>type="py"</code> for <code>type="mpy"</code> in any of the code samples below to use Micropython.</p>
+{{< highlight "html" "linenostart=1" >}}
+<script type="mpy">
+{{< /highlight >}}
+{{< highlight "python" "linenostart=2" >}}
+    from pyscript import display
+    display("Wow that was fast!")
+
+    # The micropython stdlib is also availble
+    # https://docs.micropython.org/en/latest/library/index.html
+    import hashlib
+    display(str(hashlib.sha256("hello world!").digest()))
+{{< /highlight >}}
+{{< highlight "html" "linenostart=9" >}}
+</script>
+{{< /highlight >}}
 
 <h3 class="post-h3">Tag Attributes</h3>
 <h4 class="font-mono text-green-800 post-h4">src</h4>
@@ -110,7 +125,7 @@ print("Hello, world!")
 {{< /highlight >}}
 
 <h4 class="font-mono text-green-800 post-h4">target</h4>
-<p class="post-p">Specifies the ID of an element in the DOM that calls to store as a js variable called "<code>display()</code> in this script tag should write their values to.</p>
+<p class="post-p">By default, calls to <code>display()</code> output to the same location on the page as the PyScript tag itself. If you wish the output produced by <code>display()</code> to appear somewhere else on the page, you can specify that location using the <code>target</code> attribute, which takes a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">CSS Selector</a>:</p>
 {{< highlight "html" "linenostart=1">}}
 <div id="foo"></div>
 <p>------</p>

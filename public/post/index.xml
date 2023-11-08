@@ -57,7 +57,7 @@
 &lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;https://pyscript.net/releases/2023.11.1/core.js&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;p class=&#34;warning-banner mt-4&#34;&gt;Note that previous PyScript releases required the &lt;code&gt;defer&lt;/code&gt; attribute on this tag - that&#39;s no longer necessary, but &lt;span class=&#34;font-semibold underline&#34;&gt;specifying a &lt;code class=&#34;nocode&#34;&gt;type&lt;/code&gt; of &lt;code class=&#34;nocode&#34;&gt;module&lt;/code&gt; is&lt;/span&gt;. If you forget to add the &lt;code&gt;module&lt;/code&gt; type, you&#39;ll see an error like:  &lt;code style=&#34;color:darkred&#34;&gt;Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules&lt;/code&gt;:&lt;/p&gt;
+&lt;p class=&#34;mt-4 warning-banner&#34;&gt;Note that previous PyScript releases required the &lt;code&gt;defer&lt;/code&gt; attribute on this tag - that&#39;s no longer necessary, but &lt;span class=&#34;font-semibold underline&#34;&gt;specifying a &lt;code class=&#34;nocode&#34;&gt;type&lt;/code&gt; of &lt;code class=&#34;nocode&#34;&gt;module&lt;/code&gt; is&lt;/span&gt;. If you forget to add the &lt;code&gt;module&lt;/code&gt; type, you&#39;ll see an error like:  &lt;code style=&#34;color:darkred&#34;&gt;Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules&lt;/code&gt;:&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;Note too that the name of the file has changed from &lt;code&gt;pyscript.js&lt;/code&gt; to &lt;code&gt;core.js&lt;/code&gt;.&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;One optimization: the Python runtime used (Pyodide or Micropython) is not bootstrapped until the first &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt; or &lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; tag is encountered on the page. That is, if you&#39;re injecting PyScript tags dynamically, the Pyodide and Micropoython only actually are downloaded/loaded in the browser when the first tag appears on the page.&lt;/p&gt;
 
@@ -95,6 +95,42 @@
 &lt;p class=&#34;post-p&#34;&gt;This will execute code in the browser with no backend using the &lt;a href=&#34;https://pyodide.org/en/stable/&#34;&gt;Pyodide&lt;/a&gt; runtime. The two types of tags (&lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; and &lt;code&gt;&amp;lt;py-script&amp;gt;&lt;/code&gt; are mostly* equivalent from PyScript&#39;s point of view, and I will use &lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; for the rest of this post. The &lt;code class=&#34;code&#34;&gt;script&lt;/code&gt; tag has the advantage of not pre-parsing its context as text prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a &lt;code class=&#34;code&#34;&gt;py-script&lt;/code&gt; tag. &lt;span class=&#34;font-semibold&#34;&gt;In general, using &lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; is preferred.&lt;/span&gt;&lt;/p&gt;
 &lt;h4 class=&#34;post-h4&#34; id=&#34;run-micropython&#34;&gt;Micropython&lt;/h4&gt;
 &lt;p class=&#34;post-p&#34;&gt;To run code using &lt;a href=&#34;#cpython-and-micropython&#34;&gt;Micropython&lt;/a&gt;, use either &lt;code&gt;&amp;lt;mpy-script&amp;gt;&lt;/code&gt; or &lt;code&gt;&amp;lt;script type=&#34;mpy&#34;&amp;gt;&lt;/code&gt;. In general, these tags function exactly like their Pyodide counterparts. For brevity, I&#39;ll only illustrate the examples below with Pyodide tags; swap &lt;code&gt;type=&#34;py&#34;&lt;/code&gt; for &lt;code&gt;type=&#34;mpy&#34;&lt;/code&gt; in any of the code samples below to use Micropython.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;mpy&amp;#34;&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; display
+    display(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Wow that was fast!&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# The micropython stdlib is also availble&lt;/span&gt;
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# https://docs.micropython.org/en/latest/library/index.html&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;hashlib&lt;/span&gt;
+    display(&lt;span style=&#34;color:#366&#34;&gt;str&lt;/span&gt;(hashlib&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;sha256(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;hello world!&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;digest()))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
 &lt;h3 class=&#34;post-h3&#34;&gt;Tag Attributes&lt;/h3&gt;
 &lt;h4 class=&#34;font-mono text-green-800 post-h4&#34;&gt;src&lt;/h4&gt;
@@ -172,7 +208,7 @@
 &lt;/div&gt;
 
 &lt;h4 class=&#34;font-mono text-green-800 post-h4&#34;&gt;target&lt;/h4&gt;
-&lt;p class=&#34;post-p&#34;&gt;Specifies the ID of an element in the DOM that calls to store as a js variable called &#34;&lt;code&gt;display()&lt;/code&gt; in this script tag should write their values to.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;By default, calls to &lt;code&gt;display()&lt;/code&gt; output to the same location on the page as the PyScript tag itself. If you wish the output produced by &lt;code&gt;display()&lt;/code&gt; to appear somewhere else on the page, you can specify that location using the &lt;code&gt;target&lt;/code&gt; attribute, which takes a &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors&#34;&gt;CSS Selector&lt;/a&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
 &lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
