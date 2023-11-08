@@ -198,7 +198,7 @@ if (!doNotTrack) {
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;module&#34;</span> <span style="color:#309">src</span><span style="color:#555">=</span><span style="color:#c30">&#34;https://pyscript.net/releases/2023.11.1/core.js&#34;</span>&gt;&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
 </div>
 </div>
-<p class="warning-banner mt-4">Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but <span class="font-semibold underline">specifying a <code class="nocode">type</code> of <code class="nocode">module</code> is</span>. If you forget to add the <code>module</code> type, you'll see an error like:  <code style="color:darkred">Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules</code>:</p>
+<p class="mt-4 warning-banner">Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but <span class="font-semibold underline">specifying a <code class="nocode">type</code> of <code class="nocode">module</code> is</span>. If you forget to add the <code>module</code> type, you'll see an error like:  <code style="color:darkred">Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules</code>:</p>
 <p class="post-p">Note too that the name of the file has changed from <code>pyscript.js</code> to <code>core.js</code>.</p>
 <p class="post-p">One optimization: the Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide and Micropoython only actually are downloaded/loaded in the browser when the first tag appears on the page.</p>
 
@@ -236,6 +236,42 @@ if (!doNotTrack) {
 <p class="post-p">This will execute code in the browser with no backend using the <a href="https://pyodide.org/en/stable/">Pyodide</a> runtime. The two types of tags (<code>&lt;script type="py"&gt;</code> and <code>&lt;py-script&gt;</code> are mostly* equivalent from PyScript's point of view, and I will use <code>&lt;script type="py"&gt;</code> for the rest of this post. The <code class="code">script</code> tag has the advantage of not pre-parsing its context as text prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a <code class="code">py-script</code> tag. <span class="font-semibold">In general, using <code>&lt;script type="py"&gt;</code> is preferred.</span></p>
 <h4 class="post-h4" id="run-micropython">Micropython</h4>
 <p class="post-p">To run code using <a href="#cpython-and-micropython">Micropython</a>, use either <code>&lt;mpy-script&gt;</code> or <code>&lt;script type="mpy"&gt;</code>. In general, these tags function exactly like their Pyodide counterparts. For brevity, I'll only illustrate the examples below with Pyodide tags; swap <code>type="py"</code> for <code>type="mpy"</code> in any of the code samples below to use Micropython.</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;mpy&#34;</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> display
+    display(<span style="color:#c30">&#34;Wow that was fast!&#34;</span>)
+
+    <span style="color:#09f;font-style:italic"># The micropython stdlib is also availble</span>
+    <span style="color:#09f;font-style:italic"># https://docs.micropython.org/en/latest/library/index.html</span>
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">hashlib</span>
+    display(<span style="color:#366">str</span>(hashlib<span style="color:#555">.</span>sha256(<span style="color:#c30">&#34;hello world!&#34;</span>)<span style="color:#555">.</span>digest()))</code></pre></td></tr></table>
+</div>
+</div>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
+</div>
+</div>
 
 <h3 class="post-h3">Tag Attributes</h3>
 <h4 class="font-mono text-green-800 post-h4">src</h4>
@@ -313,7 +349,7 @@ if (!doNotTrack) {
 </div>
 
 <h4 class="font-mono text-green-800 post-h4">target</h4>
-<p class="post-p">Specifies the ID of an element in the DOM that calls to store as a js variable called "<code>display()</code> in this script tag should write their values to.</p>
+<p class="post-p">By default, calls to <code>display()</code> output to the same location on the page as the PyScript tag itself. If you wish the output produced by <code>display()</code> to appear somewhere else on the page, you can specify that location using the <code>target</code> attribute, which takes a <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">CSS Selector</a>:</p>
 <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
