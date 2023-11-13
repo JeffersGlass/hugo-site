@@ -7,7 +7,7 @@ tags:
 - python
 - pyscript-next
 description: "What's new and what's changed in the newest PyScript release"
-slug_image: 'py_2023_11_1_featuredx.png'
+slug_image: 'py_2023_11_1_featured.png'
 ---
 
 <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
@@ -49,7 +49,7 @@ slug_image: 'py_2023_11_1_featuredx.png'
 {{< /highlight >}}
 <p class="mt-4 warning-banner">Note that previous PyScript releases required the <code>defer</code> attribute on this tag - that's no longer necessary, but <span class="font-semibold underline">specifying a <code class="nocode">type</code> of <code class="nocode">module</code> is</span>. If you forget to add the <code>module</code> type, you'll see an error like:  <code style="color:darkred">Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules</code>:</p>
 <p class="post-p">Note too that the name of the file has changed from <code>pyscript.js</code> to <code>core.js</code>.</p>
-<p class="post-p">One optimization: the Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide and Micropython only actually are downloaded/loaded in the browser when the first tag appears on the page.</p>
+<p class="post-p">One optimization: the Python runtime used (Pyodide or Micropython) is not bootstrapped until the first <code>&lt;py-script&gt;</code> or <code>&lt;script type="py"&gt;</code> tag is encountered on the page. That is, if you're injecting PyScript tags dynamically, the Pyodide and Micropoython only actually are downloaded/loaded in the browser when the first tag appears on the page.</p>
 
 <h2 class="post-h2" id="tags-and-attributes">Script Tags and Attributes</h2>
 <h3 class="post-h3">Script Tags</h3>
@@ -67,7 +67,7 @@ slug_image: 'py_2023_11_1_featuredx.png'
 </script>
 {{< /highlight >}}
 
-<p class="post-p">This will execute code in the browser with no backend using the <a href="https://pyodide.org/en/stable/">Pyodide</a> runtime. The two types of tags (<code>&lt;script type="py"&gt;</code> and <code>&lt;py-script&gt;</code> are mostly* equivalent from PyScript's point of view, and I will use <code>&lt;script type="py"&gt;</code> for the rest of this post. The <code class="code">script</code> tag has the advantage of not pre-parsing its context as text prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a <code class="code">py-script</code> tag. <span class="font-semibold">In general, using <code>&lt;script type="py"&gt;</code> is preferred.</span></p>
+<p class="post-p">This will execute code in the browser with no backend using the <a href="https://pyodide.org/en/stable/">Pyodide</a> runtime. The two types of tags (<code>&lt;script type="py"&gt;</code> and <code>&lt;py-script&gt;</code> are mostly* equivalent from PyScript's point of view, and I will use <code>&lt;script type="py"&gt;</code> for the rest of this post. The <code class="code">script</code> tag has the advantage of not pre-parsing its context as HTML prior to being interpreted as code, which can cause parsing errors for code that looks like HTML tags inside a <code class="code">py-script</code> tag. <span class="font-semibold">In general, using <code>&lt;script type="py"&gt;</code> is preferred.</span></p>
 <h4 class="post-h4" id="run-micropython">Micropython</h4>
 <p class="post-p">To run code using <a href="#cpython-and-micropython">Micropython</a>, use either <code>&lt;mpy-script&gt;</code> or <code>&lt;script type="mpy"&gt;</code>. In general, these tags function exactly like their Pyodide counterparts. For brevity, I'll only illustrate the examples below with Pyodide tags; swap <code>type="py"</code> for <code>type="mpy"</code> in any of the code samples below to use Micropython.</p>
 {{< highlight "html" "linenostart=1" >}}
@@ -348,7 +348,7 @@ print("Hello, world!")
 {{< /highlight >}}
 <p class="post-p">See the <a href="https://docs.pyscript.net/2023.11.1/user-guide/configuration/#files">official documentation</a> for more details on how templating works, and further examples.</span></p>
 <h3 class="post-h3" id="plugins-config"><code>plugins</code></h3>
-<p class="post-p">A list of plugins, used to specify which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, the only built-in plugin is the <code>error</code> plugin, which causes Python and other errors to be displayed on the page. To disable this, use <code>plugins = ['!error']</code> in your configuration.</p>
+<p class="post-p">A list of plugins, used to specify which built-in plugins should <span class="italic">not</span> be included using an exclamation point. Currently, there are only a couple of built-in plugins - <code>error</code>, which causes Python and other errors to be displayed on the page; and <code>terminal</code>, discussed above. To disable this, use <code>plugins = ['!error']</code> in your configuration. As more plugins get added to the core, you can investigate the full listing in the <a href="https://github.com/pyscript/pyscript/tree/2023.11.1/pyscript.core/src/plugins">core/src/plugins folder</a> of the source code itself.</p>
 <h3 class="post-h3" id="interpreter-config"><code>interpreter</code></h3>
 <p class="post-p">The release version of the interpreter (Pyodide or Micropython) to use; or, a URL pointing to a version of that runtime, which allows you to link to your own custom or local builds.</p>
 <p class="post-p">Note that each release of PyScript is pinned to, and only officially supports, one release of Pyodide and one release of Micropython-in-WASM. The <code>interpreters</code> key doesn't imply additional compatibility - rather, it's meant for use by experimenters testing custom builds of Pyodide, or bleeding-edge builds, or those with specific optional flags enabled etc.</p>
@@ -449,10 +449,10 @@ print("Hello, world!")
 <script type="py">
 {{< /highlight >}}
 {{< highlight "python" "linenostart=2">}}
-    from pyscript import window
-    p  = window.document.createElement("p")
+    from pyscript import document
+    p  = document.createElement("p")
     p.innerText = "Hello, world"
-    window.document.body.appendChild(p)
+    document.body.appendChild(p)
 {{< /highlight >}}
 {{< highlight "html" "linenostart=6">}}
 </script>
@@ -465,10 +465,10 @@ print("Hello, world!")
 <script type="py">
 {{< /highlight >}}
 {{< highlight "python" "linenostart=2">}}
-    import js
-    p  = js.document.createElement("p")
+    from js import document
+    p  = document.createElement("p")
     p.innerText = "Hello, world"
-    js.document.body.appendChild(p)
+    document.body.appendChild(p)
 {{< /highlight >}}
 {{< highlight "html" "linenostart=6">}}
 </script>
