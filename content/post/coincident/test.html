@@ -5,13 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTest</title>
     <script src="mini-coi.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        button:disabled{
+            color: white;
+            background-color: #993333;
+        }
+    </style>
 </head>
 <body>
+    <label for="digits">Digits of Pi to Calculate?</label><br>
+    <input type="text" name="digits" id="inp-digits" class="border-2 border-gray-500" value="4"><br><br>
+    <button id="btn-calc" class="p-1 bg-gray-200 border-2 border-gray-500 rounded-md">Calculate</button><br>
+    <hr>
+    <p><span class="text-2xl font-semibold">π:</span> <span id="output" class="font-semibold text-green-800">xxx</span><span id="ellipsis"></span></p>
+    <progress id="digits1" max="100" value="35"></progress>
+    <hr>
+    <p id="clock"></p>
+    <script>
+        function updateClock(){
+            document.getElementById("clock").innerText = Date();
+            setTimeout(updateClock, 200);
+        }
+        updateClock()
+    </script>
     <script type="module">
-        import coincident from 'https://unpkg.com/coincident';
-        const worker = new Worker('./worker.js', {type: 'module'});
-        // set a sync or async callback to return a serializable answer
-        coincident(worker).input = value => prompt(value);
+        import coincident from 'https://unpkg.com/coincident/window';
+        const {proxy} = coincident(new Worker('./worker.js', {type: 'module'}));
+        proxy.completionAlert = () => {
+            alert("The calculation was finished!")
+          };
+        console.log("main done")
     </script>
 </body>
 </html>

@@ -15,15 +15,24 @@ description: "Using an proxy library for synchronizing with Web Workers"
 <p class="post-">To give ourselves a practical example to work with, let's pick a technical problem that would benefit from spinning off some work into a worker thread. Namely, let's create a page that asks the user <span class="font-semibold">how many digits of Pi they want to calculate</span>, then spins up a worker to actually calculate them, and displays a progress bar while it does so. It will look something like this:</p>
 <div class="w-full p-2 m-6 bg-gray-100 border-2 border-gray-200 md:w-1/3">
     <label for="digits">Digits of Pi to Calculate?</label><br>
-    <input type="text" name="digits" id="digits1" class="border-2 border-gray-500" value="100"><br><br>
-    <button class="p-1 bg-gray-200 border-2 border-gray-500 rounded-md">Calculate</button><br>
+    <input type="text" name="digits" id="digits1" class="border-2 border-gray-500" value="8"><br><br>
+    <button class="p-1 bg-gray-200 border-2 border-gray-500 rounded-md" disabled>Calculate</button><br>
     <hr>
     <p><span class="text-2xl font-semibold">π:</span> <span class="font-semibold text-green-800">3.1415926...</span></p>
     <progress id="digits1" max="100" value="35"></progress>
+    <p id="clock1"></p>
+    <script>
+        function updateClock(){
+            document.getElementById("clock1").innerText = Date();
+            setTimeout(updateClock, 200);
+        }
+        updateClock()
+    </script>
 </div>
 
 <p class="post-p">Since it's always nice to work to a specification, let's lay out our toy site's features:
     <ul class="py-2 pl-8 text-justify list-disc list-outside;">
+        <li>The clock runs in real time, to prove none of our worker code blocks the main thread</li>
         <li>The user can type in a number into the input box</li>
         <li>When the user clicks the 'Calculate' button, a web worker will be spun up to calculate the required number of digits</li>
         <li>While the calculation is running, the 'Calculate' button will read "calculating" and the button will be disabled</li>
@@ -44,26 +53,57 @@ description: "Using an proxy library for synchronizing with Web Workers"
 <p class="post-p">So, let's get building!</p>
 
 <h3 class="post-h3">The HTML</h3>
-<p class="p">Since this writeup is really about an interesting JS library and not web development, I'll just drop the HTML we'll be using in here as-is. I've omitted all the styling that the examples on this page will be using, which is left as an excercise to the reader. (Or 'view source' if you're curious.)</p>
+<p class="p">Since this writeup is really about an interesting JS library and not web development, I'll just drop the HTML we'll be using in here as-is. I've omitted all the styling that the examples on this page will be using, which is left as an excercise to the reader. (Or 'view source' if you're curious.) The only at-all fancy thing is the clock, which I've added just to prove that the worker code doesn't tie up the main thread:</p>
+
 <div class="p-2 m-4 bg-gray-300 rounded-lg">
 <p class="text-sm text-gray-700">index.html</p>
 {{< highlight "html" "linenostart=1" >}}
 <label for="digits">Digits of Pi to Calculate?</label>
 <input type="text" name="digits" id="inp-digits">
 <button id="btn-calc">Calculate</button>
-<p>π: <span id="output"></span></p>
+<p>π: <span id="output"></span><span id="ellipsis"></span></p>
 <progress id="progress" max="100" value="o"></progress>
+<!-- The following displays the clock:-->
+<p id="clock"></p>
+<script>
+    function updateClock(){
+        document.getElementById("clock").innerText = Date();
+        setTimeout(updateClock, 200);
+    }
+    updateClock()
+</script>
 {{< /highlight >}}
 </div>
 
-<h3 class="post-h3"></h3>
+<h3 class="post-h3">The Math</h3>
+<p class="post-">Similarly briefly, here's the (deliberately slow!) formula we'll be using to calculate digits of pi, using the <a href="https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80">Leibniz formula</a>:</p>
+<div class="p-2 m-4 bg-green-300 rounded-lg">
+{{< highlight "js" "linenostart=1" >}}
+function calc_pi_gl_series(digits){
+    let value = 1
+    let i = 1
+    let term = 0;
+
+    do {
+        term = ((-1) ** i)/(2*i + 1) // 1 - 1/3 + 1/5 - 1/7 + 1/9 ...
+        value += term
+        i += 1
+    } while (Math.abs(4 * term) > (1/10**digits))
+    return value * 4
+}
+{{< /highlight >}}
+</div>
+<p class="post-p">This formula takes 2 Billion (that's 2,000,000,000) iterations to calculate just 10 digits of pi. Now there's any excuse to offload something to a worker thread if I ever saw one!</p>
+
+<h3 class="post-h3">The Main-Thread Code</h3>
+<p class="post-p">Now it's time to actually start using coincident to wire up our code</p>
 
 
 <div class="p-2 m-4 bg-blue-300 rounded-lg">
 <p class="text-sm text-blue-700">main.html</p>
 {{< highlight "html" "linenostart=1" >}}
 <script type="module">
-    import coincident from 'https://unpkg.com/coincident';
+    import coincident from 'https://unpkg.com/coincident/window';
     const worker = new Worker('./worker.js', {type: 'module'});
     // set a sync or async callback to return a serializable answer
     coincident(worker).input = value => prompt(value);
