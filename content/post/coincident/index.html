@@ -1,0 +1,39 @@
+---
+title: "Coincident"
+date: 2023-11-13T05:51:36-06:00
+draft: true
+tags:
+- javascript
+- Web Workers
+description: "Using an proxy library for synchronizing with Web Workers"
+---
+<p class="post-p">For many long years, each tab in a web browser (and before that, each window) was limited to a single thread to do <span class="italic">everything</span> - render the page, run JavaScript, handle CSS animations, etc. And while it's still true that each tab only gets one <span class="italic">main</span> thread, developers now have the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Web Worker API</a> to spin up additional "worker threads" to "do work" without locking up everything on the page.</p>
+<p class="post-p">The issue? Worker Threads and the Main Thread are not created equal. The main thread gets access to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model">the DOM</a> (which is to say, the page itself), nor to events that would bubble up and down on the DOM. This makes handling DOM manipulation from within a Worker quite tricky - you need to develop some way to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage">pass messages</a> back and forth to the worker in a meaningful way. Several wrappers for this messaging process have developed over time - Google's <a href="https://github.com/GoogleChromeLabs/comlink">Comlink</a> (and by extension Pyodide's <a href="https://github.com/pyodide/synclink">Synclink</a>), BuildIO's <a href="https://github.com/BuilderIO/partytown">PartyTown</a>, <a href="https://github.com/developit/workerize">Workerize</a> and its slimmed-down form <a href="https://github.com/developit/greenlet">Greenlet</a>, <a href="https://github.com/andywer/threads.js">threads.js</a>, and so on.</p>
+<p class="post-p">Today, I want to explore <a href="https://github.com/WebReflection/coincident">Coicident</a>, the proxy library that <a href="/post/whats-new-pyscript-2023-11-1">the most Recent PyScript release</a> is using for worker orchestration.</p>
+
+
+
+<div class="p-2 m-4 bg-blue-300 rounded-lg">
+<p class="text-sm text-blue-700">main.html</p>
+{{< highlight "html" "linenostart=1" >}}
+<script type="module">
+    import coincident from 'https://unpkg.com/coincident';
+    const worker = new Worker('./worker.js', {type: 'module'});
+    // set a sync or async callback to return a serializable answer
+    coincident(worker).input = value => prompt(value);
+</script>
+{{< /highlight >}}
+</div>
+
+<div class="p-2 m-4 bg-yellow-300 rounded-lg">
+<p class="text-sm text-yellow-700">worker.js</p>
+{{< highlight "js" "linenostart=1" >}}
+import coincident from 'https://unpkg.com/coincident';
+
+console.log('asking for an input');
+// pauses in a non blocking way the worker until the answer has been received
+console.log('input', coincident(self).input('what is 1 + 2 ?'));
+console.log('input received');
+{{< /highlight >}}
+</div>
+
