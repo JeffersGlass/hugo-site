@@ -42,8 +42,9 @@ function do_calculation(){
     proxy.completionAlert()
 }
 
-const btn = document.getElementById("btn-calc")
-btn.addEventListener("click", do_calculation)
+proxy.do_calculation = do_calculation
+
+
 
 
 //proxy.greetings();
