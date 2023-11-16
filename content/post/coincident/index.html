@@ -53,7 +53,8 @@ description: "Using an proxy library for synchronizing with Web Workers"
 <p class="post-p">So, let's get building!</p>
 
 <h3 class="post-h3">The HTML</h3>
-<p class="p">Since this writeup is really about an interesting JS library and not web development, I'll just drop the HTML we'll be using in here as-is. I've omitted all the styling that the examples on this page will be using, which is left as an excercise to the reader. (Or 'view source' if you're curious.) The only at-all fancy thing is the clock, which I've added just to prove that the worker code doesn't tie up the main thread:</p>
+<p class="post-p">Since this writeup is really about an interesting JS library and not web development, I'll just drop the HTML we'll be using in here as-is. I've omitted all the styling that the examples on this page will be using, which is left as an excercise to the reader. (Or 'view source' if you're curious.)</p>
+<p class="post-p"></p>The only at-all fancy thing is the clock, which I've added just to prove that the worker code doesn't tie up the main thread. The tag <code>&lt;script type="module" src="main.js"&gt;</code> references the JavaScript file we'll write in a moment that will run our main-thread code:</p>
 
 <div class="p-2 m-4 bg-gray-300 rounded-lg">
 <p class="text-sm text-gray-700">index.html</p>
@@ -73,6 +74,7 @@ description: "Using an proxy library for synchronizing with Web Workers"
     }
     updateClock()
 </script>
+<script type="module" src="main.js"></script>
 {{< /highlight >}}
 </div>
 
@@ -96,31 +98,104 @@ function calc_pi_gl_series(digits){
 </div>
 <p class="post-p">This formula takes 2 Billion (that's 2,000,000,000) iterations to calculate just 10 digits of pi. Now there's any excuse to offload something to a worker thread if I ever saw one!</p>
 
-<h3 class="post-h3">The Main-Thread Code</h3>
-<p class="post-p">Now it's time to actually start using coincident to wire up our code</p>
-
+<h3 class="post-h3">Code Setup</h3>
+<p class="post-p">Now it's time to actually start using coincident to wire up our code. We'll start by importing the <code>coincident</code> module from our favorite npm proxy. (There are a few different endpoints for the module, but <code>coincident/window</code> will be the most versatile for our purposes).</p>
+<a href="">We'll <a href="https://developer.mozilla.org/en-US/docs/Web/API/Worker">the usual Worker 'constructor'</a>, but wrap it in a call to <code>coincident</code> like so:</p>
 
 <div class="p-2 m-4 bg-blue-300 rounded-lg">
-<p class="text-sm text-blue-700">main.html</p>
-{{< highlight "html" "linenostart=1" >}}
-<script type="module">
-    import coincident from 'https://unpkg.com/coincident/window';
-    const worker = new Worker('./worker.js', {type: 'module'});
-    // set a sync or async callback to return a serializable answer
-    coincident(worker).input = value => prompt(value);
-</script>
+<p class="text-sm text-blue-700">main.js</p>
+{{< highlight "js" "linenostart=1" >}}
+import coincident from 'https://unpkg.com/coincident/window';
+const {proxy} = coincident(new Worker('./worker.js', {type: 'module'}));
+{{< /highlight >}}
+</div>
+
+<p class="post-p">We'll also need to start a <code>worker.js</code> file to hold the code our worker will run, and import coincident there. Notice we're also pulling out the <code>window</code> attribute in the import inside the worker - it's purpose will also be explained soon.</p>
+<p class="post-p">For the remainder of this post, since we'll often be making changes to the main thread and worker JavaScript at the same time, I'll pair the code blocks together like this:</p>
+
+<div class="m-2 p-2 border-4 border-gray-300 bg-gray-100 rounded-xl">
+<div class="p-2 m-4 bg-blue-300 rounded-lg">
+<p class="text-sm text-blue-700">main.js</p>
+{{< highlight "js" "linenostart=1" >}}
+import coincident from 'https://unpkg.com/coincident/window';
+const {proxy} = coincident(new Worker('./worker.js', {type: 'module'}));
+{{< /highlight >}}
+</div>
+    
+<div class="p-2 m-4 bg-yellow-300 rounded-lg">
+<p class="text-sm text-yellow-700">worker.js</p>
+{{< highlight "js" "linenostart=1" >}}
+import coincident from 'https://unpkg.com/coincident/window';
+const {proxy, window} = coincident(self);
+{{< /highlight >}}
+</div>
+</div> 
+
+<h3 class="post-h3" id="add-math">Add the Math</h3>
+<p class="post-p">We know we want our (terribly inefficient) math to run in th e worker thread, so let's copy that over into <code>worker.js</code>. <span class="italic">I'm omitting the body here for brevity; you can find it above.</span></p>
+<p class="post-p">But how do we actually wire up the function to be run when we click the button? Why, with good old <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"><code>addEventListener()</code> of course!</a></p>
+<div class="m-2 p-2 border-4 border-gray-300 bg-gray-100 rounded-xl">
+<div class="p-2 m-4 bg-blue-300 rounded-lg">
+<p class="text-sm text-blue-700">main.js</p>
+{{< highlight "js" "linenostart=1" >}}
+import coincident from 'https://unpkg.com/coincident/window';
+const {proxy} = coincident(new Worker('./worker.js', {type: 'module'}));
 {{< /highlight >}}
 </div>
 
 <div class="p-2 m-4 bg-yellow-300 rounded-lg">
 <p class="text-sm text-yellow-700">worker.js</p>
-{{< highlight "js" "linenostart=1" >}}
-import coincident from 'https://unpkg.com/coincident';
+{{< highlight "js" "linenostart=1,hl_lines=4-11" >}}
+import coincident from 'https://unpkg.com/coincident/window';
+const {proxy, window} = coincident(self);
 
-console.log('asking for an input');
-// pauses in a non blocking way the worker until the answer has been received
-console.log('input', coincident(self).input('what is 1 + 2 ?'));
-console.log('input received');
+function calc_pi_gl_series(digits){ ... }
+
+function do_calculation(){
+    result = calc_pi_gl_seris(10); // hardcoded number of digits for now
+    console.log(result)
+
+const btn = window.document.getElementById("btn-calc")
+btn.addEventListener("click", do_calculation)
 {{< /highlight >}}
 </div>
+</div> 
 
+<p class="post-p">This is the first bit of actual Coincident magic we've seen - inside a worker, the <code>window</code> property that we grabbed from the coincident module is a <span class="font-semibold">trasparent proxy to the main thread's <code>window</code> object</span> - which is to say, the main thread's global namespace! This gives the worker access to event handling, the DOM, etc. in a fairly seamless way.</p>
+
+<ul class="post-ul font-semibold text-red-600">
+    <li>Show the other way to wire up events, awaiting on events from main thread using <code>proxy</code></li>
+    <li>Use window proxy to grab input element, do other formatting</li>
+    <li>Call proxy.alertCompletion from the worker</li>
+
+</ul>
+<style>
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+    .py-terminal{
+        font-family: 'Courier New', Courier, monospace;
+        min-height: 4em;
+        background-color: black;
+        color: white;
+    }
+    .invisible{
+        visibility: hidden;
+    }
+    .control-button{
+        padding: 0.5rem; 
+        background-color: #E5E7EB; 
+        border-radius: 0.375rem; 
+        border-width: 2px; 
+        border-color: #D1D5DB; 
+    }
+    .post-h2{
+        border-bottom-width: 2px; 
+        border-color: #F9FAFB; 
+        border-style: solid;
+    }
+    span[style*="display:block;width:100%;background-color:#d8dada"]{
+        background-color:#dee792 !important
+    }
+</style>
