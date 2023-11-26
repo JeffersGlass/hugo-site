@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTest</title>
+    <script src="mini-coi.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        button:disabled{
+            color: white;
+            background-color: #993333;
+        }
+    </style>
+</head>
+<body>
+    <p id="output"></p>
+    <hr>
+    <p id="clock"></p>
+    <script>
+        function updateClock(){
+            document.getElementById("clock").innerText = Date();
+            setTimeout(updateClock, 200);
+        }
+        updateClock()
+    </script>
+    <script type="module">
+        import coincident from 'https://unpkg.com/coincident/window';
+        const {proxy} = coincident(new Worker('./worker_possibilities.js', {type: 'module'}));
+        const obj = {"a": 1, "b": (value) => console.log(value * 2)}
+        proxy.f = (value) => {
+            console.log("FUNC!")
+            obj.b(value)
+          };
+    </script>
+</body>
+</html>
