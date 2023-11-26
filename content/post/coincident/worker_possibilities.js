@@ -1,9 +1,12 @@
 
-import {proxy, coincident} from 'https://unpkg.com/coincident/window';
+import {proxy, window} from 'https://unpkg.com/coincident/window';
 
 console.log("Worker runnning")
 
-proxy.f(5)
+window.getElementById("btn").addEventListener("click", () => {
+    console.log("Clicked from worker")
+    //proxy.f(5)
+})
 
 
 //proxy.greetings();
