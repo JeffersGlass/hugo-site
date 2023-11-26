@@ -1,53 +1,9 @@
 
-import coincident from 'https://unpkg.com/coincident/window';
+import {proxy, coincident} from 'https://unpkg.com/coincident/window';
 
 console.log("Worker runnning")
 
-const {proxy, window, isWindowProxy} = coincident(self);
-const {document} = window;
-
-function calc_pi_gl_series(digits, output_el){
-    let value = 1
-    let i = 1
-    let term = 0;
-    let highest_digit = 1
-
-    do {
-        term = ((-1) ** i)/(2*i + 1) // 1 - 1/3 + 1/5 - 1/7 + 1/9 ...
-        value += term
-        i += 1
-        if (Math.abs(4 * term) < (1/10**highest_digit)){
-            const newValue = Math.trunc((value * 4 * 10**(highest_digit-1)), highest_digit)/10**(highest_digit-1)
-            console.log(`New Value! ${newValue}`)
-            // Our error is now small enough that we can be confident in a new digit being correct
-            proxy.setDisplayValue(newValue)
-            //output_el.innerText = Math.trunc((value * 4 * 10**(highest_digit-1)), highest_digit)/10**(highest_digit-1)
-            highest_digit += 1
-        }
-    } while (Math.abs(4 * term) > (1/10**digits))
-    return Math.trunc((value * 4 * 10**(digits-1)), digits)/10**(digits-1)
-}
-
-function do_calculation(){
-    //Handle display changes
-    document.getElementById("ellipsis").innerText = "..."
-    const btn = document.getElementById("btn-calc")
-    btn.setAttribute("disabled", "")
-    btn.innerText = "Calculating..."
-
-    const digits = document.getElementById("inp-digits").value
-    const output_el = document.getElementById("output")
-    calc_pi_gl_series(digits, output_el)
-
-    document.getElementById("ellipsis").innerText = ""
-    btn.removeAttribute("disabled")
-    btn.innerText = "Calculate"
-    //proxy.completionAlert()
-}
-
-proxy.do_calculation = do_calculation
-
-
+proxy.f(5)
 
 
 //proxy.greetings();

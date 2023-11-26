@@ -32,9 +32,11 @@
     <script type="module">
         import coincident from 'https://unpkg.com/coincident/window';
         const {proxy} = coincident(new Worker('./worker.js', {type: 'module'}));
-        proxy.completionAlert = () => {
-            alert("The calculation was finished!")
+        proxy.setDisplayValue = (value) => {
+            console.log(`Setting value in main ${value}`)
+            document.getElementById("output").innerText = value
           };
+
         const btn = document.getElementById("btn-calc")
         btn.addEventListener("click", async () => await proxy.do_calculation())
         console.log("main done")
