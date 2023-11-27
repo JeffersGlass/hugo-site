@@ -1,0 +1,111 @@
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='{{.Get "id"}}'>{{.Get "title"}}</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        {{ .Inner }}
+    </div>
+    <div>
+        <div class="load-pyscript{{if isset .Params "vizfile"}} viz{{end}}"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="{{.Get "id"}}-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="{{.Get "id"}}-upload-input" name="{{.Get "id"}}-upload">
+                </div>
+                <div class="font-mono bg-gray-200" id="{{.Get "id"}}-output"></div>
+                {{ if isset .Params "vizfile" }}<div class="grid grid-cols-1 sm:grid-cols-2 sm:space-x-2">{{ end }}
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="{{.Get "id"}}-run-btn" py-click="main_{{.Get "id"}}">RUN</button></div>
+                {{ if isset .Params "vizfile" }}
+                <div>
+                    <script type="py" src="{{.Get "vizfile"}}"></script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="{{.Get "id"}}-viz-btn" py-click="viz_{{.Get "id"}}">RUN VISUALIZATION</button></div>
+                </div>
+                </div>{{ end }}
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('{{.Get "id"}}-upload-input')
+            </script>
+            {{ if isset .Params "file" }}<script type="py" src="{{.Get "file"}}"></script> {{ end }}
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="{{.Get "id"}}-viz"></div>
+
+    {{ $filepath := delimit (slice "content/post/advent-of-code-2023/" (.Get "file")) "" }}
+    {{ $filelines :=  len (split (os.ReadFile $filepath ) "\n") }}
+    {{ if isset .Params "vizfile" }}{{ $vizpath := delimit (slice "content/post/advent-of-code-2023/" (.Get "file")) "" }}{{ end }} 
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-{{.Get "id" | safeHTMLAttr }}="#{{.Get "id"}}-code" class="active tab code-title">{{.Get "id"}}.py</li>
+        {{ if isset .Params "vizfile" }}<li data-tab-target-{{.Get "id" | safeHTMLAttr}}="#{{.Get "id"}}-viz-code" class="tab code-title">{{.Get "id"}}-viz.py</li>{{ end }} 
+        {{ if isset .Params "morefiles" }}
+        {{ $morefiles := split ($.Get "morefiles") ","}}
+            {{ range $morefiles }}
+                {{ $id := delimit (slice ($.Get "id") .) ""}}
+                {{ $id = replace $id "/" "" }}
+                {{ $id = replace $id "." "" }}
+                <li data-tab-target-{{$.Get "id" | safeHTMLAttr}}="#{{ $id }}-code" class="tab code-title">{{ . }}</li>
+            {{ end }}
+        {{ end }}
+    </ul>
+
+    <div id="{{.Get "id"}}-code" data-tab-content-{{.Get "id" | safeHTMLAttr }} class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $filepath) "python" "" }}</div>
+        {{ if ge $filelines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+    </div>
+
+    {{ if isset .Params "vizfile" }}
+    {{ $vizpath := delimit (slice "content/post/advent-of-code-2023/" (.Get "vizfile")) "" }}
+    {{ $vizlines :=  len (split (os.ReadFile $vizpath ) "\n") }}
+    <div id="{{.Get "id"}}-viz-code" data-tab-content-{{.Get "id" | safeHTMLAttr }} class="tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $vizpath) "python" "" }}</div>
+        {{ if ge $vizlines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+    </div>
+    {{ end }} 
+
+    {{/* Additional files */}}
+
+    {{ if isset .Params "morefiles" }}
+        {{ $morefiles := split (.Get "morefiles") ","}}
+        {{ range $morefiles }}
+            {{ $morepath := delimit (slice "content/post/advent-of-code-2023/" . ) ""}}
+            {{ $morelines := len ( split ( os.ReadFile $morepath ) "\n")}}
+            {{ $id := delimit (slice ($.Get "id") .) ""}}
+            {{ $id = replace $id "/" "" }}
+            {{ $id = replace $id "." "" }}
+            <div id="{{ $id }}-code" data-tab-content-{{$.Get "id" | safeHTMLAttr }} class="tab-content md:col-span-2">
+                <div class="overflow-y-scroll border-4 max-h-76">{{ highlight (os.ReadFile $morepath) "python" "" }}</div>
+                {{ if ge $morelines 12 }} <div class="text-sm post-img-caption">Scroll to see complete code</div> {{ end }}
+            </div>
+        {{ end }}
+    {{ end }}
+
+</div>
+<script>
+    const tabs{{.Get "id" | safeJS }} = document.querySelectorAll('[data-tab-target-{{.Get "id" | safeJS }}]')
+    const tabContents{{.Get "id" | safeJS }} = document.querySelectorAll('[data-tab-content-{{.Get "id" | safeJS}}]')
+
+    tabs{{.Get "id" | safeJS }}.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTarget{{.Get "id" | title | safeJS }}
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContents{{.Get "id" | safeJS }}.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabs{{.Get "id" | safeJS}}.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
