@@ -1,6 +1,6 @@
 ---
 title: "What's New in PyScript 2023.11.2"
-date: 2023-11-27T11:30:42-05:00
+date: 2023-11-29T11:30:42-05:00
 draft: true
 tags:
 - pyscript
@@ -8,22 +8,27 @@ tags:
 description: "What's new and what's changed in PyScript 2023.11.2"
 slug_image: 'py_2023_11_2_featured.png'
 ---
-<p class="post-">With the <a href="post/whats-new-pyscript-2023-11-1">2023.11.1 release</a> of PyScript behind us, i.e. the "break the world" release, the PyScript team is looking to push out releases more frequently. We're hoping to integrate both quality-of-life and significant feature improvements at a faster pace, and to push out realeases to match.</p>
-<p class="post-p">With that, today PyScript released <a href="https://github.com/pyscript/pyscript/releases/tag/2023.11.2">version 2023.11.2</a>!</p>
+<p class="post-">With the <a href="post/whats-new-pyscript-2023-11-1">2023.11.1 release</a> of PyScript behind us, i.e. the "break the world" release, the PyScript team is looking to push out releases more frequently. We're hoping to integrate both quality-of-life and significant feature improvements at a faster pace, and to push out releases to match.</p>
+<p class="post-p">With that, today PyScript released <a href="https://github.com/pyscript/pyscript/releases/tag/2023.11.2">version 2023.11.2</a>! You can see the <a href="https://github.com/pyscript/pyscript/compare/2023.11.1...2023.11.2">detailed changelog here</a>.</p>
 <p class="post-p">It's worth remembering at this point that PyScript uses the <a href="https://calver.org/">CalVer</a> versioning system, where the parts of the version are YEAR.MONTH.RELEASE-NUMBER. That is, <span class="italic">there is no minor version component</span> of the release number, and all releases should be treated as potentially breaking. Given the speed at which PyScript is moving (and heck, the whole thing just got re-written from scratch), the versioning system accurately reflects that fact that things are going to break and change all the time.</p>
-<p class="post-p">That siad, there aren't too many terribly breaking things in this release - a <a href="https://github.com/pyscript/pyscript/pull/1857">better Error message when <code>input()</code> is used on the main thread</a> is a nice touch though. No, the biggest change is what's happening to <code>/latest</code>.</p>
+<p class="post-p">That siad, there aren't too many terribly breaking things in this release - a <a href="https://github.com/pyscript/pyscript/pull/1857">better Error message when <code>input()</code> is used on the main thread</a> is a UI nice touch. No, the biggest change is what's happening to <code>/latest</code>.</p>
 <h2 class="post-h2">PyScript Versions</h2>
 <p class="post-p">PyScript has had, up to this point, several valid URLs that it can be fetched from. In order from oldest to most-bleeding-edge, they are</p>
 <ul class="post-ul">
     <li><code class="code">https://pyscript.net/alpha/pyscript.js</code>: The original release link promoted at the <a href="https://anaconda.cloud/pyscript-pycon2022-peter-wang-keynote">PyCon 2022 Keynote</a></li>
     <li><code class="code">https://pyscript.net/releases/20XX.X.X/pyscript.js</code>: Pinned versions of each of the releases of PyScript. See below for a <a href="#pinned-release-list">complete list of pinned releases</a>.</li>
-    <li class="font-semibold"><code class="code">https://pyscript.net/latest/core.js</code> The most recent full release</li>
+    <li class="font-semibold text-red-800"><code class="code">https://pyscript.net/latest/core.js</code> The most recent full release</li>
     <li><code class="code">https://pyscript.net/unstable/core.js</code> Bleeding-edge builds; rebuilt on every merge to the <code>main</code> branch </li>
 </ul>
-<p class="post-p">The challenge in that highlighted item, the <code>/latest</code> version. It's very tempting to use - "hey, I want the most recent version, and here's an easy way to get it!" In press releases and official documentation, this was even the way pyscript <span class="italic">recommended</span> grabbing PyScript from a CDN. It's quick, it's easy, it's concise. So what's the problem?</p>
+<p class="post-p">The challenge is that highlighted item, the <code>/latest</code> version. It's very tempting to use - "hey, I want the most recent version, and here's an easy way to get it!" In press releases and official documentation, this was even the way pyscript <span class="italic">recommended</span> grabbing PyScript from a CDN. It's quick, it's easy, it's concise. So what's the problem?</p>
 <p class="post-p">It's an invitation to your code being broken.</p>
 <h2 class="post-h2">The <code>/latest</code> problem</h2>
-<p class="post-p"></p>
+<p class="post-p">Linking to <code>/latest</code>, just like leaving any dependency of a thing unpinned, is an active invitation to the developers of that thing to break your code. They can change, update, roll back as they please, and you would <span class="italic">welcome</span> that. I, Jeff Glass, have personally done it to you! I've made changes to the PyScript codebase before that have definitely broken the sites that link to <code>/latest</code> when the next release rollled you. You're welcome! That's what you wanted after all, right?</p>
+<p class="post-p">That's usually not the approach you'd take with your code. Which is why <code>/latest</code> is being deprecated, and will be removed from the release process in releases <code>2023.12.x</code> and later.</p>
+<p class="post-p">Of course, this change isn't made in a vacuum. We've added a <a href="https://docs.pyscript.net/2023.11.2/user-guide/first-steps/">a note in the documentation</a>, of course, as well as <a href="https://github.com/pyscript/pyscript/pull/1848">visible-on-the-page warning</a> to PyScript that yells at you if you're linking to <code>/latest</code>:</p>
+<div class="mb-4 py-error mx-4" style="border: 1px solid red; background: rgb(255, 221, 221); color: black; font-family: courier, monospace; white-space: pre; overflow-x: auto; padding: 8px; margin-top: 8px; ">Loading scripts from latest is deprecated and will be removed soon. Please use a specific version instead.</div>
+<p class="post-p">Please feel free to <a href="https://github.com/pyscript/pyscript/issues">come tell us</a> all the reasons why <code>/latest</code> is easier, more convenient, less frustrating, etc. But in the long term, we think allowing (and promoting) unpinned versions was the wrong move, and we're breaking from that now.</p>
+
 <hr>
 <h3 class="post-h3" id="pinned-release-list">List of Pinned Releases</h3>
 <p class="post-p">For posterity's sake, the complete list of pinned releases (as of today, November 29 2023) is:</p>
