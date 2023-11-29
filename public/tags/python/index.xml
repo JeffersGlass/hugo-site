@@ -7,7 +7,58 @@
     <description>Recent content in Python on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 07 Nov 2023 11:30:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 29 Nov 2023 11:30:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What&#39;s New in PyScript 2023.11.2</title>
+      <link>https://jeff.glass/post/whats-new-pyscript-2023-11-2/</link>
+      <pubDate>Wed, 29 Nov 2023 11:30:42 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/whats-new-pyscript-2023-11-2/</guid>
+      <description>&lt;p class=&#34;post-&#34;&gt;With the &lt;a href=&#34;post/whats-new-pyscript-2023-11-1&#34;&gt;2023.11.1 release&lt;/a&gt; of PyScript behind us, i.e. the &#34;break the world&#34; release, the PyScript team is looking to push out releases more frequently. We&#39;re hoping to integrate both quality-of-life and significant feature improvements at a faster pace, and to push out releases to match.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;With that, today PyScript released &lt;a href=&#34;https://github.com/pyscript/pyscript/releases/tag/2023.11.2&#34;&gt;version 2023.11.2&lt;/a&gt;! You can see the &lt;a href=&#34;https://github.com/pyscript/pyscript/compare/2023.11.1...2023.11.2&#34;&gt;detailed changelog here&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;It&#39;s worth remembering at this point that PyScript uses the &lt;a href=&#34;https://calver.org/&#34;&gt;CalVer&lt;/a&gt; versioning system, where the parts of the version are YEAR.MONTH.RELEASE-NUMBER. That is, &lt;span class=&#34;italic&#34;&gt;there is no minor version component&lt;/span&gt; of the release number, and all releases should be treated as potentially breaking. Given the speed at which PyScript is moving (and heck, the whole thing just got re-written from scratch), the versioning system accurately reflects that fact that things are going to break and change all the time.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;That siad, there aren&#39;t too many terribly breaking things in this release - a &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1857&#34;&gt;better Error message when &lt;code&gt;input()&lt;/code&gt; is used on the main thread&lt;/a&gt; is a UI nice touch. No, the biggest change is what&#39;s happening to &lt;code&gt;/latest&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;PyScript Versions&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript has had, up to this point, several valid URLs that it can be fetched from. In order from oldest to most-bleeding-edge, they are&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;https://pyscript.net/alpha/pyscript.js&lt;/code&gt;: The original release link promoted at the &lt;a href=&#34;https://anaconda.cloud/pyscript-pycon2022-peter-wang-keynote&#34;&gt;PyCon 2022 Keynote&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;https://pyscript.net/releases/20XX.X.X/pyscript.js&lt;/code&gt;: Pinned versions of each of the releases of PyScript. See below for a &lt;a href=&#34;#pinned-release-list&#34;&gt;complete list of pinned releases&lt;/a&gt;.&lt;/li&gt;
+    &lt;li class=&#34;font-semibold text-red-800&#34;&gt;&lt;code class=&#34;code&#34;&gt;https://pyscript.net/latest/core.js&lt;/code&gt; The most recent full release&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;https://pyscript.net/unstable/core.js&lt;/code&gt; Bleeding-edge builds; rebuilt on every merge to the &lt;code&gt;main&lt;/code&gt; branch &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;The challenge is that highlighted item, the &lt;code&gt;/latest&lt;/code&gt; version. It&#39;s very tempting to use - &#34;hey, I want the most recent version, and here&#39;s an easy way to get it!&#34; In press releases and official documentation, this was even the way pyscript &lt;span class=&#34;italic&#34;&gt;recommended&lt;/span&gt; grabbing PyScript from a CDN. It&#39;s quick, it&#39;s easy, it&#39;s concise. So what&#39;s the problem?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;It&#39;s an invitation to your code being broken.&lt;/p&gt;
+&lt;h2 class=&#34;post-h2&#34;&gt;The &lt;code&gt;/latest&lt;/code&gt; problem&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Linking to &lt;code&gt;/latest&lt;/code&gt;, just like leaving any dependency of a thing unpinned, is an active invitation to the developers of that thing to break your code. They can change, update, roll back as they please, and you would &lt;span class=&#34;italic&#34;&gt;welcome&lt;/span&gt; that. I, Jeff Glass, have personally done it to you! I&#39;ve made changes to the PyScript codebase before that have definitely broken the sites that link to &lt;code&gt;/latest&lt;/code&gt; when the next release rollled you. You&#39;re welcome! That&#39;s what you wanted after all, right?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;That&#39;s usually not the approach you&#39;d take with your code. Which is why &lt;code&gt;/latest&lt;/code&gt; is being deprecated, and will be removed from the release process in releases &lt;code&gt;2023.12.x&lt;/code&gt; and later.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, this change isn&#39;t made in a vacuum. We&#39;ve added a &lt;a href=&#34;https://docs.pyscript.net/2023.11.2/user-guide/first-steps/&#34;&gt;a note in the documentation&lt;/a&gt;, of course, as well as &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1848&#34;&gt;visible-on-the-page warning&lt;/a&gt; to PyScript that yells at you if you&#39;re linking to &lt;code&gt;/latest&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;mx-4 mb-4 py-error&#34; style=&#34;border: 1px solid red; background: rgb(255, 221, 221); color: black; font-family: courier, monospace; white-space: pre; overflow-x: auto; padding: 8px; margin-top: 8px; &#34;&gt;Loading scripts from latest is deprecated and will be removed soon. Please use a specific version instead.&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Please feel free to &lt;a href=&#34;https://github.com/pyscript/pyscript/issues&#34;&gt;come tell us&lt;/a&gt; all the reasons why &lt;code&gt;/latest&lt;/code&gt; is easier, more convenient, less frustrating, etc. But in the long term, we think allowing (and promoting) unpinned versions was the wrong move, and we&#39;re breaking from that now.&lt;/p&gt;
+
+&lt;hr&gt;
+&lt;h3 class=&#34;post-h3&#34; id=&#34;pinned-release-list&#34;&gt;List of Pinned Releases&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;For posterity&#39;s sake, the complete list of pinned releases (as of today, November 29 2023) is:&lt;/p&gt;
+&lt;ul class=&#34;py-2 pl-8 text-justify list-disc list-outside;&#34;&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2022.05.1/pyscript.js&lt;/code&gt; (synonymous with &lt;code&gt;alpha&lt;/code&gt;)&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2022.06.1/pyscript.js&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2022.09.1/pyscript.js&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2022.12.1/pyscript.js&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2023.03.1/pyscript.js&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2023.05.1/pyscript.js&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2023.11.1/core.js&lt;/code&gt; (note the change in file name)&lt;/li&gt;
+    &lt;li&gt;&lt;code class=&#34;code&#34;&gt;.../2023.11.2/core.js&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;style&gt;
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+</description>
+      &lt;
+    </item>
+    
     <item>
       <title>What&#39;s New in PyScript Next (2023.11.1)</title>
       <link>https://jeff.glass/post/whats-new-pyscript-2023-11-1/</link>
