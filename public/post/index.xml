@@ -7,7 +7,228 @@
     <description>Recent content in Blog Posts on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 29 Nov 2023 11:30:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 30 Nov 2023 07:23:16 -0600</lastBuildDate><atom:link href="https://jeff.glass/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Advent of Code 2023</title>
+      <link>https://jeff.glass/post/advent-of-code-2023/</link>
+      <pubDate>Thu, 30 Nov 2023 07:23:16 -0600</pubDate>
+      
+      <guid>https://jeff.glass/post/advent-of-code-2023/</guid>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Where does the time go?? Surely it can&#39;t be time for another &lt;a href=&#34;https://adventofcode.com/&#34;&gt;Advent of Code&lt;/a&gt; challenge? Alas, it&#39;s once again December, which means 25 more mini coding challenges for the next twenty five days. This will be my sixth year particpating in advent of code, and my fourth writing about it - you can check out my &lt;a href=&#34;tags/codeadvent/&#34;&gt;previous years&#39; Advent of Code posts&lt;/a&gt; as well, if you like.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As in years before, I&#39;ll be writing my solutions to run in &lt;a href=&#34;https://pyscript.net&#34;&gt;PyScript&lt;/a&gt;  right here in the browser window. Feel free to enter your own AoC input and test your answers right here on this page! All the computations run in your own browser window, so no AoC data is transmitted to me or any server, and there&#39;s zero overhead on my end, so test as many times as you like.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Personally, I have three goals in presenting these solutions: learn form the challenges themselves, dogfood the use of PyScript to learn where our gaps in functionality are, and demonstrate the use of Python in the browser. Here&#39;s hoping we can achieve all three.&lt;/p&gt;
+&lt;div id=&#34;TOC&#34; class=&#34;w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200&#34;&gt;
+    &lt;p class=&#34;text-2xl relative-anchor&#34; id=&#34;toc&#34;&gt;Table of Contents&lt;/p&gt;
+    &lt;div class=&#34;ml-8 font-semibold&#34; id=&#34;toc-contents&#34;&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day0&#39;&gt;Day 0: Testing the Machinery&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;As with past years, I&#39;m making use of Hugo&#39;s templating system to allow me to quickly write and share each day&#39;s code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The &lt;code&gt;get_input&lt;/code&gt; function handles getting input from the textarea or file upload.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day0-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day0-upload-input&#34; name=&#34;day0-upload&#34;&gt;
+                &lt;/div&gt;
+                
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-pyscript-button&#34; id=&#34;day0-run-btn&#34; py-click=&#34;main_day0&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day0-output&#34;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;script type=&#34;py&#34;&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day0-upload-input&#39;)
+            &lt;/script&gt;
+            &lt;script type=&#34;py&#34; src=&#34;day0/main.py&#34;&gt;&lt;/script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day0-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day0=&#34;#day0-code&#34; class=&#34;active tab code-title&#34;&gt;day0.py&lt;/li&gt;
+         
+        
+    &lt;/ul&gt;
+
+    &lt;div id=&#34;day0-code&#34; data-tab-content-day0 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; display
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day0&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day0&amp;#34;&lt;/span&gt;)
+    display(data, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day0-output&amp;#34;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+        
+    &lt;/div&gt;
+
+     
+
+    
+
+    
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday0 = document.querySelectorAll(&#39;[data-tab-target-day0]&#39;)
+    const tabContentsday0 = document.querySelectorAll(&#39;[data-tab-content-day0]&#39;)
+
+    tabsday0.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetDay0
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday0.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsday0.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+
+
+&lt;py-config style=&#34;display:none&#34;&gt;
+    [files] 
+    &#34;./utils.py&#34; = &#34;./utils.py&#34;
+&lt;/py-config&gt;
+
+&lt;style&gt;
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+
+
+&lt;script&gt;    
+    //Create Load PyScript buttons:
+    document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+        btn_locations = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(btn_locations).forEach(div =&gt; {
+            div.classList.add(&#39;my-2&#39;, &#39;md:mx-4&#39;, &#39;border-2&#39;, &#39;border-blue-200&#39;, &#39;p-2&#39;, &#39;grid&#39;, &#39;grid-cols-1&#39;, &#39;rounded-xl&#39;, &#39;flex&#39;, &#39;flex-row&#39;, &#39;justify-center&#39;, &#39;w-auto&#39;, &#34;py-1&#34;, &#39;h-auto&#39;, &#39;md:h-full&#39;)
+            let p = document.createElement(&#39;p&#39;)
+            p.classList.add(&#39;my-auto&#39;, &#39;mr-4&#39;, &#39;italic&#39;, &#39;want-to-run-text&#39;)
+            p.innerHTML = &#34;Want to run these examples live in your browser?&#34;
+            if (div.classList.contains(&#34;viz&#34;)){
+                p.innerHTML += &#39; &lt;p class=&#34;font-semibold text-green-600&#34;&gt;This example includes a visualization.&lt;/p&gt;&#39;
+            }
+            div.appendChild(p)
+            //button
+            let btn = document.createElement(&#39;button&#39;)
+            btn.innerText = &#34;Load PyScript&#34;
+            btn.classList.add(&#39;load-pyscript-button&#39;, &#39;h-12&#39;)
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    /* Make Table of Contents */
+    document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+        headings = document.getElementsByClassName(&#39;post-h2&#39;)
+        tocContents = document.getElementById(&#39;toc-contents&#39;)
+        Array.from(headings).forEach(header =&gt; {
+            //&lt;p&gt;&lt;a class = &#34;text-gray-500&#34; href=&#34;#day1&#34;&gt;Day 1&lt;/a&gt;&lt;/p&gt;
+            const line = document.createElement(&#39;p&#39;)
+            const link = document.createElement(&#39;a&#39;)
+            link.href = `#${header.id}`
+            link.innerText = header.innerText
+            line.appendChild(link)
+            if (document.getElementById(`${header.id}-viz-btn`) !== null){
+                const viztag = document.createElement(&#34;span&#34;)
+                viztag.innerText = &#34; - Includes Visualization&#34;
+                line.appendChild(viztag)
+            }
+            tocContents.appendChild(line)
+        })
+    })
+
+    function loadPyScript() {     
+        delete loadPyScript //only run this function once
+
+        load_buttons = document.getElementsByClassName(&#39;load-pyscript-button&#39;)
+        Array.from(load_buttons).forEach(elem =&gt; {
+            elem.innerHTML = &#34;&lt;/span&gt;&lt;span class=&#39;align-middle spinner&#39;&gt;&lt;/span&gt;&lt;span class=&#39;inline-block&#39;&gt;Loading...&#34;
+            elem.classList.add(&#34;load-pyscript-button-loading&#34;)
+        })
+
+        /* &lt;div class=&#34;smooth spinner&#34;&gt;&lt;/div&gt; */
+
+        /* texts = document.getElementsByClassName(&#39;want-to-run-text&#39;)
+        Array.from(texts).forEach(elem =&gt; {
+            elem.innerHTML = &#34;&#34;
+        }) */
+
+        //load css
+        css_link = document.createElement(&#34;link&#34;)
+        css_link.rel = &#34;stylesheet&#34;
+        css_link.type = &#34;text/css&#34;
+        css_link.href = &#34;https://pyscript.net/releases/2023.11.1/core.css&#34;
+        //css_link.href = &#34;http://127.0.0.1:5501/pyscriptjs/build/pyscript.css&#34;
+        document.getElementsByTagName(&#39;head&#39;)[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement(&#39;script&#39;)
+        script_tag.src = &#34;https://pyscript.net/releases/2023.11.1/core.js&#34;
+        script_tag.type = &#34;module&#34;
+        //script_tag.src = &#34;http://127.0.0.1:5501/pyscriptjs/build/pyscript.js&#34;
+        document.body.append(script_tag)        
+    }
+    document.addEventListener(&#39;py:ready&#39;, () =&gt; {
+        static = document.getElementsByClassName(&#39;static-example&#39;)
+        live = document.getElementsByClassName(&#39;live-example&#39;)
+        Array.from(static).forEach(div =&gt; {
+            div.classList.add(&#39;hidden&#39;)
+        })
+        Array.from(live).forEach(div =&gt; {
+            div.classList.remove(&#39;hidden&#39;)
+        })
+        load_buttons = document.getElementsByClassName(&#39;load-pyscript&#39;)
+        Array.from(load_buttons).forEach(elem =&gt; {
+            elem.classList.add(&#39;hidden&#39;)
+        })
+    })
+&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;tabs.css&#34;&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>What&#39;s New in PyScript 2023.11.2</title>
       <link>https://jeff.glass/post/whats-new-pyscript-2023-11-2/</link>
