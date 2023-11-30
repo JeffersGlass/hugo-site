@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Advent of Code 2023</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Advent of Code 2023"/>
+<meta name="twitter:description" content="Solutions to the annual holiday coding challenge, in Python and PyScript"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Advent of Code 2023</h1>
+				<p>Published November 30, 2023</p>
+				
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/codeadvent">codeadvent</a>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/pyscript">pyscript</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					<p class="post-p">Where does the time go?? Surely it can't be time for another <a href="https://adventofcode.com/">Advent of Code</a> challenge? Alas, it's once again December, which means 25 more mini coding challenges for the next twenty five days. This will be my sixth year particpating in advent of code, and my fourth writing about it - you can check out my <a href="tags/codeadvent/">previous years' Advent of Code posts</a> as well, if you like.</p>
+<p class="post-p">As in years before, I'll be writing my solutions to run in <a href="https://pyscript.net">PyScript</a>  right here in the browser window. Feel free to enter your own AoC input and test your answers right here on this page! All the computations run in your own browser window, so no AoC data is transmitted to me or any server, and there's zero overhead on my end, so test as many times as you like.</p>
+<p class="post-p">Personally, I have three goals in presenting these solutions: learn form the challenges themselves, dogfood the use of PyScript to learn where our gaps in functionality are, and demonstrate the use of Python in the browser. Here's hoping we can achieve all three.</p>
+<div id="TOC" class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200">
+    <p class="text-2xl relative-anchor" id="toc">Table of Contents</p>
+    <div class="ml-8 font-semibold" id="toc-contents">
+    </div>
+</div>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day0'>Day 0: Testing the Machinery</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">As with past years, I'm making use of Hugo's templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day0-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day0-upload-input" name="day0-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day0-run-btn" py-click="main_day0">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day0-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day0-upload-input')
+            </script>
+            <script type="py" src="day0/main.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day0-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day0="#day0-code" class="active tab code-title">day0.py</li>
+         
+        
+    </ul>
+
+    <div id="day0-code" data-tab-content-day0 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> display
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day0</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day0&#34;</span>)
+    display(data, target<span style="color:#555">=</span><span style="color:#c30">&#34;day0-output&#34;</span>)</code></pre></td></tr></table>
+</div>
+</div></div>
+        
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday0 = document.querySelectorAll('[data-tab-target-day0]')
+    const tabContentsday0 = document.querySelectorAll('[data-tab-content-day0]')
+
+    tabsday0.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay0
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday0.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday0.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+
+<py-config style="display:none">
+    [files] 
+    "./utils.py" = "./utils.py"
+</py-config>
+
+<style>
+    /* Code tags not in highlight blocks */
+    code:not(.nocode):not(.language-python){
+        --tw-text-opacity: 1; 
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+
+
+<script>    
+    //Create Load PyScript buttons:
+    document.addEventListener('DOMContentLoaded', () => {
+        btn_locations = document.getElementsByClassName('load-pyscript')
+        Array.from(btn_locations).forEach(div => {
+            div.classList.add('my-2', 'md:mx-4', 'border-2', 'border-blue-200', 'p-2', 'grid', 'grid-cols-1', 'rounded-xl', 'flex', 'flex-row', 'justify-center', 'w-auto', "py-1", 'h-auto', 'md:h-full')
+            let p = document.createElement('p')
+            p.classList.add('my-auto', 'mr-4', 'italic', 'want-to-run-text')
+            p.innerHTML = "Want to run these examples live in your browser?"
+            if (div.classList.contains("viz")){
+                p.innerHTML += ' <p class="font-semibold text-green-600">This example includes a visualization.</p>'
+            }
+            div.appendChild(p)
+            //button
+            let btn = document.createElement('button')
+            btn.innerText = "Load PyScript"
+            btn.classList.add('load-pyscript-button', 'h-12')
+            btn.onclick = loadPyScript
+            div.appendChild(btn)
+        });
+    })
+
+    /* Make Table of Contents */
+    document.addEventListener('DOMContentLoaded', () => {
+        headings = document.getElementsByClassName('post-h2')
+        tocContents = document.getElementById('toc-contents')
+        Array.from(headings).forEach(header => {
+            //<p><a class = "text-gray-500" href="#day1">Day 1</a></p>
+            const line = document.createElement('p')
+            const link = document.createElement('a')
+            link.href = `#${header.id}`
+            link.innerText = header.innerText
+            line.appendChild(link)
+            if (document.getElementById(`${header.id}-viz-btn`) !== null){
+                const viztag = document.createElement("span")
+                viztag.innerText = " - Includes Visualization"
+                line.appendChild(viztag)
+            }
+            tocContents.appendChild(line)
+        })
+    })
+
+    function loadPyScript() {     
+        delete loadPyScript //only run this function once
+
+        load_buttons = document.getElementsByClassName('load-pyscript-button')
+        Array.from(load_buttons).forEach(elem => {
+            elem.innerHTML = "</span><span class='align-middle spinner'></span><span class='inline-block'>Loading..."
+            elem.classList.add("load-pyscript-button-loading")
+        })
+
+        /* <div class="smooth spinner"></div> */
+
+        /* texts = document.getElementsByClassName('want-to-run-text')
+        Array.from(texts).forEach(elem => {
+            elem.innerHTML = ""
+        }) */
+
+        //load css
+        css_link = document.createElement("link")
+        css_link.rel = "stylesheet"
+        css_link.type = "text/css"
+        css_link.href = "https://pyscript.net/releases/2023.11.1/core.css"
+        //css_link.href = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.css"
+        document.getElementsByTagName('head')[0].appendChild(css_link)
+
+        //load cs
+        script_tag = document.createElement('script')
+        script_tag.src = "https://pyscript.net/releases/2023.11.1/core.js"
+        script_tag.type = "module"
+        //script_tag.src = "http://127.0.0.1:5501/pyscriptjs/build/pyscript.js"
+        document.body.append(script_tag)        
+    }
+    document.addEventListener('py:ready', () => {
+        static = document.getElementsByClassName('static-example')
+        live = document.getElementsByClassName('live-example')
+        Array.from(static).forEach(div => {
+            div.classList.add('hidden')
+        })
+        Array.from(live).forEach(div => {
+            div.classList.remove('hidden')
+        })
+        load_buttons = document.getElementsByClassName('load-pyscript')
+        Array.from(load_buttons).forEach(elem => {
+            elem.classList.add('hidden')
+        })
+    })
+</script>
+<link rel="stylesheet" href="tabs.css">
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>
