@@ -122,6 +122,305 @@
     })
 &lt;/script&gt;
 
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day1_1&#39;&gt;Day 1 Trebuchet?! (Part 1)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;In most years, the first day&#39;s problems aren&#39;t too complicated - they tend to focus on reading input and parsing strings, and this year&#39;s is no exception.&lt;/p&gt;&lt;p&gt;I opted to pursue a solution purely using regex, since it&#39;s always good to stretch those muscles early on in Advent of Code. I couldn&#39;t quite find the right pattern to match &lt;span class=&#34;italic&#34;&gt;both&lt;/span&gt; the case where there are are multiple numerals in the input line or only one, so I cheated a bit and split them into two separate cases.&lt;/p&gt;&lt;p&gt;Ultimately, this solution probably could have looked more like the solution to part 2 - using &lt;code&gt;re.finditer()&lt;/code&gt; to find all the digits in a given line, then sorting that collection to find the earliest and latest digits, but it felt good to refresh on regex matching.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day1_1-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day1_1-upload-input&#34; name=&#34;day1_1-upload&#34;&gt;
+                &lt;/div&gt;
+                
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-pyscript-button&#34; id=&#34;day1_1-run-btn&#34; py-click=&#34;main_day1_1&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day1_1-output&#34;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;script type=&#34;py&#34;&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day1_1-upload-input&#39;)
+            &lt;/script&gt;
+            &lt;script type=&#34;py&#34; src=&#34;day1/main_1.py&#34;&gt;&lt;/script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day1_1-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day1_1=&#34;#day1_1-code&#34; class=&#34;active tab code-title&#34;&gt;day1_1.py&lt;/li&gt;
+         
+        
+    &lt;/ul&gt;
+
+    &lt;div id=&#34;day1_1-code&#34; data-tab-content-day1_1 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; display
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;re&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day1_1&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day1_1&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+    
+    &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+    pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[a-zA-Z]*(?P&amp;lt;first&amp;gt;\d)\w*(?P&amp;lt;last&amp;gt;\d)[a-zA-Z]*&amp;#34;&lt;/span&gt;)
+    single_digit_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[a-zA-Z]*(?P&amp;lt;first&amp;gt;\d)\w*&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data:
+        match &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;match(pattern, line)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;not&lt;/span&gt; match: match &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;match(single_digit_pattern, line)
+        number &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt; (first&lt;span style=&#34;color:#555&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;first&amp;#34;&lt;/span&gt;))) &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;last&amp;#34;&lt;/span&gt;)) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;last&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; match&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;groupdict() &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(first))
+        &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; number
+
+    display(&lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day1_1-output&amp;#34;&lt;/span&gt;)     &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+
+     
+
+    
+
+    
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday1_1 = document.querySelectorAll(&#39;[data-tab-target-day1_1]&#39;)
+    const tabContentsday1_1 = document.querySelectorAll(&#39;[data-tab-content-day1_1]&#39;)
+
+    tabsday1_1.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetDay1_1
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday1_1.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsday1_1.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day1_2&#39;&gt;Day 1 Trebuchet?! (Part 2)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;&#34;The strings which represent a given numeral&#34; &lt;span class=&#34;italic&#34;&gt;feels&lt;/span&gt; like something that should be included in Python&#39;s &#39;batteries included&#39;, but as far as I can tell, it isn&#39;t. Rather than pull something in from PYPI, I created a tiny dictionary matching numerals to strings. After finding all the literal numerals and &#39;spelled-out&#39; numerals in each line, we find the earliest and latest match, grab their value with the tiny &lt;code&gt;get_value()&lt;/code&gt; function, and concatenate them to get the value of that line.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day1_2-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day1_2-upload-input&#34; name=&#34;day1_2-upload&#34;&gt;
+                &lt;/div&gt;
+                
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-pyscript-button&#34; id=&#34;day1_2-run-btn&#34; py-click=&#34;main_day1_2&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day1_2-output&#34;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;script type=&#34;py&#34;&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day1_2-upload-input&#39;)
+            &lt;/script&gt;
+            &lt;script type=&#34;py&#34; src=&#34;day1/main_2.py&#34;&gt;&lt;/script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day1_2-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day1_2=&#34;#day1_2-code&#34; class=&#34;active tab code-title&#34;&gt;day1_2.py&lt;/li&gt;
+         
+        
+    &lt;/ul&gt;
+
+    &lt;div id=&#34;day1_2-code&#34; data-tab-content-day1_2 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; display
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;re&lt;/span&gt;
+
+patterns &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;one&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;two&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;three&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;3&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;four&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;4&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;five&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;5&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;six&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;6&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;seven&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;7&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;eight&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;8&lt;/span&gt;,
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;nine&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f60&#34;&gt;9&lt;/span&gt;,
+    }
+
+digit_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;\d&amp;#39;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;get_value&lt;/span&gt;(s):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;try&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(s)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ValueError&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; patterns[s]
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day1_2&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day1_2&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; data:
+        line_matches &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pattern &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; patterns:
+            line_matches&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;extend(re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;finditer(pattern, line))
+
+        line_matches&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;extend(re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;finditer(digit_pattern, line))
+        line_matches&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;sort(key &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;lambda&lt;/span&gt; m: m&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start())
+        &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt; get_value(line_matches[&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)) &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; get_value(line_matches[&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group(&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;))
+
+    display(&lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;, target&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day1_2-output&amp;#34;&lt;/span&gt;)  
+
+main_day1_2()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+
+     
+
+    
+
+    
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday1_2 = document.querySelectorAll(&#39;[data-tab-target-day1_2]&#39;)
+    const tabContentsday1_2 = document.querySelectorAll(&#39;[data-tab-content-day1_2]&#39;)
+
+    tabsday1_2.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetDay1_2
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday1_2.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsday1_2.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+
+
 
 &lt;py-config style=&#34;display:none&#34;&gt;
     [files] 
