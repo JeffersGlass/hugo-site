@@ -50,8 +50,6 @@ def processGear(g: Gear, part_number: int):
 
         return 0
 
-    
-    
 def main_day3_2(*args):
     data = get_input("day3_2").split("\n")
 
@@ -81,7 +79,6 @@ def main_day3_2(*args):
                     ]:
             if pos in gears:
                 sum += processGear(gears[pos], part_number=number)
-        continue
     
     display(sum, target="day3_2-output")
 
