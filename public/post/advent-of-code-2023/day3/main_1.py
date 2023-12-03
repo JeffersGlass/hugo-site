@@ -54,13 +54,16 @@ def main_day3_1(*args):
 
 # Only runs if not running in the browser
 if __name__ == "__main__":
-    def get_input(*args):
-        with open("input.txt") as f:
-            return f.read()
+    try:
+        import js
+    except ImportError:
+        def get_input(*args):
+            with open("input.txt") as f:
+                return f.read()
+            
+        def display(*args, **kwargs):
+            if 'target' in kwargs:
+                dict.pop('target')
+            print(*args, **kwargs)
         
-    def display(*args, **kwargs):
-        if 'target' in kwargs:
-            dict.pop('target')
-        print(*args, **kwargs)
-        
-    main_day3_1()
+        main_day3_1()

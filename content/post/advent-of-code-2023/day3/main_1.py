@@ -2,7 +2,14 @@ try:
     from pyscript import document
     from utils import get_input
 except ImportError:
-    pass
+    def get_input(*args):
+        with open("input.txt") as f:
+            return f.read()
+        
+    def display(*args, **kwargs):
+        if 'target' in kwargs:
+            dict.pop('target')
+        print(*args, **kwargs)
 
 from dataclasses import dataclass
 from collections import namedtuple
@@ -49,18 +56,12 @@ def main_day3_1(*args):
             (number.line+1, index) in symbols:
                 sum += number.value
                 continue
-    display(sum)
+    display(sum, target="day3_1-output")
 
 
 # Only runs if not running in the browser
 if __name__ == "__main__":
-    def get_input(*args):
-        with open("input.txt") as f:
-            return f.read()
-        
-    def display(*args, **kwargs):
-        if 'target' in kwargs:
-            dict.pop('target')
-        print(*args, **kwargs)
-        
-    main_day3_1()
+    try:
+        import js
+    except ImportError:     
+        main_day3_1()

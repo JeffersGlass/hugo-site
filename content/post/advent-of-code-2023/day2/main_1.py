@@ -2,7 +2,15 @@ try:
     from pyscript import document
     from utils import get_input
 except ImportError:
-    pass
+    print("Getting local input")    
+    def get_input(*args):
+        with open("input.txt") as f:
+            return f.read()
+        
+    def display(*args, **kwargs):
+        if 'target' in kwargs:
+            dict.pop('target')
+        print(*args, **kwargs)
 
 import re
     
@@ -29,17 +37,11 @@ def main_day2_1(*args):
                     break                    
         sum += id_value
     
-    display(sum)
+    display(sum, target="day2_1-output")
 
 # Only runs if not running in the browser
 if __name__ == "__main__":
-    def get_input(*args):
-        with open("input.txt") as f:
-            return f.read()
-        
-    def display(*args, **kwargs):
-        if 'target' in kwargs:
-            dict.pop('target')
-        print(*args, **kwargs)
-        
-    main_day2_1()
+    try:
+        import js
+    except ImportError:     
+        main_day2_1()

@@ -2,11 +2,18 @@ try:
     from pyscript import document
     from utils import get_input
 except ImportError:
-    pass
+    def get_input(*args):
+        with open("input.txt") as f:
+            return f.read()
+        
+    def display(*args, **kwargs):
+        if 'target' in kwargs:
+            dict.pop('target')
+        print(*args, **kwargs)
 
 import re
     
-def main_day2_1(*args):
+def main_day2_2(*args):
     data = get_input("day2_2").split("\n")
     color_pattern = re.compile("(?P<quantity>\d+) (?P<color>(?:red)|(?:green)|(?:blue))")
     
@@ -23,17 +30,11 @@ def main_day2_1(*args):
         power = max_red * max_green * max_blue
         sum += power
     
-    display(sum)
+    display(sum, target="day2_2-output")
 
 # Only runs if not running in the browser
-if __name__ == "__main__":
-    def get_input(*args):
-        with open("input.txt") as f:
-            return f.read()
-        
-    def display(*args, **kwargs):
-        if 'target' in kwargs:
-            dict.pop('target')
-        print(*args, **kwargs)
-        
-    main_day2_1()
+if __name__ == "__main__":        
+    try:
+        import js
+    except ImportError:     
+        main_day2_1()
