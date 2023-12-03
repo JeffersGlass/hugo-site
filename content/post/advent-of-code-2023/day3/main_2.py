@@ -13,8 +13,6 @@ position = namedtuple('position', ['line', 'char'])
 
 @dataclass
 class Gear:
-    line: int
-    char: int
     value: int = 0
     seen_once: bool = False 
 
@@ -24,6 +22,28 @@ class Number:
     line: int
     start: int
     end: int
+
+def processGear(g: Gear, part_number: int):
+    """_summary_
+
+    Args:
+        g (Gear): The gear currently being processed
+        part_number (int): The part number being processed
+
+    Returns: The value to be added to the running sum, if any
+    """
+    if g.seen_once:
+        g.value *= part_number.value
+        g.seen_once = False # Seen twice
+        return g.value
+    else:
+        if g.value == 0: 
+            g.value = part_number.value
+            g.seen_once = True
+
+        return 0
+
+    
     
 def main_day3_2(*args):
     data = get_input("day3_2").split("\n")
@@ -47,17 +67,15 @@ def main_day3_2(*args):
     sum = 0
 
     for number in part_numbers:
-        #### Stopped tweaking here down
-        if (number.line, number.start-1) in gears or \
-        (number.line, number.end) in gears:
-            
-            continue
-
-        for index in range(number.start-1, number.end+1):
-            if (number.line-1, index) in symbols or\
-            (number.line+1, index) in symbols:
-                sum += number.value
-                continue
+        for pos in [(number.line, number.start-1), # left of number
+                    (number.line, number.end), # right of number
+                    *[(number.line-1, index) for index in range(number.start-1, number.end+1)], # above number
+                    *[(number.line+1, index) for index in range(number.start-1, number.end+1)]  # below number
+                    ]:
+            if pos in gears:
+                sum += processGear(gears[pos], part_number=number)
+        continue
+    
     display(sum)
 
 
