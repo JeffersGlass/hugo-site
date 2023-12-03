@@ -69,8 +69,8 @@ def main_day3_2(*args):
     for number in part_numbers:
         for pos in [(number.line, number.start-1), # left of number
                     (number.line, number.end), # right of number
-                    *[(number.line-1, index) for index in range(number.start-1, number.end+1)], # above number
-                    *[(number.line+1, index) for index in range(number.start-1, number.end+1)]  # below number
+                    *((number.line-1, index) for index in range(number.start-1, number.end+1)), # above number
+                    *((number.line+1, index) for index in range(number.start-1, number.end+1))  # below number
                     ]:
             if pos in gears:
                 sum += processGear(gears[pos], part_number=number)
