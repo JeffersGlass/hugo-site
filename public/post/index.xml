@@ -762,6 +762,498 @@ main_day1_2()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
     })
 &lt;/script&gt;
 
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day3_1&#39;&gt;Day 3: Gear Ratios (Part 1)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;Advent of Code has a history of requiring the parsing of data in grids, and this year we&#39;re starting early. While it&#39;s tempting to build a data structure that represents each position in the grid and is querable, for sparsely populated grid I&#39;ve ususally found it&#39;s easier and faster to build a &lt;code&gt;set&lt;/code&gt; of the relevant points and query for presence in that set. This handles a lot of edge cases automatically - like in this case, a &lt;code&gt;part number&lt;/code&gt; being adjacent to the edge of the grid.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day3_1-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day3_1-upload-input&#34; name=&#34;day3_1-upload&#34;&gt;
+                &lt;/div&gt;
+                
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-pyscript-button&#34; id=&#34;day3_1-run-btn&#34; py-click=&#34;main_day3_1&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day3_1-output&#34;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;script type=&#34;py&#34;&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day3_1-upload-input&#39;)
+            &lt;/script&gt;
+            &lt;script type=&#34;py&#34; src=&#34;day3/main_1.py&#34;&gt;&lt;/script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day3_1-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day3_1=&#34;#day3_1-code&#34; class=&#34;active tab code-title&#34;&gt;day3_1.py&lt;/li&gt;
+         
+        
+    &lt;/ul&gt;
+
+    &lt;div id=&#34;day3_1-code&#34; data-tab-content-day3_1 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;try&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ImportError&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;dataclasses&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; dataclass
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;collections&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; namedtuple
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;re&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; List
+
+position &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; namedtuple(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;position&amp;#39;&lt;/span&gt;, [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;line&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;char&amp;#39;&lt;/span&gt;])
+
+&lt;span style=&#34;color:#99f&#34;&gt;@dataclass&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Number&lt;/span&gt;:
+    value: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    line: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    start: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    end: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day3_1&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day3_1&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    symbols &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;set&lt;/span&gt;()
+    part_numbers: List[Number] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+
+    symbol_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[^0123456789.]&amp;#34;&lt;/span&gt;)
+    number_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;(\d+)&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index, line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; s &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;finditer(symbol_pattern, line):
+            symbols&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;add((line_index, s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start()))
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;finditer(number_pattern, line):
+            part_numbers&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(Number(
+                    value&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group()),
+                    line &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; line_index,
+                    start &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start(),
+                    end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end()))
+    
+    &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; number &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; part_numbers:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; symbols &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt; \
+        (number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; symbols:
+            &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;continue&lt;/span&gt;
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;):
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, index) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; symbols &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt;\
+            (number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, index) &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; symbols:
+                &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value
+                &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;continue&lt;/span&gt;
+    display(&lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;)
+
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Only runs if not running in the browser&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;get_input&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; f:
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; f&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+        
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;display&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args, &lt;span style=&#34;color:#555&#34;&gt;**&lt;/span&gt;kwargs):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;target&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; kwargs:
+            &lt;span style=&#34;color:#366&#34;&gt;dict&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pop(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;target&amp;#39;&lt;/span&gt;)
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args, &lt;span style=&#34;color:#555&#34;&gt;**&lt;/span&gt;kwargs)
+        
+    main_day3_1()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+
+     
+
+    
+
+    
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday3_1 = document.querySelectorAll(&#39;[data-tab-target-day3_1]&#39;)
+    const tabContentsday3_1 = document.querySelectorAll(&#39;[data-tab-content-day3_1]&#39;)
+
+    tabsday3_1.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetDay3_1
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday3_1.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsday3_1.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+
+&lt;h2 class=&#34;mt-12 mb-1 border-b-2 border-gray-200 post-h2&#34; id=&#39;day3_2&#39;&gt;Day 3: Gear Ratios (Part 2)&lt;/h2&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:gap-x-4&#34;&gt;
+    &lt;div&gt;
+        
+&lt;p class=&#34;post-p&#34;&gt;I do like dataclasses - having autocomplete on the handful of elements in a simple &#34;data-like&#34; object is an easy way to prevent confusion and typos. You&#39;ll see on this day&#39;s problem I&#39;ve actually combined both &lt;code&gt;Dataclasses&lt;/code&gt; and &lt;code&gt;namedtuples&lt;/code&gt;; the latter being easier to use as the keys of a dictionary. But if there&#39;s any Mutable data - in my case, a flag which helps track whether a specific gear has seen zero, one, or two or more times already - is quite useful.&lt;/p&gt;
+
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;load-pyscript&#34;&gt;&lt;/div&gt;
+        &lt;div class=&#34;hidden live-example&#34;&gt;
+            &lt;div class=&#34;grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl&#34;&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Paste Input Here:&lt;/p&gt;
+                    &lt;textarea class=&#34;w-full border-2 border-gray-500&#34; id=&#34;day3_2-textinput&#34;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;p class=&#34;text-sm font-gray-700&#34;&gt;Or upload file:&lt;/p&gt;
+                    &lt;input class=&#34;w-full&#34; type=&#34;file&#34; id=&#34;day3_2-upload-input&#34; name=&#34;day3_2-upload&#34;&gt;
+                &lt;/div&gt;
+                
+                
+                &lt;div class=&#34;col-span-1&#34;&gt;&lt;button class=&#34;w-full py-2 run-pyscript-button&#34; id=&#34;day3_2-run-btn&#34; py-click=&#34;main_day3_2&#34;&gt;RUN&lt;/button&gt;&lt;/div&gt;
+                
+                &lt;div class=&#34;font-mono bg-gray-200&#34; id=&#34;day3_2-output&#34;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;script type=&#34;py&#34;&gt;
+                from utils import attach_upload_listener
+                attach_upload_listener(&#39;day3_2-upload-input&#39;)
+            &lt;/script&gt;
+            &lt;script type=&#34;py&#34; src=&#34;day3/main_2.py&#34;&gt;&lt;/script&gt; 
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;w-full md:col-span-2&#34;id=&#34;day3_2-viz&#34;&gt;&lt;/div&gt;
+
+    
+    
+     
+    &lt;ul class=&#34;tabs md:col-span-2&#34;&gt;
+        &lt;li data-tab-target-day3_2=&#34;#day3_2-code&#34; class=&#34;active tab code-title&#34;&gt;day3_2.py&lt;/li&gt;
+         
+        
+    &lt;/ul&gt;
+
+    &lt;div id=&#34;day3_2-code&#34; data-tab-content-day3_2 class=&#34;active tab-content md:col-span-2&#34;&gt;
+        &lt;div class=&#34;overflow-y-scroll border-4 max-h-76&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;29
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;30
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;31
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;32
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;33
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;34
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;35
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;36
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;37
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;38
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;39
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;40
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;41
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;42
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;43
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;44
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;45
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;46
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;47
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;48
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;49
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;50
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;51
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;52
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;53
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;54
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;55
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;56
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;57
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;58
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;59
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;60
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;61
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;62
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;63
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;64
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;65
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;66
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;67
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;68
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;69
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;70
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;71
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;72
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;73
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;74
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;75
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;76
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;77
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;78
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;79
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;80
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;81
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;82
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;83
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;84
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;85
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;86
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;87
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;88
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;89
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;90
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;91
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;92
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;93
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;try&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ImportError&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;pass&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;dataclasses&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; dataclass
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;collections&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; namedtuple
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;re&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;typing&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; List, Dict
+
+position &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; namedtuple(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;position&amp;#39;&lt;/span&gt;, [&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;line&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;char&amp;#39;&lt;/span&gt;])
+
+&lt;span style=&#34;color:#99f&#34;&gt;@dataclass&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Gear&lt;/span&gt;:
+    value: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+    seen_once: &lt;span style=&#34;color:#366&#34;&gt;bool&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt; 
+
+&lt;span style=&#34;color:#99f&#34;&gt;@dataclass&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#0a8;font-weight:bold&#34;&gt;Number&lt;/span&gt;:
+    value: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    line: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    start: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+    end: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;
+
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;processGear&lt;/span&gt;(g: Gear, part_number: &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;):
+    &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&amp;#34;&amp;#34;_summary_
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Args:
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        g (Gear): The gear currently being processed
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;        part_number (int): The part number being processed
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    Returns: The value to be added to the running sum, if any
+&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;seen_once:
+        g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#555&#34;&gt;*=&lt;/span&gt; part_number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value
+        g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;seen_once &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;False&lt;/span&gt; &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Seen twice&lt;/span&gt;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;: 
+            g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; part_number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;value
+            g&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;seen_once &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;True&lt;/span&gt;
+
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+    
+    
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;main_day3_2&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+    data &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; get_input(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;day3_2&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#c30;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;&lt;/span&gt;)
+
+    gears: Dict[position: Gear] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; {}
+    part_numbers: List[Number] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; []
+
+    gear_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;[*]&amp;#34;&lt;/span&gt;)
+    number_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;(\d+)&amp;#34;&lt;/span&gt;)
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; line_index, line &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;enumerate&lt;/span&gt;(data):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; s &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;finditer(gear_pattern, line):
+            gears[position(line&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;line_index, char&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;s&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start())] &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; Gear()
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; re&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;finditer(number_pattern, line):
+            part_numbers&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;append(Number(
+                    value&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;group()),
+                    line &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; line_index,
+                    start &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start(),
+                    end &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; n&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end()))
+    
+    &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; number &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; part_numbers:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; pos &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; [(number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;), &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# left of number&lt;/span&gt;
+                    (number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end), &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# right of number&lt;/span&gt;
+                    &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;((number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;)), &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# above number&lt;/span&gt;
+                    &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;((number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;line&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, index) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; index &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;start&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;, number&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;end&lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;))  &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# below number&lt;/span&gt;
+                    ]:
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; pos &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; gears:
+                &lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; processGear(gears[pos], part_number&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;number)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;continue&lt;/span&gt;
+    
+    display(&lt;span style=&#34;color:#366&#34;&gt;sum&lt;/span&gt;)
+
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Only runs if not running in the browser&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;get_input&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; f:
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; f&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
+        
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;display&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args, &lt;span style=&#34;color:#555&#34;&gt;**&lt;/span&gt;kwargs):
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;target&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; kwargs:
+            &lt;span style=&#34;color:#366&#34;&gt;dict&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;pop(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;target&amp;#39;&lt;/span&gt;)
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args, &lt;span style=&#34;color:#555&#34;&gt;**&lt;/span&gt;kwargs)
+        
+    main_day3_2()&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+         &lt;div class=&#34;text-sm post-img-caption&#34;&gt;Scroll to see complete code&lt;/div&gt; 
+    &lt;/div&gt;
+
+     
+
+    
+
+    
+
+&lt;/div&gt;
+&lt;script&gt;
+    const tabsday3_2 = document.querySelectorAll(&#39;[data-tab-target-day3_2]&#39;)
+    const tabContentsday3_2 = document.querySelectorAll(&#39;[data-tab-content-day3_2]&#39;)
+
+    tabsday3_2.forEach(tab =&gt; {
+        console.log(tab)
+        tab.addEventListener(&#39;click&#39;, () =&gt; {
+            let selector = tab.dataset.tabTargetDay3_2
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday3_2.forEach(tabContent =&gt; {
+                    tabContent.classList.remove(&#39;active&#39;)
+                })
+                tabsday3_2.forEach(tab =&gt; {
+                    tab.classList.remove(&#39;active&#39;)
+                })
+                tab.classList.add(&#39;active&#39;)
+                target.classList.add(&#39;active&#39;)
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+&lt;/script&gt;
+
 
 
 &lt;py-config style=&#34;display:none&#34;&gt;
