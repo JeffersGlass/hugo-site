@@ -262,7 +262,7 @@ if (!doNotTrack) {
     })
 </script>
 
-<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day1_1'>Day 1 Trebuchet?! (Part 1)</h2>
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day1_1'>Day 1: Trebuchet?! (Part 1)</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         
@@ -387,7 +387,7 @@ if (!doNotTrack) {
     })
 </script>
 
-<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day1_2'>Day 1 Trebuchet?! (Part 2)</h2>
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day1_2'>Day 2: Trebuchet?! (Part 2)</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         
@@ -548,6 +548,348 @@ main_day1_2()</code></pre></td></tr></table>
                     tabContent.classList.remove('active')
                 })
                 tabsday1_2.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day2_1'>Day 2: Cube Conundrum (Part 1)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">Happy once again that I picked up the regex track early this year! The specific syntax around things like named group, non-capturing groups, <code>findall</code> vs <code>finditer</code> is easy to forget if you haven't touched it in a few months.</p><p class="post-p">Today's challenge was pretty simple - iterating over lines of input text and, based on some condition, adding a sentinel number to a given total. There's probably a cleaner way to break out of that nest-inner-loop than using a flag, but it works.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day2_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day2_1-upload-input" name="day2_1-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day2_1-run-btn" py-click="main_day2_1">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day2_1-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day2_1-upload-input')
+            </script>
+            <script type="py" src="day2/main_1.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day2_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day2_1="#day2_1-code" class="active tab code-title">day2_1.py</li>
+         
+        
+    </ul>
+
+    <div id="day2_1-code" data-tab-content-day2_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">pass</span>
+
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+    
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day2_1</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day2_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    day_pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;Game (?P&lt;day_number&gt;\d+)&#34;</span>)
+    color_pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;(?P&lt;quantity&gt;\d+) (?P&lt;color&gt;(?:red)|(?:green)|(?:blue))&#34;</span>)
+    
+    <span style="color:#366">sum</span> <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        id_value <span style="color:#555">=</span> <span style="color:#366">int</span>(re<span style="color:#555">.</span>match(day_pattern, line)<span style="color:#555">.</span>group(<span style="color:#c30">&#34;day_number&#34;</span>))
+        pulls <span style="color:#555">=</span> line<span style="color:#555">.</span>split(<span style="color:#c30">&#34;;&#34;</span>)
+        valid_line <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
+        <span style="color:#069;font-weight:bold">for</span> p <span style="color:#000;font-weight:bold">in</span> pulls:
+            <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> valid_line: <span style="color:#069;font-weight:bold">break</span>
+            colors <span style="color:#555">=</span> re<span style="color:#555">.</span>finditer(color_pattern, p)
+            <span style="color:#069;font-weight:bold">for</span> c <span style="color:#000;font-weight:bold">in</span> colors:
+                color, quant <span style="color:#555">=</span> c<span style="color:#555">.</span>group(<span style="color:#c30">&#39;color&#39;</span>), <span style="color:#366">int</span>(c<span style="color:#555">.</span>group(<span style="color:#c30">&#39;quantity&#39;</span>))
+                <span style="color:#069;font-weight:bold">if</span> (color <span style="color:#555">==</span> <span style="color:#c30">&#39;red&#39;</span> <span style="color:#000;font-weight:bold">and</span> quant <span style="color:#555">&gt;</span> <span style="color:#f60">12</span>) <span style="color:#000;font-weight:bold">or</span> (color <span style="color:#555">==</span> <span style="color:#c30">&#39;green&#39;</span> <span style="color:#000;font-weight:bold">and</span> quant <span style="color:#555">&gt;</span> <span style="color:#f60">13</span>) <span style="color:#000;font-weight:bold">or</span> (color <span style="color:#555">==</span> <span style="color:#c30">&#39;blue&#39;</span> <span style="color:#000;font-weight:bold">and</span> quant <span style="color:#555">&gt;</span> <span style="color:#f60">14</span>): 
+                    valid_line <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>
+                    id_value <span style="color:#555">=</span> <span style="color:#f60">0</span>
+                    <span style="color:#069;font-weight:bold">break</span>                    
+        <span style="color:#366">sum</span> <span style="color:#555">+=</span> id_value
+    
+    display(<span style="color:#366">sum</span>)
+
+<span style="color:#09f;font-style:italic"># Only runs if not running in the browser</span>
+<span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            <span style="color:#366">dict</span><span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+        
+    main_day2_1()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday2_1 = document.querySelectorAll('[data-tab-target-day2_1]')
+    const tabContentsday2_1 = document.querySelectorAll('[data-tab-content-day2_1]')
+
+    tabsday2_1.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay2_1
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday2_1.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday2_1.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day2_2'>Day 2: Cube Conundrum (Part 2)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">"In both parts of today's challenge, I've found it useful to run my code locally for testing before popping it into PyScript. You can see my strategy for this in both parts of today's solution - wrapping PyScript specific imporst in <code>try/except</code> block, and within the <code>if __name__ == "__main__"</code> check redefining key functions like <code>display()</code> and <code>get_input()</code>.</p><p class="post-p">The need to override <code>display()</code> was the original reason I had implemented the <code>output</code> attribute of PyScript tags in previous releases of PyScript... perhaps I'll want to do that again.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day2_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day2_2-upload-input" name="day2_2-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day2_2-run-btn" py-click="main_day2_2">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day2_2-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day2_2-upload-input')
+            </script>
+            <script type="py" src="day2/main_2.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day2_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day2_2="#day2_2-code" class="active tab code-title">day2_2.py</li>
+         
+        
+    </ul>
+
+    <div id="day2_2-code" data-tab-content-day2_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">pass</span>
+
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+    
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day2_1</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day2_2&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+    color_pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;(?P&lt;quantity&gt;\d+) (?P&lt;color&gt;(?:red)|(?:green)|(?:blue))&#34;</span>)
+    
+    <span style="color:#366">sum</span> <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        max_red, max_green, max_blue <span style="color:#555">=</span> <span style="color:#f60">0</span>, <span style="color:#f60">0</span>, <span style="color:#f60">0</span>
+
+        colors <span style="color:#555">=</span> re<span style="color:#555">.</span>finditer(color_pattern, line)
+        <span style="color:#069;font-weight:bold">for</span> c <span style="color:#000;font-weight:bold">in</span> colors:
+            color, quant <span style="color:#555">=</span> c<span style="color:#555">.</span>group(<span style="color:#c30">&#39;color&#39;</span>), <span style="color:#366">int</span>(c<span style="color:#555">.</span>group(<span style="color:#c30">&#39;quantity&#39;</span>))
+            <span style="color:#069;font-weight:bold">if</span> color <span style="color:#555">==</span> <span style="color:#c30">&#39;red&#39;</span> <span style="color:#000;font-weight:bold">and</span> quant <span style="color:#555">&gt;</span> max_red: max_red <span style="color:#555">=</span> quant
+            <span style="color:#069;font-weight:bold">if</span> color <span style="color:#555">==</span> <span style="color:#c30">&#39;green&#39;</span> <span style="color:#000;font-weight:bold">and</span> quant <span style="color:#555">&gt;</span> max_green: max_green <span style="color:#555">=</span> quant
+            <span style="color:#069;font-weight:bold">if</span> color <span style="color:#555">==</span> <span style="color:#c30">&#39;blue&#39;</span> <span style="color:#000;font-weight:bold">and</span> quant <span style="color:#555">&gt;</span> max_blue: max_blue <span style="color:#555">=</span> quant     
+        power <span style="color:#555">=</span> max_red <span style="color:#555">*</span> max_green <span style="color:#555">*</span> max_blue
+        <span style="color:#366">sum</span> <span style="color:#555">+=</span> power
+    
+    display(<span style="color:#366">sum</span>)
+
+<span style="color:#09f;font-style:italic"># Only runs if not running in the browser</span>
+<span style="color:#069;font-weight:bold">if</span> __name__ <span style="color:#555">==</span> <span style="color:#c30">&#34;__main__&#34;</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            <span style="color:#366">dict</span><span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+        
+    main_day2_1()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday2_2 = document.querySelectorAll('[data-tab-target-day2_2]')
+    const tabContentsday2_2 = document.querySelectorAll('[data-tab-content-day2_2]')
+
+    tabsday2_2.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay2_2
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday2_2.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday2_2.forEach(tab => {
                     tab.classList.remove('active')
                 })
                 tab.classList.add('active')
