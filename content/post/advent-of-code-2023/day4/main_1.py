@@ -21,15 +21,10 @@ def main_day4_1(*args):
 
     sum = 0
     for line in data:
-        print(line)
         _, numbers_section = line.split(":")
         winning_numbers = set(m.group(0) for m in re.finditer(number_pattern, numbers_section.split("|")[0]))
         my_numbers = set(m.group(0) for m in re.finditer(number_pattern, numbers_section.split("|")[1]))
-        print(winning_numbers)
-        print(my_numbers)
-        print(winning_numbers & my_numbers)
-        value = 0 if winning_numbers.isdisjoint(my_numbers) else 2 ** (len(winning_numbers & my_numbers) - 1)
-        print(value)
+        value = 0 if winning_numbers.isdisjoint(my_numbers) else 2 ** (len(winning_numbers & my_numbers) - 1)s
         sum += value
 
     display(sum, target="day4_1-output")
