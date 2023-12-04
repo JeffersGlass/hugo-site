@@ -3,15 +3,19 @@ import os
 import pathlib
 import subprocess
 
-def make_day(dayname, challenge_name = None, challenge_number = None):
-    cannonical_path = pathlib.Path(dayname)
-    if not os.path.isdir(cannonical_path):
-        os.mkdir(cannonical_path)
-
-
-    with open(cannonical_path / 'main.py', 'w', encoding='utf-8') as f:
-        f.write(f"""from pyscript import display
-from utils import get_input
+def start_py_file(f, dayname):
+        f.write(f"""try:
+    from pyscript import document
+    from utils import get_input
+except ImportError:
+    def get_input(*args):
+        with open("input.txt") as f:
+            return f.read()
+        
+    def display(*args, **kwargs):
+        if 'target' in kwargs:
+            dict.pop('target')
+        print(*args, **kwargs)
 
 def main_{dayname}(*args):
     data = get_input("{dayname}")
@@ -19,6 +23,17 @@ def main_{dayname}(*args):
     result = None
     display(result, target="{dayname}-output")
 """)
+
+def make_day(dayname, challenge_name = None, challenge_number = None):
+    cannonical_path = pathlib.Path(dayname)
+    if not os.path.isdir(cannonical_path):
+        os.mkdir(cannonical_path)
+
+
+    for file_name in ('main_1.py', 'main_2.py'):
+        with open(cannonical_path / file_name, 'w', encoding='utf-8') as f:
+             start_py_file(f, dayname)
+
 
     # Install virtual env
     prev_dir = os.getcwd()
@@ -33,7 +48,11 @@ def main_{dayname}(*args):
         data = f.read().split(DEMARKER)
         assert len(data) == 2
     
-    data[1] = f"""{{{{< adv2023 title="Day {challenge_number if challenge_number else "X"}: {challenge_name if challenge_name else 'CHALLENGE NAME'}" id="{dayname}" file="{dayname}/main.py">}}}}
+    data[1] = f"""{{{{< adv2023 title="Day {challenge_number if challenge_number else "X"} (Part 1): {challenge_name if challenge_name else 'CHALLENGE NAME'}" id="{dayname}_1" file="{dayname}/main_2.py">}}}}
+<p class="post-p">DESCRIPTION</p>
+{{{{< /adv2023 >}}}}
+
+{{{{< adv2023 title="Day {challenge_number if challenge_number else "X"} (Part 2): {challenge_name if challenge_name else 'CHALLENGE NAME'}" id="{dayname}_2" file="{dayname}/main_2.py">}}}}
 <p class="post-p">DESCRIPTION</p>
 {{{{< /adv2023 >}}}}\n\n""" + DEMARKER + data[1]
     
