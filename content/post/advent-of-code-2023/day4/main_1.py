@@ -22,7 +22,7 @@ def main_day4_1(*args):
     sum = 0
     for line in data:
         print(line)
-        header, numbers_section = line.split(":")
+        _, numbers_section = line.split(":")
         winning_numbers = set(m.group(0) for m in re.finditer(number_pattern, numbers_section.split("|")[0]))
         my_numbers = set(m.group(0) for m in re.finditer(number_pattern, numbers_section.split("|")[1]))
         print(winning_numbers)
