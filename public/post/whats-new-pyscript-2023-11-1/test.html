@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module" src="https://pyscript.net/snapshots/2023.11.1.RC3/core.js"></script>
-    <script src="mini-coi.js"></script>
+    <script type="module" src="https://pyscript.net/releases/2023.11.2/core.js"></script>
     <!-- <script defer src="https://pyscript.net/releases/2022.05.1/pyscript.js"></script> -->
 </head>
 <body>
-<p id="para">This is some text</p>
-<script type="mpy">
-    from pyscript import display
-    display("Wow that was fast!")
+<input type="text" id="area">
+<script type="py">
+    from pyscript import when
 
-    # The micropython stdlib is also availble
-    # https://docs.micropython.org/en/latest/library/hashlib.html
-    import hashlib
-    display(str(hashlib.sha256("hello world!").digest()))
+    @when('keydown', '#area')
+    def keyhandle(evt):
+        if evt.key == "Enter":
+            print(f'You hit enter with "{evt.target.value}"" in the text input')
+            evt.target.value = ""
 </script>
 </body>
 </html>
