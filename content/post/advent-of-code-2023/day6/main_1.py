@@ -3,7 +3,7 @@ try:
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input.txt") as f:
+        with open("input_test.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
