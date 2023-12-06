@@ -12,8 +12,20 @@ except ImportError:
         print(*args, **kwargs)
 
 import re
+from typing import Tuple
 
-def almanac_op(given, dest_start, source_start, length) -> int:
+def almanac_op(given: int, dest_start: int, source_start: int, length: int) -> int:
+    """Takes an index of a location and applies the specified mapping rule to it
+
+    Args:
+        given (int): The starting location
+        dest_start (int): The starting index of the destination range
+        source_start (int): The starting index of the source range
+        length (int): The length of both ranges
+
+    Returns:
+        int: The new location after the mapping
+    """
     if given >= source_start and given <= (source_start + length - 1):
         return (given - source_start) + dest_start
     else:
