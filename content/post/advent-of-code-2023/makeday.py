@@ -9,7 +9,7 @@ def start_py_file(f, dayname):
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input.txt") as f:
+        with open("input_test.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
@@ -33,6 +33,10 @@ def make_day(dayname, challenge_name = None, challenge_number = None):
     for file_name in ('main_1.py', 'main_2.py'):
         with open(cannonical_path / file_name, 'w', encoding='utf-8') as f:
              start_py_file(f, dayname)
+
+    for file_name in ('input.txt', 'input_test.txt'):
+         with open(cannonical_path / file_name, 'w') as f:
+              pass
 
 
     # Install virtual env
