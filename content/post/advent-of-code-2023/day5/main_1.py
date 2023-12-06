@@ -52,5 +52,7 @@ def main_day5_1(*args):
 
     display("FINAL:", min, target="day5_1-output")
 
-if __name__ == "__main__":
+try:
+    import js
+except ImportError:     
     main_day5_1()

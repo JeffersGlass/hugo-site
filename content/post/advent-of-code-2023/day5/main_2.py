@@ -67,7 +67,7 @@ def almanac_op_range(seed_ranges, dest_start: int, source_start: int, length:int
         
     return untouched, moved
 
-def main_day5(*args):
+def main_day5_2(*args):
     data = get_input("day5_2")
 
     seed_ranges = [(int(s.group(1)), int(s.group(1)) + int(s.group(2)) - 1) for s in re.finditer(r"(\d+) (\d+)", data.split("\n")[0].split(":")[1])]
@@ -85,10 +85,12 @@ def main_day5(*args):
 
     minimum = min(r[0] for r in untouched)
 
-    display("FINAL:", minimum, target="day5_2-output")
+    display(minimum, target="day5_2-output")
 
-if __name__ == "__main__":
-    main_day5()
+try:
+    import js
+except ImportError:
+    main_day5_2()
 
     # Assertions used during testing, left in for interest
     assert almanac_op_range(((1,5),), 50, 20, 5) == ([(1,5)],[]) #outside of source range
