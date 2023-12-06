@@ -3,25 +3,25 @@ import os
 import pathlib
 import subprocess
 
-def start_py_file(f, dayname):
+def start_py_file(f, dayname, part):
         f.write(f"""try:
     from pyscript import document
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input.txt") as f:
+        with open("input_test.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
         if 'target' in kwargs:
-            dict.pop('target')
+            kwargs.pop('target')
         print(*args, **kwargs)
 
-def main_{dayname}(*args):
-    data = get_input("{dayname}")
+def main_{dayname}_{part}(*args):
+    data = get_input("{dayname}_{part}")
 
     result = None
-    display(result, target="{dayname}-output")
+    display(result, target="{dayname}_{part}-output")
 """)
 
 def make_day(dayname, challenge_name = None, challenge_number = None):
@@ -30,9 +30,13 @@ def make_day(dayname, challenge_name = None, challenge_number = None):
         os.mkdir(cannonical_path)
 
 
-    for file_name in ('main_1.py', 'main_2.py'):
-        with open(cannonical_path / file_name, 'w', encoding='utf-8') as f:
-             start_py_file(f, dayname)
+    for part in ('1', '2'):
+        with open(cannonical_path / f'main_{part}.py', 'w', encoding='utf-8') as f:
+             start_py_file(f, dayname, part)
+
+    for file_name in ('input.txt', 'input_test.txt'):
+         with open(cannonical_path / file_name, 'w') as f:
+              pass
 
 
     # Install virtual env
@@ -48,7 +52,7 @@ def make_day(dayname, challenge_name = None, challenge_number = None):
         data = f.read().split(DEMARKER)
         assert len(data) == 2
     
-    data[1] = f"""{{{{< adv2023 title="Day {challenge_number if challenge_number else "X"} (Part 1): {challenge_name if challenge_name else 'CHALLENGE NAME'}" id="{dayname}_1" file="{dayname}/main_2.py">}}}}
+    data[1] = f"""{{{{< adv2023 title="Day {challenge_number if challenge_number else "X"} (Part 1): {challenge_name if challenge_name else 'CHALLENGE NAME'}" id="{dayname}_1" file="{dayname}/main_1.py">}}}}
 <p class="post-p">DESCRIPTION</p>
 {{{{< /adv2023 >}}}}
 
