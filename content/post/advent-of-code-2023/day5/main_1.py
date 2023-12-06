@@ -32,7 +32,7 @@ def almanac_op(given: int, dest_start: int, source_start: int, length: int) -> i
         return given
 
 
-def main_day5(*args):
+def main_day5_1(*args):
     data = get_input("day5_1")
 
     seeds = [int(s.group()) for s in re.finditer("\d+", data.split("\n")[0].split(":")[1])]
@@ -53,4 +53,4 @@ def main_day5(*args):
     display("FINAL:", min, target="day5_1-output")
 
 if __name__ == "__main__":
-    main_day5()
+    main_day5_1()
