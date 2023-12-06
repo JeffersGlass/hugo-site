@@ -17,7 +17,7 @@ card_pattern = re.compile("Card (\d+)")
 number_pattern = re.compile("\d+")
 
 def main_day4_2(*args):
-    data = get_input("day4").split('\n')
+    data = get_input("day4_2").split('\n')
     card_counts = [1] * len(data)
 
     for i, line in enumerate(data):
