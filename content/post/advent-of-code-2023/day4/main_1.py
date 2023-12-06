@@ -17,7 +17,7 @@ card_pattern = re.compile("Card (\d+)")
 number_pattern = re.compile("\d+")
 
 def main_day4_1(*args):
-    data = get_input("day4").split('\n')
+    data = get_input("day4_1").split('\n')
 
     sum = 0
     for line in data:
@@ -29,5 +29,7 @@ def main_day4_1(*args):
 
     display(sum, target="day4_1-output")
 
-if __name__ == "__main__":
+try:
+    import js
+except ImportError:
     main_day4_1()
