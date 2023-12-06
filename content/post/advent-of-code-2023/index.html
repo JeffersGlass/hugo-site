@@ -1,7 +1,7 @@
 ---
 title: "Advent of Code 2023"
-date: 2023-11-26T14:23:16-06:00
-draft: true
+date: 2023-11-30T07:23:16-06:00
+draft: false
 tags:
 - codeadvent
 - python
@@ -9,8 +9,9 @@ tags:
 slug_image: adv2023.png
 description: "Solutions to the annual holiday coding challenge, in Python and PyScript"
 ---
-<p class="post-p">Where does the time go?? It seems like only a few years ago I was participating in <a href="post/advent-of-code-2020">my first Advent of Code</a> and here we are, doing it again! Yes it's (almost) December, which means 25 more mini coding challenges courtesy of <a href="https://adventofcode.com/">Advent of Code!</a></p>
+<p class="post-p">Where does the time go?? Surely it can't be time for another <a href="https://adventofcode.com/">Advent of Code</a> challenge? Alas, it's once again December, which means 25 more mini coding challenges for the next twenty five days. This will be my sixth year particpating in advent of code, and my fourth writing about it - you can check out my <a href="tags/codeadvent/">previous years' Advent of Code posts</a> as well, if you like.</p>
 <p class="post-p">As in years before, I'll be writing my solutions to run in <a href="https://pyscript.net">PyScript</a>  right here in the browser window. Feel free to enter your own AoC input and test your answers right here on this page! All the computations run in your own browser window, so no AoC data is transmitted to me or any server, and there's zero overhead on my end, so test as many times as you like.</p>
+<p class="post-p">Personally, I have three goals in presenting these solutions: learn form the challenges themselves, dogfood the use of PyScript to learn where our gaps in functionality are, and demonstrate the use of Python in the browser. Here's hoping we can achieve all three.</p>
 <div id="TOC" class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200">
     <p class="text-2xl relative-anchor" id="toc">Table of Contents</p>
     <div class="ml-8 font-semibold" id="toc-contents">
@@ -21,6 +22,56 @@ description: "Solutions to the annual holiday coding challenge, in Python and Py
 <p class="post-p">As with past years, I'm making use of Hugo's templating system to allow me to quickly write and share each day's code. The setup will look much like this, with a brief explanation here, the code below, and an option to run live demos. The <code>get_input</code> function handles getting input from the textarea or file upload.</p>
 {{< /adv2023 >}}
 
+
+{{< adv2023 title="Day 1: Trebuchet?! (Part 1)" id="day1_1" file="day1/main_1.py">}}
+<p class="post-p">In most years, the first day's problems aren't too complicated - they tend to focus on reading input and parsing strings, and this year's is no exception.</p><p>I opted to pursue a solution purely using regex, since it's always good to stretch those muscles early on in Advent of Code. I couldn't quite find the right pattern to match <span class="italic">both</span> the case where there are are multiple numerals in the input line or only one, so I cheated a bit and split them into two separate cases.</p><p>Ultimately, this solution probably could have looked more like the solution to part 2 - using <code>re.finditer()</code> to find all the digits in a given line, then sorting that collection to find the earliest and latest digits, but it felt good to refresh on regex matching.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 1: Trebuchet?! (Part 2)" id="day1_2" file="day1/main_2.py">}}
+<p class="post-p">"The strings which represent a given numeral" <span class="italic">feels</span> like something that should be included in Python's 'batteries included', but as far as I can tell, it isn't. Rather than pull something in from PYPI, I created a tiny dictionary matching numerals to strings. After finding all the literal numerals and 'spelled-out' numerals in each line, we find the earliest and latest match, grab their value with the tiny <code>get_value()</code> function, and concatenate them to get the value of that line.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 2: Cube Conundrum (Part 1)" id="day2_1" file="day2/main_1.py">}}
+<p class="post-p">Happy once again that I picked up the regex track early this year! The specific syntax around things like named group, non-capturing groups, <code>findall</code> vs <code>finditer</code> is easy to forget if you haven't touched it in a few months.</p><p class="post-p">Today's challenge was pretty simple - iterating over lines of input text and, based on some condition, adding a sentinel number to a given total. There's probably a cleaner way to break out of that nest-inner-loop than using a flag, but it works.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 2: Cube Conundrum (Part 2)" id="day2_2" file="day2/main_2.py">}}
+<p class="post-p">"In both parts of today's challenge, I've found it useful to run my code locally for testing before popping it into PyScript. You can see my strategy for this in both parts of today's solution - wrapping PyScript specific imporst in <code>try/except</code> block, and within the <code>if __name__ == "__main__"</code> check redefining key functions like <code>display()</code> and <code>get_input()</code>.</p><p class="post-p">The need to override <code>display()</code> was the original reason I had implemented the <code>output</code> attribute of PyScript tags in previous releases of PyScript... perhaps I'll want to do that again.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 3: Gear Ratios (Part 1)" id="day3_1" file="day3/main_1.py">}}
+<p class="post-p">Advent of Code has a history of requiring the parsing of data in grids, and this year we're starting early. While it's tempting to build a data structure that represents each position in the grid and is querable, for sparsely populated grid I've ususally found it's easier and faster to build a <code>set</code> of the relevant points and query for presence in that set. This handles a lot of edge cases automatically - like in this case, a <code>part number</code> being adjacent to the edge of the grid.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 3: Gear Ratios (Part 2)" id="day3_2" file="day3/main_2.py">}}
+<p class="post-p">I do like dataclasses - having autocomplete on the handful of elements in a simple "data-like" object is an easy way to prevent confusion and typos. You'll see on this day's problem I've actually combined both <code>Dataclasses</code> and <code>namedtuples</code>; the latter being easier to use as the keys of a dictionary. But if there's any Mutable data - in my case, a flag which helps track whether a specific gear has seen zero, one, or two or more times already - is quite useful.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 4 (Part 1): Scratchcards" id="day4_1" file="day4/main_1.py">}}
+<p class="post-p">Not too much grief completing part one of Day 4. Python's set operations make short work of determining whether there's any overlap between two sets of numbers or objects.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 4 (Part 2): Scratchcards" id="day4_2" file="day4/main_2.py">}}
+<p class="post-p">I like to look at the Advent of Code subreddit after finishing a day's problems, to look at alternate solutions and see what pitfulls I shared/avoided. In this case, most of Day 4 Part 2's solutions talked about using recurssion, which honestly haden't occured to me. Since each Scratchcard can only propogate copies to higher indices, my impulse was to just walk the data once and pile up the additional scratchcards with each additional index processed, in a functional-programming way. I do think this is faster.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 5 (Part 1): If You Give A Seed A Fertilizer" id="day5_1" file="day5/main_1.py">}}
+<p class="post-p">One of the opporunties to stub your toe on a challenge like Day 5 Part 1 is remembering that, once you've applied a mapping rule successfully to a given location, you need to skip the remainder of the rules and cary on to the next set of mappings immediately. Otherwise, you risk applying multiple rules from a single set, which is incorrect.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 5 (Part 2): If You Give A Seed A Fertilizer" id="day5_2" file="day5/main_2.py">}}
+<p class="post-p">I fell prey to a classic Advent of Code trick: <span class="italic">"We see your Part 1 solution works for single numbers... now make ti work for MILLIONS OF NUMBERS!"</span> Still, not too complicated of a solution, even if it did take me some time to work out the logic around which relationships of sources/destinations/ranges cause which effects to happen to the resulting ranges.</p><p class="post-p">There's also the possibility here to get stuck in the track of modifying a collection (say, the current list of ranges) while also iterating over that collection. The old <code>new_collection</code>-gets-added-to, <code>collection = new_collection</code> pattern helps here.</p><p class="post-p">I'm also leaving my <code>assert</code> startments in at the end of this code, as they were hugely helpful in debugging my primary algorithm.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 6 (Part 1): Day 6: Wait For It" id="day6_1" file="day6/main_1.py">}}
+<p class="post-p">The utility of grabbing numbers out of a list of text is now fully evident. It gracefully handles line endings, spaces, comma, etc. Not that I won't be back to (and indeed, already am using) <code>split()</code> and friends, but the time regexes have saved on input so far has been enlightening.</p>
+{{< /adv2023 >}}
+
+{{< adv2023 title="Day 6 (Part 2): Day 6: Wait For It" id="day6_2" file="day6/main_2.py">}}
+<p class="post-p">Having been bit yesterday, I was pretty confident that part 2 of day 6 would have a similar explosion in time/space requirements. And it did... only it doesn't seem to have mattered, as the 'naive' solution here still runs in about a second. Just lucky I guess.</p>
+{{< /adv2023 >}}
+
+<!--NEW_DAYS_ABOVE_THIS_LINE-->
 
 <py-config style="display:none">
     [files] 
