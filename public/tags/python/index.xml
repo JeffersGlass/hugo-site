@@ -7,7 +7,368 @@
     <description>Recent content in Python on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 30 Nov 2023 07:23:16 -0600</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Dec 2023 14:30:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What&#39;s New in PyScript 2023.12.1</title>
+      <link>https://jeff.glass/post/whats-new-pyscript-2023-12-1/</link>
+      <pubDate>Thu, 07 Dec 2023 14:30:42 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/whats-new-pyscript-2023-12-1/</guid>
+      <description>&lt;script src=&#34;mini-coi.js&#34;&gt;&lt;/script&gt;
+&lt;script type=&#34;module&#34; src=&#34;https://pyscript.net/releases/2023.12.1/core.js&#34;&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2023.12.1/core.css&#34;&gt;
+&lt;p class=&#34;post-p&#34;&gt;The PyScript team just cannot be stopped - three releases out so far between Halloween and Christmas. And having remade the world just a few weeks back, the runway is free and clear to add some really neat features. In &lt;a href=&#34;https://github.com/pyscript/pyscript/releases/tag/2023.12.1&#34;&gt;today&#39;s 2023.12.1 release&lt;/a&gt; release, there&#39;s three big ones:&lt;/p&gt;
+    &lt;ul class=&#34;py-2 pl-6 md:pl-12 text-justify list-disc list-outside;&#34;&gt;
+        &lt;li&gt;&lt;code&gt;&amp;lt;py-editor&amp;gt;&lt;/code&gt; (the supercharged version of the old &lt;code&gt;py-repl&lt;/code&gt;)&lt;/li&gt;
+        &lt;li&gt;&#39;Managed&#39; import of JS modules in Python&lt;/li&gt;
+        &lt;li&gt;&lt;code&gt;document&lt;/code&gt; is automatically patched in workers&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;Let&#39;s hit those one by one, and close out with some Odds and Ends, plus some recent featured projects from the community.&lt;/p&gt;
+&lt;div id=&#34;TOC&#34; class=&#34;grid justify-center p-1 m-auto bg-gray-200&#34;&gt;
+    &lt;span&gt;Jump To: &lt;span&gt;
+    &lt;a href=&#34;#py-editor&#34;&gt;&lt;code&gt;py-editor&lt;/code&gt;&lt;/a&gt; • 
+    &lt;a href=&#34;#js-module-import&#34;&gt;JS Module Import&lt;/a&gt; • 
+    &lt;a href=&#34;#autopatch&#34;&gt;&lt;code&gt;document&lt;/code&gt; patching&lt;/a&gt; • 
+    &lt;a href=&#34;#odds-and-ends&#34;&gt;Odds and Ends&lt;/a&gt; • 
+    &lt;a href=&#34;#featured&#34;&gt;Featured Projects&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;py-editor&#34;&gt;&lt;code&gt;&amp;lt;py-editor&amp;gt;&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Allow users to run their own Python code on your page with a built-in, rich editor by adding a &lt;code&gt;&amp;lt;script type=&#34;py-editor&#34;&amp;gt;&lt;/code&gt; tag anywhere on your page. It looks like this:&lt;/p&gt;
+
+&lt;div class=&#34;px-2&#34;&gt;
+    &lt;script type=&#34;py-editor&#34;&gt;
+        # Go ahead, type some Python here!
+        # Then click/tap the &#39;play&#39; button or
+        # hit shift+enter to run it
+
+        print(&#34;Hello, world!&#34;)
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The essential parts are&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;A fully featured editor powered by &lt;a href=&#34;https://codemirror.net/&#34;&gt;CodeMirror&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;A run button in the lower right &lt;span class=&#34;italic&#34;&gt;(this is hidden except on mouseover by default, but can be made permanently visible by setting&lt;/span&gt; &lt;code class=&#34;code&#34;&gt; .py-editor-run-button{ opacity: 1;}&lt;/code&gt; &lt;span class=&#34;italic&#34;&gt;in your css&lt;/span&gt;)&lt;/li&gt;
+    &lt;li&gt;A small &lt;code&gt;environment&lt;/code&gt; notation in the upper right - more on this below.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p class=&#34;post-p&#34;&gt;Following the rest of PyScript&#39;s naming conventions, a &lt;code&gt;&amp;lt;script type=&#34;mpy&#34;&amp;gt;&lt;/code&gt; tag to your page instead adds an editor that runs Micropython:&lt;/p&gt;
+&lt;div class=&#34;px-2 m-2&#34;&gt;
+    &lt;script type=&#34;mpy-editor&#34;&gt;
+        # This editor runs Micropython instead!
+        for i in range(5):
+            print(i)
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can tell which interpreter is running by the small text the way to the right of an Editor. But that text is displaying more than just the interpreter-type: it shows which &#39;environment&#39; is responsible for the editor...&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;Shared Environments&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;By default, each editor is connected to its own, independent interpreter. But there are many situations where having a group of editor elements that share a single interpreter could be handy. To that end, any editors of the same type (&lt;code&gt;py&lt;/code&gt; or &lt;code&gt;mpy&lt;/code&gt;) with the same &lt;code&gt;env&lt;/code&gt; attribute will share an interpreter. For instance:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py-editor&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;env&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;first&amp;#34;&lt;/span&gt;&amp;gt;
+    x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;
+    print(x)
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py-editor&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;env&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;first&amp;#34;&lt;/span&gt;&amp;gt;
+    print(x)
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py-editor&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;env&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;second&amp;#34;&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(x) &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Will error, as &amp;#39;second&amp;#39; is a different interpreter than &amp;#39;first&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;border-2 border-gray-300 m-2 p-2 rounded-lg&#34;&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;first&#34;&gt;
+        x = 1
+        print(x)
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;div class=&#34;border-2 border-gray-300 m-2 p-2 rounded-lg&#34;&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;first&#34;&gt;
+        print(x)
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;div class=&#34;border-2 border-gray-300 m-2 p-2 rounded-lg&#34;&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;second&#34;&gt;
+        print(x) # Will error, as &#39;second&#39; is a different interpreter than &#39;first&#39;
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Notice that the &lt;code&gt;environment&lt;/code&gt; is displayed in small text to the upper-right of the code editor, to make it clear to users that editors are running in different environments. To hide these labels, set &lt;code class=&#34;code&#34;&gt;.py-editor-box::before { display: none }&lt;/code&gt; in your css.&lt;/p&gt; 
+&lt;p class=&#34;post-p&#34;&gt;&#39;Environments&#39; (as specified by the &lt;code&gt;env&lt;/code&gt; attribute) are not shared between different types of interpreters, so &lt;code&gt;&amp;lt;script type=&#34;py-editor&#34; env=&#34;foo&#34;&amp;gt;&lt;/code&gt; and &lt;code&gt;&amp;lt;script type=&#34;mpy-editor&#34; env=&#34;foo&#34;&amp;gt;&lt;/code&gt; will not share objects nor scope.&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;Editors == Workers&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Editors are a &lt;span class=&#34;font-semibold&#34;&gt;worker only&lt;/span&gt; feature, meaning that while &lt;code&gt;&amp;lt;script type=&#34;py&#34;&amp;gt;&lt;/code&gt; tags default to running in the main thread, editor tags run their code inside of Web Workers so as not to block the main (UI) thread.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As with any of PyScript&#39;s worker need, this means you will need to have &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements&#34;&gt;appropriate headers set for using &lt;code&gt;SharedArrayBuffers&lt;/code&gt;&lt;/a&gt;. Of course, if you&#39;re comfortable setting your own headers, you can set &lt;code&gt;Cross-Origin-Opener-Policy: &#39;same origin&#39;&lt;/code&gt; and &lt;code&gt;Cross-Origin-Embedder-Policy: &#39; require-corp&#39;&lt;/code&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;But if you&#39;re not as comfortable/familiar with setting response headers, or if you&#39;re making use of a simple static hosting service like GitHub Pages, an S3 Static Site or readthedocs.io, you can make use of &lt;a href=&#34;https://github.com/WebReflection/mini-coi&#34;&gt;mini-coi&lt;/a&gt;, a single JS file you copy to your hosting which takes care of the headers for you. In fact, that&#39;s what&#39;s powering the demos on this page! Simply copy the the contents of that file to a new local file in the same directory/path as your HTML file called &lt;code&gt;mini-coi.js&lt;/code&gt;, then add &lt;code class=&#34;code&#34;&gt;&amp;lt;script src=&#34;mini-coi.js&#34;&amp;gt;&lt;/code&gt; to your HTML, and your workers/editors should just work.&lt;/code&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Just to be explicit what about that setup might look like, here&#39;s some snippets from the site you&#39;re looking at now:&lt;/p&gt;
+&lt;div class=&#34;mx-2&#34;&gt;
+    &lt;div class=&#34;mx-2&#34;&gt;
+        &lt;p class=&#34;text-sm text-blue-700&#34;&gt;https://jeff.glass/post/whats-new-pyscript-2023-12-1/mini-coi.js&lt;/p&gt;
+        &lt;div class=&#34;p-1 rounded-md border-2 border-blue-500 overflow-y-scroll h-52&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;/*! coi-serviceworker v0.1.7 - Guido Zuidhof and contributors, licensed under MIT */&lt;/span&gt;
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;/*! mini-coi - Andrea Giammarchi and contributors, licensed under MIT */&lt;/span&gt;
+(({ &lt;span style=&#34;color:#366&#34;&gt;document&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; d, navigator&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; { serviceWorker&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; s } }) =&amp;gt; {
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (d) {
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; { currentScript&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; c } &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; d;
+        s.register(c.src, { scope&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; c.getAttribute(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;scope&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#555&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;.&amp;#39;&lt;/span&gt; }).then(r =&amp;gt; {
+        r.addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;updatefound&amp;#39;&lt;/span&gt;, () =&amp;gt; location.reload());
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (r.active &lt;span style=&#34;color:#555&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;!&lt;/span&gt;s.controller) location.reload();
+        });
+    }
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt; {
+        addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;install&amp;#39;&lt;/span&gt;, () =&amp;gt; skipWaiting());
+        addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;activate&amp;#39;&lt;/span&gt;, e =&amp;gt; e.waitUntil(clients.claim()));
+        addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;fetch&amp;#39;&lt;/span&gt;, e =&amp;gt; {
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; { request&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; r } &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; e;
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (r.cache &lt;span style=&#34;color:#555&#34;&gt;===&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;only-if-cached&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#555&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; r.mode &lt;span style=&#34;color:#555&#34;&gt;!==&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;same-origin&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt;;
+        e.respondWith(fetch(r).then(r =&amp;gt; {
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; { body, status, statusText } &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; r;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#555&#34;&gt;!&lt;/span&gt;status &lt;span style=&#34;color:#555&#34;&gt;||&lt;/span&gt; status &lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;399&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; r;
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; h &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;new&lt;/span&gt; Headers(r.headers);
+            h.set(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;Cross-Origin-Opener-Policy&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;same-origin&amp;#39;&lt;/span&gt;);
+            h.set(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;Cross-Origin-Embedder-Policy&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;require-corp&amp;#39;&lt;/span&gt;);
+            h.set(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;Cross-Origin-Resource-Policy&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;cross-origin&amp;#39;&lt;/span&gt;);
+            &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;new&lt;/span&gt; Response(body, { status, statusText, headers&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; h });
+        }));
+        });
+    }
+    })(self);&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;p class=&#34;post-img-caption&#34;&gt;Scroll to see complete code&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;mx-2&#34;&gt;
+    &lt;p class=&#34;text-sm text-red-700&#34;&gt;https://jeff.glass/post/whats-new-pyscript-2023-12-1/index.html&lt;/p&gt;
+    &lt;div class=&#34;p-1 rounded-md border-2 border-red-500&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;mini-coi.js&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;src&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;https://pyscript.net/releases/2023.12.1/core.js&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py-editor&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;env&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;first&amp;#34;&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;5&lt;/span&gt;):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(i)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;While Editors may seem familiar to PyScript users who were familiar with the former &lt;code&gt;&amp;lt;py-repl&amp;gt;&lt;/code&gt; tag, they&#39;re another full rewrite for this release. So if there are features, APIs, or behaviors you think should be different or changed, please &lt;a href=&#34;https://github.com/pyscript/pyscript&#34;&gt;come let us know&lt;/a&gt;!&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;js-module-import&#34;&gt;Pythonic Import of JS Modules&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;As we&#39;ve seen more and more users taking advantage of the ability to interact with any existing JavaScript module while writing only Python, it seemed only natural to add a feature that allows for easily importing JavaScript modules. That is, it would be nice to write python like &lt;code class=&#34;code&#34;&gt;from js_modules import some_cool_JS_module&lt;/code&gt; and have it just work.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt; To that end, there are two new kfeys in &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt;: &lt;code&gt;js_modules.main&lt;/code&gt; and &lt;code&gt;js_modules.worker&lt;/code&gt;. The &lt;code&gt;main&lt;/code&gt; and &lt;code&gt;worker&lt;/code&gt; parts specific where the JavaScript module itself is loaded, but &lt;span class=&#34;italic&#34;&gt;main thread modules are accesbile from Python in both the main thread and in workers&lt;/span&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Each key takes a list of &lt;span class=&#34;italic&#34;&gt;js_module_url: py_module_name&lt;/span&gt; pairs - that is, it maps URLs that JavaScript modules will be loaded from to the Python name they can be imported as. For example:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+    # URL of esm module = &amp;#34;python module name&amp;#34;
+    [js_modules.main]
+    &amp;#34;https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.esm.js&amp;#34; = &amp;#34;leaflet&amp;#34;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;&amp;lt;!-- JS Module is available to Python in the Main Thread--&amp;gt;&lt;/span&gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;  &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js_modules&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; leaflet &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; L
+
+  &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;(L))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+
+&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;&amp;lt;!-- And in the worker thread --&amp;gt;&lt;/span&gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;pyodide&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;worker&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;  &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# JS Module available as a proxy of the module in the main thread&lt;/span&gt;
+  &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js_modules&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; leaflet &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; L
+  &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;dir&lt;/span&gt;(L))&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p class=&#34;post-p&#34;&gt;Notice again that modules included via &lt;code&gt;js_modules.main&lt;/code&gt; are still available to Python running in Workers - the JS library still lives on the main thread, and the workers can interact with it through a proxy. &lt;code&gt;js_modules.worker&lt;/code&gt; is for JavaScript modules that are best installed in worker threads &lt;span class=&#34;italic&#34;&gt;themselves&lt;/span&gt;, like libraries that might have a significant computational load. In that case, the imports look the same:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+    [js_modules.worker]
+    &amp;#34;https://cdn.jsdelivr.net/npm/html-escaper&amp;#34; = &amp;#34;html_escaper&amp;#34;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;worker&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;  &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js_modules&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; html_escaper&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;autopatch&#34;&gt;Automatic Patching of &lt;code&gt;document&lt;/code&gt; in Workers&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is one of those &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1880&#34;&gt;very short PRs&lt;/a&gt; that still has a big, meaningful impact. When running Python in a worker, the &lt;code&gt;js.document&lt;/code&gt; object is now a proxy for the main thread&#39;s &lt;code&gt;document&lt;/code&gt;, instead of just not existing.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Let&#39;s back up a step - as of &lt;a href=&#34;post/whats-new-pyscript-2023-11-1&#34;&gt;version 2023.11.1&lt;/a&gt;, PyScript has the ability to run code inside of separate worker threads. This allows you to run code without ever blocking up the browser&#39;s UI. But a Worker is a different place than the main thread, in that code running in a worker doesn&#39;t have access to the DOM (page), nor to events on it. &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript provides a little &#34;magic&#34; to ease the pain of writing different code for the main thread and worker threads. If you run &lt;code class=&#34;code&#34;&gt;from pyscript import window&lt;/code&gt;, you always get a reference to the &lt;span class=&#34;italic&#34;&gt;main window&#39;s global scope&lt;/span&gt;, no matter if your code runs in the main thread or a worker. Similarly, &lt;code class=&#34;code&#34;&gt;from pyscript import document&lt;/code&gt; is a always reference to the main thread&#39;s document.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So here&#39;s the change - as a way of improving usability of existing Pyodide packages that assume &lt;code&gt;js.document&lt;/code&gt; always exists, PyScript always now &lt;span class=&#34;italic&#34;&gt;sets&lt;/span&gt; &lt;code&gt;js.document&lt;/code&gt; to the same value as &lt;code&gt;pyscript.document&lt;/code&gt; - that is, from within PyScript, &lt;code&gt;js.document&lt;/code&gt; will now also point to the main thread&#39;s document, even in Workers where it shouldn&#39;t normally exist. This allows existing packages written for Pyodide that expect &lt;code&gt;js.document&lt;/code&gt; to always exist to work out of the box - &lt;code&gt;matplotlib&lt;/code&gt; being (with its Pyodide backend) being the primary example so far.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;If you need &lt;code&gt;js.document&lt;/code&gt; to &lt;span class=&#34;italic&#34;&gt;not&lt;/span&gt; exist for some reason - maybe your package is doing feature detection in Python to detect whether you&#39;re in a worker or now, you can always do &lt;code&gt;del js.document&lt;/code&gt; before importing your package, or similar.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is a relatively niche change, that I&#39;ve now spent five paragraphs on. But hopefully it eases compatibility of PyScript and workers with existing Pyodide packages, which is always a nice plus.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;odds-and-ends&#34;&gt;Odds and Ends&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;There have been a couple more UX and quality of life interfaces made for this release. To rip through them quickly:&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;Multiple Configs -&gt; Error&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript now throws an error if there are multiple conflicting &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; or &lt;code&gt;&amp;lt;mpy-config&amp;gt;&lt;/code&gt; tags or configurations on a page. Now that we can have both inline and as-a-tag py-configs, the error messages attempt to clear up when they&#39;re in conflict. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1885&#34;&gt;#1885&lt;/a&gt;)&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;Examples have been moved/removed&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Since the &lt;code class=&#34;code&#34;&gt;alpha&lt;/code&gt; release, PyScript has hosted a collection of examples in the main repo, but this caused issues both in terms of maintenance burden, consistency, and updating timeline. As of this release, the best places to see examples are the &lt;a href=&#34;https://github.com/pyscript/examples&#34;&gt;pyscript/examples&lt;/a&gt; repo or &lt;a href=&#34;https://pyscript.com/@examples&#34;&gt;pyscript.com/@examples&lt;/a&gt;. The PyScript.Com examples are easy to run in-place/clone-and-tinker-with etc - even if PyScript.com isn&#39;t how you ultimately want to deploy your site, I think it&#39;s a great home for these examples. (&lt;a href=&#34;https://github.com/pyscript/pyscript/pull/1884&#34;&gt;#1884&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;featured&#34;&gt;Featured Projects&lt;/h2&gt; probably 
+&lt;p class=&#34;post-p&#34;&gt;Let&#39;s close out by looking &lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Chris Laffa has been building out a declarative UI project in PyScript called &lt;a href=&#34;https://github.com/laffra/ltk&#34;&gt;LTK&lt;/a&gt; with a &lt;a href=&#34;https://laffra.github.io/ltk/?runtime=mpy&amp;tab=0&#34;&gt;frankly incredible demo page&lt;/a&gt; - go check out what&#39;s possible in PyScript with UI components, a custom pub/sub model, and more.&lt;/p&gt;
+&lt;center&gt;&lt;img src=&#34;ltk.png&#34; class=&#34;w-full md:w-1/3 border-2 border-gray-400 rounded-md&#34; alt=&#34;A screenshot showing a demo of the LTK declarative UI framework&#34; class=&#34;post-img&#34;&gt;&lt;/center&gt;
+&lt;p class=&#34;post-p&#34;&gt;Piers Storey and the MeArm Controller folks are building a robot controller with &lt;a href=&#34;https://piersstorey.pyscriptapps.com/mearm-controller/latest/&#34;&gt;MQTT and PyScript&lt;/a&gt; that&#39;s in development, but already looking quite neat.&lt;/p&gt;
+&lt;center&gt;&lt;img src=&#34;mearm.png&#34; class=&#34;w-full md:w-1/3 border-2 border-gray-400 rounded-md&#34; alt=&#34;A screenshot showing a demo of the MeArm robot controller&#34; class=&#34;post-img&#34;&gt;&lt;/center&gt;
+&lt;p class=&#34;post-p&#34;&gt;And finally on a personal note, I&#39;m still chugging along building &lt;a href=&#34;post/advent-of-code-2023/index.html&#34;&gt;solutions to Advent of Code in PyScript&lt;/a&gt; - if you&#39;re interested in coding challenges or building solutions in PyScript, those may be of interest to you!&lt;/p&gt;
+&lt;style&gt;
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Advent of Code 2023</title>
       <link>https://jeff.glass/post/advent-of-code-2023/</link>
@@ -2163,7 +2524,7 @@ number_pattern &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; re&lt;span 
     &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;utils&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; get_input
 &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ImportError&lt;/span&gt;:
     &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;get_input&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args):
-        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input_test.txt&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; f:
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; f:
             &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; f&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;read()
         
     &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;display&lt;/span&gt;(&lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt;args, &lt;span style=&#34;color:#555&#34;&gt;**&lt;/span&gt;kwargs):
