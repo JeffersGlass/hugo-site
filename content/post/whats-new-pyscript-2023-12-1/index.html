@@ -1,5 +1,5 @@
 ---
-title: "What's New in PyScript 2023.12.12"
+title: "What's New in PyScript 2023.12.11"
 date: 2023-12-06T11:30:42-05:00
 draft: false
 tags:
@@ -7,17 +7,13 @@ tags:
 - python
 description: "What's new and what's changed in PyScript 2023.12.1"
 ---
-<py-config>
-    for i in range(5):
-        print(i)
-</py-config>
 <script src="mini-coi.js"></script>
-<script type="module" src="https://pyscript.net/unstable/core.js"></script> XXXXXXXXXX NEW PYS VERSION
-<link rel="stylesheet" href="https://pyscript.net/unstable/core.css">
+<script type="module" src="https://pyscript.net/releases/2023.12.1/core.js"></script> XXXXXXXXXX NEW PYS VERSION
+<link rel="stylesheet" href="https://pyscript.net/releases/2023.12.1/core.css">
 <p class="post-p">PyScript cannot be stopped - three releases out so far between Halloween and Christmas. And having remade the world just a few weeks back, the runway is free and clear to add some really neat features. In <a href="">today's 2023.12.1 release</a> release, there's three big ones:</p>
     <ul class="py-2 pl-6 md:pl-12 text-justify list-disc list-outside;">
         <li><code>&lt;py-editor&gt;</code> (the supercharged version of the old <code>py-repl</code>)</li>
-        <li>'Native' import of JS modules in Python</li>
+        <li>'Managed' import of JS modules in Python</li>
         <li><code>document</code> is automatically patched in workers</li>
     </ul>
 <p class="post-p">Let's hit those one by one:</p>
@@ -25,13 +21,14 @@ description: "What's new and what's changed in PyScript 2023.12.1"
     <span>Jump To: <span>
     <a href="#py-editor"><code>py-editor</code></a> • 
     <a href="#js-module-import">JS Module Import</a> • 
-    <a href="#"><code>document</code> patching</a> • 
+    <a href="#autopatch"><code>document</code> patching</a> • 
+    <a href="#odds-and-ends">Odds and Ends</a>
 </div>
 
 <h2 class="post-h2" id="py-editor"><code>&lt;py-editor&gt;</code></h2>
 <p class="post-p">Allow users to run their own Python code on your page with a built-in, rich editor by adding a <code>&lt;script type="py-editor"&gt;</code> tag anywhere on your page. It looks like this:</p>
 
-<div class="p-2">
+<div class="px-2">
     <script type="py-editor">
         # Go ahead, type some Python here!
         # Then click/tap the 'play' button or
@@ -47,13 +44,14 @@ description: "What's new and what's changed in PyScript 2023.12.1"
     <li>A small <code>environment</code> notation in the upper right - more on this below.</li>
 </ul>
 <p class="post-p">Following the rest of PyScript's naming conventions, a <code>&lt;script type="mpy"&gt;</code> tag to your page instead adds an editor that runs Micropython:</p>
-<div class="p-2 m-2">
+<div class="px-2 m-2">
     <script type="mpy-editor">
         # This editor runs Micropython instead!
         for i in range(5):
             print(i)
     </script>
 </div>
+<p class="post-p">You can tell which interpreter is running by the small text the way to the right of an Editor. But that text is displaying more than just the interpreter-type: it shows which 'environment' is repsonsible for the editor...</p>
 <h3 class="post-h3">Shared Environments</h3>
 <p class="post-p">By default, each editor is connected to its own, independent interpreter. But there are many sitations where having a group of editor elements that share a single interpreter could be handy. To that end, any editors of the same type (<code>py</code> or <code>mpy</code>) with the same <code>env</code> attribute will share an interpreter. For instance:</p>
 {{< highlight "html" "linenostart=1" >}}
@@ -86,16 +84,16 @@ description: "What's new and what's changed in PyScript 2023.12.1"
         print(x) # Will error, as 'second' is a different interpreter than 'first'
     </script>
 </div>
-<p class="post-p">Notice that the <code>environement</code> is displayed in small text to the upper-right of the code editor, to make it clear to users that editors are running in different environments. To hide these labels, set <code class="code">.py-editor-box::before { display: none }</code> in your css.</p> 
+<p class="post-p">Notice that the <code>environment</code> is displayed in small text to the upper-right of the code editor, to make it clear to users that editors are running in different environments. To hide these labels, set <code class="code">.py-editor-box::before { display: none }</code> in your css.</p> 
 <p class="post-p">'Environments' (as specified by the <code>env</code> attribute) are not shared between different types of interpreters, so <code>&lt;script type="py-editor" env="foo"&gt;</code> and <code>&lt;script type="mpy-editor" env="foo"&gt;</code> will not share an objects or scope.</p>
 <h3 class="post-h3">Editors == Workers</h3>
 <p class="post-p">Editors are a <span class="font-semibold">worker only</span> feature, meaning that while <code>&lt;script type="py"&gt;</code> tags default running in the main thread, editor tags run their code inside of Web Workers so as not to block the main (UI) thread.</p>
 <p class="post-p">As with any of PyScript's worker need, this means you will need to have <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">appropriate headers set for using <code>SharedArrayBuffer</code>s</a>. Of course, if you're comfortable setting your own headers, you can set <code>Cross-Origin-Opener-Policy: 'same origin'</code> and <code>Cross-Origin-Embedder-Policy: ' require-corp'</code>.</p>
-<p class="post-p">But if you're not as comfortable/familiar with setting response headers, or if you're making use of a simple static hosting service like GitHub Pages, an S3 Static Site or readthedocs.io, you can make use of <a href="https://github.com/WebReflection/mini-coi">mini-coi</a>, a single JS file you copy to your hosting which takes care of the headers for you. In fact, that's what's powering the demos on this page! Simply copy the the contents of that file to a new local file in the same directory/path as your HTML file called <code>mini-coi.js</code>, then add <code class="code"><code>&lt;script src="mini-coi.js"&gt;</code> to your HTML, and your workers/editors should just work.</code></p>
+<p class="post-p">But if you're not as comfortable/familiar with setting response headers, or if you're making use of a simple static hosting service like GitHub Pages, an S3 Static Site or readthedocs.io, you can make use of <a href="https://github.com/WebReflection/mini-coi">mini-coi</a>, a single JS file you copy to your hosting which takes care of the headers for you. In fact, that's what's powering the demos on this page! Simply copy the the contents of that file to a new local file in the same directory/path as your HTML file called <code>mini-coi.js</code>, then add <code class="code">&lt;script src="mini-coi.js"&gt;</code> to your HTML, and your workers/editors should just work.</code></p>
 <p class="post-p">While Editors may seem familiar to PyScript users who were familiar with the former <code>&lt;py-repl&gt;</code> tag, they're another full rewrite for this release. So if there are features, APIs, or behaviors you think should be different or changed, please <a href="https://github.com/pyscript/pyscript">come let us know</a>!</p>
 
-<h2 class="post-h2" id="js-module-import">Importing JS Modules</h2>
-<p class="post-p">As we've seen more and more users taking advantage of the ability to interact with any existing JavaScript module while writing only Python, it seemed only natural to add a feature that allows for easily importing JavaScript modules.</p>
+<h2 class="post-h2" id="js-module-import">Pythonic Import of JS Modules</h2>
+<p class="post-p">As we've seen more and more users taking advantage of the ability to interact with any existing JavaScript module while writing only Python, it seemed only natural to add a feature that allows for easily importing JavaScript modules. That is, it would be nice to write python like <code class="code">from js_modules import some_cool_JS_module</code> and have it just work.</p>
 <p class="post-p"> To that end, there are two new keys in <code>&lt;py-config&gt;</code>: <code>js_modules.main</code> and <code>js_modules.worker</code>. The <code>main</code> and <code>worker</code> parts specific where the JavaScript module itself is loaded, but <span class="italic">main thread modules are accesbile from Python in both the main thread and in workers</span>.</p>
 <p class="post-p">Each key takes a list of <span class="italic">js_module_url: py_module_name</span> pairs - that is, it maps URLs that JavaScript modules will be loaded from to the Python name they can be imported as. For example:</p>
 {{< highlight "html" "linenostart=1" >}}
@@ -104,7 +102,7 @@ description: "What's new and what's changed in PyScript 2023.12.1"
     [js_modules.main]
     "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.esm.js" = "leaflet"
 </py-config>
-
+Examples
 <script type="py">{{< /highlight >}}
 {{< highlight "python" "linenostart=8" >}}
   # JS Module is available in main thread
@@ -138,12 +136,24 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 </script>
 {{< /highlight >}}
 
-<h2 class="post-h2">Automatic Patching of <code>document</code> in Workers</h2>
+<h2 class="post-h2" id="autopatch">Automatic Patching of <code>document</code> in Workers</h2>
 <p class="post-p">This is one of the <a href="https://github.com/pyscript/pyscript/pull/1880">very short PRs</a> that still has a big, meaningful impact. When running Python in a worker, the <code>js.document</code> object is now a proxy for the main thread's <code>document</code>, instead of just not existing.</p>
 <p class="post-p">Let's back up a step - as of <a href="post/whats-new-pyscript-2023-11-1">version 2023.11.1</a>, PyScript has the ability to run code inside of separate worker threads. This allows you to run code without ever blocking up the browser's UI. But a Worker is a different place than the main thread in, in that code running in a worker doesn't have access to the DOM (page), nor to events on it. </p>
 <p class="post-p">PyScript provides a little "magic" to ease the pain of writing different code for the main thread and worker threads. If you run <code class="code">from pyscript import window</code>, you always get a reference to the <span class="italic">main window's global scope</span>, no matter if your code runs in the main thread or a worker. Similarly, <code class="code">from pyscript import document</code> is a always reference to the main thread's document.</p>
 <p class="post-p">So here's the change - as a way of improving usability of existing Pyodide packages that assume <code>js.document</code> always exists, PyScript now <span class="italic">sets</span> <code>js.document</code> to the same value as <code>pyscript.document</code> - that is, from within PyScript, <code>js.document</code> will now also point to the main thread's document, even in Workers where it shouldn't normally exist. This allows existing packages written for Pyodide that expect <code>js.document</code> to always exist to work out of the box.' - <code>matplotlib</code> being (with its Pyodide backend) being the primary example so far.</p>
+<p class="post-p">This is probably a relatively niche change, that I've now spent five paragraphs on. But hopefully it eases compatibility of PyScript and workers with existing Pyodide packages, which is always a nice plus.</p>
 
+<h2 class="post-h2" id="odds-and-ends">Odds and Ends</h2>
+<p class="post-p">There have been a couple more UX and quality of life interfaces made for this release. To rip through them quickly:</p>
+<h3 class="post-h3">Multiple Configs -> Error</h3>
+<p class="post-p">PyScript now throws an error if there are multiple conflicting <code>&lt;py-config&gt;</code> tags or configurations on a page. Now that we can have both inline and as-a-tag py-configs, the error messages attempt to clear up when they're in conflict. (<a href="https://github.com/pyscript/pyscript/pull/1885">#1885</a>)</p>
+<h3 class="post-h3">Examples have been moved/removed</h3>
+<p class="post-p">Since the <code class="code">alpha</code> release, PyScript has hosted a collection of examples in the main repo, but this caused issues both in terms of maintenance burden, consistency, and updating timeline. As of this release, the best places to see examples are the <a href="https://github.com/pyscript/examples">pyscript/examples</a> repo or <a href="https://pyscript.com/@examples">pyscript.com/@examples</a>. The PyScript.Com examples are easy to run in-place/clone-and-tinker-with etc - even if PyScript.com isn't how you ultimately want to deploy your site, I think it's a great home for these examples. (<a href="https://github.com/pyscript/pyscript/pull/1884">#1884</a>)</p>
+
+<h2 class="post-h2">Featured Projects</h2>
+<p class="post-p">Chris Laffa has been building out a declarative UI project in PyScript called <a href="https://github.com/laffra/ltk">LTK</a> with a <a href="https://laffra.github.io/ltk/?runtime=mpy&tab=0">frankly incredible demo page</a> - go check out what's possible in PyScript with UI components, a custom pub/sub model, and more.</p>
+<p class="post-p">Piers Storey and the MeArm Controller folks are building a robot controller with <a href="https://piersstorey.pyscriptapps.com/mearm-controller/latest/">MQTT and PyScript</a> that's in development, but already looking quite neat.</p>
+<p class="post-p">On a personal note, and for further examples, I'm still chugging along building <a href="post/advent-of-code-2023/index.html">solutions to Advent of Code in PyScript</a> - if you're interested in coding challenges or building solutions in PyScript, those may be of interest to you!</p>
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
         --tw-text-opacity: 1;
