@@ -7,6 +7,10 @@ tags:
 - python
 description: "What's new and what's changed in PyScript 2023.12.1"
 ---
+<py-config>
+    for i in range(5):
+        print(i)
+</py-config>
 <script src="mini-coi.js"></script>
 <script type="module" src="https://pyscript.net/unstable/core.js"></script> XXXXXXXXXX NEW PYS VERSION
 <link rel="stylesheet" href="https://pyscript.net/unstable/core.css">
@@ -134,7 +138,12 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 </script>
 {{< /highlight >}}
 
-<h2 class="post-2">Automatic Patching</h2>
+<h2 class="post-h2">Automatic Patching of <code>document</code> in Workers</h2>
+<p class="post-p">This is one of the <a href="https://github.com/pyscript/pyscript/pull/1880">very short PRs</a> that still has a big, meaningful impact. When running Python in a worker, the <code>js.document</code> object is now a proxy for the main thread's <code>document</code>, instead of just not existing.</p>
+<p class="post-p">Let's back up a step - as of <a href="post/whats-new-pyscript-2023-11-1">version 2023.11.1</a>, PyScript has the ability to run code inside of separate worker threads. This allows you to run code without ever blocking up the browser's UI. But a Worker is a different place than the main thread in, in that code running in a worker doesn't have access to the DOM (page), nor to events on it. </p>
+<p class="post-p">PyScript provides a little "magic" to ease the pain of writing different code for the main thread and worker threads. If you run <code class="code">from pyscript import window</code>, you always get a reference to the <span class="italic">main window's global scope</span>, no matter if your code runs in the main thread or a worker. Similarly, <code class="code">from pyscript import document</code> is a always reference to the main thread's document.</p>
+<p class="post-p">So here's the change - as a way of improving usability of existing Pyodide packages that assume <code>js.document</code> always exists, PyScript now <span class="italic">sets</span> <code>js.document</code> to the same value as <code>pyscript.document</code> - that is, from within PyScript, <code>js.document</code> will now also point to the main thread's document, even in Workers where it shouldn't normally exist. This allows existing packages written for Pyodide that expect <code>js.document</code> to always exist to work out of the box.' - <code>matplotlib</code> being (with its Pyodide backend) being the primary example so far.</p>
+
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
         --tw-text-opacity: 1;
