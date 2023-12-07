@@ -26,7 +26,8 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 
 <h2 class="post-h2" id="py-editor"><code>&lt;py-editor&gt;</code></h2>
 <p class="post-p">Allow users to run their own Python code on your page with a built-in, rich editor by adding a <code>&lt;script type="py-editor"&gt;</code> tag anywhere on your page. It looks like this:</p>
-<div class="p-2 m-2">
+
+<div class="p-2">
     <script type="py-editor">
         # Go ahead, type some Python here!
         # Then click/tap the 'play' button or
@@ -35,6 +36,12 @@ description: "What's new and what's changed in PyScript 2023.12.1"
         print("Hello, world!")
     </script>
 </div>
+<p class="post-p">The essential parts are</p>
+<ul class="post-ul">
+    <li>A fully featured editor powered by <a href="https://codemirror.net/">CodeMirror</a></li>
+    <li>A run button in the lower right <span class="italic">(this is hidden except on mouseover by default, but can be made permanently visible by setting</span> <code class="code"> .py-editor-run-button{ opacity: 1;}</code> <span class="italic">in your css</span>)</li>
+    <li>A small <code>environment</code> notation in the upper right - more on this below.</li>
+</ul>
 <p class="post-p">Following the rest of PyScript's naming conventions, a <code>&lt;script type="mpy"&gt;</code> tag to your page instead adds an editor that runs Micropython:</p>
 <div class="p-2 m-2">
     <script type="mpy-editor">
@@ -53,29 +60,29 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 <script type="py-editor" env="first">
     print(x)
 </script>
-<script type="py-editor" env="second">
-    print(x) # Will error, as 'second' is a different interpreter than 'first'
+<script type="py-editor" env="second">{{< /highlight >}}
+{{< highlight "python" "linenostart=9" >}}
+    print(x) # Will error, as 'second' is a different interpreter than 'first'{{< /highlight >}}
+{{< highlight "html" "linenostart=10" >}}
 </script>
 {{< /highlight >}}
 <div class="border-2 border-gray-300 m-2 p-2 rounded-lg">
-    <span class="text-sm text-blue-700">first</span>
     <script type="py-editor" env="first">
         x = 1
         print(x)
     </script>
 </div>
 <div class="border-2 border-gray-300 m-2 p-2 rounded-lg">
-    <span class="text-sm text-blue-700">first</span>
     <script type="py-editor" env="first">
         print(x)
     </script>
 </div>
 <div class="border-2 border-gray-300 m-2 p-2 rounded-lg">
-    <span class="text-sm text-blue-700">second</span>
     <script type="py-editor" env="second">
         print(x) # Will error, as 'second' is a different interpreter than 'first'
     </script>
 </div>
+<p class="post-p">Notice that the <code>environement</code> is displayed in small text to the upper-right of the code editor, to make it clear to users that editors are running in different environments. To hide these labels, set <code class="code">.py-editor-box::before { display: none }</code> in your css.</p> 
 <p class="post-p">'Environments' (as specified by the <code>env</code> attribute) are not shared between different types of interpreters, so <code>&lt;script type="py-editor" env="foo"&gt;</code> and <code>&lt;script type="mpy-editor" env="foo"&gt;</code> will not share an objects or scope.</p>
 <h3 class="post-h3">Editors == Workers</h3>
 <p class="post-p">Editors are a <span class="font-semibold">worker only</span> feature, meaning that while <code>&lt;script type="py"&gt;</code> tags default running in the main thread, editor tags run their code inside of Web Workers so as not to block the main (UI) thread.</p>
@@ -126,6 +133,8 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 {{< highlight "html" "linenostart=7 " >}}
 </script>
 {{< /highlight >}}
+
+<h2 class="post-2">Automatic Patching</h2>
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
         --tw-text-opacity: 1;
