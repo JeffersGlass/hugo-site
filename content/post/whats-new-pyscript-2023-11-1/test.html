@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <script type="module" src="https://pyscript.net/releases/2023.11.2/core.js"></script>
-    <!-- <script defer src="https://pyscript.net/releases/2022.05.1/pyscript.js"></script> -->
-</head>
-<body>
-<input type="text" id="area">
-<script type="py">
-    from pyscript import when
+<html>
 
-    @when('keydown', '#area')
-    def keyhandle(evt):
-        if evt.key == "Enter":
-            print(f'You hit enter with "{evt.target.value}"" in the text input')
-            evt.target.value = ""
-</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2023.11.2/core.js"></script>
+    <py-config>
+        [[fetch]]
+        from = './'
+        files = ['faceControl.py', 'imageCut.py', 'mergeFace.py', 'changeFacialExpression.py']
+    </py-config>
+    
+</head>
+
+<body>
+    <form>
+        <h3>image_target</h3>
+        <input type="file" id="image_target" name="image_target" />
+        <h3>image_source</h3>
+        <input type="file" id="image_source" name="image_source" />
+    </form>
+    <button py-click="start">click</button>
+    <script type="py" src="./connection.py" config="./pyscript.json"></script>
+    
+    
 </body>
 </html>
