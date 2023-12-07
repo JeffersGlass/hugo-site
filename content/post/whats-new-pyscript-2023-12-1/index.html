@@ -19,8 +19,8 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 <p class="post-p">Let's hit those one by one:</p>
 <div id="TOC" class="grid justify-center p-1 m-auto bg-gray-200">
     <span>Jump To: <span>
-    <a href="#"><code>py-editor</code></a> • 
-    <a href="#">JS Module Import</a> • 
+    <a href="#py-editor"><code>py-editor</code></a> • 
+    <a href="#js-module-import">JS Module Import</a> • 
     <a href="#"><code>document</code> patching</a> • 
 </div>
 
@@ -43,7 +43,7 @@ description: "What's new and what's changed in PyScript 2023.12.1"
             print(i)
     </script>
 </div>
-<h3 class="post-h3">Shared Editors</h3>
+<h3 class="post-h3">Shared Environments</h3>
 <p class="post-p">By default, each editor is connected to its own, independent interpreter. But there are many sitations where having a group of editor elements that share a single interpreter could be handy. To that end, any editors of the same type (<code>py</code> or <code>mpy</code>) with the same <code>env</code> attribute will share an interpreter. For instance:</p>
 {{< highlight "html" "linenostart=1" >}}
 <script type="py-editor" env="first">
@@ -76,10 +76,56 @@ description: "What's new and what's changed in PyScript 2023.12.1"
         print(x) # Will error, as 'second' is a different interpreter than 'first'
     </script>
 </div>
+<p class="post-p">'Environments' (as specified by the <code>env</code> attribute) are not shared between different types of interpreters, so <code>&lt;script type="py-editor" env="foo"&gt;</code> and <code>&lt;script type="mpy-editor" env="foo"&gt;</code> will not share an objects or scope.</p>
 <h3 class="post-h3">Editors == Workers</h3>
 <p class="post-p">Editors are a <span class="font-semibold">worker only</span> feature, meaning that while <code>&lt;script type="py"&gt;</code> tags default running in the main thread, editor tags run their code inside of Web Workers so as not to block the main (UI) thread.</p>
-<p class="post-p">As with any of PyScript's worker need, this means you will need to have <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">appropriate headers set for using <code>SharedArrayBuffer</code>s</a>. Of course, if you're comfortable setting your own headers, you can set <code>Cross-Origin-Opener-Policy: same origin</code> and <code>Cross-Origin-Embedder-Policy: require-corp</code>. But if you're not as comfortable/familiar with setting response headers, or if you're making use of a simple static hosting service like GitHub Pages, an S3 Static Site or readthedocs.io, you can make use of <a href="https://github.com/WebReflection/mini-coi">mini-coi</a>, a single JS file you copy to your hosting which takes care of the headers for you. In fact, that's what's powering the demos on this page!</p>
-<p class="post-p"></p>
+<p class="post-p">As with any of PyScript's worker need, this means you will need to have <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">appropriate headers set for using <code>SharedArrayBuffer</code>s</a>. Of course, if you're comfortable setting your own headers, you can set <code>Cross-Origin-Opener-Policy: 'same origin'</code> and <code>Cross-Origin-Embedder-Policy: ' require-corp'</code>.</p>
+<p class="post-p">But if you're not as comfortable/familiar with setting response headers, or if you're making use of a simple static hosting service like GitHub Pages, an S3 Static Site or readthedocs.io, you can make use of <a href="https://github.com/WebReflection/mini-coi">mini-coi</a>, a single JS file you copy to your hosting which takes care of the headers for you. In fact, that's what's powering the demos on this page! Simply copy the the contents of that file to a new local file in the same directory/path as your HTML file called <code>mini-coi.js</code>, then add <code class="code"><code>&lt;script src="mini-coi.js"&gt;</code> to your HTML, and your workers/editors should just work.</code></p>
+<p class="post-p">While Editors may seem familiar to PyScript users who were familiar with the former <code>&lt;py-repl&gt;</code> tag, they're another full rewrite for this release. So if there are features, APIs, or behaviors you think should be different or changed, please <a href="https://github.com/pyscript/pyscript">come let us know</a>!</p>
+
+<h2 class="post-h2" id="js-module-import">Importing JS Modules</h2>
+<p class="post-p">As we've seen more and more users taking advantage of the ability to interact with any existing JavaScript module while writing only Python, it seemed only natural to add a feature that allows for easily importing JavaScript modules.</p>
+<p class="post-p"> To that end, there are two new keys in <code>&lt;py-config&gt;</code>: <code>js_modules.main</code> and <code>js_modules.worker</code>. The <code>main</code> and <code>worker</code> parts specific where the JavaScript module itself is loaded, but <span class="italic">main thread modules are accesbile from Python in both the main thread and in workers</span>.</p>
+<p class="post-p">Each key takes a list of <span class="italic">js_module_url: py_module_name</span> pairs - that is, it maps URLs that JavaScript modules will be loaded from to the Python name they can be imported as. For example:</p>
+{{< highlight "html" "linenostart=1" >}}
+<py-config>
+    # URL of esm module = "python module name"
+    [js_modules.main]
+    "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.esm.js" = "leaflet"
+</py-config>
+
+<script type="py">{{< /highlight >}}
+{{< highlight "python" "linenostart=8" >}}
+  # JS Module is available in main thread
+  from js_modules import leaflet as L
+
+  print(dir(L)){{< /highlight >}}
+{{< highlight "html" "linenostart=12" >}}
+</script>
+
+<!-- But this also works -->
+<script type="pyodide" worker>{{< /highlight >}}
+{{< highlight "python" "linenostart=16" >}}
+  # JS Module available as a proxy of the module in the main thread
+  from js_modules import leaflet as L
+  print(dir(L)){{< /highlight >}}
+{{< highlight "html" "linenostart=19" >}}
+</script>
+{{< /highlight >}}
+
+<p class="post-p">Notice again that modules included via <code>js_modules.main</code> are still available to Python running in Workers - the JS library still lives on the main thread, and the workers can interact with it through a proxy. <code>js_modules.worker</code> is for JavaScript modules that are best installed in worker threads <span class="italic">themselves</span>, like libraries that might have a significant computational load. In that case, the imports look the same:</p>
+{{< highlight "html" "linenostart=1" >}}
+<py-config>
+    [js_modules.worker]
+    "https://cdn.jsdelivr.net/npm/html-escaper" = "html_escaper"
+</py-config>
+<script type="py" worker>{{< /highlight >}}
+{{< highlight "python" "linenostart=6" >}}
+  from js_modules import html_escaper
+{{< /highlight >}}
+{{< highlight "html" "linenostart=7 " >}}
+</script>
+{{< /highlight >}}
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
         --tw-text-opacity: 1;
