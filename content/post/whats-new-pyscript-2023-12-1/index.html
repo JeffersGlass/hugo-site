@@ -9,6 +9,7 @@ description: "What's new and what's changed in PyScript 2023.12.1"
 ---
 <script src="mini-coi.js"></script>
 <script type="module" src="https://pyscript.net/unstable/core.js"></script> XXXXXXXXXX NEW PYS VERSION
+<link rel="stylesheet" href="https://pyscript.net/unstable/core.css">
 <p class="post-p">PyScript cannot be stopped - three releases out so far between Halloween and Christmas. And having remade the world just a few weeks back, the runway is free and clear to add some really neat features. In <a href="">today's 2023.12.1 release</a> release, there's three big ones:</p>
     <ul class="py-2 pl-6 md:pl-12 text-justify list-disc list-outside;">
         <li><code>&lt;py-editor&gt;</code> (the supercharged version of the old <code>py-repl</code>)</li>
@@ -42,9 +43,43 @@ description: "What's new and what's changed in PyScript 2023.12.1"
             print(i)
     </script>
 </div>
-<p class="post-p">Editors are a <span class="font-semibold">worker only feature</span></p>
-
-
+<h3 class="post-h3">Shared Editors</h3>
+<p class="post-p">By default, each editor is connected to its own, independent interpreter. But there are many sitations where having a group of editor elements that share a single interpreter could be handy. To that end, any editors of the same type (<code>py</code> or <code>mpy</code>) with the same <code>env</code> attribute will share an interpreter. For instance:</p>
+{{< highlight "html" "linenostart=1" >}}
+<script type="py-editor" env="first">
+    x = 1
+    print(x)
+</script>
+<script type="py-editor" env="first">
+    print(x)
+</script>
+<script type="py-editor" env="second">
+    print(x) # Will error, as 'second' is a different interpreter than 'first'
+</script>
+{{< /highlight >}}
+<div class="border-2 border-gray-300 m-2 p-2 rounded-lg">
+    <span class="text-sm text-blue-700">first</span>
+    <script type="py-editor" env="first">
+        x = 1
+        print(x)
+    </script>
+</div>
+<div class="border-2 border-gray-300 m-2 p-2 rounded-lg">
+    <span class="text-sm text-blue-700">first</span>
+    <script type="py-editor" env="first">
+        print(x)
+    </script>
+</div>
+<div class="border-2 border-gray-300 m-2 p-2 rounded-lg">
+    <span class="text-sm text-blue-700">second</span>
+    <script type="py-editor" env="second">
+        print(x) # Will error, as 'second' is a different interpreter than 'first'
+    </script>
+</div>
+<h3 class="post-h3">Editors == Workers</h3>
+<p class="post-p">Editors are a <span class="font-semibold">worker only</span> feature, meaning that while <code>&lt;script type="py"&gt;</code> tags default running in the main thread, editor tags run their code inside of Web Workers so as not to block the main (UI) thread.</p>
+<p class="post-p">As with any of PyScript's worker need, this means you will need to have <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">appropriate headers set for using <code>SharedArrayBuffer</code>s</a>. Of course, if you're comfortable setting your own headers, you can set <code>Cross-Origin-Opener-Policy: same origin</code> and <code>Cross-Origin-Embedder-Policy: require-corp</code>. But if you're not as comfortable/familiar with setting response headers, or if you're making use of a simple static hosting service like GitHub Pages, an S3 Static Site or readthedocs.io, you can make use of <a href="https://github.com/WebReflection/mini-coi">mini-coi</a>, a single JS file you copy to your hosting which takes care of the headers for you. In fact, that's what's powering the demos on this page!</p>
+<p class="post-p"></p>
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
         --tw-text-opacity: 1;
