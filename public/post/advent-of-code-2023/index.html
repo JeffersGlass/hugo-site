@@ -2618,6 +2618,8 @@ number_pattern <span style="color:#555">=</span> re<span style="color:#555">.</s
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
@@ -2663,7 +2665,9 @@ number_pattern <span style="color:#555">=</span> re<span style="color:#555">.</s
 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day7_1</span>(<span style="color:#555">*</span>args):
     data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day7_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
     result <span style="color:#555">=</span> score_lines_7_1(sort_lines_7_1(data))
+    
     display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day7_1-output&#34;</span>)
 
 <span style="color:#069;font-weight:bold">try</span>:
@@ -2950,6 +2954,398 @@ pat <span style="color:#555">=</span> re<span style="color:#555">.</span>compile
                     tabContent.classList.remove('active')
                 })
                 tabsday7_2.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day8_1'>Day 8 (Part 1): Haunted Wasteland</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">We've seen challenges like this in previous years' advents of code, and I suspect we'll see more like it this year. The input is a list of transformations on some input point, as indexed by some other part of the index. The only real trick is to make sure you're starting and ending points correctly identified; with Python's <code>str.startswith()</code> and <code>str.endswith()</code>, this is pretty trivial.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day8_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day8_1-upload-input" name="day8_1-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day8_1-run-btn" py-click="main_day8_1">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day8_1-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day8_1-upload-input')
+            </script>
+            <script type="py" src="day8/main_1.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day8_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day8_1="#day8_1-code" class="active tab code-title">day8_1.py</li>
+         
+        
+    </ul>
+
+    <div id="day8_1-code" data-tab-content-day8_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">dataclasses</span> <span style="color:#069;font-weight:bold">import</span> dataclass
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> cycle
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+
+<span style="color:#99f">@dataclass</span>
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Instruction</span>:
+    left: <span style="color:#366">str</span>
+    right: <span style="color:#366">str</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day8_1</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day8_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">r</span><span style="color:#c30">&#34;([A-Z]</span><span style="color:#a00">{3}</span><span style="color:#c30">) = \(([A-Z]</span><span style="color:#a00">{3}</span><span style="color:#c30">), ([A-Z]</span><span style="color:#a00">{3}</span><span style="color:#c30">)\)&#34;</span>)
+
+    turns <span style="color:#555">=</span> cycle(data[<span style="color:#f60">0</span>]<span style="color:#555">.</span>strip())
+    node_data <span style="color:#555">=</span> {re<span style="color:#555">.</span>match(pattern, line)<span style="color:#555">.</span>group(<span style="color:#f60">1</span>):
+                 Instruction(left<span style="color:#555">=</span>m<span style="color:#555">.</span>group(<span style="color:#f60">2</span>), right<span style="color:#555">=</span>m<span style="color:#555">.</span>group(<span style="color:#f60">3</span>)) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data[<span style="color:#f60">2</span>:] <span style="color:#069;font-weight:bold">if</span> (m <span style="color:#555">:=</span> re<span style="color:#555">.</span>match(pattern, line))}
+    
+    steps <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    loc <span style="color:#555">=</span> <span style="color:#c30">&#39;AAA&#39;</span>
+
+    <span style="color:#069;font-weight:bold">while</span>(<span style="color:#069;font-weight:bold">True</span>):
+        <span style="color:#069;font-weight:bold">if</span> loc <span style="color:#555">==</span> <span style="color:#c30">&#39;ZZZ&#39;</span>: <span style="color:#069;font-weight:bold">break</span>
+        next_step <span style="color:#555">=</span> node_data[loc]
+        direction <span style="color:#555">=</span> <span style="color:#366">next</span>(turns)
+        <span style="color:#069;font-weight:bold">if</span> direction <span style="color:#555">==</span> <span style="color:#c30">&#39;L&#39;</span>: loc <span style="color:#555">=</span> next_step<span style="color:#555">.</span>left
+        <span style="color:#069;font-weight:bold">elif</span> direction <span style="color:#555">==</span> <span style="color:#c30">&#39;R&#39;</span>: loc <span style="color:#555">=</span> next_step<span style="color:#555">.</span>right
+        <span style="color:#069;font-weight:bold">else</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">&#34;Direction must be L or R&#34;</span>)
+
+        steps<span style="color:#555">+=</span><span style="color:#f60">1</span>
+
+    result <span style="color:#555">=</span> steps
+    display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day8_1-output&#34;</span>)
+
+<span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    main_day8_1()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday8_1 = document.querySelectorAll('[data-tab-target-day8_1]')
+    const tabContentsday8_1 = document.querySelectorAll('[data-tab-content-day8_1]')
+
+    tabsday8_1.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay8_1
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday8_1.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday8_1.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day8_2'>Day 8 (Part 2): Haunted Wasteland</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">The niave solution here would be to simply set up an array of locations to track, and let them all run for a long time until they all simultaneously were on locations that end in 'Z'. However, with the ghosts having periods that are large and co-prime, the resulting overall period can (and in my case, is) over 14 digits long.</p><p class="post-p">The solution is to recognize that you can identify when each ghost has reached it's 'destination' (location that ends in 'Z') to find the period of that ghost. Then, the overall period is the least-common-multiple of all the ghosts' periods. Again, thanks to Python 3.9's addition of <code>math.lcm</code>, this is straightforward.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day8_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day8_2-upload-input" name="day8_2-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day8_2-run-btn" py-click="main_day8_2">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day8_2-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day8_2-upload-input')
+            </script>
+            <script type="py" src="day8/main_2.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day8_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day8_2="#day8_2-code" class="active tab code-title">day8_2.py</li>
+         
+        
+    </ul>
+
+    <div id="day8_2-code" data-tab-content-day8_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">dataclasses</span> <span style="color:#069;font-weight:bold">import</span> dataclass
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> cycle
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">math</span> <span style="color:#069;font-weight:bold">import</span> prod, lcm
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+
+<span style="color:#99f">@dataclass</span>
+<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Instruction</span>:
+    left: <span style="color:#366">str</span>
+    right: <span style="color:#366">str</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day8_2</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day8_2&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">r</span><span style="color:#c30">&#34;([A-Z0-9]</span><span style="color:#a00">{3}</span><span style="color:#c30">) = \(([A-Z0-9]</span><span style="color:#a00">{3}</span><span style="color:#c30">), ([A-Z0-9]</span><span style="color:#a00">{3}</span><span style="color:#c30">)\)&#34;</span>)
+
+    turns <span style="color:#555">=</span> cycle(data[<span style="color:#f60">0</span>]<span style="color:#555">.</span>strip())
+    node_data <span style="color:#555">=</span> {re<span style="color:#555">.</span>match(pattern, line)<span style="color:#555">.</span>group(<span style="color:#f60">1</span>):
+                 Instruction(left<span style="color:#555">=</span>m<span style="color:#555">.</span>group(<span style="color:#f60">2</span>), right<span style="color:#555">=</span>m<span style="color:#555">.</span>group(<span style="color:#f60">3</span>)) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data[<span style="color:#f60">2</span>:] <span style="color:#069;font-weight:bold">if</span> (m <span style="color:#555">:=</span> re<span style="color:#555">.</span>match(pattern, line))}
+    
+    steps <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    ghosts <span style="color:#555">=</span> [loc <span style="color:#069;font-weight:bold">for</span> loc <span style="color:#000;font-weight:bold">in</span> node_data<span style="color:#555">.</span>keys() <span style="color:#069;font-weight:bold">if</span> loc<span style="color:#555">.</span>endswith(<span style="color:#c30">&#39;A&#39;</span>)]
+    periods <span style="color:#555">=</span> [<span style="color:#555">-</span><span style="color:#f60">1</span> <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(ghosts))]
+    <span style="color:#366">print</span>(ghosts)
+
+    <span style="color:#069;font-weight:bold">while</span>(<span style="color:#069;font-weight:bold">True</span>):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">all</span>(p <span style="color:#555">!=</span> <span style="color:#555">-</span><span style="color:#f60">1</span> <span style="color:#069;font-weight:bold">for</span> p <span style="color:#000;font-weight:bold">in</span> periods): <span style="color:#069;font-weight:bold">break</span>
+        direction <span style="color:#555">=</span> <span style="color:#366">next</span>(turns)
+
+        <span style="color:#069;font-weight:bold">for</span> index, ghost <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(ghosts):
+            <span style="color:#069;font-weight:bold">if</span> ghost<span style="color:#555">.</span>endswith(<span style="color:#c30">&#34;Z&#34;</span>): periods[index] <span style="color:#555">=</span> steps
+            next_step <span style="color:#555">=</span> node_data[ghost]
+            <span style="color:#069;font-weight:bold">if</span> direction <span style="color:#555">==</span> <span style="color:#c30">&#39;L&#39;</span>: ghosts[index] <span style="color:#555">=</span> next_step<span style="color:#555">.</span>left
+            <span style="color:#069;font-weight:bold">elif</span> direction <span style="color:#555">==</span> <span style="color:#c30">&#39;R&#39;</span>: ghosts[index] <span style="color:#555">=</span> next_step<span style="color:#555">.</span>right
+            <span style="color:#069;font-weight:bold">else</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">&#34;Direction must be L or R&#34;</span>)
+
+        steps<span style="color:#555">+=</span><span style="color:#f60">1</span>
+        <span style="color:#09f;font-style:italic">#print(ghosts)</span>
+
+    result <span style="color:#555">=</span> lcm(<span style="color:#555">*</span>periods)
+    display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day8_2-output&#34;</span>)
+
+<span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    main_day8_2()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday8_2 = document.querySelectorAll('[data-tab-target-day8_2]')
+    const tabContentsday8_2 = document.querySelectorAll('[data-tab-content-day8_2]')
+
+    tabsday8_2.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay8_2
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday8_2.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday8_2.forEach(tab => {
                     tab.classList.remove('active')
                 })
                 tab.classList.add('active')
