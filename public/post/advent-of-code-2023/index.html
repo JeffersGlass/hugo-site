@@ -2522,6 +2522,474 @@ number_pattern <span style="color:#555">=</span> re<span style="color:#555">.</s
     })
 </script>
 
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day7_1'>Day 7 (Part 1): Camel Cards</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">The complexity of the problems is ramping up at this point, if not quite the difficulty. Since today is ultimately a sorting problem, I was looking for a way to transform the input into a sortable form; by tranforming the "face card" labels ("AKQJT") into Hexadeical characters with the matching rank, then evaluating the hand's strength using <code>collections.Counter</code> and appending that as another Hex character to the front, the sorting is then straightforward.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day7_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day7_1-upload-input" name="day7_1-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day7_1-run-btn" py-click="main_day7_1">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day7_1-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day7_1-upload-input')
+            </script>
+            <script type="py" src="day7/main_1.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day7_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day7_1="#day7_1-code" class="active tab code-title">day7_1.py</li>
+         
+        
+    </ul>
+
+    <div id="day7_1-code" data-tab-content-day7_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">collections</span> <span style="color:#069;font-weight:bold">import</span> Counter
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">operator</span> <span style="color:#069;font-weight:bold">import</span> itemgetter
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> Iterable
+
+pat <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;\d+&#34;</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">score_lines_7_1</span>(lines: Iterable[<span style="color:#366">str</span>]):
+    <span style="color:#c30">&#34;&#34;&#34;Take in a list of input sorted by rank, and return
+</span><span style="color:#c30">    the score required by the pizzle
+</span><span style="color:#c30">
+</span><span style="color:#c30">    Args:
+</span><span style="color:#c30">        lines (Iterable[str]): A sorted Iterable of input lines
+</span><span style="color:#c30">
+</span><span style="color:#c30">    Returns:
+</span><span style="color:#c30">        _type_: _description_
+</span><span style="color:#c30">    &#34;&#34;&#34;</span>
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(<span style="color:#366">int</span>(line<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)[<span style="color:#f60">1</span>]) <span style="color:#555">*</span> (index<span style="color:#555">+</span><span style="color:#f60">1</span>) <span style="color:#069;font-weight:bold">for</span> index, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(lines))
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">sort_lines_7_1</span>(lines: Iterable[<span style="color:#366">str</span>]):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sorted</span>(lines, key <span style="color:#555">=</span> rank_7_1)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">rank_7_1</span>(line):
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Ranking </span><span style="color:#a00">{</span>line<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>, end <span style="color:#555">=</span> <span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\t</span><span style="color:#c30">&#34;</span>)
+    hand <span style="color:#555">=</span> line<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)[<span style="color:#f60">0</span>]
+    counts <span style="color:#555">=</span> Counter(hand)
+    vals <span style="color:#555">=</span> <span style="color:#366">tuple</span>(<span style="color:#366">sorted</span>((counts<span style="color:#555">.</span>values()), reverse<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>))
+    <span style="color:#069;font-weight:bold">if</span> vals <span style="color:#555">==</span> (<span style="color:#f60">5</span>,): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;F&#34;</span> <span style="color:#09f;font-style:italic"># 5 of a kind</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">4</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;E&#34;</span> <span style="color:#09f;font-style:italic"># 4 of a kind</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">3</span>,<span style="color:#f60">2</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;D&#34;</span> <span style="color:#09f;font-style:italic"># Full House</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">3</span>,<span style="color:#f60">1</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;C&#34;</span> <span style="color:#09f;font-style:italic"># Three of a kind</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">2</span>,<span style="color:#f60">2</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;B&#34;</span> <span style="color:#09f;font-style:italic"># Two Pair</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">2</span>,<span style="color:#f60">1</span>,<span style="color:#f60">1</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;A&#34;</span>
+    <span style="color:#069;font-weight:bold">else</span>:rank <span style="color:#555">=</span> <span style="color:#c30">&#34;9&#34;</span>
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>rank<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>, end<span style="color:#555">=</span><span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\t</span><span style="color:#c30">&#34;</span>)
+    new_card <span style="color:#555">=</span> rank <span style="color:#555">+</span> remap_card_names_7_1(hand)
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>new_card<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>)
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">int</span>(rank<span style="color:#555">+</span>remap_card_names_7_1(hand), base<span style="color:#555">=</span><span style="color:#f60">16</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">remap_card_names_7_1</span>(hand):
+    trans <span style="color:#555">=</span> <span style="color:#366">str</span><span style="color:#555">.</span>maketrans(<span style="color:#c30">&#34;AKQJT&#34;</span>, <span style="color:#c30">&#34;FEDCB&#34;</span>)
+    <span style="color:#069;font-weight:bold">return</span> hand<span style="color:#555">.</span>translate(trans)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day7_1</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day7_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    result <span style="color:#555">=</span> score_lines_7_1(sort_lines_7_1(data))
+
+    display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day7_1-output&#34;</span>)
+
+<span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    main_day7_1()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday7_1 = document.querySelectorAll('[data-tab-target-day7_1]')
+    const tabContentsday7_1 = document.querySelectorAll('[data-tab-content-day7_1]')
+
+    tabsday7_1.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay7_1
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday7_1.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday7_1.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day7_2'>Day 7 (Part 2): Camel Cards</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">A relatively benign change to part one, invovling adjusting the ranking algorithm to incorporate Jokers and adjusting the translation table. One of the (minor) pain points in using PyScript is that if you're using main-thread tags, you get exactly on interpreter and one global namespace, so name collisions across multiple problems are a given. Hence the clunky names in both parts of this problem.</p><p class="post-p">Perhaps I should switch to <code>worker</code> tags...</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day7_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day7_2-upload-input" name="day7_2-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day7_2-run-btn" py-click="main_day7_2">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day7_2-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day7_2-upload-input')
+            </script>
+            <script type="py" src="day7/main_2.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day7_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day7_2="#day7_2-code" class="active tab code-title">day7_2.py</li>
+         
+        
+    </ul>
+
+    <div id="day7_2-code" data-tab-content-day7_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">collections</span> <span style="color:#069;font-weight:bold">import</span> Counter
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">operator</span> <span style="color:#069;font-weight:bold">import</span> itemgetter
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">re</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> Iterable
+
+pat <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;\d+&#34;</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">score_lines_7_2</span>(lines: Iterable[<span style="color:#366">str</span>]):
+    <span style="color:#c30">&#34;&#34;&#34;Take in a list of input sorted by rank, and return
+</span><span style="color:#c30">    the score required by the pizzle
+</span><span style="color:#c30">
+</span><span style="color:#c30">    Args:
+</span><span style="color:#c30">        lines (Iterable[str]): A sorted Iterable of input lines
+</span><span style="color:#c30">
+</span><span style="color:#c30">    Returns:
+</span><span style="color:#c30">        _type_: _description_
+</span><span style="color:#c30">    &#34;&#34;&#34;</span>
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sum</span>(<span style="color:#366">int</span>(line<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)[<span style="color:#f60">1</span>]) <span style="color:#555">*</span> (index<span style="color:#555">+</span><span style="color:#f60">1</span>) <span style="color:#069;font-weight:bold">for</span> index, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(lines))
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">sort_lines_7_2</span>(lines: Iterable[<span style="color:#366">str</span>]):
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">sorted</span>(lines, key <span style="color:#555">=</span> rank_7_2)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">rank_7_2</span>(line):
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Ranking </span><span style="color:#a00">{</span>line<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>, end <span style="color:#555">=</span> <span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\t</span><span style="color:#c30">&#34;</span>)
+    hand <span style="color:#555">=</span> line<span style="color:#555">.</span>split(<span style="color:#c30">&#34; &#34;</span>)[<span style="color:#f60">0</span>]
+    <span style="color:#069;font-weight:bold">if</span> hand <span style="color:#555">==</span> <span style="color:#c30">&#34;JJJJJ&#34;</span>: <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">int</span>(<span style="color:#c30">&#34;F11111&#34;</span>, base<span style="color:#555">=</span><span style="color:#f60">16</span>)
+
+    counts <span style="color:#555">=</span> Counter(hand)
+    vals <span style="color:#555">=</span> [<span style="color:#366">list</span>(s) <span style="color:#069;font-weight:bold">for</span> s <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">sorted</span>(counts<span style="color:#555">.</span>items(), key<span style="color:#555">=</span>itemgetter(<span style="color:#f60">1</span>), reverse<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)]
+    <span style="color:#069;font-weight:bold">if</span> vals[<span style="color:#f60">0</span>][<span style="color:#f60">0</span>] <span style="color:#555">==</span> <span style="color:#c30">&#39;J&#39;</span>: vals[<span style="color:#f60">1</span>][<span style="color:#f60">1</span>] <span style="color:#555">+=</span> vals[<span style="color:#f60">0</span>][<span style="color:#f60">1</span>]
+    <span style="color:#069;font-weight:bold">else</span>: vals[<span style="color:#f60">0</span>][<span style="color:#f60">1</span>] <span style="color:#555">+=</span> counts[<span style="color:#c30">&#34;J&#34;</span>]
+    j_items <span style="color:#555">=</span> [i <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> vals <span style="color:#069;font-weight:bold">if</span> i[<span style="color:#f60">0</span>] <span style="color:#555">==</span> <span style="color:#c30">&#34;J&#34;</span>]
+    <span style="color:#069;font-weight:bold">if</span> j_items:
+        vals<span style="color:#555">.</span>remove(j_items[<span style="color:#f60">0</span>])
+    vals <span style="color:#555">=</span> <span style="color:#366">tuple</span>(v[<span style="color:#f60">1</span>] <span style="color:#069;font-weight:bold">for</span> v <span style="color:#000;font-weight:bold">in</span> vals)
+
+
+    <span style="color:#069;font-weight:bold">if</span> vals <span style="color:#555">==</span> (<span style="color:#f60">5</span>,): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;F&#34;</span> <span style="color:#09f;font-style:italic"># 5 of a kind</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">4</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;E&#34;</span> <span style="color:#09f;font-style:italic"># 4 of a kind</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">3</span>,<span style="color:#f60">2</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;D&#34;</span> <span style="color:#09f;font-style:italic"># Full House</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">3</span>,<span style="color:#f60">1</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;C&#34;</span> <span style="color:#09f;font-style:italic"># Three of a kind</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">2</span>,<span style="color:#f60">2</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;B&#34;</span> <span style="color:#09f;font-style:italic"># Two Pair</span>
+    <span style="color:#069;font-weight:bold">elif</span> vals <span style="color:#555">==</span> (<span style="color:#f60">2</span>,<span style="color:#f60">1</span>,<span style="color:#f60">1</span>,<span style="color:#f60">1</span>): rank <span style="color:#555">=</span> <span style="color:#c30">&#34;A&#34;</span>
+    <span style="color:#069;font-weight:bold">else</span>:rank <span style="color:#555">=</span> <span style="color:#c30">&#34;9&#34;</span>
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>rank<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>, end<span style="color:#555">=</span><span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\t</span><span style="color:#c30">&#34;</span>)
+    new_card <span style="color:#555">=</span> rank <span style="color:#555">+</span> remap_card_names_7_2(hand)
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>new_card<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>)
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#366">int</span>(new_card, base<span style="color:#555">=</span><span style="color:#f60">16</span>)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">remap_card_names_7_2</span>(hand):
+    trans <span style="color:#555">=</span> <span style="color:#366">str</span><span style="color:#555">.</span>maketrans(<span style="color:#c30">&#34;AKQJT&#34;</span>, <span style="color:#c30">&#34;FED1B&#34;</span>)
+    <span style="color:#069;font-weight:bold">return</span> hand<span style="color:#555">.</span>translate(trans)
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day7_2</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day7_2&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    data <span style="color:#555">=</span> sort_lines_7_(data)
+    <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
+        <span style="color:#366">print</span>(line)
+    result <span style="color:#555">=</span> score_lines_7_2(data)
+
+    display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day7_2-output&#34;</span>)
+
+<span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    main_day7_2()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday7_2 = document.querySelectorAll('[data-tab-target-day7_2]')
+    const tabContentsday7_2 = document.querySelectorAll('[data-tab-content-day7_2]')
+
+    tabsday7_2.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay7_2
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday7_2.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday7_2.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
 <!--NEW_DAYS_ABOVE_THIS_LINE-->
 
 <py-config style="display:none">
