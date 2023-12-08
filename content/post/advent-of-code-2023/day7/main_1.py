@@ -15,8 +15,6 @@ from collections import Counter
 import re
 from typing import Iterable
 
-pat = re.compile("\d+")
-
 def score_lines_7_1(lines: Iterable[str]):
     return sum(int(line.split(" ")[1]) * (index+1) for index, line in enumerate(lines))
 
@@ -44,9 +42,7 @@ def remap_card_names_7_1(hand):
 
 def main_day7_1(*args):
     data = get_input("day7_1").split("\n")
-
     result = score_lines_7_1(sort_lines_7_1(data))
-
     display(result, target="day7_1-output")
 
 try:
