@@ -12,7 +12,6 @@ except ImportError:
         print(*args, **kwargs)
 
 from collections import Counter
-import re
 from typing import Iterable
 
 def score_lines_7_1(lines: Iterable[str]):
