@@ -44,7 +44,7 @@ def rank_7_1(line):
     elif vals == (2,2,1): rank = "B" # Two Pair
     elif vals == (2,1,1,1): rank = "A"
     else:rank = "9"
-    new_card = rank + remap_card_names_7_1(hand)
+    
     return int(rank+remap_card_names_7_1(hand), base=16)
 
 def remap_card_names_7_1(hand):
