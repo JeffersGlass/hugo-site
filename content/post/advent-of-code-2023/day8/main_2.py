@@ -24,7 +24,7 @@ class Instruction:
 def main_day8_2(*args):
     data = get_input("day8_2").split("\n")
 
-    pattern = re.compile(r"([A-Z0-9]{3}) = \(([A-Z0-9]{3}), ([A-Z0-9]{3})\)")
+    pattern = re.compile(r"([A-Z]{3}) = \(([A-Z]{3}), ([A-Z0-9]{3})\)")
 
     turns = cycle(data[0].strip())
     node_data = {re.match(pattern, line).group(1):
