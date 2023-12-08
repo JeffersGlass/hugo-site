@@ -12,22 +12,9 @@ except ImportError:
         print(*args, **kwargs)
 
 from collections import Counter
-from operator import itemgetter
-import re
 from typing import Iterable
 
-pat = re.compile("\d+")
-
 def score_lines_7_1(lines: Iterable[str]):
-    """Take in a list of input sorted by rank, and return
-    the score required by the pizzle
-
-    Args:
-        lines (Iterable[str]): A sorted Iterable of input lines
-
-    Returns:
-        _type_: _description_
-    """
     return sum(int(line.split(" ")[1]) * (index+1) for index, line in enumerate(lines))
 
 def sort_lines_7_1(lines: Iterable[str]):
@@ -44,8 +31,9 @@ def rank_7_1(line):
     elif vals == (2,2,1): rank = "B" # Two Pair
     elif vals == (2,1,1,1): rank = "A"
     else:rank = "9"
-    
-    return int(rank+remap_card_names_7_1(hand), base=16)
+
+    hand_as_hex = rank+remap_card_names_7_1(hand)
+    return int(hand_as_hex, base=16)
 
 def remap_card_names_7_1(hand):
     trans = str.maketrans("AKQJT", "FEDCB")
@@ -53,9 +41,7 @@ def remap_card_names_7_1(hand):
 
 def main_day7_1(*args):
     data = get_input("day7_1").split("\n")
-
     result = score_lines_7_1(sort_lines_7_1(data))
-
     display(result, target="day7_1-output")
 
 try:

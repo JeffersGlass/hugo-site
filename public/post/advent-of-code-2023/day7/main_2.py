@@ -39,11 +39,16 @@ def rank_7_2(line):
 
     counts = Counter(hand)
     vals = [list(s) for s in sorted(counts.items(), key=itemgetter(1), reverse=True)]
+
+    # Move count of jokers to the next-most-common card
     if vals[0][0] == 'J': vals[1][1] += vals[0][1]
     else: vals[0][1] += counts["J"]
+
+    # Find the count that corresponds to jokers, and remove it
     j_items = [i for i in vals if i[0] == "J"]
     if j_items:
         vals.remove(j_items[0])
+    
     vals = tuple(v[1] for v in vals)
 
 
@@ -54,6 +59,7 @@ def rank_7_2(line):
     elif vals == (2,2,1): rank = "B" # Two Pair
     elif vals == (2,1,1,1): rank = "A"
     else:rank = "9"
+    
     new_card = rank + remap_card_names_7_2(hand)
     return int(new_card, base=16)
 
