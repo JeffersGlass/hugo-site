@@ -34,7 +34,6 @@ def sort_lines_7_1(lines: Iterable[str]):
     return sorted(lines, key = rank_7_1)
 
 def rank_7_1(line):
-    print(f"Ranking {line}", end = "\t")
     hand = line.split(" ")[0]
     counts = Counter(hand)
     vals = tuple(sorted((counts.values()), reverse=True))
@@ -45,9 +44,7 @@ def rank_7_1(line):
     elif vals == (2,2,1): rank = "B" # Two Pair
     elif vals == (2,1,1,1): rank = "A"
     else:rank = "9"
-    print(f"{rank=}", end="\t")
     new_card = rank + remap_card_names_7_1(hand)
-    print(f"{new_card=}")
     return int(rank+remap_card_names_7_1(hand), base=16)
 
 def remap_card_names_7_1(hand):
