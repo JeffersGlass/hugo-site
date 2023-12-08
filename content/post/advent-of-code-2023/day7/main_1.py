@@ -36,7 +36,8 @@ def rank_7_1(line):
     elif vals == (2,1,1,1): rank = "A"
     else:rank = "9"
 
-    return int(rank+remap_card_names_7_1(hand), base=16)
+    hand_as_hex = rank+remap_card_names_7_1(hand)
+    return int(hand_as_hex, base=16)
 
 def remap_card_names_7_1(hand):
     trans = str.maketrans("AKQJT", "FEDCB")
