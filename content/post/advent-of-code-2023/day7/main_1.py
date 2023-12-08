@@ -12,7 +12,6 @@ except ImportError:
         print(*args, **kwargs)
 
 from collections import Counter
-from operator import itemgetter
 import re
 from typing import Iterable
 
