@@ -42,7 +42,6 @@ def main_day8_2(*args):
         for index, ghost in enumerate(ghosts):
             if ghost.endswith("Z"): periods[index] = steps
             next_step = node_data[ghost]
-            #print(f"{ghost=} {next_step=} {direction}") 
             if direction == 'L': ghosts[index] = next_step.left
             elif direction == 'R': ghosts[index] = next_step.right
             else: raise ValueError("Direction must be L or R")
@@ -50,7 +49,6 @@ def main_day8_2(*args):
         steps+=1
         #print(ghosts)
 
-    print(periods)
     result = lcm(*periods)
     display(result, target="day8_2-output")
 
