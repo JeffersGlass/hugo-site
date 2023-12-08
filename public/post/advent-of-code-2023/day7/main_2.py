@@ -34,7 +34,6 @@ def sort_lines_7_2(lines: Iterable[str]):
     return sorted(lines, key = rank_7_2)
 
 def rank_7_2(line):
-    print(f"Ranking {line}", end = "\t")
     hand = line.split(" ")[0]
     if hand == "JJJJJ": return int("F11111", base=16)
 
@@ -55,9 +54,7 @@ def rank_7_2(line):
     elif vals == (2,2,1): rank = "B" # Two Pair
     elif vals == (2,1,1,1): rank = "A"
     else:rank = "9"
-    print(f"{rank=}", end="\t")
     new_card = rank + remap_card_names_7_2(hand)
-    print(f"{new_card=}")
     return int(new_card, base=16)
 
 def remap_card_names_7_2(hand):
@@ -67,7 +64,7 @@ def remap_card_names_7_2(hand):
 def main_day7_2(*args):
     data = get_input("day7_2").split("\n")
 
-    data = sort_lines_7_(data)
+    data = sort_lines_7_2(data)
     for line in data:
         print(line)
     result = score_lines_7_2(data)
