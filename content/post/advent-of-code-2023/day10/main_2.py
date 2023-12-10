@@ -33,7 +33,20 @@ def print_pipes_10_2(data, current, seen):
             else: rich.print(f"[white]{r(char)}[/white]", end="")
         print("")
 
-def count_inner_cells(data, loop):
+def count_inner_cells(data: List[str], loop: List[tuple[int, int]]):
+    """Count the number of cells contained within the loop. Starting
+    from the beginning of each line, and with a boolean is_inside set to false, 
+    each time we cross the loop, invert that boolean, and add any non-loop 
+    space to a running count. "|" spaces are an obvious crossing; corners
+    need to be handled specially.
+
+    Args:
+        data List[str]: The original data,  split into lines
+        loop List[tuple[int, int]]: A list of (line, char_index) pairs comprising the loop.
+
+    Returns:
+        int: The number of cells inside the loop
+    """
     count = 0
     for l, line in enumerate(data):
         is_inside = False
@@ -48,15 +61,15 @@ def count_inner_cells(data, loop):
                     crossing_start = ""
                 if is_inside: color = "white"
                 else: color = "white"
-                rich.print(f"[{color}]{r(char)}[/{color}]", end = "")
+                #rich.print(f"[{color}]{r(char)}[/{color}]", end = "")
             else:
                 if is_inside: 
                     count += 1
-                    rich.print(f"[white on green]{char}[/white on green]", end = "")
+                    #rich.print(f"[white on green]{char}[/white on green]", end = "")
                 else:
-                    rich.print(f"[red]{char}[/red]", end = "")
-        print("")
-                
+                    pass
+                    #rich.print(f"[red]{char}[/red]", end = "")
+        #print("")
 
     return count
 
@@ -69,7 +82,6 @@ def main_day10_2(*args):
 
     start_line, _start_line_data = [(index, line)for index, line in enumerate(data) if 'S' in line][0]
     start_char = _start_line_data.index('S')
-    #print_pipes(data, [], [])
 
     north_entry = ('N', (1,0))
     east_entry = ('E', (0, -1))
@@ -109,28 +121,27 @@ def main_day10_2(*args):
                      ('N', (start_line + 1, start_char)) if map_data[(start_line + 1, start_char)] in ('|', 'L', 'J') else "", 
                      ('S', (start_line - 1, start_char)) if map_data[(start_line - 1, start_char)] in ('|', '7', 'F') else ""]
 
+    # Pick an arbitrary starting direction
     entry_dir, position = [a for a in adjacent_dirs if a][0]
     
     count = 1
     loop = [(start_line, start_char), position]
     
+    # Find all the cells in the loop
     while (current_space:= map_data[position]) != 'S':
         count += 1
         entry_dir, position_delta = instructions[current_space][entry_dir]
         position = (position[0] + position_delta[0], position[1] + position_delta[1])
         loop.append(position)
-        #print_pipes(data, position, seen)
 
-    print(adjacent_dirs)
+    # Replace the starting 'S' with the appropriate symbol to make the next algorithm simpler
     starting_directions = tuple(a[0] for a in adjacent_dirs if a)
-    print(starting_directions)
     if starting_directions == ('W', 'E'): data[start_line] = replace_char(data[start_line], start_char, "-")
     elif starting_directions == ('N', 'S'): data[start_line] = replace_char(data[start_line], start_char, "|")
     elif starting_directions == ('W', 'N'): data[start_line] = replace_char(data[start_line], start_char, "F")
     elif starting_directions == ('W', 'S'): data[start_line] = replace_char(data[start_line], start_char, "L")
     elif starting_directions == ('E', 'N'): data[start_line] = replace_char(data[start_line], start_char, "7")
     elif starting_directions == ('E', 'S'): data[start_line] = replace_char(data[start_line], start_char, "J")
-    
 
     result = count_inner_cells(data, loop)
 
@@ -138,7 +149,3 @@ def main_day10_2(*args):
 
 if not 'js' in sys.modules:
     main_day10_2()
-    #print(r("7"))
-    #data = [".|L-7.F-J|."]
-    #loop = ((0,1), (0,2), (0,3), (0,4), (0,6), (0,7), (0,8), (0,9))
-    #count_inner_cells(data, loop)
