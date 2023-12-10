@@ -96,11 +96,11 @@ description: "Solutions to the annual holiday coding challenge, in Python and Py
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 10 (Part 1): Pipe Maze" id="day10_1" file="day10/main_1.py">}}
-<p class="post-p">DESCRIPTION</p>
+<p class="post-p">Ah, back to processing input on a grid. As with earlier puzzles, I usually find it easier to create a running dictionary of <code>data[(row, column)]</code> instead of tested dicts <code>data[row][column]</code>, since then a single <code>(x, y) in data</code> suffices to check for precence.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 10 (Part 2): Pipe Maze" id="day10_2" file="day10/main_2.py">}}
-<p class="post-p">DESCRIPTION</p>
+<p class="post-p">Part two is a bit of a curveball, in that it asks you to find an entirely new property of the curve/data from part one. My initial impulse was to use something like a <a href="https://en.wikipedia.org/wiki/Flood_fill">flood fill</a> algorith, but the second set of example problems show that some "outside" areas might be trapped and "unfloodable".</p><p class="post-p">I ultimately used a version of the <a href="https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm">Raycasting/Jordan Curve</a> agorithm, iterating along each line and determining whether a given position was "inside" or "outside" the curve. Whenenver a <code>|</code> is crossed, one passes from inside to outside; corners are a little harder: <code>"L----7"</code> and <code>"F----J"</code> count as crossings, but <code>"L----J"</code> and <code>"F----7"</code> do not. Finally, the original starting point <code>S</code> has to be replaced with the appropriate symbol before processing, or everything after it on that line may go sideways.</p>
 {{< /adv2023 >}}
 
 <!--NEW_DAYS_ABOVE_THIS_LINE-->
