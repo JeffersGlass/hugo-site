@@ -4344,6 +4344,364 @@ pat <span style="color:#555">=</span> re<span style="color:#555">.</span>compile
     })
 </script>
 
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day11_1'>Day 11 (Part 1): Cosmic Expansion</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">What I've taken away from the first chunk of Advent of Code this year is:
+    <ul class="post-ul">
+        <li>Inserting additional features into your original data structure is often a mistake, as insertions don't scale well.</li>
+        <li>When faced with a task that involves a grid, think carefully about whether you need to store the full structure of the grid, or just some important coordinates.</li>
+    </ul></p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day11_1-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day11_1-upload-input" name="day11_1-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day11_1-run-btn" py-click="main_day11_1">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day11_1-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day11_1-upload-input')
+            </script>
+            <script type="py" src="day11/main_1.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day11_1-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day11_1="#day11_1-code" class="active tab code-title">day11_1.py</li>
+         
+        
+    </ul>
+
+    <div id="day11_1-code" data-tab-content-day11_1 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> combinations
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day11_1</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day11_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    expanding_row_indices <span style="color:#555">=</span> [i <span style="color:#069;font-weight:bold">for</span> i, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">all</span>(char <span style="color:#555">==</span> <span style="color:#c30">&#39;.&#39;</span> <span style="color:#069;font-weight:bold">for</span> char <span style="color:#000;font-weight:bold">in</span> line)]
+    expanding_col_indices <span style="color:#555">=</span> [i <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data)) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">all</span>(line[i] <span style="color:#555">==</span> <span style="color:#c30">&#39;.&#39;</span> <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data)]
+    stars <span style="color:#555">=</span>  [(line_index, char_index) <span style="color:#069;font-weight:bold">for</span> line_index, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data) <span style="color:#069;font-weight:bold">for</span> char_index, char <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line) <span style="color:#069;font-weight:bold">if</span> char <span style="color:#555">==</span> <span style="color:#c30">&#39;#&#39;</span>]
+
+    total <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    <span style="color:#069;font-weight:bold">for</span> s1, s2, <span style="color:#000;font-weight:bold">in</span> combinations(stars, <span style="color:#f60">2</span>):
+        manhattan_dist <span style="color:#555">=</span> <span style="color:#366">abs</span>(s2[<span style="color:#f60">0</span>] <span style="color:#555">-</span> s1[<span style="color:#f60">0</span>]) <span style="color:#555">+</span> <span style="color:#366">abs</span>(s2[<span style="color:#f60">1</span>] <span style="color:#555">-</span> s1[<span style="color:#f60">1</span>])
+        
+        <span style="color:#09f;font-style:italic"># expanding rows; stars are in row order, so s2[0] &gt;= s1[0]</span>
+        row_total <span style="color:#555">=</span> <span style="color:#366">len</span>([r <span style="color:#069;font-weight:bold">for</span> r <span style="color:#000;font-weight:bold">in</span> expanding_row_indices <span style="color:#069;font-weight:bold">if</span> s1[<span style="color:#f60">0</span>] <span style="color:#555">&lt;</span> r <span style="color:#555">&lt;</span> s2[<span style="color:#f60">0</span>]])
+
+        <span style="color:#09f;font-style:italic"># expanding columns, not necessarily ordered</span>
+        <span style="color:#069;font-weight:bold">if</span> s2[<span style="color:#f60">1</span>] <span style="color:#555">==</span> s1[<span style="color:#f60">1</span>]: 
+            col_total <span style="color:#555">=</span> <span style="color:#f60">0</span>
+        <span style="color:#069;font-weight:bold">elif</span> s2[<span style="color:#f60">1</span>] <span style="color:#555">&gt;</span> s1[<span style="color:#f60">1</span>]:
+            col_total <span style="color:#555">=</span> <span style="color:#366">len</span>([c <span style="color:#069;font-weight:bold">for</span> c <span style="color:#000;font-weight:bold">in</span> expanding_col_indices <span style="color:#069;font-weight:bold">if</span> s1[<span style="color:#f60">1</span>] <span style="color:#555">&lt;</span> c <span style="color:#555">&lt;</span> s2[<span style="color:#f60">1</span>]])
+        <span style="color:#069;font-weight:bold">else</span>: <span style="color:#09f;font-style:italic"># s2[1] &lt; s1[1] </span>
+            col_total <span style="color:#555">=</span> <span style="color:#366">len</span>([c <span style="color:#069;font-weight:bold">for</span> c <span style="color:#000;font-weight:bold">in</span> expanding_col_indices <span style="color:#069;font-weight:bold">if</span> s2[<span style="color:#f60">1</span>] <span style="color:#555">&lt;</span> c <span style="color:#555">&lt;</span> s1[<span style="color:#f60">1</span>]])
+
+        total <span style="color:#555">+=</span> manhattan_dist <span style="color:#555">+</span> row_total <span style="color:#555">+</span> col_total
+    
+    result <span style="color:#555">=</span> total
+    display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day11_1-output&#34;</span>)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    main_day11_1()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday11_1 = document.querySelectorAll('[data-tab-target-day11_1]')
+    const tabContentsday11_1 = document.querySelectorAll('[data-tab-content-day11_1]')
+
+    tabsday11_1.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay11_1
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday11_1.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday11_1.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
+<h2 class="mt-12 mb-1 border-b-2 border-gray-200 post-h2" id='day11_2'>Day 11 (Part 2): Cosmic Expansion</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
+    <div>
+        
+<p class="post-p">The only critical hint I'd give about part to is: <span class="italic">beware of off-by-one errors</span>. Otherwise, the solution to part 2 is very similar to part 1.</p>
+
+    </div>
+    <div>
+        <div class="load-pyscript"></div>
+        <div class="hidden live-example">
+            <div class="grid grid-cols-1 p-2 space-y-2 border-2 border-blue-200 rounded-xl">
+                <div>
+                    <p class="text-sm font-gray-700">Paste Input Here:</p>
+                    <textarea class="w-full border-2 border-gray-500" id="day11_2-textinput"></textarea>
+                </div>
+                <div>
+                    <p class="text-sm font-gray-700">Or upload file:</p>
+                    <input class="w-full" type="file" id="day11_2-upload-input" name="day11_2-upload">
+                </div>
+                
+                
+                <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day11_2-run-btn" py-click="main_day11_2">RUN</button></div>
+                
+                <div class="font-mono bg-gray-200" id="day11_2-output"></div>
+            </div>
+            <script type="py">
+                from utils import attach_upload_listener
+                attach_upload_listener('day11_2-upload-input')
+            </script>
+            <script type="py" src="day11/main_2.py"></script> 
+        </div>
+    </div>
+    <div class="w-full md:col-span-2"id="day11_2-viz"></div>
+
+    
+    
+     
+    <ul class="tabs md:col-span-2">
+        <li data-tab-target-day11_2="#day11_2-code" class="active tab code-title">day11_2.py</li>
+         
+        
+    </ul>
+
+    <div id="day11_2-code" data-tab-content-day11_2 class="active tab-content md:col-span-2">
+        <div class="overflow-y-scroll border-4 max-h-76"><div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
+<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+            <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
+        
+    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
+        <span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;target&#39;</span> <span style="color:#000;font-weight:bold">in</span> kwargs:
+            kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
+        <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
+
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> combinations
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day11_2</span>(<span style="color:#555">*</span>args):
+    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day11_2&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+
+    expanding_row_indices <span style="color:#555">=</span> [i <span style="color:#069;font-weight:bold">for</span> i, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">all</span>(char <span style="color:#555">==</span> <span style="color:#c30">&#39;.&#39;</span> <span style="color:#069;font-weight:bold">for</span> char <span style="color:#000;font-weight:bold">in</span> line)]
+    expanding_col_indices <span style="color:#555">=</span> [i <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data)) <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">all</span>(line[i] <span style="color:#555">==</span> <span style="color:#c30">&#39;.&#39;</span> <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data)]
+    stars <span style="color:#555">=</span>  [(line_index, char_index) <span style="color:#069;font-weight:bold">for</span> line_index, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data) <span style="color:#069;font-weight:bold">for</span> char_index, char <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line) <span style="color:#069;font-weight:bold">if</span> char <span style="color:#555">==</span> <span style="color:#c30">&#39;#&#39;</span>]
+
+    total <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    <span style="color:#069;font-weight:bold">for</span> s1, s2, <span style="color:#000;font-weight:bold">in</span> combinations(stars, <span style="color:#f60">2</span>):
+        manhattan_dist <span style="color:#555">=</span> <span style="color:#366">abs</span>(s2[<span style="color:#f60">0</span>] <span style="color:#555">-</span> s1[<span style="color:#f60">0</span>]) <span style="color:#555">+</span> <span style="color:#366">abs</span>(s2[<span style="color:#f60">1</span>] <span style="color:#555">-</span> s1[<span style="color:#f60">1</span>])
+        
+        <span style="color:#09f;font-style:italic"># expanding rows; stars are in row order, so s2[0] &gt;= s1[0]</span>
+        row_total <span style="color:#555">=</span> <span style="color:#366">len</span>([r <span style="color:#069;font-weight:bold">for</span> r <span style="color:#000;font-weight:bold">in</span> expanding_row_indices <span style="color:#069;font-weight:bold">if</span> s1[<span style="color:#f60">0</span>] <span style="color:#555">&lt;</span> r <span style="color:#555">&lt;</span> s2[<span style="color:#f60">0</span>]])
+
+        <span style="color:#09f;font-style:italic"># expanding columns, not necessarily ordered</span>
+        <span style="color:#069;font-weight:bold">if</span> s2[<span style="color:#f60">1</span>] <span style="color:#555">==</span> s1[<span style="color:#f60">1</span>]: 
+            col_total <span style="color:#555">=</span> <span style="color:#f60">0</span>
+        <span style="color:#069;font-weight:bold">elif</span> s2[<span style="color:#f60">1</span>] <span style="color:#555">&gt;</span> s1[<span style="color:#f60">1</span>]:
+            col_total <span style="color:#555">=</span> <span style="color:#366">len</span>([c <span style="color:#069;font-weight:bold">for</span> c <span style="color:#000;font-weight:bold">in</span> expanding_col_indices <span style="color:#069;font-weight:bold">if</span> s1[<span style="color:#f60">1</span>] <span style="color:#555">&lt;</span> c <span style="color:#555">&lt;</span> s2[<span style="color:#f60">1</span>]])
+        <span style="color:#069;font-weight:bold">else</span>: <span style="color:#09f;font-style:italic"># s2[1] &lt; s1[1] </span>
+            col_total <span style="color:#555">=</span> <span style="color:#366">len</span>([c <span style="color:#069;font-weight:bold">for</span> c <span style="color:#000;font-weight:bold">in</span> expanding_col_indices <span style="color:#069;font-weight:bold">if</span> s2[<span style="color:#f60">1</span>] <span style="color:#555">&lt;</span> c <span style="color:#555">&lt;</span> s1[<span style="color:#f60">1</span>]])
+
+        total <span style="color:#555">+=</span> manhattan_dist <span style="color:#555">+</span> row_total <span style="color:#555">+</span> col_total
+    
+    result <span style="color:#555">=</span> total
+    display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day11_2-output&#34;</span>)
+
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+    main_day11_2()</code></pre></td></tr></table>
+</div>
+</div></div>
+         <div class="text-sm post-img-caption">Scroll to see complete code</div> 
+    </div>
+
+     
+
+    
+
+    
+
+</div>
+<script>
+    const tabsday11_2 = document.querySelectorAll('[data-tab-target-day11_2]')
+    const tabContentsday11_2 = document.querySelectorAll('[data-tab-content-day11_2]')
+
+    tabsday11_2.forEach(tab => {
+        console.log(tab)
+        tab.addEventListener('click', () => {
+            let selector = tab.dataset.tabTargetDay11_2
+            console.log(`Activating element with selector ${selector}`)
+            const target = document.querySelector(selector)
+            if (target !== null){
+                tabContentsday11_2.forEach(tabContent => {
+                    tabContent.classList.remove('active')
+                })
+                tabsday11_2.forEach(tab => {
+                    tab.classList.remove('active')
+                })
+                tab.classList.add('active')
+                target.classList.add('active')
+            }
+            else {
+                console.warn(`No element found with selector ${selector}`)
+            }
+        })
+    })
+</script>
+
 <!--NEW_DAYS_ABOVE_THIS_LINE-->
 
 <py-config style="display:none">
