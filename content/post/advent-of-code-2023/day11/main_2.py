@@ -36,7 +36,7 @@ def main_day11_2(*args):
         else: # s2[1] < s1[1] 
             col_total = len([c for c in expanding_col_indices if s2[1] < c < s1[1]])
 
-        total += manhattan_dist + row_total + col_total
+        total += manhattan_dist + (row_total + col_total) * 999_999
     
     result = total
     display(result, target="day11_2-output")
