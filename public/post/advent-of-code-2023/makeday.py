@@ -16,12 +16,17 @@ except ImportError:
         if 'target' in kwargs:
             kwargs.pop('target')
         print(*args, **kwargs)
+                
+import sys
 
 def main_{dayname}_{part}(*args):
     data = get_input("{dayname}_{part}")
 
     result = None
     display(result, target="{dayname}_{part}-output")
+
+if not 'js' in sys.modules:
+    main_{dayname}_{part}()
 """)
 
 def make_day(dayname, challenge_name = None, challenge_number = None):
