@@ -55,23 +55,31 @@ def min_length_of_sequence_set(sequences: Iterable[int]) -> int:
     if len(sequences) == 1: return len(sequences)
     return sum(sequences) + len(sequences) - 1
 
-def count_valid_options(sequences: Iterable[int], pattern, prefix = ''):
+def get_valid_options(sequences: Iterable[int], pattern, prefix = ''):
     print(f"Counting valid options for {sequences} against {pattern}")
     if len(sequences) == 1:
+        print("Only 1 sequence left")
         g = [s for s in gen_runs_of_springs(sequences[0], len(pattern)) if match(s, pattern)]
-        print([prefix + new for new in g])
-        return len(g)
+        return set(prefix + new for new in g)
     else:
-        count = 0
-        min_space_for_first_group = sequences[0] + 1
+        valid = set()
+        min_space_for_first_group = sequences[0]
         max_space_for_first_group = len(pattern) - min_length_of_sequence_set(sequences[1:])
         # TODO there is an error in here, not accounting for needing a '.' between groups if the first
         # group ends in a "#""
-        for length_for_first_group in range(min_space_for_first_group, max_space_for_first_group+1):
-            for possibilty in gen_runs_of_springs(sequences[0], length_for_first_group):
+        for length_for_first_group in range(min_space_for_first_group + 1, max_space_for_first_group+1):
+            for possibilty in (g + '.' for g in gen_runs_of_springs(sequences[0], length_for_first_group)):
+                print(f"Starting possibility: {possibilty}")
                 if match(possibilty, pattern):
-                    count += count_valid_options(sequences[1:], pattern[length_for_first_group:])
-        return count
+                    print("Getting extensions")
+                    valid = valid.union(get_valid_options(sequences[1:], pattern[length_for_first_group:], prefix=possibilty[:length_for_first_group]))
+                else:
+                    print("Invalid prefix match")
+                print("--")
+        return valid
+    
+def count_valid_options(sequences, pattern):
+    return len(get_valid_options(sequences, pattern))
         
 
 def main_day12_1(*args):
@@ -82,5 +90,6 @@ def main_day12_1(*args):
 
 if not 'js' in sys.modules:
     pass
+    print(get_valid_options([1,1], '??.??'))
     #main_day12_1()
 
