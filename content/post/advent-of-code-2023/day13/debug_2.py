@@ -37,15 +37,20 @@ def find_horizontal_mirror(pattern: List[str]) -> int | None:
 
 # Vertical Mirrors - index 0 is between first_line[0] and first_line[1]
 def find_smudged_vertical_mirror(pattern: List[str]) -> int | None:
+    print("Looking for smudged vertical mirror")
     pattern = pattern.split("\n")
     for seam_index in range(len(pattern[0])-1):
         smudge_count = 0
         good_seam = True # sentinel to allow shortcutting out of the loop
         for lower, upper in zip(range(seam_index, -1, -1), range(seam_index+1, len(pattern[0]))):
+            print(f"Comparing columns {lower=} and {upper=}")
+            for line in pattern:
+                print(line[lower], end = " ")
+                print(line[upper])
             smudge_count += [line[lower] == line[upper] for line in pattern].count(False)
-            if smudge_count > 1: #If count is to high, exist immediately
-                good_seam = False
-                break
+            #if smudge_count > 1: #If count is to high, exist immediately
+                #good_seam = False
+                #break
         if good_seam and smudge_count == 1: return seam_index + 1 # Counted in original problem is one different from this index
 
 def find_smudged_horizontal_mirror(pattern: List[str]) -> int | None:
@@ -64,9 +69,11 @@ def find_smudged_horizontal_mirror(pattern: List[str]) -> int | None:
 
 def main_day13_2(*args):
     patterns = get_input("day13_2").split("\n\n")
+    patterns = [patterns[i] for i in (14, )] #(14, 16, 54, 58, 72, 85)
 
     total = 0
     for index, pattern in enumerate(patterns): 
+        print(f"Examining pattern {index}")
         if smudge_index := find_smudged_vertical_mirror(pattern):
             if smudge_index != find_vertical_mirror(pattern):
                 total += smudge_index
