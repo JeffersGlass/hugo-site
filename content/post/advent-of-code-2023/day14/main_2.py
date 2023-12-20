@@ -3,7 +3,7 @@ try:
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input.txt") as f:
+        with open("input_test.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
@@ -88,18 +88,18 @@ def main_day14_2(*args):
     print(f"{first_occurance=}")
     print(f"{loop_point=}")
     loop_length = loop_point - first_occurance
+    target = 1_000_000_000
+    last_loop = (int((target - first_occurance)/loop_length)) * loop_length + first_occurance
+    print(f"{last_loop=}")
+    difference = target - last_loop
+
+    for _ in range(difference):
+        data = cycle(data)
 
     # TODO: Given the two points of repetition, calculate
-    # the value after 1_000_000_000 cycles
-
-    print_pattern(configs[first_occurance])
-    print("")
-    print_pattern(configs[loop_point])
-
-
+    # the value after 1_000_000_000 cycle
+    # Something in the above calcs is wrong
         
-        
-
     load = 0
     for row_index, row in enumerate(data.split("\n")):
         row_value = len(data.split("\n")) - row_index
