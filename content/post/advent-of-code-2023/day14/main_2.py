@@ -3,7 +3,7 @@ try:
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input_test.txt") as f:
+        with open("input.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
@@ -85,6 +85,7 @@ def main_day14_2(*args):
         data = cycle(data)
 
     first_occurance = configs.index(data)
+    loop_point += 1
     print(f"{first_occurance=}")
     print(f"{loop_point=}")
     loop_length = loop_point - first_occurance
