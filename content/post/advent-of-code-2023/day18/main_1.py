@@ -29,6 +29,21 @@ inst = {
     "D": Location(x = 0, y = 1)
 }
 
+def score_shoelace(data):
+    loc = Location(x = 0, y = 0)
+    trench = [Location(0,0)]
+
+    for line in data:
+        m = re.match(r"(?P<dir>[RDLU]) (?P<num>\d)", line)
+        dir, num = m.group("dir"), m.group("num")
+        for _ in range(int(num)):
+            loc = Location(loc.x + inst[dir].x, loc.y + inst[dir].y)
+        trench.append(loc)
+    
+    for (one, two) in pairwise(trench):
+        print(one, two)
+    return sum((one.x * two.y) - (two.x * one.y) for (one, two) in pairwise(trench))
+
 def get_trench(data):
     loc = Location(x = 0, y = 0)
     trench = set([Location(0,0)])
