@@ -50,7 +50,7 @@ def find_smudged_vertical_mirror(pattern: List[str]) -> int | None:
 
 def find_smudged_horizontal_mirror(pattern: List[str]) -> int | None:
     pattern = pattern.split("\n")
-    for seam_index in range(len(pattern[0])-1):
+    for seam_index in range(len(pattern)-1):
         smudge_count = 0
         good_seam = True # sentinel to allow shortcutting out of the loop
         for lower, upper in zip(range(seam_index, -1, -1), range(seam_index+1, len(pattern))):
