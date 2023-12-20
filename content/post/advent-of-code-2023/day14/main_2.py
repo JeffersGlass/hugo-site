@@ -84,22 +84,15 @@ def main_day14_2(*args):
         configs.append(data)
         data = cycle(data)
 
-    first_occurance = configs.index(data)
     loop_point += 1
-    print(f"{first_occurance=}")
-    print(f"{loop_point=}")
+    first_occurance = configs.index(data)
     loop_length = loop_point - first_occurance
     target = 1_000_000_000
     last_loop = (int((target - first_occurance)/loop_length)) * loop_length + first_occurance
-    print(f"{last_loop=}")
     difference = target - last_loop
 
     for _ in range(difference):
         data = cycle(data)
-
-    # TODO: Given the two points of repetition, calculate
-    # the value after 1_000_000_000 cycle
-    # Something in the above calcs is wrong
         
     load = 0
     for row_index, row in enumerate(data.split("\n")):
