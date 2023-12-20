@@ -89,6 +89,9 @@ def main_day14_2(*args):
     print(f"{loop_point=}")
     loop_length = loop_point - first_occurance
 
+    # TODO: Given the two points of repetition, calculate
+    # the value after 1_000_000_000 cycles
+
     print_pattern(configs[first_occurance])
     print("")
     print_pattern(configs[loop_point])
