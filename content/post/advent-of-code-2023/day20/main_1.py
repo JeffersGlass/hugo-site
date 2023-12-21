@@ -28,11 +28,6 @@ def push_button(modules: Mapping[str, Module]):
         p: Pulse = pulse_list.popleft()
         modules[p.to].receive_pulse(p)
 
-def hash_state(modules: Mapping[str, Module]) -> str:
-    flops: Iterable[FlipFlop] = sorted((m for m in modules.values() if type(m) == FlipFlop), key=attrgetter('label'))
-    return ''.join(f.label + ('H' if f.state == Level.HI else 'L') for f in flops)
-
-
 def main_day20_1(*args):
     data = get_input("day20_1").split("\n")
 
@@ -71,7 +66,6 @@ def main_day20_1(*args):
 
     for i in range(1000):
         push_button(modules)
-        #print(hash_state(modules))
 
     print(f"{pulse_list.count=}")
     print(f"{prod(pulse_list.count.values())}")
