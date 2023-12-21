@@ -21,7 +21,7 @@ def main_day20_1(*args):
     data = get_input("day20_1").split("\n")
 
     modules: dict[str, Module] = {}
-    pattern = r"(?P<name>((?P<flag>[%&])(?P<label>[a-z])+)|broadcaster) -> (?P<destinations>[a-z ,]+)"
+    pattern = r"(?P<name>((?P<flag>[%&])(?P<label>[a-z]+))|broadcaster) -> (?P<destinations>[a-z ,]+)"
     # Build network
     for line in data:
         m = re.match(pattern, line)
@@ -41,6 +41,8 @@ def main_day20_1(*args):
         if (label:= m.group("label")): modules[label]._destinations = dests
         elif (name:= m.group("name")) == 'broadcaster': modules['broadcaster']._destinations = dests
         else: raise ValueError(f"Line was not a valid label or 'broadcaster': {line}")
+
+    print(modules)
 
     #button = Broadcaster([modules['broadcaster']])
     pulse_list.append(Pulse('broadcaster', Level.LO))
