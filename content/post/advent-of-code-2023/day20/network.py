@@ -3,7 +3,7 @@ import networkx as nx
 
 import re 
 
-from pulse import pulse_list, Pulse, Level
+from pulse import Level
 from module import Broadcaster, FlipFlop, Conjunction, Dummy, Module, Counter
 
 G = nx.DiGraph()
