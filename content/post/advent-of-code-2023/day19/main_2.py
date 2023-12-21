@@ -20,10 +20,14 @@ from typing import Iterable, Self
 
 @dataclass
 class PartRange:
-    x: tuple[int, int]
-    m: tuple[int, int]
-    a: tuple[int, int]
-    s: tuple[int, int]
+    x_min: int
+    x_max: int
+    m_min: int
+    m_max: int
+    a_min: int
+    a_max: int
+    s_min: int
+    s_max: int
     status: str = "InProgress"
     rule: str = "in"
 
@@ -31,47 +35,52 @@ class PartRange:
 
     @staticmethod
     def fromPartRange(other, x_min=None, x_max=None, m_min = None, m_max = None, a_min = None, a_max = None, s_min = None, s_max = None, rule=None):
-        return PartRange(x=(x_min or other.x[0], x_max or other.x[1]),
-                         m=(m_min or other.m[0], m_max or other.m[1]),
-                         a=(a_min or other.a[0], a_max or other.a[1]),
-                         s=(s_min or other.s[0], s_max or other.s[1]),
-                         rule = rule or other.rule
-        )
+        return PartRange(x_min=x_min or other.x_min, x_max=x_max or other.x_max,
+                         m_min=m_min or other.m_min, m_max=m_max or other.m_max,
+                         a_min=a_min or other.a_min, a_max=a_max or other.a_max,
+                         s_min=s_min or other.s_min, s_max=s_max or other.s_max,
+                         rule = rule or other.rule)
 
     def count(self):
-        return prod(z[1] - z[0] for z in (self.x, self.m, self.a, self.s))
+        return prod([(self.x_max - self.x_min + 1),(self.m_max - self.m_min + 1),(self.a_max - self.a_min + 1),(self.s_max - self.s_min + 1)])
     
-    def apply_flow(self, rule: str) -> Iterable[Self]:
+    def apply_flow(self, flow: str) -> Iterable[Self]:
         outgoing = []
-        # TODO hmmmmmm
-        if self.rule == "A": 
-            self.status = "A"
-            return
-        if self.rule == "R":
-            self.status = "R"
-            return
+        for rule in flow.split(","):
+            if rule == "A": 
+                self.status = "A"
+                outgoing.append(self)
+                return outgoing
+            if rule == "R":
+                self.status = "R"
+                return outgoing
         
-        if not any(char in rule for char in ("<", ">")):
-            #print(f"Jumping to new rule {rule}")
-            self.rule = rule
-            return
-        
-        
-        prep, new_rule = rule.split(":")
-        m = re.match(self.pattern, prep)
+            if not any(char in rule for char in ("<", ">")):
+                self.rule = rule
+                outgoing.append(self)
+                return outgoing
+            
+            prep, new_rule = rule.split(":")
+            m = re.match(self.pattern, prep)
 
-        if m.group("op") == "<":
-            first_kwargs = {m.group("attribute")+ "_min": int(m.group("num"))}
-            second_kwargs = {m.group("attribute")+ "_max": int(m.group("num"))}
-            return [self.fromPartRange(self, rule=new_rule, **first_kwargs),
-                    self.fromPartRange(self, rule=new_rule, **second_kwargs)]
-                    
-        elif m.group("op") == "<":
-            kwargs = {m.group("attribute")+ "_max": int(m.group("num"))}
-            return self.fromPartRange(self, rule=new_rule, **kwargs)
-        else: raise ValueError(f"Op must be < or > not {m.group('op')}")
+            attr = m.group("attribute")
+            num = int(m.group("num"))
 
-        
+            if m.group("op") == "<":
+                if int(getattr(self, attr+"_min")) <= num:
+                    first_kwargs = {attr+ "_max": num-1}
+                    outgoing.append(self.fromPartRange(self, rule=new_rule, **first_kwargs))
+                    setattr(self, attr+"_min", num)
+                    continue
+
+            elif m.group("op") == ">":
+                if int(getattr(self, attr+"_max")) >= num:
+                    first_kwargs = {attr+ "_min": num+1}
+                    outgoing.append(self.fromPartRange(self, rule=new_rule, **first_kwargs))
+                    setattr(self, attr+"_max", num)
+                    continue
+
+            raise ValueError(f"Rule {rule} did not match anything")                
       
 
 def main_day19_2(*args):
@@ -81,11 +90,26 @@ def main_day19_2(*args):
     flows = {}
     for line in raw_flows.split("\n"):
         m = re.match(flow_pattern, line)
-        flows[m.group("name")] = m.group("rest").split(",")
+        flows[m.group("name")] = m.group("rest")
 
-    ranges = [PartRange(x=(1,4000),m=(1,4000),a=(1,4000),s=(1,4000))]
-    r = ranges[0].test_rule('s<1351:px')
-    print(r)
+    ranges = [PartRange(x_min=1, x_max=4000,m_min=1, m_max=4000,a_min=1, a_max=4000,s_min=1, s_max=4000)]
+
+    #r = ranges[0].apply_flow("s>1000:aa,s<500:bb,cc")
+    #for l in r:
+    #    print(l)
+    #return
+
+    accepted = []
+    while ranges:
+        r = ranges.pop()
+        if r.status == "A" or r.rule == "A":
+            accepted.append(r)
+        elif r.status == "R" or r.rule == "R":
+            pass
+        else:
+            ranges.extend(r.apply_flow(flows[r.rule]))
+
+    print(sum(r.count() for r in accepted))
 
     result = None
     display(result, target="day19_2-output")
