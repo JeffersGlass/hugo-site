@@ -13,6 +13,7 @@ class State(Enum):
 
 @dataclass
 class Pulse:
+    _from: str
     to: str
     level: Level
 
@@ -21,8 +22,9 @@ class PulseList(deque):
         self.count = 0
         super().__init__(*args, **kwargs)
 
-    def append(self,x:Any):
+    def append(self,p:Pulse):
         self.count += 1
-        super().append(x)
+        print(f"Sending {p.level} Pulse from {p._from} to {p.to}")
+        super().append(p)
 
 pulse_list = PulseList()
