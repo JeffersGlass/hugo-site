@@ -29,14 +29,12 @@ def push_button_2(modules: Mapping[str, Module]):
         p: Pulse = pulse_list.popleft()
         modules[p.to].receive_pulse(p)
 
+
 def hash_state(modules: Mapping[str, Module]) -> str:
     flops: Iterable[FlipFlop] = sorted((m for m in modules.values() if type(m) == FlipFlop), key=attrgetter('label'))
     return ''.join(f.label + ('H' if f.state == Level.HI else 'L') for f in flops)
 
-
-def main_day20_2(*args):
-    data = get_input("day20_2").split("\n")
-
+def load_modules(data: Iterable[str]) -> Iterable[Module]:
     modules: dict[str, Module] = {}
     pattern = r"(?P<name>((?P<flag>[%&])(?P<label>[a-z]+))|broadcaster) -> (?P<destinations>[a-z ,]+)"
     # Build network
@@ -68,21 +66,25 @@ def main_day20_2(*args):
             name = m.group("label") or 'broadcaster'
             if not d in modules: modules[d] = Counter(label=name)
             if type(modules[d]) == Conjunction: modules[d].last_pulse[name] = Level.LO
+        
+    return modules
 
+def main_day20_2(*args):
+    data = get_input("day20_2").split("\n")
 
+    modules = load_modules(data)
+    
     for i in count():
         push_button_2(modules)
         if not i % 10_000: print(i)
         if modules['rx'].count == 1:
-            break
+            break 
         modules['rx'].count = 0
         
-
-
     print(f"{i=}") 
 
     result = None
     display(result, target="day20_2-output")
 
-if not 'js' in sys.modules:
+if not 'js' in sys.modules and __name__ == "__main__":
     main_day20_2()
