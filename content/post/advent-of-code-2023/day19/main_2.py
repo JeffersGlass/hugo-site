@@ -12,7 +12,6 @@ except ImportError:
         print(*args, **kwargs)
 
 from dataclasses import dataclass      
-import operator
 from math import prod
 import re
 import sys
@@ -93,11 +92,6 @@ def main_day19_2(*args):
         flows[m.group("name")] = m.group("rest")
 
     ranges = [PartRange(x_min=1, x_max=4000,m_min=1, m_max=4000,a_min=1, a_max=4000,s_min=1, s_max=4000)]
-
-    #r = ranges[0].apply_flow("s>1000:aa,s<500:bb,cc")
-    #for l in r:
-    #    print(l)
-    #return
 
     accepted = []
     while ranges:
