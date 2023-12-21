@@ -11,7 +11,7 @@ class Module(ABC):
         return f"({self.__class__} destinations={','.join(self._destinations) if self._destinations else "\'\'"})"
 
     @abstractmethod
-    def receive_pulse(p: Pulse):
+    def receive_pulse(self, p: Pulse):
         ...
 
 class FlipFlop(Module):
@@ -20,7 +20,15 @@ class FlipFlop(Module):
         super().__init__(destinations)
 
     def receive_pulse(self, p: Pulse):
-        ...
+        if p.level == Level.LO:
+            if self.state == State.OFF:
+                self.state = State.ON
+                for d in self._destinations:
+                    pulse_list.append(Pulse(d, Level.HI))
+            else:
+                self.state = State.OFF
+                for d in self._destinations:
+                    pulse_list.append(Pulse(d, Level.LO))
 
 class Conjunction(Module):
     def __init__(self, destinations = None):
@@ -40,8 +48,9 @@ class Conjunction(Module):
         self._destinations = value
         self.last_pulse = [Level.LO] * len(self._destinations)
 
-    def receive_pulse(p: Pulse):
+    def receive_pulse(self, p: Pulse):
         ...
+        # TODO add 'from' field to Pulse to enable this
 
 class Broadcaster(Module):
     def receive_pulse(self, p: Pulse):
