@@ -57,3 +57,11 @@ class Broadcaster(Module):
 class Dummy(Module):
     def receive_pulse(self, p: Pulse):
         pass
+
+class Counter(Module):
+    def __init__(self,label, destinations = None):
+        self.count = 0
+        super().__init__(label, destinations)
+        
+    def receive_pulse(self, p: Pulse):
+        self.count += 1
