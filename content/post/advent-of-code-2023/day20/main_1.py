@@ -14,7 +14,7 @@ except ImportError:
 import re
 import sys
 
-from enums import pulse_list, Pulse, Level
+from pulse import pulse_list, Pulse, Level
 from module import Broadcaster, FlipFlop, Conjunction, Module
 
 def main_day20_1(*args):
@@ -26,11 +26,11 @@ def main_day20_1(*args):
     for line in data:
         m = re.match(pattern, line)
         if m.group("flag") == "%":
-            modules[m.group("label")] = FlipFlop()
+            modules[m.group("label")] = FlipFlop(label=m.group("label"))
         elif m.group("flag") == "&":
-            modules[m.group("label")] = Conjunction()
+            modules[m.group("label")] = Conjunction(label=m.group("label"))
         elif m.group("name") == "broadcaster":
-            modules['broadcaster'] = Broadcaster()
+            modules['broadcaster'] = Broadcaster(label="broadcaster")
         else:
             raise ValueError(f"Flag must be % or & or name must be 'broadcaster'; line was {line}")
     
@@ -38,14 +38,20 @@ def main_day20_1(*args):
     for line in data:
         m = re.match(pattern, line)
         dests = [d.strip() for d in m.group("destinations").split(",")]
-        if (label:= m.group("label")): modules[label]._destinations = dests
-        elif (name:= m.group("name")) == 'broadcaster': modules['broadcaster']._destinations = dests
+        if (label:= m.group("label")): modules[label].destinations = dests
+        elif (name:= m.group("name")) == 'broadcaster': modules['broadcaster'].destinations = dests
         else: raise ValueError(f"Line was not a valid label or 'broadcaster': {line}")
+        
+        #Set up conjunction module inputs
+        for d in dests:
+            name = m.group("label") or 'broadcaster'
+            if type(modules[d]) == Conjunction: modules[d].last_pulse[name] = Level.LO
+
 
     print(modules)
 
     #button = Broadcaster([modules['broadcaster']])
-    pulse_list.append(Pulse('broadcaster', Level.LO))
+    pulse_list.append(Pulse(_from='button', to='broadcaster', level=Level.LO))
     
     while(pulse_list):
         p: Pulse = pulse_list.popleft()
