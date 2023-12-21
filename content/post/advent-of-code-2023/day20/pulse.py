@@ -19,12 +19,12 @@ class Pulse:
 
 class PulseList(deque):
     def __init__(self, *args, **kwargs):
-        self.count = 0
+        self.count = {Level.LO: 0, Level.HI: 0}
         super().__init__(*args, **kwargs)
 
     def append(self,p:Pulse):
-        self.count += 1
-        print(f"Sending {p.level} Pulse from {p._from} to {p.to}")
+        self.count[p.level] += 1
+        #print(f"Sending {p.level} Pulse from {p._from} to {p.to}")
         super().append(p)
 
 pulse_list = PulseList()

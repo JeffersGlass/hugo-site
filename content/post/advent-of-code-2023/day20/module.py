@@ -44,9 +44,7 @@ class Conjunction(Module):
 
     # TODO something in this is broken
     def receive_pulse(self, p: Pulse):
-        print(f"{p}")
-        self.last_pulse[p._from] == p.level
-        print(f"{self} has levels {self.last_pulse}")
+        self.last_pulse[p._from] = p.level
         if all(value == Level.HI for value in self.last_pulse.values()):
             self.send_to_all(Level.LO)
         else:
@@ -55,3 +53,7 @@ class Conjunction(Module):
 class Broadcaster(Module):
     def receive_pulse(self, p: Pulse):
         self.send_to_all(p.level)
+
+class Dummy(Module):
+    def receive_pulse(self, p: Pulse):
+        pass
