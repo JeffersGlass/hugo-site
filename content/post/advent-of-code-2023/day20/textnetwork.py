@@ -1,5 +1,6 @@
 from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer, Horizontal
+from textual.widget import Widget
 from textual.widgets import Header, Footer, Static
 from textual.reactive import reactive
 
@@ -21,6 +22,16 @@ class Node(Static):
         else: classes += " off"
 
         self.classes = classes
+
+def chunk(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+class Count(Widget):
+    count = reactive(0)
+
+    def render(self) -> str:
+        return str(self.count)
     
 classToClass = {
     "<class 'module.Broadcaster'>" : 'broadcaster',
@@ -34,8 +45,10 @@ class MyApp(App):
     BINDINGS = [("d", "toggle_dark", "Toggle Dark Mode"),
                 ("a", "step_list", "Process One Pulse")]
     
+    count = reactive(0)
+    
     def __init__(self):
-        with open("input_test.txt", "r") as f:
+        with open("input.txt", "r") as f:
             data = f.read().split("\n")
 
         self.modules = load_modules(data)
@@ -43,10 +56,11 @@ class MyApp(App):
     
     def compose(self) -> ComposeResult:
         nodes = [] #
-        with Horizontal():
-            for label, m in self.modules.items():
-                yield Node(m, id=label)
-
+        for c in chunk(list(self.modules.items()), 5):
+            with Horizontal():
+                for label, m in c:
+                    yield Node(m, id=label)
+        yield Count()
         yield Footer()
     
     def action_toggle_dark(self) -> None:
@@ -54,6 +68,8 @@ class MyApp(App):
 
     def action_step_list(self) -> None:
         push_button_2(self.modules)
+        c = self.query_one(Count)
+        c.count = c.count + 1
         for node in self.query(Node):
             #node.update(node.module.label)
             node.set_classes()
