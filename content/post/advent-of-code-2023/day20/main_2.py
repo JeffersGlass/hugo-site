@@ -34,7 +34,7 @@ def hash_state(modules: Mapping[str, Module]) -> str:
     flops: Iterable[FlipFlop] = sorted((m for m in modules.values() if type(m) == FlipFlop), key=attrgetter('label'))
     return ''.join(f.label + ('H' if f.state == Level.HI else 'L') for f in flops)
 
-def load_modules(data: Iterable[str]) -> Iterable[Module]:
+def load_modules(data: Iterable[str]) -> dict[str, Module]:
     modules: dict[str, Module] = {}
     pattern = r"(?P<name>((?P<flag>[%&])(?P<label>[a-z]+))|broadcaster) -> (?P<destinations>[a-z ,]+)"
     # Build network
