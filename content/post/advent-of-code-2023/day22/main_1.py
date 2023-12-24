@@ -11,24 +11,26 @@ except ImportError:
             kwargs.pop('target')
         print(*args, **kwargs)
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from collections import namedtuple
 import re
 import sys
 
 Point = namedtuple("Point", ['x', 'y', 'z'])
 
-def point_under(p: Point):
+def point_under(p: Point) -> Point:
     return Point(p.x, p.y, p.z -1)
 
 @dataclass(frozen=True, slots=True)
 class Brick:
     cells: set[Point]
     vertical: bool = False
+    supporting: set = field(default_factory=set)
     
     @property
     def footprint(self) -> set[Point]:
         if self.vertical:
+            print("Getting vertical footprint")
             cell = next(iter(self.cells))
             x = cell.x
             y = cell.y
@@ -68,25 +70,21 @@ def main_day22_1(*args):
         print(b)
 
     # Let bricks fall down
-    moved = True
-    while moved:
-        moved = False
+    anything_moved = True
+    while anything_moved:
+        anything_moved = False
         for index, b in enumerate(bricks):
             stationary = False
             for cell in b.footprint:
                 if cell.z == 1: # on ground
                     stationary = True; break
-                if brick_in(point_under(cell), bricks): # space underneath is occupied
+                if x:= brick_in(point_under(cell), bricks): # space underneath is occupied
                     stationary = True; break
 
             if not stationary:
-                print(f"Moving brick {b}")
-                bricks[index] = Brick(set(Point(c.x, c.y, c.z-1) for c in b.cells))
-                moved = True
+                bricks[index] = Brick(set(Point(c.x, c.y, c.z-1) for c in b.cells), vertical=b.vertical)
+                anything_moved = True
 
-    # TODO Something in this moving logic is wrong
-
-    print("")
     for b in bricks:
         print(b)
 
