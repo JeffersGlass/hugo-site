@@ -3,7 +3,7 @@ try:
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input_test.txt") as f:
+        with open("input.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
@@ -13,8 +13,10 @@ except ImportError:
 
 from dataclasses import dataclass, field
 from collections import namedtuple
+from itertools import permutations
 import re
 import sys
+from typing import Self
 
 Point = namedtuple("Point", ['x', 'y', 'z'])
 
@@ -28,7 +30,7 @@ def point_above(p:Point) -> Point:
 class Brick:
     cells: set[Point]
     vertical: bool = False
-    supported_by: list = field(default_factory=list)
+    supported_by: list[Self] = field(default_factory=list)
     
     @property
     def footprint(self) -> set[Point]:
@@ -70,6 +72,8 @@ def main_day22_1(*args):
         else:
             bricks.append(Brick(set([Point(x1, y1, z1),])))
 
+    print("Bricks created")
+
     # Let bricks fall down
     anything_moved = True
     while anything_moved:
@@ -86,17 +90,33 @@ def main_day22_1(*args):
                 bricks[index] = Brick(set(Point(c.x, c.y, c.z-1) for c in b.cells), vertical=b.vertical)
                 anything_moved = True
 
+    print("Bricks have fallen")
+
     #calculate supporting bricks for all bricks
     for b in bricks:
         b.supported_by = [brick_in(point_under(c), bricks) for c in b.footprint if brick_in(point_under(c), bricks) is not None]
 
     for index, b in enumerate(bricks):
-        #print(b)
         if b.supported_by:
             print(f"Brick {index} is supported by bricks {','.join(str(bricks.index(c)) for c in b.supported_by)}")
         else: print(f"Brick {index} is not supported by any other bricks")
+    
+
+    removable_bricks = 0
+    for a_index, a in enumerate(bricks):
+        a_removable = True
+        for b_index, b in enumerate(bricks):
+            if a == b: continue
+            if b.supported_by and a in b.supported_by and len(b.supported_by) == 1:
+                a_removable = False
+                break
+        if a_removable: removable_bricks += 1
+
         
-        #TODO: one by one try removing a brick and redo count of bricks with no support - if it changes, something fell down.
+
+    print(f"{(removable_bricks)=}")
+    #711 was too high
+        
 
     result = None
     display(result, target="day22_1-output")
