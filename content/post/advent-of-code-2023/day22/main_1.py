@@ -3,7 +3,7 @@ try:
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input.txt") as f:
+        with open("input_test.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
@@ -42,7 +42,6 @@ class Brick:
             return set([Point(x, y, z)])
         return self.cells # If not vertical, footprint is self
     
-
 
 bricks: list[Brick] = list()
 
@@ -105,12 +104,13 @@ def main_day22_1(*args):
     removable_bricks = 0
     for a_index, a in enumerate(bricks):
         a_removable = True
-        for b_index, b in enumerate(bricks):
+        for b in bricks:
             if a == b: continue
             if b.supported_by and a in b.supported_by and len(b.supported_by) == 1:
                 a_removable = False
                 break
-        if a_removable: removable_bricks += 1
+        if a_removable: 
+            removable_bricks += 1
 
         
 
