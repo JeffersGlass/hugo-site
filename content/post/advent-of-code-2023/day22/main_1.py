@@ -21,22 +21,26 @@ Point = namedtuple("Point", ['x', 'y', 'z'])
 def point_under(p: Point) -> Point:
     return Point(p.x, p.y, p.z -1)
 
-@dataclass(frozen=True, slots=True)
+def point_above(p:Point) -> Point:
+    return Point(p.x, p.y, p.z+1)
+
+@dataclass(slots=True)
 class Brick:
     cells: set[Point]
     vertical: bool = False
-    supporting: set = field(default_factory=set)
+    supported_by: list = field(default_factory=list)
     
     @property
     def footprint(self) -> set[Point]:
         if self.vertical:
-            print("Getting vertical footprint")
             cell = next(iter(self.cells))
             x = cell.x
             y = cell.y
             z = min(p.z for p in self.cells)
             return set([Point(x, y, z)])
         return self.cells # If not vertical, footprint is self
+    
+
 
 bricks: list[Brick] = list()
 
@@ -66,9 +70,6 @@ def main_day22_1(*args):
         else:
             bricks.append(Brick(set([Point(x1, y1, z1),])))
 
-    for b in bricks:
-        print(b)
-
     # Let bricks fall down
     anything_moved = True
     while anything_moved:
@@ -85,8 +86,17 @@ def main_day22_1(*args):
                 bricks[index] = Brick(set(Point(c.x, c.y, c.z-1) for c in b.cells), vertical=b.vertical)
                 anything_moved = True
 
+    #calculate supporting bricks for all bricks
     for b in bricks:
-        print(b)
+        b.supported_by = [brick_in(point_under(c), bricks) for c in b.footprint if brick_in(point_under(c), bricks) is not None]
+
+    for index, b in enumerate(bricks):
+        #print(b)
+        if b.supported_by:
+            print(f"Brick {index} is supported by bricks {','.join(str(bricks.index(c)) for c in b.supported_by)}")
+        else: print(f"Brick {index} is not supported by any other bricks")
+        
+        #TODO: one by one try removing a brick and redo count of bricks with no support - if it changes, something fell down.
 
     result = None
     display(result, target="day22_1-output")
