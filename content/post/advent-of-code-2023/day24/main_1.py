@@ -30,9 +30,10 @@ def sign(x):
     if x == 0: return 0
     return abs(x)/x
 
-pattern = r"(-?\d+),\s+(-?\d+),\s+(-?\d+) @\s+(-?\d+),\s+(-?\d+),\s+(-?\d+)"
 def main_day24_1(*args):
     data = get_input("day24_1").split("\n")
+
+    pattern = r"(-?\d+),\s+(-?\d+),\s+(-?\d+) @\s+(-?\d+),\s+(-?\d+),\s+(-?\d+)"
 
     stone_data = (re.match(pattern, line) for line in data)
     stones = [Stone(x=int(m.group(1)),
