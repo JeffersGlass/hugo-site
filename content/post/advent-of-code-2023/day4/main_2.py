@@ -29,7 +29,6 @@ def main_day4_2(*args):
 
     display(sum(card_counts), target="day4_2-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day4_2()

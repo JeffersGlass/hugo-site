@@ -24,7 +24,6 @@ def main_day6_2(*args):
 
     display(count, target="day6_2-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day6_2()

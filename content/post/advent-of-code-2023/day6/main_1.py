@@ -30,7 +30,6 @@ def main_day6_1(*args):
 
     display(prod, target="day6_1-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day6_1()
