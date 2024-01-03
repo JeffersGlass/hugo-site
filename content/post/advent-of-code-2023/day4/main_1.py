@@ -29,7 +29,6 @@ def main_day4_1(*args):
 
     display(sum, target="day4_1-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day4_1()

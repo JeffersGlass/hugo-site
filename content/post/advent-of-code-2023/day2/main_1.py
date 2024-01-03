@@ -40,8 +40,6 @@ def main_day2_1(*args):
     display(sum, target="day2_1-output")
 
 # Only runs if not running in the browser
-if __name__ == "__main__":
-    try:
-        import js
-    except ImportError:     
-        main_day2_1()
+import sys
+if not 'js' in sys.modules:
+    main_day2_1()
