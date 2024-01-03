@@ -40,8 +40,6 @@ def main_day1_2(*args):
 
     display(sum, target="day1_2-output")  
 
-if __name__ == "__main__":
-    try:
-        import js
-    except ImportError:
-        main_day1_2()
+import sys
+if not 'js' in sys.modules:
+    main_day1_2()

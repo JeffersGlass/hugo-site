@@ -8,7 +8,7 @@ except ImportError:
         
     def display(*args, **kwargs):
         if 'target' in kwargs:
-            dict.pop('target')
+            kwargs.pop('target')
         print(*args, **kwargs)
 
 import re

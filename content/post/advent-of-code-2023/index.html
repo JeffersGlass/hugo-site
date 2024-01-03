@@ -35,19 +35,22 @@ description: "Solutions to the annual holiday coding challenge, in Python and Py
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 2: Cube Conundrum (Part 2)" id="day2_2" file="day2/main_2.py">}}
+<p class="post-p">The second part of today's challenge isn't too different from the first; we iterate over all the parts of each line of the input and, for each line, calculate the appropriate product of the minmum number of cubes of each color.</p>
 <p class="post-p">In both parts of today's challenge, I've found it useful to run my code locally for testing before popping it into PyScript. You can see my strategy for this in both parts of today's solution - similar to what Pyodide recommends, we can check if the <code>js</code> module is in <code>sys.modules</code>. If it is, we can assume we're running in PyScript/in the Browser; if not, we're likely in "normal" desktop python.</p><p class="post-p">The need to override <code>display()</code> was the original reason I had implemented the <code>output</code> attribute of PyScript tags in previous releases of PyScript... perhaps I'll want to do that again.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 3: Gear Ratios (Part 1)" id="day3_1" file="day3/main_1.py">}}
 <p class="post-p">Advent of Code has a history of requiring the parsing of data in grids, and this year we're starting early. While it's tempting to build a data structure that represents each position in the grid and is querable, for sparsely populated grid I've ususally found it's easier and faster to build a <code>set</code> of the relevant points and query for presence in that set. This handles a lot of edge cases automatically - like in this case, a <code>part number</code> being adjacent to the edge of the grid.</p>
+<p class="post-p">Once we have a collection of the symbols and numbers ('parts') in the input, we can iterate over each number and determine whether any of the coordinates corresponding to 'symbols' are adjacent to their positions, then sum them up.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 3: Gear Ratios (Part 2)" id="day3_2" file="day3/main_2.py">}}
-<p class="post-p">I do like dataclasses - having autocomplete on the handful of elements in a simple "data-like" object is an easy way to prevent confusion and typos. You'll see on this day's problem I've actually combined both <code>Dataclasses</code> and <code>namedtuples</code>; the latter being easier to use as the keys of a dictionary. But if there's any Mutable data - in my case, a flag which helps track whether a specific gear has seen zero, one, or two or more times already - is quite useful.</p>
+<p class="post-p">I do like dataclasses - having autocomplete on the handful of elements in a simple "data-like" object is an easy way to prevent confusion and typos. You'll see on this day's problem I've actually combined both <code>Dataclasses</code> and <code>namedtuples</code>; the latter being easier to use as the keys of a dictionary. But if there's any Mutable data - in my case, a flag which helps track whether a specific gear has seen zero, one, or two or more times already - dataclass is quite useful.</p>
+<p class="post-p">With that change to the parsing, the solution is to again iterate over all of the numbers, find which correspond to the given criteria, and sum them up.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 4 (Part 1): Scratchcards" id="day4_1" file="day4/main_1.py">}}
-<p class="post-p">Not too much grief completing part one of Day 4. Python's set operations make short work of determining whether there's any overlap between two sets of numbers or objects.</p>
+<p class="post-p">Python's set operations really shine here - one we've parsed each line of input into its winning numbers and scratchcard numbers, we can use <code>isdisjoint()</code> to determine if there's any overlap between the two sets, and and <code>winning_numbers & my_numbers</code> to find it if it is. From there, we calculate 2 to the power of the length of this set of numbers, and sum up those values.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 4 (Part 2): Scratchcards" id="day4_2" file="day4/main_2.py">}}
@@ -55,11 +58,12 @@ description: "Solutions to the annual holiday coding challenge, in Python and Py
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 5 (Part 1): If You Give A Seed A Fertilizer" id="day5_1" file="day5/main_1.py">}}
+<p class="post-p">If programming is thinking-written-down, I find a significant amount of my thinking occurs in devising the data structure and object format to encapsulate a given problem. In this case, the <code>almanac_op</code> function which applies a mapping rule to a given number. I tend to write out full docstrings for these <span class="italic">'problem-critical'</span> code sections, and not worry about them for more procedural code like a main method.</p>
 <p class="post-p">One of the opporunties to stub your toe on a challenge like Day 5 Part 1 is remembering that, once you've applied a mapping rule successfully to a given location, you need to skip the remainder of the rules and cary on to the next set of mappings immediately. Otherwise, you risk applying multiple rules from a single set, which is incorrect.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 5 (Part 2): If You Give A Seed A Fertilizer" id="day5_2" file="day5/main_2.py">}}
-<p class="post-p">I fell prey to a classic Advent of Code trick: <span class="italic">"We see your Part 1 solution works for single numbers... now make ti work for MILLIONS OF NUMBERS!"</span> Still, not too complicated of a solution, even if it did take me some time to work out the logic around which relationships of sources/destinations/ranges cause which effects to happen to the resulting ranges.</p><p class="post-p">There's also the possibility here to get stuck in the track of modifying a collection (say, the current list of ranges) while also iterating over that collection. The old <code>new_collection</code>-gets-added-to, <code>collection = new_collection</code> pattern helps here.</p><p class="post-p">I'm also leaving my <code>assert</code> startments in at the end of this code, as they were hugely helpful in debugging my primary algorithm.</p>
+<p class="post-p">I fell prey to a classic Advent of Code trick: <span class="italic">"We see your Part 1 solution works for single numbers... now make it work for MILLIONS OF NUMBERS!"</span> Still, not too complicated of a solution, even if it did take me some time to work out the logic around which relationships of sources/destinations/ranges cause which effects to happen to the resulting ranges.</p><p class="post-p">There's also the possibility here to get stuck in the track of modifying a collection (say, the current list of ranges) while also iterating over that collection. The old <code>new_collection += result</code>, <code>collection = new_collection</code> pattern helps here.</p><p class="post-p">I'm also leaving my <code>assert</code> startments in at the end of this code, as they were hugely helpful in debugging my primary algorithm.</p>
 {{< /adv2023 >}}
 
 {{< adv2023 title="Day 6 (Part 1): Day 6: Wait For It" id="day6_1" file="day6/main_1.py">}}
