@@ -1,7 +1,9 @@
-try:
+import sys
+if 'js' in sys.modules:
     from pyscript import document
     from utils import get_input, output_redirect_to_xterm
-except ImportError:
+    from pyodide.ffi.wrappers import add_event_listener
+else:
     def get_input(*args):
         with open("input.txt") as f:
             return f.read()
@@ -77,8 +79,11 @@ def count_inner_cells_viz(data: List[str], loop: List[tuple[int, int]]):
 
     return count
 
-
 def viz_day10_2(*args):
+    with output_redirect_to_xterm('day10_2-viz'):
+        _viz_day10_2()
+        
+def _viz_day10_2(*args):
     data: List[str] = get_input("day10_2").split('\n')
 
     _map_data = {(line_num, char_num): char for line_num, line in enumerate(data) for char_num, char in enumerate(line)}
@@ -154,3 +159,6 @@ def viz_day10_2(*args):
 if not 'js' in sys.modules:
     with output_redirect_to_xterm('day10_2-viz'):
         viz_day10_2()
+else:
+    add_event_listener(document.getElementById("day10_2-viz-btn"), "click", _viz_day10_2)
+    print("ADDED VIZ FOR DAY 10 part 2")

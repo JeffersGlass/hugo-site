@@ -9,6 +9,7 @@ tags:
 slug_image: adv2023.png
 description: "Solutions to the annual holiday coding challenge, in Python and PyScript"
 ---
+<script src="mini-coi.js"></script>
 <p class="post-p">Where does the time go?? Surely it can't be time for another <a href="https://adventofcode.com/">Advent of Code</a> challenge? Alas, it's once again December, which means 25 more mini coding challenges for the next twenty five days. This will be my sixth year particpating in advent of code, and my fourth writing about it - you can check out my <a href="tags/codeadvent/">previous years' Advent of Code posts</a> as well, if you like.</p>
 <p class="post-p">As in years before, I'll be writing my solutions to run in <a href="https://pyscript.net">PyScript</a>  right here in the browser window. Feel free to enter your own AoC input and test your answers right here on this page! All the computations run in your own browser window, so no AoC data is transmitted to me or any server, and there's zero overhead on my end, so test as many times as you like.</p>
 <p class="post-p">Personally, I have three goals in presenting these solutions: learn form the challenges themselves, dogfood the use of PyScript to learn where our gaps in functionality are, and demonstrate the use of Python in the browser. Here's hoping we can achieve all three.</p>
@@ -102,7 +103,7 @@ description: "Solutions to the annual holiday coding challenge, in Python and Py
 <p class="post-p">Ah, back to processing input on a grid. As with earlier puzzles, I usually find it easier to create a running dictionary of <code>data[(row, column)]</code> instead of tested dicts <code>data[row][column]</code>, since then a single <code>(x, y) in data</code> suffices to check for precence.</p>
 {{< /adv2023 >}}
 
-{{< adv2023 title="Day 10 (Part 2): Pipe Maze" id="day10_2" file="day10/main_2.py" vizfile="day10/viz_2.py">}}
+{{< adv2023 title="Day 10 (Part 2): Pipe Maze" id="day10_2" file="day10/main_2.py" vizfile="day10/viz_2.py" terminal="">}}
 <p class="post-p">Part two is a bit of a curveball, in that it asks you to find an entirely new property of the curve/data from part one. My initial impulse was to use something like a <a href="https://en.wikipedia.org/wiki/Flood_fill">flood fill</a> algorith, but the second set of example problems show that some "outside" areas might be trapped and "unfloodable".</p><p class="post-p">I ultimately used a version of the <a href="https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm">Raycasting/Jordan Curve</a> agorithm, iterating along each line and determining whether a given position was "inside" or "outside" the curve. Whenenver a <code>|</code> is crossed, one passes from inside to outside; corners are a little harder: <code>"L----7"</code> and <code>"F----J"</code> count as crossings, but <code>"L----J"</code> and <code>"F----7"</code> do not. Finally, the original starting point <code>S</code> has to be replaced with the appropriate symbol before processing, or everything after it on that line may go sideways.</p>
 {{< /adv2023 >}}
 
