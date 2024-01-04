@@ -63,7 +63,7 @@ mip.install('https://raw.githubusercontent.com/micropython/micropython-lib/maste
 mip.install("github:jeffersglass/some-project/foo.py")
 {{< /highlight >}}
 
-<p class="post-p"><a href="https://github.com/dpgeorge/micropython/blob/webassembly-add-modjs/ports/webassembly/pyscript/manifest.py">A number of MicroPython pacakges are pre-installed in PyScript</a> by default. Now, with <code>mip</code> integrated, <a href="https://awesome-micropython.com/">the wide universe of MicroPython packages</a> is available in the browser.</p>
+<p class="post-p"><a href="https://github.com/dpgeorge/micropython/blob/webassembly-add-modjs/ports/webassembly/pyscript/manifest.py">A number of MicroPython packages are pre-installed in PyScript</a> by default. Now, with <code>mip</code> integrated, <a href="https://awesome-micropython.com/">the wide universe of MicroPython packages</a> is available in the browser.</p>
 
 <h2 class="post-h2" id="js-modules"><code>js_modules</code> as modules</h2>
 <p class="post-p">The concept of a <a href="https://docs.python.org/3/tutorial/modules.html">Python Package or Module</a> doesn't map exactly to the idea of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">Modules</a> in the JavaScript world. As such, there are interesting decisions to be made when it comes to the places where these two ideas intersect.</p>
@@ -83,7 +83,6 @@ mip.install("github:jeffersglass/some-project/foo.py")
 </script>
 {{< /highlight >}}
 
-<p class="post-img-caption">Enjoy some fireworks!</p>
 <div class="m-4 border-2 border-blue-800">
     <center>
         <canvas id="fw" style="width:80%"></canvas>
@@ -100,6 +99,7 @@ mip.install("github:jeffersglass/some-project/foo.py")
     fireworks = Fireworks.Fireworks.new(container)
     fireworks.start()
 </script>
+<p class="post-img-caption">Enjoy some fireworks!</p> 
 
 <p class="post-p">That <code>Fireworks_Module.Fireworks.new...</code> is a little bit awkward though. In Python, we might find it more comfortable to import the "Fireworks object" directly from the "Fireworks Module" (big ole air quotes there). <span class="font-semibold">Now, in PyScript 2024.1.1, you can:</span></p>
 
@@ -120,11 +120,50 @@ mip.install("github:jeffersglass/some-project/foo.py")
 
 <p class="post-p">In fact, <span class="italic">any attribute of a JavaScript object can now be imported as if it was a submodule using this syntax</span>. Hopefully, this make working with JavaScript modules feel more intuitive for Python users. See <a href="https://github.com/pyodide/pyodide/discussions/4346">this discussion on the Pyodide GitHub</a> for more info.</p>
 
+<h2 class="post-h2" id="xterm">Exposed XTerm Object</h2>
+<p class="post-p">When using the <a href="https://pyscript.github.io/docs/2023.12.1/user-guide/terminal/"><code>terminal</code></a> attribute of a <code>&lt;script type="py"&gt;</code> tag, several users have reported wanting to take more direct control over the <a href="https://xtermjs.org/docs/api/terminal/classes/terminal/#resize">xterm.js Terminal</a> object that's used for the output. That Terminal is now present as the <code>terminal</code> property of the script tag itself.</p>
+<p class="post-p">When running code in the main thread, the <code>document.currentScript</code> helper can be used to quickly grab the current script tag. Here's an example which resizes the terminal to 40 columns by 6 rows, then prints a long string to demonstrate the new size:</p>
+
+{{< highlight "python3" "linenostart=1" >}}
+<script type="py" terminal>
+    from pyscript import document
+    document.currentScript.terminal.resize(40, 6)
+    print("Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repellat alias atque quae ad voluptatem officia delectus voluptatum autem possimus ut libero, neque ipsum nam non totam iusto ratione quibusdam esse.") 
+</script>
+{{< /highlight >}}
+
+<p class="post-p">Code running in workers does not update <code>document.currentScript</code>, since there could indeed be multiple scripts running at the same time. So a different method must be used to select the appropriate script tag. Since only a single PyScript tag may have a terminal attached (currently), the following should consistently work (the example code achieves the same effect as the one above, then opens a REPL).</p>
+
+{{< highlight "python3" "linenostart=1" >}}
+<script type="py" terminal worker>
+    from pyscript import document
+    term = document.querySelector('script[terminal]').terminal
+    term.resize(40, 6)
+    print("Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repellat alias atque quae ad voluptatem officia delectus voluptatum autem possimus ut libero, neque ipsum nam non totam iusto ratione quibusdam esse.") 
+
+    import code
+    code.interact(local=globals())
+</script>
+{{< /highlight >}}
+<p class="post-p">Here's a live-running example of the above code. Try running <code>dir(term)</code> to inspect the Terminal object.</p>
+<div class="border-2 border-blue-800 m-4 p-1 rounded-md">
+    <script type="py" terminal worker>
+        from pyscript import document
+        term = document.querySelector('script[terminal]').terminal
+        term.resize(40, 6)
+        print("Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repellat alias atque quae ad voluptatem officia delectus voluptatum autem possimus ut libero, neque ipsum nam non totam iusto ratione quibusdam esse.")
+    
+        import code
+        code.interact(local=globals())
+    </script>
+</div>
+
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
         --tw-text-opacity: 1;
         color: rgba(5, 120, 85, var(--tw-text-opacity));
     }
 </style>
+<script src="mini-coi.js"></script>
 <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
