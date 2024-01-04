@@ -87,9 +87,8 @@ def main_day5_2(*args):
 
     display(minimum, target="day5_2-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day5_2()
 
     # Assertions used during testing, left in for interest

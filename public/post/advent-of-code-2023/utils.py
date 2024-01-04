@@ -1,7 +1,38 @@
+from contextlib import contextmanager
 import os
+import sys
 
+from pyscript import RUNNING_IN_WORKER
 from pyodide.ffi import create_proxy
-from js import console, document
+from pyscript import window, document
+
+console = window.console
+class xterm_stdout:
+    def __init__(self, xterm):
+        self.xterm = xterm
+
+    def write(self, line):
+        self.element.xterm.write(line)
+
+@contextmanager
+def output_redirect_to_xterm(id):
+    import pyscript
+    if RUNNING_IN_WORKER:
+        raise EnvironmentError("output_redirect only works on the main thread for now?")
+    
+    _old_stdout = sys.stdout
+
+    wrapper = document.getElementById(id)
+    print("Wrapper", wrapper)
+    if not hasattr(wrapper, "terminal"):
+        wrapper.terminal = pyscript.js_modules.xterm.Terminal.new()
+        wrapper.terminal.open(pyscript.document.getElementById("id"))
+
+    sys.stdout = xterm_stdout(wrapper.terminal)
+    try:
+        yield
+    finally:
+        sys.stdout = _old_stdout
 
 def get_input(id):
     local_file_path = f'./{id}-input.txt'

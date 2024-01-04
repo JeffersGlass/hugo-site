@@ -52,7 +52,6 @@ def main_day5_1(*args):
 
     display("FINAL:", min, target="day5_1-output")
 
-try:
-    import js
-except ImportError:     
+import sys
+if not 'js' in sys.modules:  
     main_day5_1()

@@ -8,7 +8,7 @@ except ImportError:
         
     def display(*args, **kwargs):
         if 'target' in kwargs:
-            dict.pop('target')
+            kwargs.pop('target')
         print(*args, **kwargs)
 
 import re
@@ -33,8 +33,6 @@ def main_day2_2(*args):
     display(sum, target="day2_2-output")
 
 # Only runs if not running in the browser
-if __name__ == "__main__":        
-    try:
-        import js
-    except ImportError:     
-        main_day2_1()
+import sys
+if not 'js' in sys.modules:    
+    main_day2_2()

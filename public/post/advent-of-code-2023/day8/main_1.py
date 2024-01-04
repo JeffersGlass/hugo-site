@@ -45,7 +45,6 @@ def main_day8_1(*args):
     result = steps
     display(result, target="day8_1-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day8_1()
