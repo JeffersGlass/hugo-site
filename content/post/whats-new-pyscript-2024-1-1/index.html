@@ -1,0 +1,130 @@
+---
+title: "What's New in PyScript 2024.1.1"
+date: 2024-01-04T10:30:42-05:00
+draft: true
+tags:
+- pyscript
+- python
+description: "What's new and what's changed in PyScript 2024.1.1"
+---
+<p class="post-p">New Year, New Features! PyScript had it's first release in 2024 today with the <a href="">release of PyScript 2024.1.1</a>.</p>
+<p class="post-p">A few banner new features have been added, including:
+    <ul class="post-ul">
+        <li>The <code>mip</code> package manager is now available for Micropython</li>
+        <li><code>pyscript.js_modules</code> now acts like a module</li>
+        <li>The internal <a href="https://xtermjs.org/">xterm.js</a> terminal of scripts with a <code>terminal</code> attribute is exposed.</li>
+    </ul>
+</p>
+
+<div id="TOC" class="grid justify-center p-1 my-4 m-auto bg-gray-200">
+    <span>Jump To: <span>
+    <a href="#mip"><code>MicroPython Package Management</code></a> • 
+    <a href="#js-modules">js_modules as a module</a> • 
+    <a href="#xterm">Exposed XTerm.js</a>
+</div>
+
+<h2 class="post-h2" id="mip">MicroPython Packages</h2>
+<p class="post-p">PyScript has long had a <code>py-config</code> tag which allows users to, among other things, <a href="https://pyscript.github.io/docs/2023.12.1/user-guide/configuration/#packages">install packages from PyPI or from local wheels</a> when PyScript loads. It also smartly loads <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html">Pyodide-specific versions of some packages</a>, with their C/Rust/Fortran extensions pre-compiled to work with Pyodide/WebAssembly.</p>
+<p class="post-p">But <a href="https://micropython.org/">MicroPython</a>, which was introduced as an additional engine for PyScript in <a href="https://jeff.glass/post/whats-new-pyscript-2023-11-1/">version 2023.11.1</a>, has an entirely different concept of package management. Rather than PyPI, most packages are installed from a resource called <a href="https://github.com/micropython/micropython-lib">MicroPython-Lib</a> using a tool called <a href="https://docs.micropython.org/en/latest/reference/packages.html"><code>mip</code></a>. <span class="font-semibold">Today's release brings <code>mip</code> to PyScript, allow users to install 3rd-party MicroPython packages in their PyScript pages</span>.</p>
+<p class="post-p">The added <code>packages</code> key in <code>&lt;mpy-config&gt;</code> takes a list of strings; PyScript then calls <a href="https://docs.micropython.org/en/latest/reference/packages.html#installing-packages-with-mip"><code>mip.install()</code> with each of those strings</a>. All basic package names are looked-up on MicroPython-Lib - here's how to install, for instance, the <a href="https://github.com/micropython/micropython-lib/blob/master/python-stdlib/curses.ascii/curses/ascii.py"><code>curses.ascii</code> package</a> for inspecting the properties of specific characters:</p>
+
+{{< highlight "html" "linenostart=1" >}}
+<script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+<mpy-config>
+    packages = ['curses.ascii']
+</mpy-config>
+<script type="mpy">
+    from curses import ascii
+    print(f"{ascii.isalpha("A")=})")
+    print(f"{ascii.isalpha("3")=})")
+</script>
+{{< /highlight >}}
+
+<p class="post-p"><code>mip</code> can do a lot more than just install from MicroPython-lib - it call also install files directly from a URL, from GitHub using some shorthand syntax, or a whole package specified with <code>package.json</code>:</p>
+{{< highlight "python3" "linenostart=1" >}}
+<mpy-config>
+    packages = ['https://raw.githubusercontent.com/micropython/micropython-lib/master/python-stdlib/bisect/bisect.py',
+                'github:jeffersglass/some-project/foo.py',]
+</mpy-config>
+{{< /highlight >}}
+
+<p class="post-p"><code>mip</code> is now also available programmatically within Micropython via the <code>mip</code> package, if you need to programmatically fetch and install packages:</p>
+
+{{< highlight "python3" "linenostart=1" >}}
+import mip
+
+# Install default version from micropython-lib
+mip.install('keyword')
+
+# Install from raw URL
+mip.install('https://raw.githubusercontent.com/micropython/micropython-lib/master/python-stdlib/bisect/bisect.py')
+
+# Install from GitHub shortcut
+mip.install("github:jeffersglass/some-project/foo.py")
+{{< /highlight >}}
+
+<p class="post-p"><a href="https://github.com/dpgeorge/micropython/blob/webassembly-add-modjs/ports/webassembly/pyscript/manifest.py">A number of MicroPython pacakges are pre-installed in PyScript</a> by default. Now, with <code>mip</code> integrated, <a href="https://awesome-micropython.com/">the wide universe of MicroPython packages</a> is available in the browser.</p>
+
+<h2 class="post-h2" id="js-modules"><code>js_modules</code> as modules</h2>
+<p class="post-p">The concept of a <a href="https://docs.python.org/3/tutorial/modules.html">Python Package or Module</a> doesn't map exactly to the idea of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">Modules</a> in the JavaScript world. As such, there are interesting decisions to be made when it comes to the places where these two ideas intersect.</p>
+<p class="post-p">One of these places is the <code>js_modules</code> key in <code>&lt;py-config&gt;</code> that was <a href="post/whats-new-pyscript-2023-12-1/#js-module-import">introduced in PyScript 2023.12.1</a>. As a reminder, <code>js_modules</code> instructs PyScript to install a JavaScript (ECMAScript) module in the browser, and make it available to Python by a given name:</p>
+{{< highlight "html" "linenostart=1" >}}
+<canvas id="fw"></canvas>
+<mpy-config>
+    [js_modules.main]
+    "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm" = "Fireworks_Module"
+</mpy-config>
+<script type="mpy">
+    from pyscript import document
+    from pyscript.js_modules import Fireworks_Module
+    container = document.querySelector('#fw')
+    fireworks = Fireworks_Module.Fireworks.new(container)
+    fireworks.start()
+</script>
+{{< /highlight >}}
+
+<p class="post-img-caption">Enjoy some fireworks!</p>
+<div class="m-4 border-2 border-blue-800">
+    <center>
+        <canvas id="fw" style="width:80%"></canvas>
+    </center>
+</div>
+<mpy-config>
+    [js_modules.main]
+    "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm" = "Fireworks"
+</mpy-config>
+<script type="mpy">
+    from pyscript import document
+    from pyscript.js_modules import Fireworks
+    container = document.querySelector('#fw')
+    fireworks = Fireworks.Fireworks.new(container)
+    fireworks.start()
+</script>
+
+<p class="post-p">That <code>Fireworks_Module.Fireworks.new...</code> is a little bit awkward though. In Python, we might find it more comfortable to import the "Fireworks object" directly from the "Fireworks Module" (big ole air quotes there). <span class="font-semibold">Now, in PyScript 2024.1.1, you can:</span></p>
+
+{{< highlight "python3" "linenostart=1,hl_lines=8 10" >}}
+<canvas id="fw"></canvas>
+<mpy-config>
+    [js_modules.main]
+    "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm" = "Fireworks_Module"
+</mpy-config>
+<script type="mpy">
+    from pyscript import document
+    from pyscript.js_modules.Fireworks_Module import Fireworks
+    container = document.querySelector('#fw')
+    fireworks = Fireworks.new(container)
+    fireworks.start()
+</script>
+{{< /highlight >}}
+
+<p class="post-p">In fact, <span class="italic">any attribute of a JavaScript object can now be imported as if it was a submodule using this syntax</span>. Hopefully, this make working with JavaScript modules feel more intuitive for Python users. See <a href="https://github.com/pyodide/pyodide/discussions/4346">this discussion on the Pyodide GitHub</a> for more info.</p>
+
+<style>
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
+<script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
