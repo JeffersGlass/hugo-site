@@ -154,7 +154,8 @@ if (!doNotTrack) {
 				
 				<hr>
 				<div>
-					<p class="post-p">Where does the time go?? Surely it can't be time for another <a href="https://adventofcode.com/">Advent of Code</a> challenge? Alas, it's once again December, which means 25 more mini coding challenges for the next twenty five days. This will be my sixth year particpating in advent of code, and my fourth writing about it - you can check out my <a href="tags/codeadvent/">previous years' Advent of Code posts</a> as well, if you like.</p>
+					<script src="mini-coi.js"></script>
+<p class="post-p">Where does the time go?? Surely it can't be time for another <a href="https://adventofcode.com/">Advent of Code</a> challenge? Alas, it's once again December, which means 25 more mini coding challenges for the next twenty five days. This will be my sixth year particpating in advent of code, and my fourth writing about it - you can check out my <a href="tags/codeadvent/">previous years' Advent of Code posts</a> as well, if you like.</p>
 <p class="post-p">As in years before, I'll be writing my solutions to run in <a href="https://pyscript.net">PyScript</a>  right here in the browser window. Feel free to enter your own AoC input and test your answers right here on this page! All the computations run in your own browser window, so no AoC data is transmitted to me or any server, and there's zero overhead on my end, so test as many times as you like.</p>
 <p class="post-p">Personally, I have three goals in presenting these solutions: learn form the challenges themselves, dogfood the use of PyScript to learn where our gaps in functionality are, and demonstrate the use of Python in the browser. Here's hoping we can achieve all three.</p>
 <div id="TOC" class="w-auto pt-2 pb-4 pl-2 mr-2 -ml-2 align-top bg-gray-200">
@@ -3941,8 +3942,8 @@ pat <span style="color:#555">=</span> re<span style="color:#555">.</span>compile
                 <div class="col-span-1"><button class="w-full py-2 run-pyscript-button" id="day10_2-run-btn" py-click="main_day10_2">RUN</button></div>
                 
                 <div>
-                    <script type="py" src="day10/viz_2.py" ></script>
-                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day10_2-viz-btn" py-click="viz_day10_2">RUN VISUALIZATION</button></div>
+                    <script type="py" src="day10/viz_2.py"  terminal worker ></script>
+                    <div class="col-span-1"><button class="w-full py-2 run-vis-button" id="day10_2-viz-btn">RUN VISUALIZATION</button></div>
                 </div>
                 </div>
                 <div class="font-mono bg-gray-200" id="day10_2-output"></div>
@@ -4440,12 +4441,22 @@ pat <span style="color:#555">=</span> re<span style="color:#555">.</span>compile
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">154
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">155
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">156
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">157
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">158
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">159
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">160
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">161
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">162
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">163
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">164
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
     <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyscript</span> <span style="color:#069;font-weight:bold">import</span> document
     <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input, output_redirect_to_xterm
-<span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
+    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi.wrappers</span> <span style="color:#069;font-weight:bold">import</span> add_event_listener
+<span style="color:#069;font-weight:bold">else</span>:
     <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
         <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
             <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
@@ -4521,8 +4532,11 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 
     <span style="color:#069;font-weight:bold">return</span> count
 
-
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">viz_day10_2</span>(<span style="color:#555">*</span>args):
+    <span style="color:#069;font-weight:bold">with</span> output_redirect_to_xterm(<span style="color:#c30">&#39;day10_2-viz&#39;</span>):
+        _viz_day10_2()
+        
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">_viz_day10_2</span>(<span style="color:#555">*</span>args):
     data: List[<span style="color:#366">str</span>] <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day10_2&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#39;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#39;</span>)
 
     _map_data <span style="color:#555">=</span> {(line_num, char_num): char <span style="color:#069;font-weight:bold">for</span> line_num, line <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data) <span style="color:#069;font-weight:bold">for</span> char_num, char <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(line)}
@@ -4598,6 +4612,9 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
     <span style="color:#069;font-weight:bold">with</span> output_redirect_to_xterm(<span style="color:#c30">&#39;day10_2-viz&#39;</span>):
         viz_day10_2()
+<span style="color:#069;font-weight:bold">else</span>:
+    add_event_listener(document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;day10_2-viz-btn&#34;</span>), <span style="color:#c30">&#34;click&#34;</span>, _viz_day10_2)
+    <span style="color:#366">print</span>(<span style="color:#c30">&#34;ADDED VIZ FOR DAY 10 part 2&#34;</span>)
 </code></pre></td></tr></table>
 </div>
 </div></div>
