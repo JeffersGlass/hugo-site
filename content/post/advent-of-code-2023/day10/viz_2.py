@@ -82,7 +82,7 @@ def count_inner_cells_viz(data: List[str], loop: List[tuple[int, int]]):
 def viz_day10_2(*args):
     with output_redirect_to_xterm('day10_2-viz'):
         _viz_day10_2()
-        
+
 def _viz_day10_2(*args):
     data: List[str] = get_input("day10_2").split('\n')
 
@@ -161,4 +161,3 @@ if not 'js' in sys.modules:
         viz_day10_2()
 else:
     add_event_listener(document.getElementById("day10_2-viz-btn"), "click", _viz_day10_2)
-    print("ADDED VIZ FOR DAY 10 part 2")
