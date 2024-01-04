@@ -84,8 +84,6 @@ def main_day3_2(*args):
 
 
 # Only runs if not running in the browser
-if __name__ == "__main__":
-    try:
-        import js
-    except ImportError:     
-        main_day3_2()
+import sys
+if not 'js' in sys.modules:  
+    main_day3_2()

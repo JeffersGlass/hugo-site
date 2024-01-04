@@ -77,7 +77,6 @@ def main_day7_2(*args):
 
     display(result, target="day7_2-output")
 
-try:
-    import js
-except ImportError:
+import sys
+if not 'js' in sys.modules:
     main_day7_2()
