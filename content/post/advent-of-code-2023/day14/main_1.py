@@ -11,7 +11,6 @@ except ImportError:
             kwargs.pop('target')
         print(*args, **kwargs)
 
-from copy import deepcopy
 from itertools import pairwise      
 import sys
 
