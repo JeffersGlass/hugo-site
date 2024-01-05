@@ -11,10 +11,8 @@ except ImportError:
             kwargs.pop('target')
         print(*args, **kwargs)
 
-from copy import deepcopy
 from itertools import pairwise, count      
 import sys
-from typing import List, Callable
 
 def cycle(data: str) -> str:
     data = completely(data, rollNorth)
@@ -23,11 +21,10 @@ def cycle(data: str) -> str:
     return completely(data, rollEast)
 
 def completely(data: str, f: [str, str]) -> str:
-    #print(f"Applying function {f.__name__} completly")
-    new_data = f(deepcopy(data))
-    while any(new_data[i][j] != data[i][j] for i in range(len(data)) for j in range(len(data[i]))):
-        data = deepcopy(new_data)
-        new_data = f(deepcopy(data))
+    new_data = f(data)
+    while new_data != data:
+        data = new_data
+        new_data = f(data)
     return new_data
 
 def rollNorth(data: str) -> str:
