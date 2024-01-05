@@ -28,15 +28,14 @@ def rollNorth(data: str) -> str:
 def main_day14_1(*args):
     data = get_input("day14_1")
 
-    new_data = rollNorth(deepcopy(data))
-    while any(new_data[i][j] != data[i][j] for i in range(len(data)) for j in range(len(data[i]))):
-        data = deepcopy(new_data)
-        new_data = rollNorth(deepcopy(data))
+    new_data = rollNorth(data)
+    while new_data != data:
+        data = new_data
+        new_data = rollNorth(data)
 
     load = 0
     for row_index, row in enumerate(new_data.split("\n")):
         row_value = len(new_data.split("\n")) - row_index
-        print(f"{row_value}")
         for char in row:
             if char == 'O': load += row_value
 
