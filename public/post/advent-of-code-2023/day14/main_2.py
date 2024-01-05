@@ -11,10 +11,8 @@ except ImportError:
             kwargs.pop('target')
         print(*args, **kwargs)
 
-from copy import deepcopy
 from itertools import pairwise, count      
 import sys
-from typing import List, Callable
 
 def cycle(data: str) -> str:
     data = completely(data, rollNorth)
@@ -23,11 +21,10 @@ def cycle(data: str) -> str:
     return completely(data, rollEast)
 
 def completely(data: str, f: [str, str]) -> str:
-    #print(f"Applying function {f.__name__} completly")
-    new_data = f(deepcopy(data))
-    while any(new_data[i][j] != data[i][j] for i in range(len(data)) for j in range(len(data[i]))):
-        data = deepcopy(new_data)
-        new_data = f(deepcopy(data))
+    new_data = f(data)
+    while new_data != data:
+        data = new_data
+        new_data = f(data)
     return new_data
 
 def rollNorth(data: str) -> str:
@@ -74,18 +71,27 @@ def print_pattern(data:str):
     for line in data.split("\n"):
         print(line)
 
+def get_load(data: str) -> int:
+    load = 0
+    for row_index, row in enumerate(data.split("\n")):
+        row_value = len(data.split("\n")) - row_index
+        for char in row:
+            if char == 'O': load += row_value
+    return load
+
 def main_day14_2(*args):
     data = get_input("day14_2")
     configs = []
 
     counter = count()
     while data not in configs:
-        print(loop_point:= counter.__next__())
+        print(loop_point:= counter.__next__(), "\t", get_load(data) )
         configs.append(data)
         data = cycle(data)
 
     loop_point += 1
     first_occurance = configs.index(data)
+    print(f"After {loop_point=} iterations, the stones were in the same place as after {first_occurance}")
     loop_length = loop_point - first_occurance
     target = 1_000_000_000
     last_loop = (int((target - first_occurance)/loop_length)) * loop_length + first_occurance
@@ -93,14 +99,8 @@ def main_day14_2(*args):
 
     for _ in range(difference):
         data = cycle(data)
-        
-    load = 0
-    for row_index, row in enumerate(data.split("\n")):
-        row_value = len(data.split("\n")) - row_index
-        for char in row:
-            if char == 'O': load += row_value
 
-    result = load
+    result = get_load(data)
     display(result, target="day14_2-output")
 
 if not 'js' in sys.modules:

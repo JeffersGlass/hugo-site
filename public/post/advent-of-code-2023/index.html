@@ -678,12 +678,12 @@ digit_pattern <span style="color:#555">=</span> re<span style="color:#555">.</sp
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day2_1</span>(<span style="color:#555">*</span>args):
     data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day2_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
 
-    day_pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;Game (?P&lt;day_number&gt;\d+)&#34;</span>)
+    game_pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;Game (?P&lt;day_number&gt;\d+)&#34;</span>)
     color_pattern <span style="color:#555">=</span> re<span style="color:#555">.</span>compile(<span style="color:#c30">&#34;(?P&lt;quantity&gt;\d+) (?P&lt;color&gt;(?:red)|(?:green)|(?:blue))&#34;</span>)
     
     <span style="color:#366">sum</span> <span style="color:#555">=</span> <span style="color:#f60">0</span>
     <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
-        id_value <span style="color:#555">=</span> <span style="color:#366">int</span>(re<span style="color:#555">.</span>match(day_pattern, line)<span style="color:#555">.</span>group(<span style="color:#c30">&#34;day_number&#34;</span>))
+        id_value <span style="color:#555">=</span> <span style="color:#366">int</span>(re<span style="color:#555">.</span>match(game_pattern, line)<span style="color:#555">.</span>group(<span style="color:#c30">&#34;day_number&#34;</span>))
         pulls <span style="color:#555">=</span> line<span style="color:#555">.</span>split(<span style="color:#c30">&#34;;&#34;</span>)
         valid_line <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
         <span style="color:#069;font-weight:bold">for</span> p <span style="color:#000;font-weight:bold">in</span> pulls:
@@ -701,7 +701,7 @@ digit_pattern <span style="color:#555">=</span> re<span style="color:#555">.</sp
 
 <span style="color:#09f;font-style:italic"># Only runs if not running in the browser</span>
 <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
-<span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
+<span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules: 
     main_day2_1()</code></pre></td></tr></table>
 </div>
 </div></div>
@@ -5426,7 +5426,7 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         
-<p class="post-p"><span class="italic">A description for this part of the day's problem is coming soon.</span></p>
+<p class="post-p">Today's problem involves finding lines of symmetry in the given data, either horizontally or vertically. In cases like this, I find Python's shortcutting <code>any()</code> builtin quite easy - when comparing if the two halves of data across a potential mirror line don't match in <span class="italic">any</span> position, immediately move on.</p>
 
     </div>
     <div>
@@ -5620,7 +5620,7 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         
-<p class="post-p"><span class="italic">A description for this part of the day's problem is coming soon.</span></p>
+<p class="post-p">Having established a general logic for part 1, part two is not too terribly different - but sadly, we can't immediately bail out when any single position between the two "mirrored" halves differ. Rather, we track in <span class="italic">how many</span> positions they differ - if it's ever more than one, we can bail out immediately; otherwise, if we get to the end of a potential mirror line and <span class="italic">exactly one</span> position differs, we've found our mirror.</p>
 
     </div>
     <div>
@@ -5872,7 +5872,8 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         
-<p class="post-p"><span class="italic">A description for this part of the day's problem is coming soon.</span></p>
+<p class="post-p">A rolling stone gathers no moss, and today's stones are no exception. For part 1, we can iterate over a list of strings an compare them, then "roll" the stone characters down each list as necessary.</p>
+<p class="post-p">In both part 1 and part 2 of today's challenge, I started with a more complex data structure to hold the state of the grid, before reverting to simply using a string as-is. But in the switch, I forgot that some of the operations I was doing - like comparisons across multiple indices, and doing a <code>deepcopy</code> of the data each time, we unnecessary with (immutable) strings. Whoops! That's some free performance gain, I suppose.</p>
 
     </div>
     <div>
@@ -5959,13 +5960,6 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
@@ -5981,10 +5975,8 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
             kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
         <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
 
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">copy</span> <span style="color:#069;font-weight:bold">import</span> deepcopy
 <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> pairwise      
 <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> List
 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">rollNorth</span>(data: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">str</span>:
     pattern <span style="color:#555">=</span> [<span style="color:#366">list</span>(line) <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)]
@@ -5999,19 +5991,14 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day14_1</span>(<span style="color:#555">*</span>args):
     data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day14_1&#34;</span>)
 
-    <span style="color:#09f;font-style:italic">#for line in data.split(&#34;\n&#34;):</span>
-    <span style="color:#09f;font-style:italic">#    print(line)</span>
-    
-
-    new_data <span style="color:#555">=</span> rollNorth(deepcopy(data))
-    <span style="color:#069;font-weight:bold">while</span> <span style="color:#366">any</span>(new_data[i][j] <span style="color:#555">!=</span> data[i][j] <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data)) <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data[i]))):
-        data <span style="color:#555">=</span> deepcopy(new_data)
-        new_data <span style="color:#555">=</span> rollNorth(deepcopy(data))
+    new_data <span style="color:#555">=</span> rollNorth(data)
+    <span style="color:#069;font-weight:bold">while</span> new_data <span style="color:#555">!=</span> data:
+        data <span style="color:#555">=</span> new_data
+        new_data <span style="color:#555">=</span> rollNorth(data)
 
     load <span style="color:#555">=</span> <span style="color:#f60">0</span>
     <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(new_data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)):
         row_value <span style="color:#555">=</span> <span style="color:#366">len</span>(new_data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)) <span style="color:#555">-</span> row_index
-        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>row_value<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
         <span style="color:#069;font-weight:bold">for</span> char <span style="color:#000;font-weight:bold">in</span> row:
             <span style="color:#069;font-weight:bold">if</span> char <span style="color:#555">==</span> <span style="color:#c30">&#39;O&#39;</span>: load <span style="color:#555">+=</span> row_value
 
@@ -6064,7 +6051,8 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-x-4">
     <div>
         
-<p class="post-p"><span class="italic">A description for this part of the day's problem is coming soon.</span></p>
+<p class="post-p">Yet another Advent of Code challenge that takes a quantity in part 1 (roll once), and amps it way up in part 2 (roll a billion times).</p>
+<p class="post-p">The key insight is to glean (hope) that the stones will fall into a repeating pattern at some point; after which, we can calculate where in that repeating cycle the stones will be after a billion steps, and calculate the load at that point. For me, after 124 cycles of North/West/South/East movement, the stones enter a repeating pattern of 26 cycles.</p>
 
     </div>
     <div>
@@ -6228,10 +6216,8 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
             kwargs<span style="color:#555">.</span>pop(<span style="color:#c30">&#39;target&#39;</span>)
         <span style="color:#366">print</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs)
 
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">copy</span> <span style="color:#069;font-weight:bold">import</span> deepcopy
 <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> pairwise, count      
 <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">sys</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> List, Callable
 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">cycle</span>(data: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">str</span>:
     data <span style="color:#555">=</span> completely(data, rollNorth)
@@ -6240,11 +6226,10 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
     <span style="color:#069;font-weight:bold">return</span> completely(data, rollEast)
 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">completely</span>(data: <span style="color:#366">str</span>, f: [<span style="color:#366">str</span>, <span style="color:#366">str</span>]) <span style="color:#555">-&gt;</span> <span style="color:#366">str</span>:
-    <span style="color:#09f;font-style:italic">#print(f&#34;Applying function {f.__name__} completly&#34;)</span>
-    new_data <span style="color:#555">=</span> f(deepcopy(data))
-    <span style="color:#069;font-weight:bold">while</span> <span style="color:#366">any</span>(new_data[i][j] <span style="color:#555">!=</span> data[i][j] <span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data)) <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#366">len</span>(data[i]))):
-        data <span style="color:#555">=</span> deepcopy(new_data)
-        new_data <span style="color:#555">=</span> f(deepcopy(data))
+    new_data <span style="color:#555">=</span> f(data)
+    <span style="color:#069;font-weight:bold">while</span> new_data <span style="color:#555">!=</span> data:
+        data <span style="color:#555">=</span> new_data
+        new_data <span style="color:#555">=</span> f(data)
     <span style="color:#069;font-weight:bold">return</span> new_data
 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">rollNorth</span>(data: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">str</span>:
@@ -6291,18 +6276,27 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
     <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>):
         <span style="color:#366">print</span>(line)
 
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_load</span>(data: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#366">int</span>:
+    load <span style="color:#555">=</span> <span style="color:#f60">0</span>
+    <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)):
+        row_value <span style="color:#555">=</span> <span style="color:#366">len</span>(data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)) <span style="color:#555">-</span> row_index
+        <span style="color:#069;font-weight:bold">for</span> char <span style="color:#000;font-weight:bold">in</span> row:
+            <span style="color:#069;font-weight:bold">if</span> char <span style="color:#555">==</span> <span style="color:#c30">&#39;O&#39;</span>: load <span style="color:#555">+=</span> row_value
+    <span style="color:#069;font-weight:bold">return</span> load
+
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day14_2</span>(<span style="color:#555">*</span>args):
     data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day14_2&#34;</span>)
     configs <span style="color:#555">=</span> []
 
     counter <span style="color:#555">=</span> count()
     <span style="color:#069;font-weight:bold">while</span> data <span style="color:#000;font-weight:bold">not</span> <span style="color:#000;font-weight:bold">in</span> configs:
-        <span style="color:#366">print</span>(loop_point<span style="color:#555">:=</span> counter<span style="color:#555">.</span>__next__())
+        <span style="color:#366">print</span>(loop_point<span style="color:#555">:=</span> counter<span style="color:#555">.</span>__next__(), <span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\t</span><span style="color:#c30">&#34;</span>, get_load(data) )
         configs<span style="color:#555">.</span>append(data)
         data <span style="color:#555">=</span> cycle(data)
 
     loop_point <span style="color:#555">+=</span> <span style="color:#f60">1</span>
     first_occurance <span style="color:#555">=</span> configs<span style="color:#555">.</span>index(data)
+    <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;After </span><span style="color:#a00">{</span>loop_point<span style="color:#a00">=}</span><span style="color:#c30"> iterations, the stones were in the same place as after </span><span style="color:#a00">{</span>first_occurance<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
     loop_length <span style="color:#555">=</span> loop_point <span style="color:#555">-</span> first_occurance
     target <span style="color:#555">=</span> <span style="color:#f60">1_000_000_000</span>
     last_loop <span style="color:#555">=</span> (<span style="color:#366">int</span>((target <span style="color:#555">-</span> first_occurance)<span style="color:#555">/</span>loop_length)) <span style="color:#555">*</span> loop_length <span style="color:#555">+</span> first_occurance
@@ -6310,14 +6304,8 @@ rich<span style="color:#555">.</span>_console <span style="color:#555">=</span> 
 
     <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(difference):
         data <span style="color:#555">=</span> cycle(data)
-        
-    load <span style="color:#555">=</span> <span style="color:#f60">0</span>
-    <span style="color:#069;font-weight:bold">for</span> row_index, row <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)):
-        row_value <span style="color:#555">=</span> <span style="color:#366">len</span>(data<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)) <span style="color:#555">-</span> row_index
-        <span style="color:#069;font-weight:bold">for</span> char <span style="color:#000;font-weight:bold">in</span> row:
-            <span style="color:#069;font-weight:bold">if</span> char <span style="color:#555">==</span> <span style="color:#c30">&#39;O&#39;</span>: load <span style="color:#555">+=</span> row_value
 
-    result <span style="color:#555">=</span> load
+    result <span style="color:#555">=</span> get_load(data)
     display(result, target<span style="color:#555">=</span><span style="color:#c30">&#34;day14_2-output&#34;</span>)
 
 <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#c30">&#39;js&#39;</span> <span style="color:#000;font-weight:bold">in</span> sys<span style="color:#555">.</span>modules:
@@ -9805,6 +9793,10 @@ inst <span style="color:#555">=</span> {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">try</span>:
@@ -9812,7 +9804,7 @@ inst <span style="color:#555">=</span> {
     <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">utils</span> <span style="color:#069;font-weight:bold">import</span> get_input
 <span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">ImportError</span>:
     <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_input</span>(<span style="color:#555">*</span>args):
-        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input_test.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
+        <span style="color:#069;font-weight:bold">with</span> <span style="color:#366">open</span>(<span style="color:#c30">&#34;input.txt&#34;</span>) <span style="color:#069;font-weight:bold">as</span> f:
             <span style="color:#069;font-weight:bold">return</span> f<span style="color:#555">.</span>read()
         
     <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
@@ -9854,13 +9846,18 @@ Point <span style="color:#555">=</span> namedtuple(<span style="color:#c30">&#34
 
 bricks: <span style="color:#366">list</span>[Brick] <span style="color:#555">=</span> <span style="color:#366">list</span>()
 
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">brick_in</span>(loc: <span style="color:#366">tuple</span>[<span style="color:#366">int</span>, <span style="color:#366">int</span>, <span style="color:#366">int</span>], bricks: <span style="color:#366">set</span>[Brick]) <span style="color:#555">-&gt;</span> Brick <span style="color:#555">|</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#069;font-weight:bold">if</span> (length<span style="color:#555">:=</span> <span style="color:#366">len</span>(matches<span style="color:#555">:=</span> [b <span style="color:#069;font-weight:bold">for</span> b <span style="color:#000;font-weight:bold">in</span> bricks <span style="color:#069;font-weight:bold">if</span> loc <span style="color:#000;font-weight:bold">in</span> b<span style="color:#555">.</span>cells])) <span style="color:#555">==</span> <span style="color:#f60">1</span>: <span style="color:#069;font-weight:bold">return</span> matches[<span style="color:#f60">0</span>]
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">brick_in</span>(loc: <span style="color:#366">tuple</span>[<span style="color:#366">int</span>, <span style="color:#366">int</span>, <span style="color:#366">int</span>], bricks: <span style="color:#366">set</span>[Brick], current_brick<span style="color:#555">=</span><span style="color:#069;font-weight:bold">None</span>) <span style="color:#555">-&gt;</span> Brick <span style="color:#555">|</span> <span style="color:#069;font-weight:bold">None</span>:
+    <span style="color:#069;font-weight:bold">for</span> b <span style="color:#000;font-weight:bold">in</span> bricks:
+        <span style="color:#069;font-weight:bold">if</span> loc <span style="color:#000;font-weight:bold">in</span> b<span style="color:#555">.</span>cells: <span style="color:#069;font-weight:bold">return</span> b
+    <span style="color:#069;font-weight:bold">return</span> <span style="color:#069;font-weight:bold">None</span>
+    <span style="color:#069;font-weight:bold">if</span> (length<span style="color:#555">:=</span> <span style="color:#366">len</span>(matches<span style="color:#555">:=</span> [b <span style="color:#069;font-weight:bold">for</span> b <span style="color:#000;font-weight:bold">in</span> bricks <span style="color:#069;font-weight:bold">if</span> loc <span style="color:#000;font-weight:bold">in</span> b<span style="color:#555">.</span>cells])) <span style="color:#555">==</span> <span style="color:#f60">1</span>: 
+        <span style="color:#069;font-weight:bold">if</span> matches[<span style="color:#f60">0</span>] <span style="color:#555">==</span> current_brick: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">&#34;Somehow comapring to current brick&#34;</span>)
+        <span style="color:#069;font-weight:bold">return</span> matches[<span style="color:#f60">0</span>]
     <span style="color:#069;font-weight:bold">if</span> length <span style="color:#555">&gt;</span> <span style="color:#f60">1</span>: <span style="color:#069;font-weight:bold">raise</span> <span style="color:#c00;font-weight:bold">ValueError</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Detected more than one brick in cell </span><span style="color:#a00">{</span>loc<span style="color:#a00">}</span><span style="color:#c30">: </span><span style="color:#a00">{</span>matches<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
     <span style="color:#069;font-weight:bold">return</span> <span style="color:#069;font-weight:bold">None</span>
 
 <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">main_day22_1</span>(<span style="color:#555">*</span>args):
-    data <span style="color:#555">=</span> get_input(<span style="color:#c30">&#34;day22_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>)
+    data <span style="color:#555">=</span> <span style="color:#366">reversed</span>(get_input(<span style="color:#c30">&#34;day22_1&#34;</span>)<span style="color:#555">.</span>split(<span style="color:#c30">&#34;</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#c30">&#34;</span>))
 
     <span style="color:#069;font-weight:bold">for</span> line <span style="color:#000;font-weight:bold">in</span> data:
         m <span style="color:#555">=</span> re<span style="color:#555">.</span>match(<span style="color:#c30">r</span><span style="color:#c30">&#34;(\d+),(\d+),(\d+)~(\d+),(\d+),(\d+)&#34;</span>, line)
@@ -9891,7 +9888,7 @@ bricks: <span style="color:#366">list</span>[Brick] <span style="color:#555">=</
             <span style="color:#069;font-weight:bold">for</span> cell <span style="color:#000;font-weight:bold">in</span> b<span style="color:#555">.</span>footprint:
                 <span style="color:#069;font-weight:bold">if</span> cell<span style="color:#555">.</span>z <span style="color:#555">==</span> <span style="color:#f60">1</span>: <span style="color:#09f;font-style:italic"># on ground</span>
                     stationary <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>; <span style="color:#069;font-weight:bold">break</span>
-                <span style="color:#069;font-weight:bold">if</span> x<span style="color:#555">:=</span> brick_in(point_under(cell), bricks): <span style="color:#09f;font-style:italic"># space underneath is occupied</span>
+                <span style="color:#069;font-weight:bold">if</span> x<span style="color:#555">:=</span> brick_in(point_under(cell), bricks, b): <span style="color:#09f;font-style:italic"># space underneath is occupied</span>
                     stationary <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>; <span style="color:#069;font-weight:bold">break</span>
 
             <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> stationary:
@@ -9920,7 +9917,6 @@ bricks: <span style="color:#366">list</span>[Brick] <span style="color:#555">=</
                 <span style="color:#069;font-weight:bold">break</span>
         <span style="color:#069;font-weight:bold">if</span> a_removable: 
             removable_bricks <span style="color:#555">+=</span> <span style="color:#f60">1</span>
-
         
 
     <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>(removable_bricks)<span style="color:#a00">=}</span><span style="color:#c30">&#34;</span>)

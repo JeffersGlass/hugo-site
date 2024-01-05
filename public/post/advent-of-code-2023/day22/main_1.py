@@ -3,7 +3,7 @@ try:
     from utils import get_input
 except ImportError:
     def get_input(*args):
-        with open("input_test.txt") as f:
+        with open("input.txt") as f:
             return f.read()
         
     def display(*args, **kwargs):
@@ -45,13 +45,18 @@ class Brick:
 
 bricks: list[Brick] = list()
 
-def brick_in(loc: tuple[int, int, int], bricks: set[Brick]) -> Brick | None:
-    if (length:= len(matches:= [b for b in bricks if loc in b.cells])) == 1: return matches[0]
+def brick_in(loc: tuple[int, int, int], bricks: set[Brick], current_brick=None) -> Brick | None:
+    for b in bricks:
+        if loc in b.cells: return b
+    return None
+    if (length:= len(matches:= [b for b in bricks if loc in b.cells])) == 1: 
+        if matches[0] == current_brick: raise ValueError("Somehow comapring to current brick")
+        return matches[0]
     if length > 1: raise ValueError(f"Detected more than one brick in cell {loc}: {matches}")
     return None
 
 def main_day22_1(*args):
-    data = get_input("day22_1").split("\n")
+    data = reversed(get_input("day22_1").split("\n"))
 
     for line in data:
         m = re.match(r"(\d+),(\d+),(\d+)~(\d+),(\d+),(\d+)", line)
@@ -82,7 +87,7 @@ def main_day22_1(*args):
             for cell in b.footprint:
                 if cell.z == 1: # on ground
                     stationary = True; break
-                if x:= brick_in(point_under(cell), bricks): # space underneath is occupied
+                if x:= brick_in(point_under(cell), bricks, b): # space underneath is occupied
                     stationary = True; break
 
             if not stationary:
@@ -111,7 +116,6 @@ def main_day22_1(*args):
                 break
         if a_removable: 
             removable_bricks += 1
-
         
 
     print(f"{(removable_bricks)=}")
