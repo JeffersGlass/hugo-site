@@ -18,12 +18,12 @@ import re
 def main_day2_1(*args):
     data = get_input("day2_1").split("\n")
 
-    day_pattern = re.compile("Game (?P<day_number>\d+)")
+    game_pattern = re.compile("Game (?P<day_number>\d+)")
     color_pattern = re.compile("(?P<quantity>\d+) (?P<color>(?:red)|(?:green)|(?:blue))")
     
     sum = 0
     for line in data:
-        id_value = int(re.match(day_pattern, line).group("day_number"))
+        id_value = int(re.match(game_pattern, line).group("day_number"))
         pulls = line.split(";")
         valid_line = True
         for p in pulls:
@@ -41,5 +41,5 @@ def main_day2_1(*args):
 
 # Only runs if not running in the browser
 import sys
-if not 'js' in sys.modules:
+if not 'js' in sys.modules: 
     main_day2_1()

@@ -14,7 +14,6 @@ except ImportError:
 from copy import deepcopy
 from itertools import pairwise      
 import sys
-from typing import List
 
 def rollNorth(data: str) -> str:
     pattern = [list(line) for line in data.split("\n")]
@@ -28,10 +27,6 @@ def rollNorth(data: str) -> str:
 
 def main_day14_1(*args):
     data = get_input("day14_1")
-
-    #for line in data.split("\n"):
-    #    print(line)
-    
 
     new_data = rollNorth(deepcopy(data))
     while any(new_data[i][j] != data[i][j] for i in range(len(data)) for j in range(len(data[i]))):
