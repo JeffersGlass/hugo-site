@@ -27,15 +27,6 @@ def completely(data: str, f: [str, str]) -> str:
         new_data = f(data)
     return new_data
 
-def _rollNorth(data: str) -> str:
-    line_num = data.count("\n")+1
-    line_length = data.index("\n")
-    for first in range(line_num) -1:
-        second = first + 1
-        for char_index in range(line_length):
-            if data[char_index + line_length * first] 
-
-
 def rollNorth(data: str) -> str:
     pattern = [list(line) for line in data.split("\n")]
     for first, second in pairwise(pattern):
