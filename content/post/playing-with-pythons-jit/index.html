@@ -1,0 +1,50 @@
+---
+title: "Playing With Python's new JIT"
+date: 2024-01-05T18:21:46-06:00
+draft: true
+tags:
+- python
+- cpython
+- jit
+description: "Playing with the Upcoming CPython JIT"
+---
+
+<p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
+<p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
+<p class="post-p">Essentially, CPython may be getting a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code (or similar) very shortly before<span class="italic">the time that code is actually run.</span> In the case of Brandt's PR, that's done by a method called <span class="font-semibold italic">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
+<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer - so let's pull down Brandt's JIT branch and play around a bit.</p>
+<div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
+    <ul class="post-ul">
+        <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
+        <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
+        <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno</li>
+        <li>The internals of the <a href="https://github.com/python/cpython/pull/113465">pull request itself</a></li>
+    </ul>
+</div>
+
+<p class="post-p">Brandt mentions in his talk that performance is roughly comparable to the existing (non-JIT) performance - some overhead cost balanced by improved performance, even before all the 'clever optimisations' happen. It's unclear to me exactly how this is benchmarked - <a href="https://pyperf.readthedocs.io/en/latest/run_benchmark.html#jit-compilers">PyPy in particular is hard to benchmark</a> in a comparable way due to its JIT, and the desire to 'warm up' the code for best JIT performance. (There's a line on <a href="https://github.com/faster-cpython/benchmarking-public">Faster Cpython's Public Benchmarking</a> that implies that the build as of a couple days ago was roughly 5% slower than mainline CPython.)</p>
+
+<ol>
+    <li>Clone the jit branch at <code>https://github.com/brandtbucher/cpython.git</code>.</li>
+    <li>Run <code>configure --use-experimental-jit --with-pydebug --ensure-pip=install</code></li>
+    <li>Run <code>make</code></li>
+    <li>Run <code>./python</code> to drop into a REPL with your freshly built python</li>
+    <li><code>make altinstall</code></li>
+</ol>
+
+To profile
+
+<ol>
+    <li><code>./python -m pyperf system_tune</code></li>
+    <li><code>./python -m pip install pyperformance</code></li>
+    <li><code>./python -m pyperformance run -o base.json</code></li>
+</ol>
+
+
+
+<style>
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
