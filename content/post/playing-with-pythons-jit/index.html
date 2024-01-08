@@ -23,26 +23,10 @@ description: "Playing with the Upcoming CPython JIT"
 </div>
 
 <p class="post-p">Brandt mentions in his talk that performance is roughly comparable to the existing (non-JIT) performance - some overhead cost balanced by improved performance, even before all the 'clever optimisations' happen. It's unclear to me exactly how this is benchmarked - <a href="https://pyperf.readthedocs.io/en/latest/run_benchmark.html#jit-compilers">PyPy in particular is hard to benchmark</a> in a comparable way due to its JIT, and the desire to 'warm up' the code for best JIT performance. (There's a line on <a href="https://github.com/faster-cpython/benchmarking-public">Faster Cpython's Public Benchmarking</a> that implies that the build as of a couple days ago was roughly 5% slower than mainline CPython.)</p>
-
-<h2 class="post-h2">Your Own Playground</h2>
-<p class="post-p">If you want to try out JIT'd Python for yourself, here's a quick and dirty </p>
-<ol>
-    <li>Clone the jit branch at <code>https://github.com/brandtbucher/cpython.git</code>.</li>
-    <li>Run <code>configure --enable-experimental-jit --with-pydebug --ensure-pip=install</code></li>
-    <li>Run <code>make</code></li>
-    <li>Run <code>./python</code> to drop into a REPL with your freshly built python</li>
-    <li><code>make altinstall</code></li>
-</ol>
-
-<p class="post-p">To profile one way:</p>
-
-<ol>
-    <li><code>./python -m pyperf system_tune</code></li>
-    <li><code>./python -m pip install pyperformance</code></li>
-    <li><code>./python -m pyperformance run -o base.json</code></li>
-</ol>
-
-<p class="post-p">To benchmark a-la faster-cpython:</p>
+<p class="post-p">Since I wanted to play with the JIT myself, I set up an environment to run the Faster CPython team's tests locally, based on their <a href="https://github.com/faster-cpython/benchmarking-public/blob/main/.github/workflows/_benchmark.yml"><code>_benchmark</code> GitHub Action</a> and <a href="https://github.com/faster-cpython/bench_runner">bench_runner</a> script. (I did tried to just run the whole action locally using <a href="https://github.com/nektos/act">act</a>, but ran into mysterious issues. You can expand the summary below to see the full list of commands used to run these benchmarks locally.</p>
+<details class="ml-4">
+    <summary class=""><span class="border-2 border-blue-700 p-1 rounded-md">Shell Commands to run Faster CPython Benchmarks Locally</span></summary>
+<div class="m-2 p-2 border-2 border-blue-700">
 {{< highlight "sh" "linenostart=1" >}}
 git clone https://github.com/faster-cpython/benchmarking-public.git
 cd benchmarking-public
@@ -69,8 +53,203 @@ venv/bin/python -m pip install --no-binary :all: ./pyperformance
 venv/bin/python -m pyperf system tune
 sudo bash -c "echo 100000 > /proc/sys/kernel/perf_event_max_sample_rate"
 rm -rf ~/.debug/*
-venv/bin/python -m bench_runner run_benchmarks benchmark cpython/python forkname ref all' --run_id $ $(date +%s) --flag PYTHON_UOPS --flag JIT
+venv/bin/python -m bench_runner run_benchmarks benchmark cpython/python forkname ref all --run_id $ 1 --flag PYTHON_UOPS --flag JIT
 {{< /highlight >}}
+</div>
+</details>
+
+<p class="post-p">Comparing a basement benchmark (cpython <code>main@802d4954)</code> with the JIT branch (brandtbucher/justin@33427753d0) we see that their speed is roughly comparable </p>
+<p class="post-p">You can toggle open the full output from <code>pyperf</code> if you're interested</p>
+<details class="ml-4">
+    <summary><span class="border-2 border-blue-700 p-1 rounded-md">Full Benchmarking Comparison</span></summary>
+    <div class="m-4 p-2 border-2 border-blue-700">
+        <h1 id="benchmarks-with-tag-apps-">Benchmarks with tag &#39;apps&#39;:</h1>
+        <table>
+        <thead>
+        <tr>
+        <th>Benchmark</th>
+        <th style="text-align:center">benchmark</th>
+        <th style="text-align:center">benchmark_jit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>docutils</td>
+        <td style="text-align:center">7.65 sec</td>
+        <td style="text-align:center">7.13 sec: 1.07x faster</td>
+        </tr>
+        <tr>
+        <td>Geometric mean</td>
+        <td style="text-align:center">(ref)</td>
+        <td style="text-align:center">1.01x faster</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>Benchmark hidden because not significant (4): 2to3, chameleon, html5lib, tornado_http</p>
+        <h1 id="benchmarks-with-tag-asyncio-">Benchmarks with tag &#39;asyncio&#39;:</h1>
+        <p>Benchmark hidden because not significant (4): async_tree_none, async_tree_cpu_io_mixed, async_tree_io, async_tree_memoization</p>
+        <h1 id="benchmarks-with-tag-math-">Benchmarks with tag &#39;math&#39;:</h1>
+        <p>Benchmark hidden because not significant (3): float, nbody, pidigits</p>
+        <h1 id="benchmarks-with-tag-regex-">Benchmarks with tag &#39;regex&#39;:</h1>
+        <p>Benchmark hidden because not significant (4): regex_compile, regex_dna, regex_effbot, regex_v8</p>
+        <h1 id="benchmarks-with-tag-serialize-">Benchmarks with tag &#39;serialize&#39;:</h1>
+        <table>
+        <thead>
+        <tr>
+        <th>Benchmark</th>
+        <th style="text-align:center">benchmark</th>
+        <th style="text-align:center">benchmark_jit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>tomli_loads</td>
+        <td style="text-align:center">6.75 sec</td>
+        <td style="text-align:center">6.71 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>Geometric mean</td>
+        <td style="text-align:center">(ref)</td>
+        <td style="text-align:center">1.00x faster</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>Benchmark hidden because not significant (13): json_dumps, json_loads, pickle, pickle_dict, pickle_list, pickle_pure_python, unpickle, unpickle_list, unpickle_pure_python, xml_etree_parse, xml_etree_iterparse, xml_etree_generate, xml_etree_process</p>
+        <h1 id="benchmarks-with-tag-startup-">Benchmarks with tag &#39;startup&#39;:</h1>
+        <p>Benchmark hidden because not significant (2): python_startup, python_startup_no_site</p>
+        <h1 id="benchmarks-with-tag-template-">Benchmarks with tag &#39;template&#39;:</h1>
+        <p>Benchmark hidden because not significant (4): django_template, genshi_text, genshi_xml, mako</p>
+        <h1 id="all-benchmarks-">All benchmarks:</h1>
+        <table>
+        <thead>
+        <tr>
+        <th>Benchmark</th>
+        <th style="text-align:center">benchmark</th>
+        <th style="text-align:center">benchmark_jit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>aiohttp</td>
+        <td style="text-align:center">2.78 ms</td>
+        <td style="text-align:center">2.75 ms: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>asyncio_tcp</td>
+        <td style="text-align:center">1.78 sec</td>
+        <td style="text-align:center">1.76 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>crypto_pyaes</td>
+        <td style="text-align:center">281 ms</td>
+        <td style="text-align:center">272 ms: 1.04x faster</td>
+        </tr>
+        <tr>
+        <td>docutils</td>
+        <td style="text-align:center">7.65 sec</td>
+        <td style="text-align:center">7.13 sec: 1.07x faster</td>
+        </tr>
+        <tr>
+        <td>fannkuch</td>
+        <td style="text-align:center">1.11 sec</td>
+        <td style="text-align:center">1.10 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>flaskblogging</td>
+        <td style="text-align:center">8.67 ms</td>
+        <td style="text-align:center">8.75 ms: 1.01x slower</td>
+        </tr>
+        <tr>
+        <td>create_gc_cycles</td>
+        <td style="text-align:center">3.10 ms</td>
+        <td style="text-align:center">3.05 ms: 1.02x faster</td>
+        </tr>
+        <tr>
+        <td>gc_traversal</td>
+        <td style="text-align:center">7.43 ms</td>
+        <td style="text-align:center">7.33 ms: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>gunicorn</td>
+        <td style="text-align:center">2.78 ms</td>
+        <td style="text-align:center">2.74 ms: 1.02x faster</td>
+        </tr>
+        <tr>
+        <td>logging_format</td>
+        <td style="text-align:center">23.8 us</td>
+        <td style="text-align:center">23.4 us: 1.02x faster</td>
+        </tr>
+        <tr>
+        <td>mdp</td>
+        <td style="text-align:center">7.03 sec</td>
+        <td style="text-align:center">6.99 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>mypy2</td>
+        <td style="text-align:center">2.03 sec</td>
+        <td style="text-align:center">2.02 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>pycparser</td>
+        <td style="text-align:center">3.61 sec</td>
+        <td style="text-align:center">3.58 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>scimark_fft</td>
+        <td style="text-align:center">968 ms</td>
+        <td style="text-align:center">957 ms: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>scimark_sparse_mat_mult</td>
+        <td style="text-align:center">12.8 ms</td>
+        <td style="text-align:center">12.5 ms: 1.02x faster</td>
+        </tr>
+        <tr>
+        <td>sqlite_synth</td>
+        <td style="text-align:center">5.29 us</td>
+        <td style="text-align:center">5.35 us: 1.01x slower</td>
+        </tr>
+        <tr>
+        <td>sympy_str</td>
+        <td style="text-align:center">792 ms</td>
+        <td style="text-align:center">784 ms: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>tomli_loads</td>
+        <td style="text-align:center">6.75 sec</td>
+        <td style="text-align:center">6.71 sec: 1.01x faster</td>
+        </tr>
+        <tr>
+        <td>Geometric mean</td>
+        <td style="text-align:center">(ref)</td>
+        <td style="text-align:center">1.00x faster</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>Benchmark hidden because not significant (82): 2to3, async_generators, async_tree_none, async_tree_cpu_io_mixed, async_tree_io, async_tree_memoization, asyncio_tcp_ssl, asyncio_websockets, chameleon, chaos, comprehensions, bench_mp_pool, bench_thread_pool, coroutines, coverage, dask, deepcopy, deepcopy_reduce, deepcopy_memo, deltablue, django_template, dulwich_log, float, generators, genshi_text, genshi_xml, go, hexiom, html5lib, json, json_dumps, json_loads, logging_silent, logging_simple, mako, meteor_contest, nbody, nqueens, pathlib, pickle, pickle_dict, pickle_list, pickle_pure_python, pidigits, pprint_safe_repr, pprint_pformat, pyflate, pylint, python_startup, python_startup_no_site, raytrace, regex_compile, regex_dna, regex_effbot, regex_v8, richards, richards_super, scimark_lu, scimark_monte_carlo, scimark_sor, spectral_norm, sqlalchemy_declarative, sqlalchemy_imperative, sqlglot_parse, sqlglot_transpile, sqlglot_optimize, sqlglot_normalize, sympy_expand, sympy_integrate, sympy_sum, telco, thrift, tornado_http, typing_runtime_protocols, unpack_sequence, unpickle, unpickle_list, unpickle_pure_python, xml_etree_parse, xml_etree_iterparse, xml_etree_generate, xml_etree_process</p>
+    </div>
+
+</details>
+
+<h2 class="post-h2">Your Own Playground</h2>
+<p class="post-p">If you want to try out JIT'd Python for yourself, here's a quick and dirty </p>
+<ol>
+    <li>Clone the jit branch at <code>https://github.com/brandtbucher/cpython.git</code>.</li>
+    <li>Run <code>configure --enable-experimental-jit --with-pydebug --ensure-pip=install</code></li>
+    <li>Run <code>make</code></li>
+    <li>Run <code>./python</code> to drop into a REPL with your freshly built python</li>
+    <li><code>make altinstall</code></li>
+</ol>
+
+<p class="post-p">To profile one way:</p>
+
+<ol>
+    <li><code>./python -m pyperf system_tune</code></li>
+    <li><code>./python -m pip install pyperformance</code></li>
+    <li><code>./python -m pyperformance run -o base.json</code></li>
+</ol>
+
+<p class="post-p">To benchmark a-la faster-cpython:</p>
 
 
 
