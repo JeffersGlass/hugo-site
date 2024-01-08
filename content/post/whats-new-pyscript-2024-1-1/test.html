@@ -8,17 +8,24 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
 </head>
 <body>
-    <script>
-        var foo = (s) => {
-            console.log("Hey you gave me ", s)
-        }
-    </script>
-    
+    <canvas id="fw" style="background-color: black;"></canvas>
+    <py-config>
+        [js_modules.main]
+        "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm" = "Fireworks_Module"
+    </py-config>
     <script type="py">
-        from pyscript import display
-        from js import foo
+        from pyscript import document, window
+        from pyscript.js_modules import Fireworks_Module
+
+        from pyodide.ffi import to_js
+        from js import Object
         
-        foo("This is from python")
+        options = to_js({"sound": {"enabled": True, "volume" : {"min": 4, "max": 8}, "files" : ("https://raw.githubcontent.com/crashmax-dev/fireworks-js/website/public/sounds/explosion0.mp3",)}}, dict_converter = Object.fromEntries)
+        #options = to_js({"decay": {"min": 0.005, "max": 0.020}}, dict_converter = Object.fromEntries)
+
+        container = document.querySelector('#fw')
+        fireworks = Fireworks_Module.Fireworks.new(container, options)
+        fireworks.start()
     </script>
 </body>
 </html>
