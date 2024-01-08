@@ -11,7 +11,7 @@ description: "Playing with the Upcoming CPython JIT"
 
 <p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
 <p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
-<p class="post-p">Essentially, CPython may be getting a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code (or similar) very shortly before<span class="italic">the time that code is actually run.</span> In the case of Brandt's PR, that's done by a method called <span class="font-semibold italic">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
+<p class="post-p">Essentially, CPython may be getting a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code (or similar) very shortly before <span class="italic">the time that code is actually run.</span> In the case of Brandt's PR, that's done by a method called <span class="font-semibold italic">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
 <p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer - so let's pull down Brandt's JIT branch and play around a bit.</p>
 <div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
     <ul class="post-ul">
@@ -24,21 +24,53 @@ description: "Playing with the Upcoming CPython JIT"
 
 <p class="post-p">Brandt mentions in his talk that performance is roughly comparable to the existing (non-JIT) performance - some overhead cost balanced by improved performance, even before all the 'clever optimisations' happen. It's unclear to me exactly how this is benchmarked - <a href="https://pyperf.readthedocs.io/en/latest/run_benchmark.html#jit-compilers">PyPy in particular is hard to benchmark</a> in a comparable way due to its JIT, and the desire to 'warm up' the code for best JIT performance. (There's a line on <a href="https://github.com/faster-cpython/benchmarking-public">Faster Cpython's Public Benchmarking</a> that implies that the build as of a couple days ago was roughly 5% slower than mainline CPython.)</p>
 
+<h2 class="post-h2">Your Own Playground</h2>
+<p class="post-p">If you want to try out JIT'd Python for yourself, here's a quick and dirty </p>
 <ol>
     <li>Clone the jit branch at <code>https://github.com/brandtbucher/cpython.git</code>.</li>
-    <li>Run <code>configure --use-experimental-jit --with-pydebug --ensure-pip=install</code></li>
+    <li>Run <code>configure --enable-experimental-jit --with-pydebug --ensure-pip=install</code></li>
     <li>Run <code>make</code></li>
     <li>Run <code>./python</code> to drop into a REPL with your freshly built python</li>
     <li><code>make altinstall</code></li>
 </ol>
 
-To profile
+<p class="post-p">To profile one way:</p>
 
 <ol>
     <li><code>./python -m pyperf system_tune</code></li>
     <li><code>./python -m pip install pyperformance</code></li>
     <li><code>./python -m pyperformance run -o base.json</code></li>
 </ol>
+
+<p class="post-p">To benchmark a-la faster-cpython:</p>
+{{< highlight "sh" "linenostart=1" >}}
+git clone https://github.com/faster-cpython/benchmarking-public.git
+cd benchmarking-public
+git clone https://github.com/{fork-of-cpython}/python.git
+cd python
+git reset --hard {reference-branch-or-tag}
+cd ..
+python -m venv venv
+venv/bin/python -m pip install -r requirements.txt
+git clone https://github.com/pyston/python-macrobenchmarks.git ./pyston-benchmarks
+cd python-macrobenchmarks
+git reset --hard {PYSTON_BENCHMARKS_HASH} # : ee8adbd7846ec67d1a8a362e6a5e876df372431d
+cd ..
+git clone https://github.com/python/pyperformance.git
+cd pyperformance
+git reset --hard {PYPERFORMANCE_HASH} # f7f36509e2e81e9a20cfeadddd6608f2378ff26c
+cd ..
+export PYTHON_UOPS=1
+cd cpython
+./configure --enable-optimizations --with-lto=yes --enable-experimental-jit
+make -j4
+cd ..
+venv/bin/python -m pip install --no-binary :all: ./pyperformance
+venv/bin/python -m pyperf system tune
+sudo bash -c "echo 100000 > /proc/sys/kernel/perf_event_max_sample_rate"
+rm -rf ~/.debug/*
+venv/bin/python -m bench_runner run_benchmarks benchmark cpython/python forkname ref all' --run_id $ $(date +%s) --flag PYTHON_UOPS --flag JIT
+{{< /highlight >}}
 
 
 
