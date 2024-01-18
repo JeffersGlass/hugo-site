@@ -12,18 +12,19 @@ slug_image: py_dis_featured.png
 <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
 
-<div class="grid grid-cols-2 space-x-4">
+<div class="flex flex-row space-x-4">
     <div class="mr-4">
         <textarea name="code" id="code" cols="80" rows="10"></textarea>
         <div id="error" style="color: #E2001F"></div>
     </div>
-    <div style="padding-left: 25px; width: 100%" class="overflow-y-scroll max-h-124">
+    <div style="padding-left: 25px; width: 100%; min-width:300px;" class="overflow-y-scroll max-h-124">
         <table>
             <thead>
                 <tr id="head">
                     <td>Offset</td>
                     <td>Opname</td>
                     <td>argrepr</td>
+                    <td>Line No</td>
                 </tr>
             </thead>
             <tbody id="output"></tbody>
@@ -51,7 +52,7 @@ slug_image: py_dis_featured.png
         GREEN = "#009879"
         GRAY = "gray"
 
-    ROW = "<tr><td>{offset}</td><td>{opname}</td><td>{argrepr}</td></tr>"
+    ROW = "<tr><td>{offset}</td><td>{opname}</td><td>{argrepr}</td><td>{lineno}</td></tr>"
 
     @when("change", "#adaptive")
     @when("input", "#code",)
@@ -71,7 +72,7 @@ slug_image: py_dis_featured.png
             document.getElementById("error").innerText = str(err)
         else:
             document.getElementById("error").innerText = ''
-            fill_table('\n'.join(ROW.format(offset=instr.offset, opname=instr.opname, argrepr=instr.argrepr) for instr in result))
+            fill_table('\n'.join(ROW.format(offset=instr.offset, opname=instr.opname, argrepr=instr.argrepr, lineno=instr.positions.lineno) for instr in result))
             set_border_color(Color.GREEN)
 
     def fill_table(content):
