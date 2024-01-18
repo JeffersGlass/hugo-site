@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+      <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      async function main(){
+        let pyodide = await loadPyodide();
+        console.log(pyodide.runPython(`
+        import asyncio
+
+        async def foo():
+            print("starting")
+            await asyncio.sleep(1)
+            print(1/0)
+
+        asyncio.ensure_future(foo())
+        None
+        `));
+      }
+      main();
+    </script>
+  </body>
+</html>
