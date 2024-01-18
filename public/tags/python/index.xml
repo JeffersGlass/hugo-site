@@ -18,8 +18,11 @@
 &lt;script type=&#34;module&#34; src=&#34;https://pyscript.net/releases/2024.1.1/core.js&#34;&gt;&lt;/script&gt;
 &lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2024.1.1/core.css&#34;&gt;
 
-&lt;div class=&#34;grid grid-cols-2 divide-x-2 gap-x-4&#34;&gt;
-    &lt;textarea name=&#34;code&#34; id=&#34;code&#34; cols=&#34;120&#34; rows=&#34;10&#34;&gt;&lt;/textarea&gt;
+&lt;div class=&#34;grid grid-cols-2 space-x-4&#34;&gt;
+    &lt;div class=&#34;mr-4&#34;&gt;
+        &lt;textarea name=&#34;code&#34; id=&#34;code&#34; cols=&#34;80&#34; rows=&#34;10&#34;&gt;&lt;/textarea&gt;
+        &lt;div id=&#34;error&#34; style=&#34;color: #E2001F&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
     &lt;div style=&#34;padding-left: 25px; width: 100%&#34; class=&#34;overflow-y-scroll max-h-124&#34;&gt;
         &lt;table&gt;
             &lt;thead&gt;
@@ -71,7 +74,9 @@
         except SyntaxError as err:
             window.console.error(err)
             set_border_color(Color.RED)
+            document.getElementById(&#34;error&#34;).innerText = str(err)
         else:
+            document.getElementById(&#34;error&#34;).innerText = &#39;&#39;
             fill_table(&#39;\n&#39;.join(ROW.format(offset=instr.offset, opname=instr.opname, argrepr=instr.argrepr) for instr in result))
             set_border_color(Color.GREEN)
 
@@ -119,7 +124,7 @@
     }
     
     tbody tr:last-of-type {
-        border-bottom: 2px solid #009879;
+        border-bottom: 2px solid gray;
     }
 
     textarea {
