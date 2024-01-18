@@ -1,31 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
-</head>
-<body>
-    <canvas id="fw" style="background-color: black;"></canvas>
-    <py-config>
-        [js_modules.main]
-        "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm" = "Fireworks_Module"
-    </py-config>
-    <script type="py">
-        from pyscript import document, window
-        from pyscript.js_modules import Fireworks_Module
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>stlite app</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.39.0/build/stlite.css"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.39.0/build/stlite.js"></script>
+    <script>
+      stlite.mount(
+        `
+import streamlit as st
 
-        from pyodide.ffi import to_js
-        from js import Object
-        
-        options = to_js({"sound": {"enabled": True, "volume" : {"min": 4, "max": 8}, "files" : ("https://raw.githubcontent.com/crashmax-dev/fireworks-js/website/public/sounds/explosion0.mp3",)}}, dict_converter = Object.fromEntries)
-        #options = to_js({"decay": {"min": 0.005, "max": 0.020}}, dict_converter = Object.fromEntries)
-
-        container = document.querySelector('#fw')
-        fireworks = Fireworks_Module.Fireworks.new(container, options)
-        fireworks.start()
+name = st.text_input('Your name')
+st.write("Hello,", name or "world")
+`,
+        document.getElementById("root")
+      );
     </script>
-</body>
+  </body>
 </html>
