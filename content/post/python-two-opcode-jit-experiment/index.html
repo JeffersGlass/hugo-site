@@ -1,0 +1,117 @@
+---
+title: "Python Two Opcode Jit Experiment"
+date: 2024-01-22T07:46:37-06:00
+draft: true
+tags:
+- python
+- cpython
+- jit
+description: "Expanding Python's C&P JIT compiler to 30,000+ Opcode Pairs"
+---
+<p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
+<p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
+<p class="post-p">Essentially, CPython may be getting a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code (or similar) very shortly before <span class="italic">the time that code is actually run.</span> In the case of Brandt's PR, that's done by a method called <span class="font-semibold italic">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
+<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer - and Brandt left some breadcrumbs at the end of his core developer sprint talk (link below) - one of which <a href="https://xkcd.com/356/">nerd sniped</a> me. This is the log of the experiment that followed</p>
+<div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
+    <ul class="post-ul">
+        <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
+        <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
+        <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno</li>
+        <li>The internals of the <a href="https://github.com/python/cpython/pull/113465">pull request itself</a></li>
+    </ul>
+</div>
+
+<h2 class="post-h2">JIT-ing "Superinstructions</h2>
+<p class="post-p">One of the "fun tricks" that brandt mentions in his talk is the possibility of pre-compiling <span class="italic">"superinstructions"</span> - pairs or tripples (or more) of opcodes -  for increased efficiency of the machine code and speed. In my mind, the steps in developing this feature would be:</p>
+<ol>
+    <li>Modify Brant's tools (<code class="code">build.py</code>, <code class="code">template.c</code>, and <code>jit.c</code> in particular) to build these two-opcode stencils</li>
+    <li>Identiy which opcode pairs <span class="italic">can</span> occur together, either globally or within a hot loop that is going to be optimized/JIT'd</li>
+    <li>Identify which opcode pairs benefit from being pre-built together, i.e. have shorter machine-code representations than just concatenating the results of compiing each opcode separately.</li>
+    <li>Find a sensible way to index the two-opcode stenctils so they are fast to lookup at runtime.
+        <ul class="ml-4">
+            <li>Note: This is not an issue in the original JIT PR, since all uOPs have jit representations and can be looked up in a short array by index. If we have a sparse arrangement of, say, 1000 opcode pairs pre-compiled out of a possible 30,000+, we need to a way to index into that collection and bail quickly back to the single-opcode case.</li>
+        </ul>
+</ol>
+
+<h2 class="post-h2"></h2>
+<p class="post-p">To test this concept and build a working version of Python without getting too "clever" out of the gate, I started by building a version of Python which pre-compiles <span class="italic">all 34,225 micro-opcodes</span> to machine code (as well as the original 185 single uOPs).</p>
+<p class="post-p">The modifications to the build tools are ulimately not terribly complicated, though it took me some time and experimentation to understand what they were doing. The key changes are:</p>
+<h3 class="post-h3">template_2.c</h3>
+<p class="post-p">Very similar to <code>template.c</code>, with the following modifications:</p>
+    <ul class="post-ul">
+        <li>An additional set of patched values (<code>OPARG2</code>, <code>OPERAND2</code>, and <code>TARGET2</code>) to capture the holes in a second op</li>
+        <li>An additional <code>switch (opcode2)</code> and inclusion of <code>executor_cases.c.h</code></li> to compile the second opcode in.
+<div class="border-2 border-gray-400 rounded-md mx-2 px-2 py-1">
+{{< highlight "c" "linenostart=1" >}}
+PATCH_VALUE(uint16_t, _oparg2, _JIT_OPARG2)
+PATCH_VALUE(uint64_t, _operand2, _JIT_OPERAND2)
+PATCH_VALUE(uint32_t, _target2, _JIT_TARGET2)
+switch (opcode2) {
+#include "executor_cases.c.h"
+    default:
+        Py_UNREACHABLE();
+}{{< /highlight >}}
+</div>
+    </ul>
+</li>
+<h3 class="post-h3">build.py</h3>
+<ul class="post-ul">
+    <li>(Optionally) generate these two-opcode pairs, by passing them to clang along with the new <code>template_2.c</code></li>
+    <li>Each opcode pair is indexed by the following formula, where <code>max_id</code> is the largest uOP id as read from <code>pycode_uop_ids.h</code>:
+        <p class="ml-12"><code class="nocode">stencil_index = (max_id * first_uop_id) + second_uop_id + max_id + 1 + 1</code></p>
+        <p class="italic">The additional constants at the end are to leave space for the existing single-opcode stencils at the beginning of this array.</p>
+    </li>
+    <li>Emit these indexes as newly defined constants, of the form <code>f"#define {first_id}plus{second_id} {index_from_above}</code></li>
+    <li>Set the appropriate indices of the <code>jit_stencils</code> array to be our new stencils.</li>
+</ul>
+<h3 class="post-h3">jit.c</h3>
+<ul class="post-ul">
+    <li>Again, taking the lazy path - since we know we can JIT all possible pairs of UOps, for every executor, we jit every consecutive pair of uOPs ([0,1], [2, 3], [4,5], etc). If the executor contains an odd number of instructions, we emit machine code for the final instruction.</li>
+    <li>This looks something like:</li>
+<div class="border-2 border-gray-400 rounded-md mx-2 px-2 py-1">
+{{< highlight "c" "linenostart=1" >}}
+# define JIT_INDEX(FIRST, SECOND) (MAX_UOP_ID * FIRST) + SECOND + MAX_UOP_ID + 2
+
+Py_ssize_t executor_size = Py_SIZE(executor);
+for (Py_ssize_t i = 0; i < executor_size; i+= 2) {
+    _PyUOpInstruction *instruction1 = &executor->trace[i];
+    _PyUOpInstruction *instruction2 = &executor->trace[i+1];
+    const StencilGroup *group = &stencil_groups[JIT_INDEX(instruction1->opcode, instruction2->opcode)];
+    code_size += group->code.body_size;
+    data_size += group->data.body_size;
+}
+if (executor_size % 2){
+    _PyUOpInstruction *instruction = &executor->trace[executor_size-1];
+    const StencilGroup *group = &stencil_groups[instruction->opcode];
+    code_size += group->code.body_size;
+    data_size += group->data.body_size;
+}{{< /highlight >}}
+</div>
+<p class="italic">This is the loop to calculate the total executor size - the execution/patching loop looks similar.</p>
+</ul>
+
+<h2 class="post-h2">Building and Testing</h2>
+<p class="post-p">This is a short and uninteresting section - running <code>make</code> succeeds and builds python, and <code>python -m test</code> also passes (with the usual handful of skipped, resource-intrusive tests).</p>
+
+<h2 class="post-h2">Size and Performance</h2>
+<p class="post-p">Let's get to the two more important questions:
+    <ul class="post-ul">
+        <li>Does this make Python any faster?</li>
+        <li>How big is the Python executable when you jam 34,225 machine code stencils in it?</li>
+    </ul>
+</p>
+<h3 class="post-h3">Size</h3>
+<p class="post-p">Let's answer the second question first - with<code>--py-debug</code> symbols turned off, the <code class="no-code">x86_64-unknown-linux-gnu</code> build of 3.13.0.a02</p> is a whopping XXXXXX MB. For comparison, a build without any experiemntal JIT modifications is only XXXXXXXXX MB. This is clearly a very size-inefficent way to build Python - but that was expected, we're deliebrately being lazy and including every possible uOP pair, including impossible/un-valuable ones.</code>
+
+<h3 class="post-h3">Performance</h3>
+<p class="post-p">We can measure the performance of our build using <code>python -m ensurepip &$ python -m pip3 install pyperformance && python -m pyperformance run</code>.</p>
+
+
+
+
+<style>
+    code:not(.nocode):not(.language-python):not(.language-c):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+</style>
