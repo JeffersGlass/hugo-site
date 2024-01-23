@@ -1,0 +1,195 @@
+---
+title: "Pyscript and Disassembled Bytecode"
+date: 2024-01-18T10:01:55-06:00
+draft: false
+tags:
+- pyscript
+- Python
+description: "Explore Python's Bytecode in the Browser"
+slug_image: py_dis_featured.png
+---
+<p class="post-p">Type python on the left, and see the disassembly on the right.</p>
+<script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+
+<div class="flex flex-row space-x-4">
+    <div class="mr-4">
+        <textarea name="code" id="code" cols="80" rows="10"></textarea>
+        <div id="error" style="color: #E2001F"></div>
+    </div>
+    <div style="padding-left: 25px; width: 100%; min-width:300px;" class="overflow-y-scroll max-h-124">
+        <table>
+            <thead>
+                <tr id="head">
+                    <td>Offset</td>
+                    <td>Opname</td>
+                    <td>argrepr</td>
+                    <td>Line No</td>
+                </tr>
+            </thead>
+            <tbody id="output"></tbody>
+        </table>
+    </div>
+    <!-- <div class="h-4 text-center" style="line-height: 16px">
+        <label class="mt-2 switch">
+            <input type="checkbox" id="adaptive">
+            <span class="slider round"></span>
+        </label> Adaptive
+    </div>
+    <span style="display: inline-block; vertical-align: middle; line-height: normal;"></span> -->
+</div>
+<p class="post-p">The source for this page is <a href="https://github.com/JeffersGlass/hugo-site/blob/main/content/post/pyscript-dis/index.html">hosted on GitHub</a>, if you want to check it out.</p>
+
+
+<script type="py">
+    import dis
+    from enum import Enum
+    from pyscript import document, window, when
+    import time
+
+    class Color(Enum):
+        RED = "#E2001F"
+        YELLOW = "#EE9600"
+        GREEN = "#009879"
+        GRAY = "gray"
+
+    ROW = "<tr><td>{offset}</td><td>{opname}</td><td>{argrepr}</td><td>{lineno}</td></tr>"
+
+    @when("change", "#adaptive")
+    @when("input", "#code",)
+    def maybe_update_dis(evt):
+        code = document.getElementById('code').value
+        if code.strip() == '':
+            fill_table("")
+            set_border_color(Color.YELLOW)
+            return
+
+        try:
+            result = dis.Bytecode(code)
+            pass
+        except SyntaxError as err:
+            window.console.error(err)
+            set_border_color(Color.RED)
+            document.getElementById("error").innerText = str(err)
+        else:
+            document.getElementById("error").innerText = ''
+            fill_table('\n'.join(ROW.format(offset=instr.offset, opname=instr.opname, argrepr=instr.argrepr, lineno=instr.positions.lineno) for instr in result))
+            set_border_color(Color.GREEN)
+
+    def fill_table(content):
+        document.getElementById("output").innerHTML = content
+
+    def set_border_color(c: Color):
+        document.getElementById("code").style.borderColor = c.value
+        document.getElementById("head").style.backgroundColor = c.value
+
+    maybe_update_dis(None)
+            
+</script>
+<style>
+    table{
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        width: 100%;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    thead tr{
+        background-color: gray;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    th{
+        padding: 12px 15px;
+    }
+
+    th, td{
+        padding: 4px 15px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+    
+    tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+    
+    tbody tr:last-of-type {
+        border-bottom: 2px solid gray;
+    }
+
+    textarea {
+        font-family: 'Courier New', Courier, monospace;
+        padding: 0.5rem;
+        border-width: 0.5rem;
+        border-radius: 0.3rem;
+    }
+
+    /* The switch - the box around the slider */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+    
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+    
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+    
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
