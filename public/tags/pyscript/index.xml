@@ -7,7 +7,201 @@
     <description>Recent content in PyScript on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 04 Jan 2024 10:30:42 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 18 Jan 2024 10:01:55 -0600</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pyscript and Disassembled Bytecode</title>
+      <link>https://jeff.glass/post/pyscript-dis/</link>
+      <pubDate>Thu, 18 Jan 2024 10:01:55 -0600</pubDate>
+      
+      <guid>https://jeff.glass/post/pyscript-dis/</guid>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Type python on the left, and see the disassembly on the right.&lt;/p&gt;
+&lt;script type=&#34;module&#34; src=&#34;https://pyscript.net/releases/2024.1.1/core.js&#34;&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2024.1.1/core.css&#34;&gt;
+
+&lt;div class=&#34;flex flex-row space-x-4&#34;&gt;
+    &lt;div class=&#34;mr-4&#34;&gt;
+        &lt;textarea name=&#34;code&#34; id=&#34;code&#34; cols=&#34;80&#34; rows=&#34;10&#34;&gt;&lt;/textarea&gt;
+        &lt;div id=&#34;error&#34; style=&#34;color: #E2001F&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div style=&#34;padding-left: 25px; width: 100%; min-width:300px;&#34; class=&#34;overflow-y-scroll max-h-124&#34;&gt;
+        &lt;table&gt;
+            &lt;thead&gt;
+                &lt;tr id=&#34;head&#34;&gt;
+                    &lt;td&gt;Offset&lt;/td&gt;
+                    &lt;td&gt;Opname&lt;/td&gt;
+                    &lt;td&gt;argrepr&lt;/td&gt;
+                    &lt;td&gt;Line No&lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody id=&#34;output&#34;&gt;&lt;/tbody&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+    &lt;!-- &lt;div class=&#34;h-4 text-center&#34; style=&#34;line-height: 16px&#34;&gt;
+        &lt;label class=&#34;mt-2 switch&#34;&gt;
+            &lt;input type=&#34;checkbox&#34; id=&#34;adaptive&#34;&gt;
+            &lt;span class=&#34;slider round&#34;&gt;&lt;/span&gt;
+        &lt;/label&gt; Adaptive
+    &lt;/div&gt;
+    &lt;span style=&#34;display: inline-block; vertical-align: middle; line-height: normal;&#34;&gt;&lt;/span&gt; --&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The source for this page is &lt;a href=&#34;https://github.com/JeffersGlass/hugo-site/blob/main/content/post/pyscript-dis/index.html&#34;&gt;hosted on GitHub&lt;/a&gt;, if you want to check it out.&lt;/p&gt;
+
+
+&lt;script type=&#34;py&#34;&gt;
+    import dis
+    from enum import Enum
+    from pyscript import document, window, when
+    import time
+
+    class Color(Enum):
+        RED = &#34;#E2001F&#34;
+        YELLOW = &#34;#EE9600&#34;
+        GREEN = &#34;#009879&#34;
+        GRAY = &#34;gray&#34;
+
+    ROW = &#34;&lt;tr&gt;&lt;td&gt;{offset}&lt;/td&gt;&lt;td&gt;{opname}&lt;/td&gt;&lt;td&gt;{argrepr}&lt;/td&gt;&lt;td&gt;{lineno}&lt;/td&gt;&lt;/tr&gt;&#34;
+
+    @when(&#34;change&#34;, &#34;#adaptive&#34;)
+    @when(&#34;input&#34;, &#34;#code&#34;,)
+    def maybe_update_dis(evt):
+        code = document.getElementById(&#39;code&#39;).value
+        if code.strip() == &#39;&#39;:
+            fill_table(&#34;&#34;)
+            set_border_color(Color.YELLOW)
+            return
+
+        try:
+            result = dis.Bytecode(code)
+            pass
+        except SyntaxError as err:
+            window.console.error(err)
+            set_border_color(Color.RED)
+            document.getElementById(&#34;error&#34;).innerText = str(err)
+        else:
+            document.getElementById(&#34;error&#34;).innerText = &#39;&#39;
+            fill_table(&#39;\n&#39;.join(ROW.format(offset=instr.offset, opname=instr.opname, argrepr=instr.argrepr, lineno=instr.positions.lineno) for instr in result))
+            set_border_color(Color.GREEN)
+
+    def fill_table(content):
+        document.getElementById(&#34;output&#34;).innerHTML = content
+
+    def set_border_color(c: Color):
+        document.getElementById(&#34;code&#34;).style.borderColor = c.value
+        document.getElementById(&#34;head&#34;).style.backgroundColor = c.value
+
+    maybe_update_dis(None)
+            
+&lt;/script&gt;
+&lt;style&gt;
+    table{
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        width: 100%;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    thead tr{
+        background-color: gray;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    th{
+        padding: 12px 15px;
+    }
+
+    th, td{
+        padding: 4px 15px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+    
+    tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+    
+    tbody tr:last-of-type {
+        border-bottom: 2px solid gray;
+    }
+
+    textarea {
+        font-family: &#39;Courier New&#39;, Courier, monospace;
+        padding: 0.5rem;
+        border-width: 0.5rem;
+        border-radius: 0.3rem;
+    }
+
+    /* The switch - the box around the slider */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: &#34;&#34;;
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+    
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+    
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+    
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+&lt;/style&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>What&#39;s New in PyScript 2024.1.1</title>
       <link>https://jeff.glass/post/whats-new-pyscript-2024-1-1/</link>
