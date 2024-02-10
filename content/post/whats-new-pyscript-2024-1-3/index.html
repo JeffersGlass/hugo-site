@@ -1,0 +1,75 @@
+---
+title: "Whats New Pyscript 2024.1.3"
+date: 2024-02-10T08:45:32-06:00
+draft: true
+tags:
+- pyscript
+- python
+description: "What's new and what's changed in PyScript 2024.1.3"
+---
+
+<p class="post-p">Happy release season! With two further releases in January, let's look at what's new in <span class="font-bold">both PyScript 2024.1.2 and 2024.1.3</span>.</p>
+
+<!-- XXXXXXXXX TOC -->
+
+<h2 class="post-h2">Multiple Worker Terminals</h2>
+<p class="post-p">Perhaps the most visible improvement in the last two releases is the ability to have multiple terminals on a single page:</p>
+<div class="grid grid-cols-1 lg:grid-cols-2">
+    <script type="py" worker terminal>
+        print("\033[31mThis is one terminal with one interpreter\033[39m")
+        import code
+        code.interact()
+    </script>
+    <script type="py" worker terminal>
+        print("\033[32mThis is a totally separate terminal\033[39m")
+        import code
+        code.interact()
+    </script>
+</div>
+<div class="m-2 border-2 p-1 rounded-md">
+{{< highlight "html" "linenostart=1" >}}
+<script type="py" worker terminal>
+    print("\033[31mThis is one terminal with one interpreter\033[39m")
+    import code
+    code.interact()
+</script>
+<script type="py" worker terminal>
+    print("\033[32mThis is a totally separate terminal\033[39m")
+    import code
+    code.interact()
+</script>{{< /highlight >}}
+</div>
+<p class="post-p">Each interpreter is still limited to having a single terminal - in particular, this means that the unique main-thread interpreter of a given type can only have one terminal on the page. However, each worker interpreter can now have it's own terminal.</p>
+
+<h2 class="post-h2" id="terminal-attribute"><code>__terminal__</code> attribute</h2>
+<p class="post-p">Speaking of the terminal - as soon as that made it's way back into PyScript late last year, users have been asking how they can simply access the underlying <a href="https://xtermjs.org/">xterm.js</a> instance to tweak it. Xtermjs provides a flexible API for adjusting things like column widths, key handlers, autocomplete, etc, and users wanted to tap into those underneath PyScript.</p>
+<p class="post-p">Now, they can! The <code class="code">__terminal__</code> global variable is a deference to the xtermjs instance (when the appropriate <code>&lt;script&gt;</code> tag has the <code class="code">terminal</code> attribute). Here's an example that grabs the terminal and resizes its row and column count after startup:</p>
+<script type="py" worker terminal >
+    __terminal__.resize(40, 6)
+    print("Lorem ipsum dolor sit amet consectetur, adipisicing elit. Exercitationem laboriosam ex porro, aliquid aperiam maiores sunt similique natus accusantium adipisci odio cupiditate quidem quos impedit ratione, fuga autem numquam accusamus. ")
+</script>
+<div class="m-2 border-2 p-1 rounded-md">
+{{< highlight "HTML" "linenostart=1" >}}
+<script type="py" worker terminal >
+    __terminal__.resize(40, 6)
+    print("Lorem ipsum dolor sit amet consectetur, adipisicing elit. Exercitationem laboriosam ex porro, aliquid aperiam maiores sunt similique natus accusantium adipisci odio cupiditate quidem quos impedit ratione, fuga autem numquam accusamus. ")
+</script>{{< /highlight >}}
+</div>
+
+<h2 class="post-h2">Upgraded Pyodide and Micropython</h2>
+<p class="post-p">PyScript has upgraded to the latest release of <span class="font-bold">Pyodide, Version 0.25.0</span>. The full <a href="https://blog.pyodide.org/posts/0.25-release/">release post from the Pyodide team</a> goes into great detail about the new features, but some highlight are:</p>
+<ul class="post-ul">
+    <li><a href="https://blog.pyodide.org/posts/0.25-release/#requests-support-in-pyodide">Direct support</a> for the <code>requests</code> module, thanks to Emscripten/Browser support in urllib3 directly.</li>
+    <li>Experimental support for the <a href="https://blog.pyodide.org/posts/0.25-release/#requests-support-in-pyodide">JS Promise Integration</a>, a feature (currently behind a flag in Chrome) that allows WebAssembly programs to make async calls from a synchronous context. While this is not something PyScript is taking advnatage of yet, as it's behind two layets of experimental flags, it would/will significantly simplify async issues both on the main thread and in workers when it's finally integrated. We're stoked!</li>
+    <li>Numerous <a href="https://pyodide.org/en/stable/project/changelog.html#packages">new packages</a>, including <code class="code">river</code>, <code class="code">aiohttp</code>, <code class="code">zengl</code>, and more.</li>
+    <li>Plenty of bugfixes and API improveents. See the full <a href="https://pyodide.org/en/stable/project/changelog.html#version-0-25-0">Pyodide changelog for more details</a></li>
+</ul>
+
+<p class="post-p">MicroPython has been upgraded as well, to <span class="font-semibold">version 1.21.0-279</span>. A handful of bugs and API inconsistencies were fixed in this release, in particular a <a href="https://github.com/pyscript/pyscript/issues/1926">tricky issue</a> in passing proxies of Micropython Floats to JavaScript.</p>
+
+<h2 class="post-h2" id="bugfixes">Bug Fixes</h2>
+<p class="post-p">As PyScript grows in complexity, it's almost inevitable that odd edge case bugs will crop up. Thankfully, we have a wonderful community of users who are diligent about <a href="https://github.com/pyscript/pyscript/issues">reporting them</a> and working with the team to gather data. In particular, I want to shout out two community members who worked extensively to ensure their issues were heard and addressed.</p>
+<p class="post-p">First, GitHub user <span class="font-semibold">sch246</span>, who discovered an odd race condition that was <a href="https://github.com/pyscript/pyscript/issues/1946">causing <code>&lt;py-editor&gt;</code> tags to sometimes be created more than once</a>. This was an odd one, hard to reproduce, but that didn't stop sch from proving that the issue was real and presenting a minified reproduction. Thanks to their efforts, that bug is now squashed.</p>
+<p class="post-p">Second, GitHub user <span class="font-semibold">jorenham</span> raised a concern that <a href="https://github.com/pyscript/pyscript/issues/1972">line numbers in PyScript tracebacks did not accurately reflect user code</a>. This sent PyScript core dev Andrea into quite a process, leading to a significant overhaul of the way PyScript was executing it's setup and teardown code in a way that isolates it from user code. Which, as a side-effect, means that line numbers in user tracebacks now make sense. Without community involvement (and of course, Andrea's persistance), this never would have been possible.</script>
+<script type="module" src="https://pyscript.net/releases/2024.1.3/core.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.3/core.css">
