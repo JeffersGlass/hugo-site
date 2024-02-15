@@ -354,6 +354,38 @@ To output summary, make a folder that has only the data file in it
 ./python ./Tools/scripts/summarize_stats.py /home/jglass/Documents/cpython/rundata > out.md
 
 
+------------
+
+Notes about OpArgs, Operands, and Targets
+
+Target
+    Optimizer.c
+        @ 418, in `translate_bytecode_to_trace`, target is set with `target = INSTR_IP(instr, code), where 
+            instr is a _Py_CODEUNIT*
+                typedef union {
+                    uint16_t cache;
+                    struct {
+                        uint8_t code;
+                        uint8_t arg;
+                    } op;
+                } _Py_CODEUNIT;
+            code is a PyCodeObject*
+                defined in code.h
+                Constructor Macro takes a SIZE (code is SIZE 1)
+                has an array co_code_adaptive[(SIZE)]
+            INSTR_UP is
+                #define INSTR_IP(INSTR, CODE) \
+                (
+                    (uint32_t)(
+                            INSTR - ((_Py_CODEUNIT *)(CODE)->co_code_adaptive)
+                        )
+                )
+
+Constructing a Trace
+    `translate_bytecode_to_trace`:
+        Starts with a
+        @ 594 - ADD_TO_TRACE(uop, oparg, operand, target)
+
 
 
 
