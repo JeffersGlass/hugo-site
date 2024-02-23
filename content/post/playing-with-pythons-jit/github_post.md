@@ -1,6 +1,6 @@
 Having caught up with main, here's some stat counts and pyperformance analysis, exploring which subsets of superinstructions might be most valuable. For the moment, this incorporates both "format compatible" superinstructions that don't have overlapping oparg/operand/target, as well as incompatible ones that have overlap.
 
-These are the top 500 Uop pairs (as of where main was last night):
+These are the top 500 Uop pairs when running pyperformance, as of where main was last night:
 
 <details>
 <summary>Pair counts for top 500 uop pairs</summary>
@@ -3366,11 +3366,9 @@ To assess their potency, I've taken the 326 UOp pairs that account for more that
 
 ---
 
-So, how much shorter is "short enough to be worth it?" Should we be weighting the instructions also by their prevalence?
+So, how much shorter is "short enough to be worth it?" Should we be weighting the instructions also by their prevalence? Probably some experimentation is needed.
 
-I tried a few arbrirary testing points. All speedups are from the geometric mean of `pyperformance`, two local runs and one Brandt kindly ran on the benchrunner system:
-
-`PYTHON_UOPS=1 ./python -m pyperformance run --inherit-environ PYTHON_UOPS -o out.json`
+I tried a couple arbitrary testing points - two local runs using pyperformance and one Brandt kindly ran on the benchrunner system. All are compared against main-with-jit.
 
 ---
 
@@ -3746,4 +3744,4 @@ Benchmark hidden because not significant (16): bench_mp_pool, async_tree_none, t
 
 ---
 
-**\*Not including pairs that include `_JUMP_TO_TOP` - currently, including that in a superinstruction currently segfaults. Whoops.**
+*\*Not including pairs that include `_JUMP_TO_TOP` - currently, including that in a superinstruction currently segfaults.*
