@@ -3027,7 +3027,7 @@ the corresponding unspecialized instruction are not counted as pairs.
 
 ---
 
-To assess their potency, I've taken the 326 UOp pairs that account for more that 0.1% of all UOp pairs and running them through the scoring script, which compares the length of the superinstruction in machine instructions to the sum of the lengths of its components. Here are those scores, by both percentage difference and absolute difference:
+To assess their potency, I've taken the 326 UOp pairs that account for more that 0.1% of all UOp pairs and run them through the scoring script, which compares the length of the superinstruction in machine instructions to the sum of the lengths of its components. Here are those scores, by both percentage difference and absolute difference:
 
 `./python Tools/jit/score.py jit_stencils.h --output_mode "table" --sort_by "delta"`
 <details>
