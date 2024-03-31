@@ -1,0 +1,21 @@
+<label for="seed">Seed</label>
+<input class="border-2 border-gray-500 rounded-md" type="text" name="seed" id="seed" value="12345">
+<br><label for="iterations">Iterations</label>
+<input class="border-2 border-gray-500 rounded-md" type="text" name="iterations" id="iterations" value="10000">
+<br><button id="btn" class="p-2 bg-gray-100 border-2 border-gray-500 rounded-md">Calculate</button>
+<div id="result"></div>
+<script type="module">
+    import { PyWorker } from 'https://cdn.jsdelivr.net/npm/@pyscript/core@0.4.11/+esm';
+    
+    const { sync } = await PyWorker(
+      './worker.py',
+      { config: { sync_main_only: true }}
+    );
+    
+    document.getElementById('btn').addEventListener('click', async () => {
+        const seed = parseInt(document.getElementById("seed").value)
+        const iters = parseInt(document.getElementById("iterations").value)
+        const result = await sync.pseudorandom(seed, iters)
+        document.getElementById("result").innerText += result + "\n"
+    })
+    </script>
