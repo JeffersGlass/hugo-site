@@ -150,11 +150,68 @@ description: "What's new and what's changed in PyScript 2024.1.3"
 <p class="post-p"><code>pyscript.fetch</code> works in both Pyodide and Micropython tags.</p>
 
 <h2 class="post-h2">Automatic <code class="nocode">.zip</code> and <code class="nocode">.tar.gz</code> unzipping</h2>
-XXXXXXXXXXXXXXXXX
+<p class="post-p">For applications involving numerous data files, or a build step involving a whole folder of data, it's handy to not have to manually unzip those files on the PyScript side on every upload. PyScript now has the ability to detect and automatically unzip these assets within the <code>[files]</code> section of <code>&lt;py-config&gt;</code>.</p>
+<p class="post-p">As a refresher, the <code>[files]</code> section of <code>&lt;py-config&gt;</code> takes a list of key/value pairs, where the key is the source URL and the value is a location in the in-memory virtual filesystem that PyScript runs in. For instance, the following takes the contents of the file at the relative URL <code class="nocode">content/posts/datafile1.txt"</code> and places them in a file at <code class="nocode">/data/data1.txt</code> in the virtual filesystem:</p>
+{{< highlight "html" "linenostart=1" >}}
+<py-config>
+    [files]
+    "content/posts/datafile1.txt" = "/data/data1.txt"
+</py-config>
+{{< /highlight >}}
+<p class="post-p">The automatic-unzip feature triggeres whenever the source URL ends in <code class="nocode">.zip</code> or <code class="nocode">.tar.gz</code> <span class="italic">and</span> the destination ends in <code class="nocode">"*"</code>. As an example, the following fetches a zip file from <code class="nocode">assets/images/compressed_images.zip</code> and unzips them to the <code class="nocode">./imagedata</code> folder in the virtual filesystem:</p>
+{{< highlight "html" "linenostart=1" >}}
+<py-config>
+    [files]
+    "assets/images/compressed_images.zip" = "./imagedata/*"
+</py-config>
+{{< /highlight >}}
 
-<h2 class="post-h2"><code>pyscript.ffi</code> module adds standardization</h2>
-XXXXXXXXXXXXXXXXX
+<h2 class="post-h2" id="pyscript-ffi"><code>pyscript.ffi</code> module adds standardization</h2>
+<p class="post-p">PyScript is a singular project which straddles two (quite different) interpreters - Pyodide/Cpython and Micropython. While the internal architectures of both are dissimilar, it's useful for PyScript to present a somewhat-unified interface for both when it comes to web interactivity.</p>
+<p class="post-p">To that end, the <code>pyscript</code> package now includes the <code>ffi</code> module, which is starting to collect common interface features to standarize them between the two interpreters. So far, this contains only two functions:</p>
+<h3 class="post-h3"><code>pyscript.ffi.to_js</code></h3>
+<p class="post-p">The <code>to_js</code> utility manually converts Python references to their JavaScript counterparts (where possible). Typically this is not necessary, as passing proxy objects back and forth will do. The primary use case is that <code>pyscript.ffi.to_js</code> automatically converts all Mapping objects to JavaScript literal objects, which is the preferred way to pass around configurations in JavaScript.</p>
+<p class="italic post-p">(For advanced users of Pyodide, when used in a Pyodide-backed interpreter, <code>pyscript.ffi.to_js</code> is equivalent to <code>pyodide.ffi.to_js</code> with a default <code>dict_converter</code> of <code>Object.from_entries</code>.)</p>
+<p class="post-p">The key here is that the behavior of this utility is <span class="italic">the same in both Pyodide and Micropython PyScript tags</span>. By starting to flesh out our own FFI, we can create standard expectations between both runtime types.</p>
+<h3 class="post-h3"><code>pyscript.ffi.create_proxy</code></h3>
+<p class="post-p">Another Pyodide-inspired utility that PyScript is adapting to be uniform across runtimes - this forably keeps a borrowed reference to whatever Python object it is handed, to prevent that object/Proxy from being garbage collected before its time. For more context on the challenges of cross-language garbage collection, see my earlier writies on <a href="post/pyscript-why-create-proxy/">Why <code class="nocode">create_proxy()</code> is Necessary</a>.</p>
+<p class="post-p">This is one solution to an error which you may have seen if you've been working with event handlers:</p>
+{{< highlight "python" "linenostart=1" >}}
+<button id="btn">Click Me</button>
+<script type="py">
+    # This breaks when the event handler is called
+    from pyscript import document
 
+    def print_foo(evt):
+        print("FOO!")
+
+    document.getElementById("btn").addEventListener("click", print_foo)
+</script>
+{{< /highlight >}}
+<div class="p-2 m-2 text-red-800 bg-red-200 border-2 border-red-800">pyodide.asm.js:9 Uncaught Error: This borrowed proxy was automatically destroyed at the end of a function call. Try using create_proxy or create_once_callable.</div>
+<p class="post-p">But this works fine:</p>
+{{< highlight "python" "linenostart=1" >}}
+<button id="btn">Click Me</button>
+<script type="py">
+    from pyscript import document
+    from pyscript.ffi import create_proxy
+    def print_foo(evt):
+        print("FOO!")
+
+    document.getElementById("btn").addEventListener("click", create_proxy(print_foo))
+</script>
+{{< /highlight >}}
+<p class="post-p">Of course, there are other ways of hooking up event handlers that don't create this issue, like PyScripts <code>@when</code> decorator:</p>
+{{< highlight "python" "linenostart=1" >}}
+<button id="btn">Click Me</button>
+<script type="py">
+    from pyscript import document, when
+
+    @when('click', 'button')
+    def print_foo(evt):
+        print("FOO!")
+</script>
+{{< /highlight >}}
 <h2 class="post-h2" id="error-lines">Accurate Error Line Handling</h2>
 <p class="post-p">PyScript users can now expect the line number of the errors that appear in tracebacks to be accurate. While this seems like a trivial (and necessary!) detail, it actually involved a fair amount of complexity to ensure that the various bits of Python code that PyScript runs at startup aren't included in the line-number count.</p>
 {{< highlight "python3" "linenostart=1" >}}
