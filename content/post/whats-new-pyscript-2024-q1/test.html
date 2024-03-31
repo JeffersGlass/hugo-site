@@ -7,33 +7,14 @@
     <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
 </head>
 <body>
-<label for="seed">Seed</label>
-<input type="text" name="seed" id="seed">
-<br><label for="iterations">Iterations</label>
-<input type="text" name="iterations" id="iterations">
-<br><button id="btn">Calculate</button>
-<div id="result"></div>
-<script type="py" async>
-    from pyscript import PyWorker
+<button id="btn">Click Me</button>
+<script type="py">
+    from pyscript import document, when
 
-    p = await PyWorker('./foo.py')
+    @when('click', 'button')
+    def print_foo(evt):
+        print("FOO!")
 </script>
 
-<!-- <script type="module">
-    import { PyWorker } from 'https://cdn.jsdelivr.net/npm/@pyscript/core@0.4.11/+esm';
-    
-    const { sync } = await PyWorker(
-      './worker.py',
-      { config: { sync_main_only: true }}
-    );
-    
-    document.getElementById('btn').addEventListener('click', async () => {
-        const seed = parseInt(document.getElementById("seed").value)
-        const iters = parseInt(document.getElementById("iterations").value)
-        const result = await sync.pseudorandom(seed, iters)
-        document.getElementById("result").innerText += result + "\n"
-    })
-    </script>
--->
 </body> 
 </html>
