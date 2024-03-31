@@ -1,22 +1,33 @@
 ---
-title: "Whats New in Pyscript 2024 Q1"
+title: "What's New in Pyscript in 2024 Q1"
 date: 2024-03-30T17:49:17-05:00
 draft: true
 tags:
 - pyscript
 - python
-description: "What's new and what's changed PyScript in 2024"
+description: "What's new and what's changed in PyScript in the first part of 2024"
 ---
 <p class="post-p">Life moves fast! In the midst of buying a house, a rapid public launch at my day job, and the other vagaries of real life, I haven't kept up with all the stunning releases that PyScript has had in the first quarter of 2024.</p>
 <p class="post-p">That changes today!</p>
 <p class="post-p">This post will cover all of the new and changed features <a href="post/whats-new-pyscript-2024-1-1">since version 2024.1.1</a>. That includes PyScript versions: <a class="font-mono" href="https://github.com/pyscript/pyscript/releases/tag/2024.1.2">2024.1.2</a>, <a class="font-mono" href="https://github.com/pyscript/pyscript/releases/tag/2024.1.3">2024.1.3</a>, <a class="font-mono" href="https://github.com/pyscript/pyscript/releases/tag/2024.2.1">2024.2.1</a>, <a class="font-mono" href="https://github.com/pyscript/pyscript/releases/tag/2024.3.1">2024.3.1</a>, and <a class="font-mono" href="https://github.com/pyscript/pyscript/releases/tag/2024.3.2">2024.3.2</a>. Specifically, we'll be looking at the current state of all the new features as of <span class="font-mono">2024.3.2</span> - I'm not going to try to fully document every incremental change in the intervening versions. The goal here is to catch up to the present, and share all the great new PyScript features, not fully rehash history.</p>
 <p class="post-p">So without further ado, let's get started!</p>
-<div id="TOC" class="grid justify-center p-1 m-auto my-4 bg-gray-200">
+<div id="TOC" class="grid p-1 my-4 bg-gray-200 justify-left">
     <span>Jump To: <span>
-    <a href="#mip"><code>MicroPython Package Management</code></a> • 
+    <ul class="post-ul">
+        <li><a href="#multiple-workers">Multiple Worker Terminals</a></li>
+        <li><a href="#terminal-attribute"><code>__terminal__</code> attribute</a></li>
+        <li><a href="#py-editor-setup"><code class="nocode">py-editor</code> <code>setup</code> attribute</a></li>
+        <li><a href="#fetch"><code>pyscript.fetch</code></a></li>
+        <li><a href="#zip">Automatic <code class="nocode">.zip</code> and <code class="nocode">.tar.gz</code> unzipping</a></li>
+        <li><a href="#pyscript-ffi"><code>pyscript.ffi</code> module adds standardization</a></li>
+        <li><a href="#error-lines">Accurate Error Line Handling</a></li>
+        <li><a href="#hide-dom">CORS-Less Workers</a></li>
+        <li><a href="#utf-8">UTF-8 By Default</a></li>
+        <li><a href="#version-bumps">Pyodide and Micropython Version Bumps</a></li>
+    </ul>
 </div>
 
-<h2 class="post-h2">Multiple Worker Terminals</h2>
+<h2 class="post-h2" id="multiple-workers">Multiple Worker Terminals</h2>
 <p class="post-p">It is now possible to have multiple terminals (associated with multiple interpreters) single page:</p>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-4">
     <script type="py" worker terminal>
@@ -62,7 +73,7 @@ description: "What's new and what's changed PyScript in 2024"
 </script>{{< /highlight >}}
 </div>
 
-<h2 class="post-h2"><code class="nocode">py-editor</code> <code>setup</code> attribute</h2>
+<h2 class="post-h2" id="py-editor-setup"><code class="nocode">py-editor</code> <code>setup</code> attribute</h2>
 <p class="post-p">Another longstanding feature request, particularly by users in the educational space, is the desire to have py-editors that are are not just blank Python interpreters, but rather have some site-authored code run before their turned over to the user to play in. The new <code>setup</code> of <code>&lt;py-editor&gt;</code> tags makes this possible.</p>
 <p class="post-p"><a href="post/whats-new-pyscript-2023-12-1">As you'll recall</a>, <code>py-editor</code> tags can have an optional <code>env</code> attribute, where all editors with the same <code>env</code> share the same underlying interpreter instance. Now, each env can also optionally have a single <code>py-editor</code>tag on the page with the <code>setup</code> attribute. Any code in the "setup tag" with run before the editors in that env are enabled. The code in a "setup tag" is not visible on the page.</p>
 {{< highlight "python" "linenostart=1" >}}
@@ -102,7 +113,7 @@ description: "What's new and what's changed PyScript in 2024"
 
 <h2 class="post-h2" id="fetch"><code>pyscript.fetch</code></h2>
 <p class="post-p">One of the neat parts of writing Python for the web is the ability to grab data <span class="italic">from the web</span> and make use of it. To that end, PyScript now includes its own <a href="https://pyscript.github.io/docs/2024.3.2/user-guide/builtins/#pyscriptfetch"><code>fetch()</code> utility</a> that makes it simple and Pythonic to to interact with Web APIs.</p>
-<p class="post-p"><code>pyscript.fetch()</code> takes a URL as a string, and optionally some additional keyword arguemnts. It then uses the browsers <a href="https://developer.mozilla.org/en-US/docs/Web/API/fetch">fetch()</a> mechanism to grab results from the destination URL. Any keyword arguments are packaged up as a JSON object and passed along to the JavaScript fetch call.</p>
+<p class="post-p"><code>pyscript.fetch()</code> takes a URL as a string, and optionally some additional keyword arguments. It then uses the browsers <a href="https://developer.mozilla.org/en-US/docs/Web/API/fetch">fetch()</a> mechanism to grab results from the destination URL. Any keyword arguments are packaged up as a JSON object and passed along to the JavaScript fetch call.</p>
 <p class="post-p">The results of the fetch are wrapped up as a <a href="https://github.com/pyscript/pyscript/blob/1447cb3094abdb1f4d974445635b2adaee7174cc/pyscript.core/src/stdlib/pyscript/fetch.py#L7"><code>_Reponse</code> object</a>, which provides pythonic access to the results via a variety of (mostly async) attributes. For example, to grab the results from the fetch as text, use <code>await my_result.text()</code>.</p>
 <p class="post-p">Here's a working example:</p>
 {{< highlight "python3" "linenostart=1" >}}
@@ -149,12 +160,69 @@ description: "What's new and what's changed PyScript in 2024"
 </div>
 <p class="post-p"><code>pyscript.fetch</code> works in both Pyodide and Micropython tags.</p>
 
-<h2 class="post-h2">Automatic <code class="nocode">.zip</code> and <code class="nocode">.tar.gz</code> unzipping</h2>
-XXXXXXXXXXXXXXXXX
+<h2 class="post-h2" id="zip">Automatic <code class="nocode">.zip</code> and <code class="nocode">.tar.gz</code> unzipping</h2>
+<p class="post-p">For applications involving numerous data files, or a build step involving a whole folder of data, it's handy to not have to manually unzip those files on the PyScript side on every upload. PyScript now has the ability to detect and automatically unzip these assets within the <code>[files]</code> section of <code>&lt;py-config&gt;</code>.</p>
+<p class="post-p">As a refresher, the <code>[files]</code> section of <code>&lt;py-config&gt;</code> takes a list of key/value pairs, where the key is the source URL and the value is a location in the in-memory virtual filesystem that PyScript runs in. For instance, the following takes the contents of the file at the relative URL <code class="nocode">content/posts/datafile1.txt"</code> and places them in a file at <code class="nocode">/data/data1.txt</code> in the virtual filesystem:</p>
+{{< highlight "html" "linenostart=1" >}}
+<py-config>
+    [files]
+    "content/posts/datafile1.txt" = "/data/data1.txt"
+</py-config>
+{{< /highlight >}}
+<p class="post-p">The automatic-unzip feature triggers whenever the source URL ends in <code class="nocode">.zip</code> or <code class="nocode">.tar.gz</code> <span class="italic">and</span> the destination ends in <code class="nocode">"*"</code>. As an example, the following fetches a zip file from <code class="nocode">assets/images/compressed_images.zip</code> and unzips them to the <code class="nocode">./imagedata</code> folder in the virtual filesystem:</p>
+{{< highlight "html" "linenostart=1" >}}
+<py-config>
+    [files]
+    "assets/images/compressed_images.zip" = "./imagedata/*"
+</py-config>
+{{< /highlight >}}
 
-<h2 class="post-h2"><code>pyscript.ffi</code> module adds standardization</h2>
-XXXXXXXXXXXXXXXXX
+<h2 class="post-h2" id="pyscript-ffi"><code>pyscript.ffi</code> module adds standardization</h2>
+<p class="post-p">PyScript is a singular project which straddles two (quite different) interpreters - Pyodide/Cpython and Micropython. While the internal architectures of both are dissimilar, it's useful for PyScript to present a somewhat-unified interface for both when it comes to web interactivity.</p>
+<p class="post-p">To that end, the <code>pyscript</code> package now includes the <code>ffi</code> module, which is starting to collect common interface features to standarize them between the two interpreters. So far, this contains only two functions:</p>
+<h3 class="post-h3"><code>pyscript.ffi.to_js</code></h3>
+<p class="post-p">The <code>to_js</code> utility manually converts Python references to their JavaScript counterparts (where possible). Typically this is not necessary, as passing proxy objects back and forth will do. The primary use case is that <code>pyscript.ffi.to_js</code> automatically converts all Mapping objects to JavaScript literal objects, which is the preferred way to pass around configurations in JavaScript.</p>
+<p class="italic post-p">(For advanced users of Pyodide, when used in a Pyodide-backed interpreter, <code>pyscript.ffi.to_js</code> is equivalent to <code>pyodide.ffi.to_js</code> with a default <code>dict_converter</code> of <code>Object.from_entries</code>.)</p>
+<p class="post-p">The key here is that the behavior of this utility is <span class="italic">the same in both Pyodide and Micropython PyScript tags</span>. By starting to flesh out our own FFI, we can create standard expectations between both runtime types.</p>
+<h3 class="post-h3"><code>pyscript.ffi.create_proxy</code></h3>
+<p class="post-p">Another Pyodide-inspired utility that PyScript is adapting to be uniform across runtimes - this forably keeps a borrowed reference to whatever Python object it is handed, to prevent that object/Proxy from being garbage collected before its time. For more context on the challenges of cross-language garbage collection, see my earlier writies on <a href="post/pyscript-why-create-proxy/">Why <code class="nocode">create_proxy()</code> is Necessary</a>.</p>
+<p class="post-p">This is one solution to an error which you may have seen if you've been working with event handlers:</p>
+{{< highlight "python" "linenostart=1" >}}
+<button id="btn">Click Me</button>
+<script type="py">
+    # This breaks when the event handler is called
+    from pyscript import document
 
+    def print_foo(evt):
+        print("FOO!")
+
+    document.getElementById("btn").addEventListener("click", print_foo)
+</script>
+{{< /highlight >}}
+<div class="p-2 m-2 text-red-800 bg-red-200 border-2 border-red-800">pyodide.asm.js:9 Uncaught Error: This borrowed proxy was automatically destroyed at the end of a function call. Try using create_proxy or create_once_callable.</div>
+<p class="post-p">But this works fine:</p>
+{{< highlight "python" "linenostart=1" >}}
+<button id="btn">Click Me</button>
+<script type="py">
+    from pyscript import document
+    from pyscript.ffi import create_proxy
+    def print_foo(evt):
+        print("FOO!")
+
+    document.getElementById("btn").addEventListener("click", create_proxy(print_foo))
+</script>
+{{< /highlight >}}
+<p class="post-p">Of course, there are other ways of hooking up event handlers that don't create this issue, like PyScripts <code>@when</code> decorator:</p>
+{{< highlight "python" "linenostart=1" >}}
+<button id="btn">Click Me</button>
+<script type="py">
+    from pyscript import document, when
+
+    @when('click', 'button')
+    def print_foo(evt):
+        print("FOO!")
+</script>
+{{< /highlight >}}
 <h2 class="post-h2" id="error-lines">Accurate Error Line Handling</h2>
 <p class="post-p">PyScript users can now expect the line number of the errors that appear in tracebacks to be accurate. While this seems like a trivial (and necessary!) detail, it actually involved a fair amount of complexity to ensure that the various bits of Python code that PyScript runs at startup aren't included in the line-number count.</p>
 {{< highlight "python3" "linenostart=1" >}}
@@ -187,7 +255,7 @@ XXXXXXXXXXXXXXXXX
 <p class="post-p">As thrilled as we were to add the <a href="https://pyscript.github.io/docs/2024.3.2/user-guide/workers/">ability to run code in Worker threads</a> in PyScript, it did force users to wade into the messy lands of server permissions, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS</a>, and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy">COOP</a> to avoid a baffling error message:</p>
 <div class="p-2 m-2 text-red-200 bg-red-900 border-2 border-red-800 ">Uncaught Error: Unable to use SharedArrayBuffer due insecure environment.
     Please read requirements in MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements</div>
-<p class="post-p">The long and short of this erorr is: PyScript workers make use of a feature of web browsers called a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer">SharedArrayBuffer</a> to pass data, signals, and proxies back and forth between the browser's main thread and the worker thread. But <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">as of 2018</a>, this structure is only available within secure environments. I.e., you have to either configure your server with specific headers, or use some shim-javascript like <a href="https://github.com/WebReflection/mini-coi">mini-coi.js</a>. Neither is particularly obvious or intituive for new web users, let alone folks who just want to stick some Python on the Web.</p>
+<p class="post-p">The long and short of this error is: PyScript workers make use of a feature of web browsers called a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer">SharedArrayBuffer</a> to pass data, signals, and proxies back and forth between the browser's main thread and the worker thread. But <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">as of 2018</a>, this structure is only available within secure environments. I.e., you have to either configure your server with specific headers, or use some shim-javascript like <a href="https://github.com/WebReflection/mini-coi">mini-coi.js</a>. Neither is particularly obvious or intituive for new web users, let alone folks who just want to stick some Python on the Web.</p>
 <p class="post-p">Thankfully, a new PyScript configuration option makes this <span class="italic">somewhat</span> better. If you add <code>sync_main_only = True</code> to your <code>py-config</code> tag, your <code class="nocode">worker</code> tags will lose access to the DOM/Window, but you also won't require <code>SharedArrayBuffer</code> anymore, which obviates the need for special server settings.</p>
 {{< highlight "python3" "linenostart=1" >}}
 <py-config>
@@ -199,7 +267,7 @@ XXXXXXXXXXXXXXXXX
         console.log(i)
 </script>
 {{< /highlight >}}
-<p class="post-p">Of course, without the ability to interact with the DOM, such workers are signficantly more limited in how they can affect the page. They're best used for offloading long-running Python calculations to the worker thread, for when you need to crunch data in Numpy or similar. Here's a working example, which generates a pseudorandom number in a worker thread:</p>
+<p class="post-p">Of course, without the ability to interact with the DOM, such workers are significantly more limited in how they can affect the page. They're best used for offloading long-running Python calculations to the worker thread, for when you need to crunch data in Numpy or similar. Here's a working example, which generates a pseudorandom number in a worker thread:</p>
 
 {{< highlight "html" "linenostart=1" >}}
 <label for="seed">Seed</label>
@@ -234,7 +302,26 @@ XXXXXXXXXXXXXXXXX
 <h2 class="post-h2" id="utf-8">UTF-8 By Default</h2>
 <p class="post-p">PyScript now loads all of the standard library and external packages using 'utf-8' as the default encoding scheme. This solved <a href="https://github.com/pyscript/pyscript/issues/1974">an issue a user was having</a> where comments in an imported package included characters that were valid in UTF-8, but not in Latin-1.</p>
 
+<h2 class="post-h2" id="version-bumps">Pyodide and Micropython Version Bumps</h2>
+<p class="post-p">Since the time of my last update, both <a href="https://pyodide.org">Pyodide</a> and <a href="https://github.com/micropython/micropython/pull/13583">Micropython for the Web</a> have had releases, to versions <span class="font-semibold">0.25.0</span> and <span class="font-semibold">1.22.0-272</span>, respectively.</p>
+<p class="post-p">While I would love to spend an entire post sharing the awesome new updates from both projects, I think you and I both will be better served by bulleted lists and links to their release posts:</p>
+<h3 class="post-h3" id="pyodide-0-25">Pyodide 0.25.0 (<a href="https://blog.pyodide.org/posts/0.25-release/">release post</a>)</h3>
+<ul class="post-ul">
+    <li>Direct support for <code>requests</code> and <code>urllib3</code> in the browser</li>
+    <li>Experimental support for JS promise integration, allowing for making async calls in asynchronous contexts</li>
+    <li>Various build-system improvements</li>
+</ul>
+<h3 class="post-h3" id="micropython-updates">Micropython 1.22.0-272 (<a href="https://github.com/micropython/micropython/pull/13583">PR of interest</a>)</h3>
+<ul class="post-ul">
+    <li>Improved transparent proxying of objects between Python and JavaScript</li>
+    <li>New tests of the webassembly ports</li>
+    <li>Make <code>random()</code> and <code>time()</code> functional in PyScript</li>
+</ul>
 
+<h2 class="post-h2" id="whats-next">What's Next</h2>
+<p class="post-p">As we speed toward PyCon 2024 (where me, Valerio Maggio, and Łukasz Langa are <a href="https://us.pycon.org/2024/schedule/">all giving talks on PyScript!</a>), several community members are putting the final touches on their frameworks with an eye toward showing them off in Pittsburgh. I'm personally hoping to see lots of you there! We'll try to get both an open-space and a sprint together during and after the weekend.</p>
+<p class="post-p"><a href="post/come-see-pyscript-at-pycon-2023/">Like last year</a>, I'll do a proper preview of the PyScript-focused talks in advance of the conference, and my slides/recording will be available afterward. I'm still hoping to be able to attend the <a href="https://us.pycon.org/2024/events/webassembly-summit/">WebAssembly Summit</a>, but I'm not sure if I'll be able to make it out to the conference on Thursday morning... we'll see how accomodating the dayjob is.</p>
+<p class="post-p">PyScript is still having weekly community and FUN meetings on Tuesday and Thursdays on <a href="https://discord.gg/fm8aennV3M">The Discord server</a> - come chat with other PyScript enthusiasts and the core dev team, and show off what you've been working on.</p>
 
 <style>
     code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
