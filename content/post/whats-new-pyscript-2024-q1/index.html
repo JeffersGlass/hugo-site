@@ -115,7 +115,9 @@ slug_image: 'py_2024_q1_featured.png'
 <h2 class="post-h2" id="fetch"><code>pyscript.fetch</code></h2>
 <p class="post-p">One of the neat parts of writing Python for the web is the ability to grab data <span class="italic">from the web</span> and make use of it. To that end, PyScript now includes its own <a href="https://pyscript.github.io/docs/2024.3.2/user-guide/builtins/#pyscriptfetch"><code>fetch()</code> utility</a> that makes it simple and Pythonic to to interact with Web APIs.</p>
 <p class="post-p"><code>pyscript.fetch()</code> takes a URL as a string, and optionally some additional keyword arguments. It then uses the browsers <a href="https://developer.mozilla.org/en-US/docs/Web/API/fetch">fetch()</a> mechanism to grab results from the destination URL. Any keyword arguments are packaged up as a JSON object and passed along to the JavaScript fetch call.</p>
-<p class="post-p">The results of the fetch are wrapped up as a <a href="https://github.com/pyscript/pyscript/blob/1447cb3094abdb1f4d974445635b2adaee7174cc/pyscript.core/src/stdlib/pyscript/fetch.py#L7"><code>_Reponse</code> object</a>, which provides pythonic access to the results via a variety of (mostly async) attributes. For example, to grab the results from the fetch as text, use <code>await my_result.text()</code>.</p>
+<p class="post-p">The results of the fetch are wrapped up as a <a href="https://github.com/pyscript/pyscript/blob/1447cb3094abdb1f4d974445635b2adaee7174cc/pyscript.core/src/stdlib/pyscript/fetch.py#L7"><code>_Reponse</code> object</a>, which provides pythonic access to the results via a variety of (mostly async) attributes. For example, to grab the results from the fetch as text, use <code>await my_result.text()</code>; for a dictionary that represents JSON, use <code>.json()</code>. The full list includes:</p>
+<code>arrayBuffer()</code>, <code>bytearray()</code>, <code>json()</code>, and <code>text()</code>, each of which return Pythonic representations of the appropriate data. You can also use <code>blob()</code> to get the represented <a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a> object. 
+
 <p class="post-p">Here's a working example:</p>
 {{< highlight "python3" "linenostart=1" >}}
 <script type="py" worker>
@@ -136,19 +138,21 @@ slug_image: 'py_2024_q1_featured.png'
     
         async def process_data(url):
             response = await pyscript.fetch(url)
-            pyscript.display(await response.text())
+            pyscript.display(await response.json())
     
         t = asyncio.create_task(process_data("https://reqres.in/api/users/2"))
     </script>
 </div>
 
-<p class="post-p">Of course, not everyone loves asyncio, even though it <a href="post/pyscript-asyncio">pretty much Just Works in PyScript</a>. But this is a prime place to make use of the <code>async</code> attribute of PyScript tags, which <a href="post/pyscript-asyncio#implicitasync">allows the use of Top-Level Await</a>. The code below works the same as the block above, but I think you'll agree is more readable:</p>
+<p class="post-p">You can also chain the awaitable which retrieves the data type, as in <code>t = await pyscript.fetch(url).json()</code>. This only succeeds if the result of the <code>fetch()</code> was in the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#successful_responses">HTTP Success Range (200-299)</a>.</p>
+
+<p class="post-p">Of course, not everyone loves asyncio, even though it <a href="post/pyscript-asyncio">pretty much Just Works in Pyodide</a>. But this is a prime place to make use of the <code>async</code> attribute of PyScript tags, which <a href="post/pyscript-asyncio#implicitasync">allows the use of Top-Level Await</a>. The code below works the same as the block above, but I think you'll agree is more readable:</p>
 {{< highlight "python3" "linenostart=1" >}}
 <script type="py" worker async>
     import pyscript
 
     response = await pyscript.fetch("https://reqres.in/api/users/2")
-    pyscript.display(await response.text())
+    pyscript.display(await response.json())
 </script>
 {{< /highlight >}}
 <div class="p-2 m-2 text-yellow-800 border-2 border-gray-600">
@@ -156,10 +160,10 @@ slug_image: 'py_2024_q1_featured.png'
         import pyscript
     
         response = await pyscript.fetch("https://reqres.in/api/users/2")
-        pyscript.display(await response.text())
+        pyscript.display(await response.json())
     </script>
 </div>
-<p class="post-p"><code>pyscript.fetch</code> works in both Pyodide and Micropython tags.</p>
+<p class="post-p">As a bonus - this snippet works in both Pyodide and Micropython, even though <code class="nocode">asyncio</code> looks quite different in Micropython. Similarly, <code>pyscript.fetch</code> works in both Pyodide and Micropython tags.</p>
 
 <h2 class="post-h2" id="zip">Automatic <code class="nocode">.zip</code> and <code class="nocode">.tar.gz</code> unzipping</h2>
 <p class="post-p">For applications involving numerous data files, or a build step involving a whole folder of data, it's handy to not have to manually unzip those files on the PyScript side on every upload. PyScript now has the ability to detect and automatically unzip these assets within the <code>[files]</code> section of <code>&lt;py-config&gt;</code>.</p>
@@ -257,7 +261,7 @@ slug_image: 'py_2024_q1_featured.png'
 <div class="p-2 m-2 text-red-200 bg-red-900 border-2 border-red-800 ">Uncaught Error: Unable to use SharedArrayBuffer due insecure environment.
     Please read requirements in MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements</div>
 <p class="post-p">The long and short of this error is: PyScript workers make use of a feature of web browsers called a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer">SharedArrayBuffer</a> to pass data, signals, and proxies back and forth between the browser's main thread and the worker thread. But <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements">as of 2018</a>, this structure is only available within secure environments. I.e., you have to either configure your server with specific headers, or use some shim-javascript like <a href="https://github.com/WebReflection/mini-coi">mini-coi.js</a>. Neither is particularly obvious or intituive for new web users, let alone folks who just want to stick some Python on the Web.</p>
-<p class="post-p">Thankfully, a new PyScript configuration option makes this <span class="italic">somewhat</span> better. If you add <code>sync_main_only = True</code> to your <code>py-config</code> tag, your <code class="nocode">worker</code> tags will lose access to the DOM/Window, but you also won't require <code>SharedArrayBuffer</code> anymore, which obviates the need for special server settings.</p>
+<p class="post-p">Thankfully, a new PyScript configuration option makes this <span class="italic">somewhat</span> better. If you add <code>sync_main_only = true</code> to your <code>py-config</code> tag, your <code class="nocode">worker</code> tags will lose access to the DOM/Window, but you also won't require <code>SharedArrayBuffer</code> anymore, which obviates the need for special server settings.</p>
 {{< highlight "python3" "linenostart=1" >}}
 <py-config>
     sync_main_only = true
@@ -278,7 +282,7 @@ slug_image: 'py_2024_q1_featured.png'
 <br><button id="btn">Calculate</button>
 <div id="result"></div>
 <script type="module">
-    import { PyWorker } from 'https://cdn.jsdelivr.net/npm/@pyscript/core@0.4.11/+esm';
+    import { PyWorker } from 'https://pyscript.net/releases/2024.3.2/core.js';
     
     const { sync } = await PyWorker(
       './worker.py',
