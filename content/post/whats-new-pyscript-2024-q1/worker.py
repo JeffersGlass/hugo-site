@@ -8,6 +8,6 @@ def pseudorandom(seed: int, iters: int):
 
     for _ in range(iters):
         seed = (a * seed + increment) % modulus
-    return seed % (2 ** 47)
+    return result
 
 sync.pseudorandom = pseudorandom
