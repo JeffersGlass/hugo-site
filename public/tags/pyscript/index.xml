@@ -7,7 +7,510 @@
     <description>Recent content in PyScript on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 18 Jan 2024 10:01:55 -0600</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 30 Mar 2024 17:49:17 -0500</lastBuildDate><atom:link href="https://jeff.glass/tags/pyscript/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What&#39;s New in Pyscript in 2024 Q1</title>
+      <link>https://jeff.glass/post/whats-new-pyscript-2024-q1/</link>
+      <pubDate>Sat, 30 Mar 2024 17:49:17 -0500</pubDate>
+      
+      <guid>https://jeff.glass/post/whats-new-pyscript-2024-q1/</guid>
+      <description>&lt;p class=&#34;post-p&#34;&gt;Life moves fast! In the midst of buying a house, a rapid public launch at my day job, and the other vagaries of real life, I haven&#39;t kept up with all the stunning releases that PyScript has had in the first quarter of 2024.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;That changes today!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This post will cover all of the new and changed features &lt;a href=&#34;post/whats-new-pyscript-2024-1-1&#34;&gt;since version 2024.1.1&lt;/a&gt;. That includes PyScript versions: &lt;a class=&#34;font-mono&#34; href=&#34;https://github.com/pyscript/pyscript/releases/tag/2024.1.2&#34;&gt;2024.1.2&lt;/a&gt;, &lt;a class=&#34;font-mono&#34; href=&#34;https://github.com/pyscript/pyscript/releases/tag/2024.1.3&#34;&gt;2024.1.3&lt;/a&gt;, &lt;a class=&#34;font-mono&#34; href=&#34;https://github.com/pyscript/pyscript/releases/tag/2024.2.1&#34;&gt;2024.2.1&lt;/a&gt;, &lt;a class=&#34;font-mono&#34; href=&#34;https://github.com/pyscript/pyscript/releases/tag/2024.3.1&#34;&gt;2024.3.1&lt;/a&gt;, and &lt;a class=&#34;font-mono&#34; href=&#34;https://github.com/pyscript/pyscript/releases/tag/2024.3.2&#34;&gt;2024.3.2&lt;/a&gt;. Specifically, we&#39;ll be looking at the current state of all the new features as of &lt;span class=&#34;font-mono&#34;&gt;2024.3.2&lt;/span&gt; - I&#39;m not going to try to fully document every incremental change in the intervening versions. The goal here is to catch up to the present, and share all the great new PyScript features, not fully rehash history.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So without further ado, let&#39;s get started!&lt;/p&gt;
+&lt;div id=&#34;TOC&#34; class=&#34;grid p-1 my-4 bg-gray-200 justify-left&#34;&gt;
+    &lt;span&gt;Jump To: &lt;span&gt;
+    &lt;ul class=&#34;post-ul&#34;&gt;
+        &lt;li&gt;&lt;a href=&#34;#multiple-workers&#34;&gt;Multiple Worker Terminals&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#terminal-attribute&#34;&gt;&lt;code&gt;__terminal__&lt;/code&gt; attribute&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#py-editor-setup&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;py-editor&lt;/code&gt; &lt;code&gt;setup&lt;/code&gt; attribute&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#fetch&#34;&gt;&lt;code&gt;pyscript.fetch&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#zip&#34;&gt;Automatic &lt;code class=&#34;nocode&#34;&gt;.zip&lt;/code&gt; and &lt;code class=&#34;nocode&#34;&gt;.tar.gz&lt;/code&gt; unzipping&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#pyscript-ffi&#34;&gt;&lt;code&gt;pyscript.ffi&lt;/code&gt; module adds standardization&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#error-lines&#34;&gt;Accurate Error Line Handling&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#hide-dom&#34;&gt;CORS-Less Workers&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#utf-8&#34;&gt;UTF-8 By Default&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#version-bumps&#34;&gt;Pyodide and Micropython Version Bumps&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;multiple-workers&#34;&gt;Multiple Worker Terminals&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;It is now possible to have multiple terminals (associated with multiple interpreters) single page:&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-1 lg:grid-cols-2 gap-y-4&#34;&gt;
+    &lt;script type=&#34;py&#34; worker terminal&gt;
+        __terminal__.resize(80, 6)
+        print(&#34;\033[31mThis is one terminal with one interpreter\033[39m&#34;)
+        import code
+        code.interact()
+    &lt;/script&gt;
+    &lt;script type=&#34;py&#34; worker terminal&gt;
+        __terminal__.resize(80, 6)
+        print(&#34;\033[32mThis is a totally separate terminal\033[39m&#34;)
+        import code
+        code.interact()
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;div class=&#34;p-1 m-2 border-2 rounded-md&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;worker&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;terminal&lt;/span&gt;&amp;gt;
+    print(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;\033[31mThis is one terminal with one interpreter\033[39m&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; code
+    code.interact()
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;worker&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;terminal&lt;/span&gt;&amp;gt;
+    print(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;\033[32mThis is a totally separate terminal\033[39m&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; code
+    code.interact()
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Each interpreter is still limited to having a single terminal - there&#39;s no way to have multiple terminals pointing at the same worker/interpreter. That&#39;s also true of the unique main-thread interpreter (of a given type). However, each worker interpreter can now have it&#39;s own terminal.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;terminal-attribute&#34;&gt;&lt;code&gt;__terminal__&lt;/code&gt; attribute&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Speaking of the terminal - as soon as that made it&#39;s way back into PyScript late last year, users have been asking how they can simply access the underlying &lt;a href=&#34;https://xtermjs.org/&#34;&gt;xterm.js&lt;/a&gt; instance to tweak it. Xtermjs provides a flexible API for adjusting things like column widths, key handlers, autocomplete, etc, and users wanted to tap into those underneath PyScript.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Now, they can! The &lt;code class=&#34;code&#34;&gt;__terminal__&lt;/code&gt; global variable is a deference to the xtermjs instance (when the appropriate &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt; tag has the &lt;code class=&#34;code&#34;&gt;terminal&lt;/code&gt; attribute). Here&#39;s an example that grabs the terminal and resizes its row and column count after startup:&lt;/p&gt;
+&lt;script type=&#34;py&#34; worker terminal &gt;
+    __terminal__.resize(40, 6)
+    print(&#34;Lorem ipsum dolor sit amet consectetur, adipisicing elit. Exercitationem laboriosam ex porro, aliquid aperiam maiores sunt similique natus accusantium adipisci odio cupiditate quidem quos impedit ratione, fuga autem numquam accusamus. &#34;)
+&lt;/script&gt;
+&lt;div class=&#34;p-1 m-2 border-2 rounded-md&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-HTML&#34; data-lang=&#34;HTML&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;worker&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;terminal&lt;/span&gt; &amp;gt;
+    &lt;span style=&#34;color:#f60&#34;&gt;__&lt;/span&gt;terminal__.resize(&lt;span style=&#34;color:#f60&#34;&gt;40&lt;/span&gt;, &lt;span style=&#34;color:#f60&#34;&gt;6&lt;/span&gt;)
+    print(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Lorem ipsum dolor sit amet consectetur, adipisicing elit. Exercitationem laboriosam ex porro, aliquid aperiam maiores sunt similique natus accusantium adipisci odio cupiditate quidem quos impedit ratione, fuga autem numquam accusamus. &amp;#34;&lt;/span&gt;)
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;py-editor-setup&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;py-editor&lt;/code&gt; &lt;code&gt;setup&lt;/code&gt; attribute&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Another longstanding feature request, particularly by users in the educational space, is the desire to have py-editors that are are not just blank Python interpreters, but rather have some site-authored code run before their turned over to the user to play in. The new &lt;code&gt;setup&lt;/code&gt; of &lt;code&gt;&amp;lt;py-editor&amp;gt;&lt;/code&gt; tags makes this possible.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;a href=&#34;post/whats-new-pyscript-2023-12-1&#34;&gt;As you&#39;ll recall&lt;/a&gt;, &lt;code&gt;py-editor&lt;/code&gt; tags can have an optional &lt;code&gt;env&lt;/code&gt; attribute, where all editors with the same &lt;code&gt;env&lt;/code&gt; share the same underlying interpreter instance. Now, each env can also optionally have a single &lt;code&gt;py-editor&lt;/code&gt;tag on the page with the &lt;code&gt;setup&lt;/code&gt; attribute. Any code in the &#34;setup tag&#34; with run before the editors in that env are enabled. The code in a &#34;setup tag&#34; is not visible on the page.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py-editor&amp;#34;&lt;/span&gt; env&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;one&amp;#34;&lt;/span&gt; setup&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Preset a variable that users might want to use&lt;/span&gt;
+    x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;42&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py-editor&amp;#34;&lt;/span&gt; env&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;one&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(x)
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-600 p1&#34;&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;one&#34; setup&gt;
+        # Preset a variable that users might want to use
+        x = 42
+    &lt;/script&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;one&#34;&gt;
+        print(x)
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;As a more complex example, you might include whole functions before the user gets to interact&lt;/p&gt;
+
+&lt;div class=&#34;p-2 m-2 border-2 border-gray-600&#34;&gt;
+    &lt;div id=&#34;viewport&#34;&gt;This is some kind of output viewport&lt;/div&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;two&#34; setup&gt;
+        def pretty_print(l):
+            for i, item in enumerate(l):
+                print(f&#34;Item {i} in the list is {item}&#34;)
+    &lt;/script&gt;
+    &lt;script type=&#34;py-editor&#34; env=&#34;two&#34;&gt;
+        my_list = [&#34;A&#34;, &#34;BB&#34;, &#34;CCC&#34;, &#34;DDDD&#34;]
+        pretty_print(my_list)
+    &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;p class=&#34;italic post-p&#34;&gt;Note: Users, myself included, have asked for the ability to have a &lt;code&gt;&lt;a href=&#34;https://pyscript.github.io/docs/2024.3.2/user-guide/configuration/&#34;&gt;py-config&lt;/a&gt;&lt;/code&gt; associated to an editor environment. That changed has been &lt;a href=&#34;https://github.com/pyscript/pyscript/pull/2010&#34;&gt;merged the development branch&lt;/a&gt;, and so is coming soon, but is NOT present in the &lt;code class=&#34;nocode&#34;&gt;2024.3.2&lt;/code&gt; release. Similarly, not even the &lt;code&gt;pyscript&lt;/code&gt; package is currently present in &lt;code class=&#34;nocode&#34;&gt;py-editors&lt;/code&gt;, but that&#39;s coming too.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;fetch&#34;&gt;&lt;code&gt;pyscript.fetch&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;One of the neat parts of writing Python for the web is the ability to grab data &lt;span class=&#34;italic&#34;&gt;from the web&lt;/span&gt; and make use of it. To that end, PyScript now includes its own &lt;a href=&#34;https://pyscript.github.io/docs/2024.3.2/user-guide/builtins/#pyscriptfetch&#34;&gt;&lt;code&gt;fetch()&lt;/code&gt; utility&lt;/a&gt; that makes it simple and Pythonic to to interact with Web APIs.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;code&gt;pyscript.fetch()&lt;/code&gt; takes a URL as a string, and optionally some additional keyword arguments. It then uses the browsers &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/API/fetch&#34;&gt;fetch()&lt;/a&gt; mechanism to grab results from the destination URL. Any keyword arguments are packaged up as a JSON object and passed along to the JavaScript fetch call.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The results of the fetch are wrapped up as a &lt;a href=&#34;https://github.com/pyscript/pyscript/blob/1447cb3094abdb1f4d974445635b2adaee7174cc/pyscript.core/src/stdlib/pyscript/fetch.py#L7&#34;&gt;&lt;code&gt;_Reponse&lt;/code&gt; object&lt;/a&gt;, which provides pythonic access to the results via a variety of (mostly async) attributes. For example, to grab the results from the fetch as text, use &lt;code&gt;await my_result.text()&lt;/code&gt;; for a dictionary that represents JSON, use &lt;code&gt;.json()&lt;/code&gt;. The full list includes:&lt;/p&gt;
+&lt;code&gt;arrayBuffer()&lt;/code&gt;, &lt;code&gt;bytearray()&lt;/code&gt;, &lt;code&gt;json()&lt;/code&gt;, and &lt;code&gt;text()&lt;/code&gt;, each of which return Pythonic representations of the appropriate data. You can also use &lt;code&gt;blob()&lt;/code&gt; to get the represented &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/API/Blob&#34;&gt;Blob&lt;/a&gt; object. 
+
+&lt;p class=&#34;post-p&#34;&gt;Here&#39;s a working example:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; worker&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;asyncio&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt;
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;process_data&lt;/span&gt;(url):
+        response &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; pyscript&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;fetch(url)
+        pyscript&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;display(&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; response&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;text())
+
+    t &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; asyncio&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;create_task(process_data(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;https://reqres.in/api/users?page=2&amp;#34;&lt;/span&gt;))
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;p-2 m-2 text-blue-800 border-2 border-gray-600&#34;&gt;
+    &lt;script type=&#34;py&#34; worker&gt;
+        import asyncio
+        import pyscript
+    
+        async def process_data(url):
+            response = await pyscript.fetch(url)
+            pyscript.display(await response.json())
+    
+        t = asyncio.create_task(process_data(&#34;https://reqres.in/api/users/2&#34;))
+    &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;p class=&#34;post-p&#34;&gt;You can also chain the awaitable which retrieves the data type, as in &lt;code&gt;t = await pyscript.fetch(url).json()&lt;/code&gt;. This only succeeds if the result of the &lt;code&gt;fetch()&lt;/code&gt; was in the &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#successful_responses&#34;&gt;HTTP Success Range (200-299)&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p class=&#34;post-p&#34;&gt;Of course, not everyone loves asyncio, even though it &lt;a href=&#34;post/pyscript-asyncio&#34;&gt;pretty much Just Works in Pyodide&lt;/a&gt;. But this is a prime place to make use of the &lt;code&gt;async&lt;/code&gt; attribute of PyScript tags, which &lt;a href=&#34;post/pyscript-asyncio#implicitasync&#34;&gt;allows the use of Top-Level Await&lt;/a&gt;. The code below works the same as the block above, but I think you&#39;ll agree is more readable:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; worker &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt;
+
+    response &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; pyscript&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;fetch(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;https://reqres.in/api/users/2&amp;#34;&lt;/span&gt;)
+    pyscript&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;display(&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; response&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;json())
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;p-2 m-2 text-yellow-800 border-2 border-gray-600&#34;&gt;
+    &lt;script type=&#34;py&#34; worker async&gt;
+        import pyscript
+    
+        response = await pyscript.fetch(&#34;https://reqres.in/api/users/2&#34;)
+        pyscript.display(await response.json())
+    &lt;/script&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;As a bonus - this snippet works in both Pyodide and Micropython, even though &lt;code class=&#34;nocode&#34;&gt;asyncio&lt;/code&gt; looks quite different in Micropython. Similarly, &lt;code&gt;pyscript.fetch&lt;/code&gt; works in both Pyodide and Micropython tags.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;zip&#34;&gt;Automatic &lt;code class=&#34;nocode&#34;&gt;.zip&lt;/code&gt; and &lt;code class=&#34;nocode&#34;&gt;.tar.gz&lt;/code&gt; unzipping&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;For applications involving numerous data files, or a build step involving a whole folder of data, it&#39;s handy to not have to manually unzip those files on the PyScript side on every upload. PyScript now has the ability to detect and automatically unzip these assets within the &lt;code&gt;[files]&lt;/code&gt; section of &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As a refresher, the &lt;code&gt;[files]&lt;/code&gt; section of &lt;code&gt;&amp;lt;py-config&amp;gt;&lt;/code&gt; takes a list of key/value pairs, where the key is the source URL and the value is a location in the in-memory virtual filesystem that PyScript runs in. For instance, the following takes the contents of the file at the relative URL &lt;code class=&#34;nocode&#34;&gt;content/posts/datafile1.txt&#34;&lt;/code&gt; and places them in a file at &lt;code class=&#34;nocode&#34;&gt;/data/data1.txt&lt;/code&gt; in the virtual filesystem:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+    [files]
+    &amp;#34;content/posts/datafile1.txt&amp;#34; = &amp;#34;/data/data1.txt&amp;#34;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The automatic-unzip feature triggers whenever the source URL ends in &lt;code class=&#34;nocode&#34;&gt;.zip&lt;/code&gt; or &lt;code class=&#34;nocode&#34;&gt;.tar.gz&lt;/code&gt; &lt;span class=&#34;italic&#34;&gt;and&lt;/span&gt; the destination ends in &lt;code class=&#34;nocode&#34;&gt;&#34;*&#34;&lt;/code&gt;. As an example, the following fetches a zip file from &lt;code class=&#34;nocode&#34;&gt;assets/images/compressed_images.zip&lt;/code&gt; and unzips them to the &lt;code class=&#34;nocode&#34;&gt;./imagedata&lt;/code&gt; folder in the virtual filesystem:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;
+    [files]
+    &amp;#34;assets/images/compressed_images.zip&amp;#34; = &amp;#34;./imagedata/*&amp;#34;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;py-config&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;pyscript-ffi&#34;&gt;&lt;code&gt;pyscript.ffi&lt;/code&gt; module adds standardization&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript is a singular project which straddles two (quite different) interpreters - Pyodide/Cpython and Micropython. While the internal architectures of both are dissimilar, it&#39;s useful for PyScript to present a somewhat-unified interface for both when it comes to web interactivity.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To that end, the &lt;code&gt;pyscript&lt;/code&gt; package now includes the &lt;code&gt;ffi&lt;/code&gt; module, which is starting to collect common interface features to standarize them between the two interpreters. So far, this contains only two functions:&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;&lt;code&gt;pyscript.ffi.to_js&lt;/code&gt;&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;The &lt;code&gt;to_js&lt;/code&gt; utility manually converts Python references to their JavaScript counterparts (where possible). Typically this is not necessary, as passing proxy objects back and forth will do. The primary use case is that &lt;code&gt;pyscript.ffi.to_js&lt;/code&gt; automatically converts all Mapping objects to JavaScript literal objects, which is the preferred way to pass around configurations in JavaScript.&lt;/p&gt;
+&lt;p class=&#34;italic post-p&#34;&gt;(For advanced users of Pyodide, when used in a Pyodide-backed interpreter, &lt;code&gt;pyscript.ffi.to_js&lt;/code&gt; is equivalent to &lt;code&gt;pyodide.ffi.to_js&lt;/code&gt; with a default &lt;code&gt;dict_converter&lt;/code&gt; of &lt;code&gt;Object.from_entries&lt;/code&gt;.)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The key here is that the behavior of this utility is &lt;span class=&#34;italic&#34;&gt;the same in both Pyodide and Micropython PyScript tags&lt;/span&gt;. By starting to flesh out our own FFI, we can create standard expectations between both runtime types.&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34;&gt;&lt;code&gt;pyscript.ffi.create_proxy&lt;/code&gt;&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Another Pyodide-inspired utility that PyScript is adapting to be uniform across runtimes - this forably keeps a borrowed reference to whatever Python object it is handed, to prevent that object/Proxy from being garbage collected before its time. For more context on the challenges of cross-language garbage collection, see my earlier writies on &lt;a href=&#34;post/pyscript-why-create-proxy/&#34;&gt;Why &lt;code class=&#34;nocode&#34;&gt;create_proxy()&lt;/code&gt; is Necessary&lt;/a&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This is one solution to an error which you may have seen if you&#39;ve been working with event handlers:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;button &lt;span style=&#34;color:#366&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;btn&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;Click Me&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;button&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# This breaks when the event handler is called&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;print_foo&lt;/span&gt;(evt):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;FOO!&amp;#34;&lt;/span&gt;)
+
+    document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;btn&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, print_foo)
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;p-2 m-2 text-red-800 bg-red-200 border-2 border-red-800&#34;&gt;pyodide.asm.js:9 Uncaught Error: This borrowed proxy was automatically destroyed at the end of a function call. Try using create_proxy or create_once_callable.&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;But this works fine:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;button &lt;span style=&#34;color:#366&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;btn&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;Click Me&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;button&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript.ffi&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; create_proxy
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;print_foo&lt;/span&gt;(evt):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;FOO!&amp;#34;&lt;/span&gt;)
+
+    document&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;btn&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;click&amp;#34;&lt;/span&gt;, create_proxy(print_foo))
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, there are other ways of hooking up event handlers that don&#39;t create this issue, like PyScripts &lt;code&gt;@when&lt;/code&gt; decorator:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;button &lt;span style=&#34;color:#366&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;btn&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;Click Me&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;button&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; document, when
+
+    &lt;span style=&#34;color:#99f&#34;&gt;@when&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;click&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;button&amp;#39;&lt;/span&gt;)
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;print_foo&lt;/span&gt;(evt):
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;FOO!&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;error-lines&#34;&gt;Accurate Error Line Handling&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript users can now expect the line number of the errors that appear in tracebacks to be accurate. While this seems like a trivial (and necessary!) detail, it actually involved a fair amount of complexity to ensure that the various bits of Python code that PyScript runs at startup aren&#39;t included in the line-number count.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; worker&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;sys&lt;/span&gt;                      &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# 1&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;traceback&lt;/span&gt;                &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# 2&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;pyscript&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; display    &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# 3&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;try&lt;/span&gt;:                            &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# 4&lt;/span&gt;
+        &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;)                  &lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# 5 - Error is here&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#c00;font-weight:bold&#34;&gt;ZeroDivisionError&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;as&lt;/span&gt; err:
+        display(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;join(traceback&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;format_exception(err)))
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;p&gt;Result:&lt;/p&gt;
+    &lt;div class=&#34;p-2 m-4 text-red-800 bg-red-200 border-2 border-red-800&#34;&gt;
+        &lt;script type=&#34;py&#34; worker&gt;
+            import sys                      # 1
+            import traceback                # 2
+            from pyscript import display    # 3
+            try:                            # 4
+                print(1/0)                  # 5 - Error is here
+            except ZeroDivisionError as err:
+                display(&#39;&#39;.join(traceback.format_exception(err)))
+        &lt;/script&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;hide-dom&#34;&gt;CORS-Less Workers&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;As thrilled as we were to add the &lt;a href=&#34;https://pyscript.github.io/docs/2024.3.2/user-guide/workers/&#34;&gt;ability to run code in Worker threads&lt;/a&gt; in PyScript, it did force users to wade into the messy lands of server permissions, &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS&#34;&gt;CORS&lt;/a&gt;, and &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy&#34;&gt;COOP&lt;/a&gt; to avoid a baffling error message:&lt;/p&gt;
+&lt;div class=&#34;p-2 m-2 text-red-200 bg-red-900 border-2 border-red-800 &#34;&gt;Uncaught Error: Unable to use SharedArrayBuffer due insecure environment.
+    Please read requirements in MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;The long and short of this error is: PyScript workers make use of a feature of web browsers called a &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer&#34;&gt;SharedArrayBuffer&lt;/a&gt; to pass data, signals, and proxies back and forth between the browser&#39;s main thread and the worker thread. But &lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements&#34;&gt;as of 2018&lt;/a&gt;, this structure is only available within secure environments. I.e., you have to either configure your server with specific headers, or use some shim-javascript like &lt;a href=&#34;https://github.com/WebReflection/mini-coi&#34;&gt;mini-coi.js&lt;/a&gt;. Neither is particularly obvious or intituive for new web users, let alone folks who just want to stick some Python on the Web.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Thankfully, a new PyScript configuration option makes this &lt;span class=&#34;italic&#34;&gt;somewhat&lt;/span&gt; better. If you add &lt;code&gt;sync_main_only = true&lt;/code&gt; to your &lt;code&gt;py-config&lt;/code&gt; tag, your &lt;code class=&#34;nocode&#34;&gt;worker&lt;/code&gt; tags will lose access to the DOM/Window, but you also won&#39;t require &lt;code&gt;SharedArrayBuffer&lt;/code&gt; anymore, which obviates the need for special server settings.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;py&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;config&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    sync_main_only &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; true
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;py&lt;span style=&#34;color:#555&#34;&gt;-&lt;/span&gt;config&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt;script &lt;span style=&#34;color:#366&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;py&amp;#34;&lt;/span&gt; worker&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color:#0cf;font-weight:bold&#34;&gt;js&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; console
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;):
+        console&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;log(i)
+&lt;span style=&#34;color:#555&#34;&gt;&amp;lt;/&lt;/span&gt;script&lt;span style=&#34;color:#555&#34;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;Of course, without the ability to interact with the DOM, such workers are significantly more limited in how they can affect the page. They&#39;re best used for offloading long-running Python calculations to the worker thread, for when you need to crunch data in Numpy or similar. Here&#39;s a working example, which generates a pseudorandom number in a worker thread:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;label&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;seed&amp;#34;&lt;/span&gt;&amp;gt;Seed&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;label&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;seed&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;seed&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;br&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;label&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;iterations&amp;#34;&lt;/span&gt;&amp;gt;Iterations&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;label&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;iterations&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;iterations&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;br&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;btn&amp;#34;&lt;/span&gt;&amp;gt;Calculate&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;button&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;div&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;result&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;div&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt; &lt;span style=&#34;color:#309&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt;&amp;gt;
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;import&lt;/span&gt; { PyWorker } from &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;https://pyscript.net/releases/2024.3.2/core.js&amp;#39;&lt;/span&gt;;
+    
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; { sync } &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; PyWorker(
+      &lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;./worker.py&amp;#39;&lt;/span&gt;,
+      { config&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; { sync_main_only&lt;span style=&#34;color:#555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;true&lt;/span&gt; }}
+    );
+    
+    &lt;span style=&#34;color:#366&#34;&gt;document&lt;/span&gt;.getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;btn&amp;#39;&lt;/span&gt;).addEventListener(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;click&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; () =&amp;gt; {
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; seed &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;parseInt&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;document&lt;/span&gt;.getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;seed&amp;#34;&lt;/span&gt;).value)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; iters &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;parseInt&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;document&lt;/span&gt;.getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;iterations&amp;#34;&lt;/span&gt;).value)
+        &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;const&lt;/span&gt; result &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; sync.pseudorandom(seed, iters)
+        &lt;span style=&#34;color:#366&#34;&gt;document&lt;/span&gt;.getElementById(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;result&amp;#34;&lt;/span&gt;).innerText &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; result &lt;span style=&#34;color:#555&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;\n&amp;#34;&lt;/span&gt;
+    })
+    &amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;script&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#309;font-weight:bold&#34;&gt;body&lt;/span&gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;iframe src=&#34;isrc.html&#34; frameborder=&#34;4&#34;&gt;&lt;/iframe&gt;
+&lt;/body&gt;
+
+
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;utf-8&#34;&gt;UTF-8 By Default&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript now loads all of the standard library and external packages using &#39;utf-8&#39; as the default encoding scheme. This solved &lt;a href=&#34;https://github.com/pyscript/pyscript/issues/1974&#34;&gt;an issue a user was having&lt;/a&gt; where comments in an imported package included characters that were valid in UTF-8, but not in Latin-1.&lt;/p&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;version-bumps&#34;&gt;Pyodide and Micropython Version Bumps&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Since the time of my last update, both &lt;a href=&#34;https://pyodide.org&#34;&gt;Pyodide&lt;/a&gt; and &lt;a href=&#34;https://github.com/micropython/micropython/pull/13583&#34;&gt;Micropython for the Web&lt;/a&gt; have had releases, to versions &lt;span class=&#34;font-semibold&#34;&gt;0.25.0&lt;/span&gt; and &lt;span class=&#34;font-semibold&#34;&gt;1.22.0-272&lt;/span&gt;, respectively.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;While I would love to spend an entire post sharing the awesome new updates from both projects, I think you and I both will be better served by bulleted lists and links to their release posts:&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34; id=&#34;pyodide-0-25&#34;&gt;Pyodide 0.25.0 (&lt;a href=&#34;https://blog.pyodide.org/posts/0.25-release/&#34;&gt;release post&lt;/a&gt;)&lt;/h3&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Direct support for &lt;code&gt;requests&lt;/code&gt; and &lt;code&gt;urllib3&lt;/code&gt; in the browser&lt;/li&gt;
+    &lt;li&gt;Experimental support for JS promise integration, allowing for making async calls in asynchronous contexts&lt;/li&gt;
+    &lt;li&gt;Various build-system improvements&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 class=&#34;post-h3&#34; id=&#34;micropython-updates&#34;&gt;Micropython 1.22.0-272 (&lt;a href=&#34;https://github.com/micropython/micropython/pull/13583&#34;&gt;PR of interest&lt;/a&gt;)&lt;/h3&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Improved transparent proxying of objects between Python and JavaScript&lt;/li&gt;
+    &lt;li&gt;New tests of the webassembly ports&lt;/li&gt;
+    &lt;li&gt;Make &lt;code&gt;random()&lt;/code&gt; and &lt;code&gt;time()&lt;/code&gt; functional in PyScript&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 class=&#34;post-h2&#34; id=&#34;whats-next&#34;&gt;What&#39;s Next&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;As we speed toward PyCon 2024 (where me, Valerio Maggio, and Łukasz Langa are &lt;a href=&#34;https://us.pycon.org/2024/schedule/&#34;&gt;all giving talks on PyScript!&lt;/a&gt;), several community members are putting the final touches on their frameworks with an eye toward showing them off in Pittsburgh. I&#39;m personally hoping to see lots of you there! We&#39;ll try to get both an open-space and a sprint together during and after the weekend.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;a href=&#34;post/come-see-pyscript-at-pycon-2023/&#34;&gt;Like last year&lt;/a&gt;, I&#39;ll do a proper preview of the PyScript-focused talks in advance of the conference, and my slides/recording will be available afterward. I&#39;m still hoping to be able to attend the &lt;a href=&#34;https://us.pycon.org/2024/events/webassembly-summit/&#34;&gt;WebAssembly Summit&lt;/a&gt;, but I&#39;m not sure if I&#39;ll be able to make it out to the conference on Thursday morning... we&#39;ll see how accomodating the dayjob is.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;PyScript is still having weekly community and FUN meetings on Tuesday and Thursdays on &lt;a href=&#34;https://discord.gg/fm8aennV3M&#34;&gt;The Discord server&lt;/a&gt; - come chat with other PyScript enthusiasts and the core dev team, and show off what you&#39;ve been working on.&lt;/p&gt;
+
+&lt;style&gt;
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+&lt;/style&gt;
+&lt;script src=&#34;mini-coi.js&#34;&gt;&lt;/script&gt;
+&lt;script type=&#34;module&#34; src=&#34;https://pyscript.net/releases/2024.3.2/core.js&#34;&gt;&lt;/script&gt;
+&lt;link rel=&#34;stylesheet&#34; href=&#34;https://pyscript.net/releases/2024.3.2/core.css&#34;&gt;</description>
+      &lt;
+    </item>
+    
     <item>
       <title>Pyscript and Disassembled Bytecode</title>
       <link>https://jeff.glass/post/pyscript-dis/</link>
