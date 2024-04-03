@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+</head>
+<script src="mini-coi.js"></script>
+<button py-click="bar">Click Me</button>
+<script type="py" async>
+    from pyscript import PyWorker, ffi
+
+    worker_options = ffi.to_js({"type": "pyodide"})
+    worker = await PyWorker("foo_worker.py", worker_options) 
+    
+    result = await worker.sync.utility(3)
+    print(result) # Expect 6
+</script>
+</body>
+</body> 
+</html>
