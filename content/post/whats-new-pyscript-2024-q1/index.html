@@ -274,45 +274,49 @@ slug_image: 'py_2024_q1_featured.png'
 {{< /highlight >}}
 <p class="post-p">Of course, without the ability to interact with the DOM, such workers are significantly more limited in how they can affect the page. They're best used for offloading long-running Python calculations to the worker thread, for when you need to crunch data in Numpy or similar. Here's a working example, which generates a pseudorandom number in a worker thread:</p>
 
-{{< highlight "html" "linenostart=1" >}}
-<label for="seed">Seed</label>
-<input type="text" name="seed" id="seed">
-<br><label for="iterations">Iterations</label>
-<input type="text" name="iterations" id="iterations">
-<br><button id="btn">Calculate</button>
-<div id="result"></div>
-<script type="module">
-    import { PyWorker } from 'https://pyscript.net/releases/2024.3.2/core.js';
+<div class="m-2">
+    {{< highlight "html" "linenostart=1" >}}
+    <label for="seed">Seed</label>
+    <input type="text" name="seed" id="seed">
+    <br><label for="iterations">Iterations</label>
+    <input type="text" name="iterations" id="iterations">
+    <br><button id="btn">Calculate</button>
+    <div id="result"></div>
+    <script type="module">
+        import { PyWorker } from 'https://pyscript.net/releases/2024.3.2/core.js';
     
-    const { sync } = await PyWorker(
-      './worker.py',
-      { config: { sync_main_only: true }}
-    );
+        const { sync } = await PyWorker(
+          './worker.py',
+          { config: { sync_main_only: true }}
+        );
     
-    document.getElementById('btn').addEventListener('click', async () => {
-        const seed = parseInt(document.getElementById("seed").value)
-        const iters = parseInt(document.getElementById("iterations").value)
-        const result = await sync.pseudorandom(seed, iters)
-        document.getElementById("result").innerText += result + "\n"
-    })
-    </script>
-</body>
-{{< /highlight >}}
-{{< highlight "python3" "linenostart=1" >}}
-# worker.py
-from pyscript import sync
-
-def pseudorandom(seed: int, iters: int):
-    """Linear congruential generator. Parameters borrowed from POSIX and are probably bad"""
-    modulus = 2**48
-    a = 25214903917 
-    increment = 11
-
-    for _ in range(iters):
-        seed = (a * seed + increment) % modulus
-    return result
-
-sync.pseudorandom = pseudorandom
+        document.getElementById('btn').addEventListener('click', async () => {
+            const seed = parseInt(document.getElementById("seed").value)
+            const iters = parseInt(document.getElementById("iterations").value)
+            const result = await sync.pseudorandom(seed, iters)
+            document.getElementById("result").innerText += result + "\n"
+        })
+        </script>
+    </body>
+    {{< /highlight >}}
+</div>
+<div class="m-2">
+    {{< highlight "python3" "linenostart=1" >}}
+    # worker.py
+    from pyscript import sync
+    
+    def pseudorandom(seed: int, iters: int):
+        """Linear congruential generator. Parameters borrowed from POSIX and are probably bad"""
+        modulus = 2**48
+        a = 25214903917
+        increment = 11
+    
+        for _ in range(iters):
+            seed = (a * seed + increment) % modulus
+        return result
+    
+    sync.pseudorandom = ps
+</div>eudorandom
 {{< /highlight >}}
 
 <iframe src="isrc.html" frameborder="4"></iframe>
