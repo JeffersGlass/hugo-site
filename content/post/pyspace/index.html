@@ -1,0 +1,52 @@
+---
+title: "py.space"
+date: 2024-05-18T09:49:41-05:00
+draft: true
+tags:
+- py.space
+- anvil
+- python
+- pycon
+description: "Trying out Anvil's py.space product"
+slug_image: pyspace_featured.png
+aliases: /pyspace
+---
+<p class="post-p">I had a lovely chat at on the floor at PyCon US with Ian Davies at <a href="https://anvil.works/">Anvil</a>, and specifically their newly launch <a href="https://py.space">py.space</a> product. In short - it's a stripped down/streamlined version of Anvil that's being offered free to users to write online Python applications.</p>
+<p class="post-p">This is going to be just my lab notebook as a stumble through the product for 45 minutes before the next talks. Ian demo'd a bunch of their features to embed Python inside webpages, and as you can imagine, that's something I value! So let's see how it works in the wild</p>
+<p class="post-p">This isn't an ad, and I hope it doesn't come off as one. I'm just flush with PyCon exciting and looking to try things out. So many of us have identified both web and Python as the most popular platforms of the future, and I'm always game to try out another one.</p>
+<h2 class="post-h2">Getting Started</h2>
+<p class="post-p">A welcome page with a 'get started' button is always welcome:</p>
+<img class="post-img" src="intro.png" alt="A screenshot of the py.space homepage showing a 'get started' button">
+<p class="post-p">On the login page, py.space describes itself as "An online space for writing, running and deploying Python scripts and APIs." The API's note is curious, and not sometime I think I've seen made available in other web-python-IDE's of this type.</p>
+<p class="post-p">On registering via GitHub, you're asked to choose a username. I'll be <code>@JeffGlass</code>, I suppose.</p>
+<p class="post-p">The first thing that pops up is a section asking "What do you Want to Build?", and offers Script, API, and GUI as options. There's also some featured examples.</p>
+<img class="post-img" src="whatdoyouwanttobuild.png" alt="A screenshot of py.space showing the section 'What do you Want to Build' and offering three options.">
+<h2 class="post-h2">Scripts</h2>
+<p class="post-p">Let's try making a Script. Clicking that button brings up a pop-up code editor - looks like it's <a href="https://codemirror.net/">CodeMirror</a> under the hood, which <a href="https://docs.pyscript.net/2024.5.2/user-guide/editor/">PyScript also loves</a>.  The rest of the user interface is quite minimal - Run and Schedule buttons, packages and secrets tabs, a private/public togger, sharing, settings, and help.</p>
+<img class="post-img" src="helloworld.png" alt="The anvil code editor showing 'print(Hello, world!').">
+<p class="post-p">Let's try running the provided <code>print("Hello, world!")</code> code:</p>
+<img class="post-img" src="output.png" alt="">
+<p class="post-p">After taking 8-10 seconds with the run button saying "Launching", we see the output in a new pane at the bottom of the editor. A second execution took about a quarter of a second - so something special must be initializing the first time you run a project.</p>
+<p class="post-p">Let's try importing some packages. I know very little about Anvil and it's packaging model, so let's see what we can learn.</p>
+<img class="post-img" src="packages.png" alt="">
+<p class="post-p">The packages pane has fields for <code>package</code> and <code>version</code>, or <span class="italic">edit requirements.txt directly</span>, which is an interesting option. I wonder if can point to dev packages on test.pypi.org? Typing in my favorite testing packages, <a href="https://github.com/Textualize/rich">rich</a>, Anvil brings up a list of versions which seems up to date - so either it's really querying PyPI or its internal mirroring/compatibility is handling it well. Let's use the latest version.</p>
+<img class="post-img" src="richversions.png" alt="">
+<p class="post-p">It took about 45 seconds of "Building" before the installation process was complete - and in the middle of it, an interesting security warning popped up. Not sure if that's something generated on the Anvil side or from PyPI or what, but it's an interesting touch.</p>
+<img src="security.png" alt="" class="post-img">
+<p class="post-p">The code does indeed run! Looks like there's not support for terminal formmatting commands, but I that's very reasonable - something like a fully <a href="https://xtermjs.org/">xterm.js</a> is a bit heavy for this application. It does seem like the packages pane visually bleeds into the input pane - I've pinged the py.space forum about that, assuming its an ok place to report bugs.</p>
+<p class="post-p">One of the things Ian showed off as we were chatting this morning is the embedding feature... so let's try that out! Here's the code above embedded in my site:</p>
+<script src="https://py.space/embed/g/HQD5BNPM6C5Q4L7Z.js"></script>
+<p class="post-p">I'm hoping that will appear for most people, but in case it doesn't (or as a historical record in case it changes later), here's what I see:</p>
+<img src="embedded.png" alt="" class="post-img w-1/2">
+<p class="post-p">Ah, so what appears is the full code snippet, with a similar nice UI and such. The action is Fork to Run, which is interesting... so there's not a way for viewers of this block to actually <span class="italic">run</span> this code directly on my site - they'd need to fork it to their own (free) Anvil account in order to run it. This takes me back to a lot of the conversations that were had around <a href="https://pyscript.com">PyScript.com</a> (PSDC) - I'm not a part of that team, but naturally I know a bunch of the players. Where PSDC offers an option for <span class="italic">any</span> user to run your code and then fork it if they want, in this context forking is required. Not that either is better or worse, just different models of what code sharing means.</p>
+<h2 class="post-h2">API</h2>
+<p class="post-p">Let's go back to the start page and try building an API</p>
+<img src="apistart.png" alt="" class="post-img">
+<p class="post-p">We get a very similar editor, this time pre-populated with what I assume is boilerplate Anvil server code. I also see there's a URL at the bottom: <a href="https://clumsy-nervous-handle.anvil.app/hello">https://clumsy-nervous-handle.anvil.app/hello</a>, which looks like an auto-generated prefix. Just hitting that URL in my browser at this point does give me a <code>{"hello":"world"}</code> response - so they API is live from the time of creation! That's pretty slick.</p>
+<p class="post-p">Let's try adding another endpoint that doubles the number we feed it. It's not obvious from the <a href="https://py.space/docs/tutorials/api">py.space docs</a> how we do this, but my understanding from Ian is that all of these are full Anvil apps under the hood, so let's see if the <a href="https://anvil.works/docs/server">Anvil Docs</a> answer that question. And yes! Not too complicated:</p>
+<p class="post-p">Now, hitting <a href="https://clumsy-nervous-handle.anvil.app/double/10"><code>https://clumsy-nervous-handle.anvil.app/double/10</code></a> gives me back <code>{"result":20}</code> as desired. Instant API online... very very cool.</p>
+<script src="https://py.space/embed/g/6ACLXGXUEHSZYL5F.js"></script>
+<h2 class="post-h2">GUI?</h2>
+<img src="gui.png" alt="" class="post-img">
+<p class="post-p">The GUI editor looks very exciting... and from Ian's demo, has more features than I can explored before the next open space at the con. So that'll have to wait till another time.</p>
+<p class="post-p">Here ends the stream of consciousness. Hope all are having a great pycon!</p>
