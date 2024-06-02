@@ -1,0 +1,39 @@
+---
+title: "How to Try Out the new CPython JIT"
+date: 2024-06-02T15:43:59-04:00
+draft: true
+tags:
+- python
+- JIT
+
+description: "Description Here"
+---
+
+<p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
+<p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
+<p class="post-p">Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before <span class="italic">the time that code is actually run.</span> In the case of CPython's new JIT, that's done by a method called <span class="font-semibold italic">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
+<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR's, I want to share the how <span class="italic">you</span> can get a copy of Python with the JIT enabled to play with as well. We'll also see some ways to get additional debug output, for those who want to really see the sausage get made.</p>
+<div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
+    <ul class="post-ul">
+        <li><a href="https://peps.python.org/pep-0744/">PEP 744 - Jit Compilation</a>: an informational PEP on the thinking behind and basic approach to the copy-and-patch technique.</li>
+        <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
+        <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
+        <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno. (A similar talk appeared at PyConUS 2024 and will be linked here when available).</li>
+        <li>The internals of the <a href="https://github.com/python/cpython/pull/113465">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
+    </ul>
+</div>
+<h2 class="post-h2"> Building CPython with a JIT</h2>
+<p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please let me know if I'm wrong!) So, we'll have to build our own!</p>
+<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. Suffice to say, we'll pick up assuming you have:</p>
+<ul class="post-ul">
+    <li>Installed <code>git</code> and <code>make</code>(for POSIX systems)</li>
+    <li>Cloned the CPython repo locally</li>
+</ul>
+<h3 class="post-h3">Configuring the JIT</h3>
+<p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
+<ul class="post-ul">
+    <li><code>--enable-experimental-jit=yes</code> Enables a JIT build; The same as not passing a specific value of this flag at all</li>
+    <li><code>--enable the-experimental-jit=yes-off</code> Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off.</li>
+    <li><code>--enable-experimental-jit=interpreter</code> Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted. Provides no performance enhancement, but currently provides more debuggability than the full JIT.</li>
+    <li><code>--enable-experimental-jit=no</code> The same as not passing this flag. Just for comprehensiveness, I suppose.</li>
+</ul>
