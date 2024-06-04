@@ -24,16 +24,55 @@ description: "Description Here"
 </div>
 <h2 class="post-h2"> Building CPython with a JIT</h2>
 <p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please let me know if I'm wrong!) So, we'll have to build our own!</p>
-<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. Suffice to say, we'll pick up assuming you have:</p>
+<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. I'm only going to be covering the Linux build here - the flags for the windows builds are the same, but the commands are quite different, so follow along with the windows dev guide and you'll be ok.</p>  
+<p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
 <ul class="post-ul">
-    <li>Installed <code>git</code> and <code>make</code>(for POSIX systems)</li>
+    <li>Installed <code>git</code> and <code>make</code> </li>
     <li>Cloned the CPython repo locally</li>
 </ul>
 <h3 class="post-h3">Configuring the JIT</h3>
 <p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
-<ul class="post-ul">
-    <li><code>--enable-experimental-jit=yes</code> Enables a JIT build; The same as not passing a specific value of this flag at all</li>
-    <li><code>--enable the-experimental-jit=yes-off</code> Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off.</li>
-    <li><code>--enable-experimental-jit=interpreter</code> Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted. Provides no performance enhancement, but currently provides more debuggability than the full JIT.</li>
-    <li><code>--enable-experimental-jit=no</code> The same as not passing this flag. Just for comprehensiveness, I suppose.</li>
-</ul>
+
+<div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="bg-gray-200"><code class="text-right items-center float-right mr-4">--enable-experimental-jit=yes</code></div>
+    <div class="bg-gray-200">Enables a JIT build; The same as not passing a specific value of this flag at all</div>
+    <div><code class="text-right items-center float-right mr-4">--enable the-experimental-jit=yes-off</code></div>
+    <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off.</div>
+    <div class="bg-gray-200"><code class="text-right items-center float-right mr-4">--enable-experimental-jit=interpreter</code></div>
+    <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted. Provides no performance enhancement, but currently provides more debuggability than the full JIT.</div>
+    <div><code class="text-right items-center float-right mr-4">--enable-experimental-jit=no</code></div>
+    <div>The same as not passing this flag. Just for comprehensiveness, I suppose.</div>
+</div>
+
+<p class="post-p">That's all the configuring you'll need to do! There are some additional configuration flags you <span class="italic">can</span> pass, but we'll touch on those more in the <a href="#debugging">debugging</a> and <a href="#stats">gathering statistics</a> sections.</p>
+
+<h3 class="post-h3">Building the JIT</h3>
+<p class="post-p">Python's <code>configure</code> script will drop a <code>Makefile</code> into the root of the CPython repo, which has all the configuration options bake in. Once that's finished building, you can simple run <code>make</code>... or, if you want a little time back, <code>make -jX</code>, where <code>X</code> is the number of separate build threads to run in parallel. Staring with the number of processors on your computer (discoverable by running <code>nproc</code>) is a decent place to start, but it's worth experimenting up or down to see how it affects build time.</p>
+<p class="post-p">If you're building often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what <code>make clean</code> and its more aggressive partner <code>make distclean</code> are for. <code>clean</code> just removes generated files, while <code>distclean</code> removes generated files too, including the Makefile!</p>
+
+<h3 class="post-h3">Running the JIT</h3>
+<p class="post-p">When the makefile completes, you should have an executable called <code>python</code> sitting in the root of the repo! Running code with it now will make use of the JIT!</p>
+<div class="m-4 px-2 py-6 bg-gray-200">
+    <pre><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)' </code></pre>
+</div>
+<p class="post-p">At this point, running with JIT is, on average, about as fast as running without the JIT, so you're not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?</p>
+
+<h3 class="post-h3" id="debugging">Debugging and Displaying Output</h3>
+<p class="post-p">With a debug build of Python, we'll have more options for displaying JIT output. Let's reconfigure and rebuild Python with:</p>
+<div class="m-4 bg-gray-200">
+<pre class="m-4 px-2 py-6 bg-gray-200"><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./configure --enable-experimental-jit --with-pydebug
+make</code></pre>
+</div>
+<p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a special environment variable that will print out what's going on with the JIT in realtime. Setting <code>PYTHON_LLTRACE=X</code> will display increasing volumes of information as X increases from 1 to 5:</p>
+
+
+<h3 class="post-h3" id="stats">Gathering Stats</h3>
+
+
+
+<style>
+code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+    --tw-text-opacity: 1;
+    color: rgba(5, 120, 85, var(--tw-text-opacity));
+}
+</style>
