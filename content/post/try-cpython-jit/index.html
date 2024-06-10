@@ -1,12 +1,12 @@
 ---
-title: "How to Get the new CPython JIT"
+title: "How to Get the New CPython JIT"
 date: 2024-06-09T15:43:59-04:00
 draft: true
 tags:
 - python
 - JIT
-
 description: "How to Build and Run CPython's New JIT Compiler"
+slug_image: get-jit-featured.png
 ---
 <h2 class="post-h2">TL;DR</h2>
 <p class="post-p">To just build and run with the JIT:</p>
@@ -40,7 +40,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <h2 class="post-h2" id="full-story">Trying CPython's JIT</h2>
 <p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
 <p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
-<p class="post-p">Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before <span class="italic">the time that code is actually run.</span> In the case of CPython's new JIT, that's done by a method called <span class="font-semibold italic">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
+<p class="post-p">Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before <span class="italic">the time that code is actually run.</span> In the case of CPython's new JIT, that's done by a method called <span class="italic font-semibold">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
 <p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR's, I want to share the how <span class="italic">you</span> can get a copy of Python with the JIT enabled to play with as well. We'll also see some ways to get additional debug output, for those who want to really see the sausage get made.</p>
 <div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
     <ul class="post-ul">
@@ -62,14 +62,14 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <h3 class="post-h3" id="configuring">Configuring the JIT</h3>
 <p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
 
-<div class="grid grid-cols-1 md:grid-cols-2 border-2 border-gray-400 gap-y-4">
-    <div class="bg-gray-200"><code class="text-right items-center float-right mr-4">--enable-experimental-jit=yes</code></div>
+<div class="grid grid-cols-1 border-2 border-gray-400 md:grid-cols-2 gap-y-4">
+    <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes</code></div>
     <div class="bg-gray-200">Enables a JIT build; The same as not passing a specific value of this flag at all</div>
-    <div><code class="text-right items-center float-right mr-4">--enable the-experimental-jit=yes-off</code></div>
+    <div><code class="items-center float-right mr-4 text-right">--enable the-experimental-jit=yes-off</code></div>
     <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off.</div>
-    <div class="bg-gray-200"><code class="text-right items-center float-right mr-4">--enable-experimental-jit=interpreter</code></div>
+    <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=interpreter</code></div>
     <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted. Provides no performance enhancement, but currently provides more debuggability than the full JIT.</div>
-    <div><code class="text-right items-center float-right mr-4">--enable-experimental-jit=no</code></div>
+    <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=no</code></div>
     <div>The same as not passing this flag. Just for comprehensiveness, I suppose.</div>
 </div>
 
@@ -80,13 +80,13 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <p class="post-p">If you're building often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what <code>make clean</code> and its more aggressive partner <code>make distclean</code> are for. <code>clean</code> just removes generated files, while <code>distclean</code> removes generated files too, including the Makefile!</p>
 <p class="post-p">So to summarize - once you've cloned the CPython repo, all you need to do to build the JIT is:</p>
 <div class="m-4 bg-gray-200 border-2 border-gray-600">
-<pre class="m-4 px-2 py-6 bg-gray-200"><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./configure --enable-experimental-jit
+<pre class="px-2 py-6 m-4 bg-gray-200"><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./configure --enable-experimental-jit
 make -j4 <span class="text-blue-600">#Or however many threads you want to build with</span></code></pre>
 </div>
 
 <h2 class="post-h2" id="running">Running the JIT</h2>
 <p class="post-p">When the makefile completes, you should have an executable called <code>python</code> sitting in the root of the repo! Running code with it now will make use of the JIT!</p>
-<div class="m-4 px-2 py-6 bg-gray-200">
+<div class="px-2 py-6 m-4 bg-gray-200">
     <pre><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)' </code></pre>
 </div>
 <p class="post-p">At this point, running with JIT is, on average, about as fast as running without the JIT, so you're not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?</p>
@@ -94,7 +94,7 @@ make -j4 <span class="text-blue-600">#Or however many threads you want to build 
 <h3 class="post-h3" id="debugging">Debugging and Displaying Output</h3>
 <p class="post-p">With a debug build of Python, we'll have more options for displaying JIT output. Let's reconfigure and rebuild Python with:</p>
 <div class="m-4 bg-gray-200">
-<pre class="m-4 px-2 py-6 bg-gray-200"><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./configure --enable-experimental-jit --with-pydebug
+<pre class="px-2 py-6 m-4 bg-gray-200"><code style="color: rgba(5, 120, 85, var(--tw-text-opacity));">./configure --enable-experimental-jit --with-pydebug
 make</code></pre>
 </div>
 <p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a special environment variable that will print out what's going on with the JIT in realtime. Setting <code>PYTHON_LLTRACE=X</code> will display increasing volumes of information as X increases from 1 to 5.</p>
@@ -112,22 +112,22 @@ for i in range(2000):
 print(x)
 {{< /highlight >}}
 
-<h4 class="post-h4 underline"><code class="nocode">LLTRACE=1</code></h4>
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=1</code></h4>
 <p class="post-p">The lowest value of <code>LLTRACE</code> will print minimal messages, indicating that traces were created and where but providing no real detail. It also enables the printing of any optimization errors, like <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L441-L443">unknown opcodes</a> or <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L452-L455">running out of space to store traces</a>.</p>
 
 <div class="m-4">
-<pre class="m-4 px-2 py-4 max-h-72 bg-gray-200 overflow-y-scroll border-2 border-gray-600"><code class="nocode">$   PYTHON_LLTRACE=1 ./python src.py</code>
+<pre class="px-2 py-4 m-4 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=1 ./python src.py</code>
 <code>Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
 1999001
 </code></pre>
 </div>
 
-<h4 class="post-h4 underline"><code class="nocode">LLTRACE=2</code></h4>
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=2</code></h4>
 
 <p class="post-p">Increasing <code>LLTRACE</code> to two opens up many more details. We can see each UOp as it's added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and <a href="https://github.com/python/cpython/pull/119354#issuecomment-2138473361">target</a> of each UOp if any. (Since the operands are unique-per-run and machine-specific, I'm filtering them out here to make comparison easier.)</p>
 <p class="post-p">You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920">flagged here</a>.</p>
 <div class="m-4">
-<pre class="m-4 px-2 py-4 max-h-72 bg-gray-200 overflow-y-scroll border-2 border-gray-600"><code class="nocode">$   PYTHON_LLTRACE=2 ./python src.py</code>
+<pre class="px-2 py-4 m-4 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=2 ./python src.py</code>
 <code>1999001
     Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
@@ -191,11 +191,11 @@ print(x)
 </code></pre>
 </div>
 
-<h4 class="post-h4 underline"><code class="nocode">LLTRACE=3</code></h4>
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=3</code></h4>
 <p class="post-p">In a normal JIT build, <code>PYTHON_LLTRACE=2</code> and <code>PYTHON_LLTRACE=3</code> are exactly the same! (At least as of the current build). But if you build with only the Tier 2 interpreter and not the JIT, you do get a few more messages about side exits and cold exists... or a lot more, depending on your code:</p>
 
 <div class="m-4">
-<pre class="m-4 px-2 py-4 max-h-72 bg-gray-200 overflow-y-scroll border-2 border-gray-600"><code class="nocode">$   PYTHON_LLTRACE=3 ./python src.py <span class="text-blue-800"># built with --enable-experimental-jit=interpreter</span></code>
+<pre class="px-2 py-4 m-4 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=3 ./python src.py <span class="text-blue-800"># built with --enable-experimental-jit=interpreter</span></code>
 <code>Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
     1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
  29: JUMP_BACKWARD(20)
@@ -297,15 +297,15 @@ print(x)
  # ... 20,000 more lines of this</code></pre>
 </div>
 
-<h4 class="post-h4 underline"><code class="nocode">LLTRACE=4</code></h4>
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=4</code></h4>
 <p class="post-p">At least in the build we're working with, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
 
-<h4 class="post-h4 underline"><code class="nocode">LLTRACE=5</code></h4>
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=5</code></h4>
 <p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any* Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
 <p class="post-p">Burried in the middle of this, you can see similar JIT/UOp/Trace information as at level 3/4.</p>
-<p class="post-p italic">*Except in frames that are owned by the C Stack, i.e. C extensions calling into Python.</p>
+<p class="italic post-p">*Except in frames that are owned by the C Stack, i.e. C extensions calling into Python.</p>
 <div class="m-4">
-<pre class="m-4 px-2 py-4 max-h-72 bg-gray-200 overflow-y-scroll border-2 border-gray-600"><code class="nocode">$   PYTHON_LLTRACE=5 ./python src.py</code>
+<pre class="px-2 py-4 m-4 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=5 ./python src.py</code>
 <code>
 Resuming frame for &#39;&lt;module&gt;&#39; in module &#39;_frozen_importlib&#39;
     stack=[]
@@ -1250,7 +1250,7 @@ mkdir -p /tmp/py_stats
 
 <p class="post-p">The stats files themselves are fairly readable - and contain statistics about all kinds of things the interpreter did as it ran your code. Here's the actual stats output from running the above snippet - the Tier 2 stats are at the very end, if you care to scroll down:</p>
 <div class="m-4">
-<pre class="m-4 px-2 py-4 max-h-72 bg-gray-200 overflow-y-scroll border-2 border-gray-600"><code class="nocode">opcode[BINARY_SLICE].specializable : 1
+<pre class="px-2 py-4 m-4 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">opcode[BINARY_SLICE].specializable : 1
 opcode[STORE_SLICE].specializable : 1
 opcode[CACHE].pair_count[POP_TOP] : 22
 opcode[CACHE].pair_count[COPY_FREE_VARS] : 122
