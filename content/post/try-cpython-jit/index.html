@@ -2841,7 +2841,14 @@ Rare event (watched_globals_modification): 0
 <h2 class="post-h2" id="conclusion">Conclusion</h2>
 <p class="post-p">So, what can you do with the JIT? It isn't, at the moment, any fast than CPython without the JIT... so why turn it on?</p>
 <p class="post-p"><span class="font-semibold">Test it Against Your Code.</span> The JIT is brand-spanking-new, and while it passes the full CPython test suite, the real test of its durability is how it survives against real-world code. I'd encourage you to try to turning on the JIT, seeing what happens, and submitting any bugs you find!</p>
-<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> jit ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span></p>
+<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> jit ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span>.</p>
+<p class="post-p">Some specific things to look at in the CPython codebase:
+<ul class="post-ul">
+    <li>Search for <code class="bg-gray-200">#ifdef _Py_JIT</code> and <code class="bg-gray-200">#ifndef _Py_JIT</code></li>
+    <li>Search for<code class="bg-gray-200">#ifdef _Py_TIER2</code> and <code class="bg-gray-200">#ifndef _Py_TIER2</code></li>
+    <li>Look at <code>jit.c</code></li>
+    <li>Look at the <code class="bg-gray-200">tier2_dispatch</code> label in <code>ceval.c</code></li>
+</ul></p>
 <p class="post-p"><span class="font-semibold">Mess Around!</span> Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?</p>
 <p class="post-p">As always, I'd love to hear from corrections and comments, via <a href="#" id="mlink">Email</a>, on <a href="https://x.com/jeffersglass">Twitter</a>, or on <a href="https://mastodon.social/@jeffglass">Mastodon</a>.</p>
 
