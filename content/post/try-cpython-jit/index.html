@@ -41,7 +41,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
 <p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
 <p class="post-p">Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before <span class="italic">the time that code is actually run.</span> In the case of CPython's new JIT, that's done by a method called <span class="italic font-semibold">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
-<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR's, I want to share the how <span class="italic">you</span> can get a copy of Python with the JIT enabled to play with as well. We'll also see some ways to get additional debug output, for those who want to really see the sausage get made.</p>
+<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR's, I want to share the how <span class="italic">you</span> can get a copy of Python with the JIT enabled to play with as well. We'll also see some ways to get additional debug output, for those who really want to see the sausage get made.</p>
 <div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
     <ul class="post-ul">
         <li><a href="https://peps.python.org/pep-0744/">PEP 744 - Jit Compilation</a>: an informational PEP on the thinking behind and basic approach to the copy-and-patch technique.</li>
@@ -52,7 +52,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
     </ul>
 </div>
 <h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
-<p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please let me know if I'm wrong!) So, we'll have to build our own!</p>
+<p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please <a href="#conclusion">let me know</a> if I'm wrong.) So, we'll have to build our own!</p>
 <p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. I'm only going to be covering the Linux build here - the flags for the windows builds are the same, but the commands are quite different, so follow along with the windows dev guide and you'll be ok.</p>  
 <p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
 <ul class="post-ul">
@@ -60,7 +60,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
     <li>Cloned the CPython repo locally. All the examples on this page use specifically the <code>v3.13.0b2</code> beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.</li>
 </ul>
 <h3 class="post-h3" id="configuring">Configuring the JIT</h3>
-<p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
+<p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script that lives in the root of the CPython repo: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
 
 <div class="grid grid-cols-1 border-2 border-gray-400 md:grid-cols-2 gap-y-4">
     <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes</code></div>
@@ -76,8 +76,8 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <p class="post-p">That's all the configuring you'll need to do! There are some additional configuration flags you <span class="italic">can</span> pass, but we'll touch on those more in the <a href="#debugging">debugging</a> and <a href="#stats">gathering statistics</a> sections.</p>
 
 <h3 class="post-h3" id="building">Building the JIT</h3>
-<p class="post-p">Python's <code>configure</code> script will drop a <code>Makefile</code> into the root of the CPython repo, which has all the configuration options bake in. Once that's finished building, you can simple run <code>make</code>... or, if you want a little time back, <code>make -jX</code>, where <code>X</code> is the number of separate build threads to run in parallel. Staring with the number of processors on your computer (discoverable by running <code>nproc</code>) is a decent place to start, but it's worth experimenting up or down to see how it affects build time.</p>
-<p class="post-p">If you're building often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what <code>make clean</code> and its more aggressive partner <code>make distclean</code> are for. <code>clean</code> just removes generated files, while <code>distclean</code> removes generated files too, including the Makefile!</p>
+<p class="post-p">Python's <code>configure</code> script will drop a Makefile into the root of the CPython repo, which has all the configuration options baked in. Once that's finished building, you can simply run <code class="codegray">make</code>... or, if you want a little time back, <code class="codegray">make -jX</code>, where <code>X</code> is the number of separate build threads to run in parallel. Staring with the number of processors on your computer (discoverable by running <code class="codegray">nproc</code>) is a decent place to start, but it's worth experimenting up or down to see how it affects build time.</p>
+<p class="post-p">If you're rebuilding often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what <code class="codegray">make clean</code> (and its more aggressive partner <code class="codegray">make distclean</code>) are for. <code>clean</code> just removes generated files, while <code>distclean</code> removes generated files too, including the Makefile!</p>
 <p class="post-p">So to summarize - once you've cloned the CPython repo, all you need to do to build the JIT is:</p>
 
 <div class="m-2 border-2 border-gray-400">
@@ -110,7 +110,7 @@ make
 {{< /highlight >}}
 </div>
 </div>
-<p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a special environment variable that will print out what's going on with the JIT in realtime. Setting <code>PYTHON_LLTRACE=X</code> will display increasing volumes of information as X increases from 1 to 5.</p>
+<p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a special environment variable that will print out what's going on with the JIT in realtime. Setting <code class="codegray">PYTHON_LLTRACE=X</code> will display increasing volumes of information as X increases from 1 to 5.</p>
 
 <p class="post-p">Let's give ourself a short snippet of Python to run, so we can see how the output differs as <code>PYTHON_LLTRACE</code> increases. If this code seems a bit contrived - it is!</p>
 
@@ -305,7 +305,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, targ
 # ... 20,000 more lines of this</code></pre>
 
 <h4 class="underline post-h4"><code class="nocode">LLTRACE=4</code></h4>
-<p class="post-p">At least in the build we're working with, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
+<p class="post-p">As of Python 3.13.0b2, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
 
 <h4 class="underline post-h4"><code class="nocode">LLTRACE=5</code></h4>
 <p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any* Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
@@ -1240,7 +1240,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 886, targ
 
 <h2 class="post-h2" id="stats">Gathering Statistics</h2>
 <p class="post-p">Seeing the raw debug output as traces are created, optimized, and exited is useful for debugging the JIT, or perhaps short programs. But once your program grows to any appreciable size, these debug files become simply enormous. (The <code>PYTHON_LLTRACE=3</code> output for the simple snippet above is over 20,00 lines long). In such a case, a collection of collated stats would be more helpful.</p>
-<p class="post-p">Python will generate stats about the Tier 2 interpreter and JIT (and many other things) if configured with yet another comfigure flag: <code>--enable-pystats</code>. Any code run with the <code>-X pystats</code> command line option will dump a statistics files to <code>/tmp/py_stats</code>. Note that this director must exist <span class="italic">before</span> the code is run, as it will not be created for you.</p>
+<p class="post-p">Python will generate stats about the Tier 2 interpreter and JIT (and many other things) if configured with yet another configure flag: <code>--enable-pystats</code>. Any code run with the <code class="codegray">-X pystats</code> command line option will dump a statistics files to <code>/tmp/py_stats</code>. Note that this directory must exist <span class="italic">before</span> the code is run, as it will not be created for you.</p>
 <div class="m-2 border-2 border-gray-400">
 <div class="m-1">
 {{< highlight "shell" "linenostart=1" >}}
@@ -2868,5 +2868,8 @@ Rare event (watched_globals_modification): 0
 code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
     --tw-text-opacity: 1;
     color: rgba(5, 120, 85, var(--tw-text-opacity));
+}
+code.codegray{
+    background-color: #e5e7eb;
 }
 </style>
