@@ -1,6 +1,6 @@
 ---
-title: "How to Try Out the new CPython JIT"
-date: 2024-06-02T15:43:59-04:00
+title: "How to Get the new CPython JIT"
+date: 2024-06-09T15:43:59-04:00
 draft: true
 tags:
 - python
@@ -2833,6 +2833,25 @@ Rare event (watched_globals_modification): 0
 <p class="post-p">This will create quite a few (~87!) temporary venvs and run each benchmark a single time, gathering stats as it goes. Running <code>summarize_stats.py</code> over these generated stats gives us something like:</p>
 
 <iframe src="/html/pystats_stats.html" frameborder="2" class="w-full border-2 border-gray-400 h-96"></iframe>
+
+<h2 class="post-h2" id="conclusion">Conclusion</h2>
+<p class="post-p">So, what can you do with the JIT? It isn't, at the moment, any fast than CPython without the JIT... so why turn it on?</p>
+<p class="post-p"><span class="font-semibold">Test it Against Your Code.</span> The JIT is brand-spanking-new, and while it passes the full CPython test suite, the real test of its durability is how it survives against real-world code. I'd encourage you to try to turning on the JIT, seeing what happens, and submitting any bugs you find!</p>
+<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> jit ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span></p>
+<p class="post-p"><span class="font-semibold">Mess Around!</span> Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?</p>
+<p class="post-p">As always, I'd love to hear from corrections and comments, via <a href="#" id="mlink">Email</a>, on <a href="https://x.com/jeffersglass">Twitter</a>, or on <a href="https://mastodon.social/@jeffglass">Mastodon</a>.</p>
+
+<script>
+    /* 1. define variables */
+    var me = "glass.jeffrey";
+    var place = "gmail.com";
+    
+    /* 2. find email link to replace */
+    var elink = document.getElementById("mlink");
+    
+    /* 3. replace link href with variables  */
+    elink.href = `mailto:${me}@${place}`;
+    </script>
 
 <style>
 code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
