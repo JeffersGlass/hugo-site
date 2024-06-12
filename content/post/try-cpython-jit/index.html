@@ -53,7 +53,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 </div>
 <h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
 <p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please <a href="#conclusion">let me know</a> if I'm wrong.) So, we'll have to build our own!</p>
-<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. I'm only going to be covering the Linux build here - the flags for the windows builds are the same, but the commands are quite different, so follow along with the windows dev guide and you'll be ok.</p>  
+<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. This post is written assuming you're building in a POSIX/Linux environment - see the section at the end for <a href="#windows">information on building for Windows</a>.</p>  
 <p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
 <ul class="post-ul">
     <li>Installed <code>git</code> and <code>make</code> </li>
@@ -69,7 +69,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
     <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes-off</code></div>
     <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off. See the notes on <a href="#PYTHON_JIT">PYTHON_JIT</a> below.</div>
     <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=interpreter</code></div>
-    <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted. Provides no performance enhancement, but currently provides more debuggability than the full JIT.</div>
+    <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted... and then they're not actually jitted. It runs exactly the same code as the JIT itself, but skips the copy-and-patch step. Performs worse than running with the full JIT, but currently provides more debuggability.</div>
     <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=no</code></div>
     <div>The same as not passing this flag. Just for comprehensiveness, I suppose.</div>
 </div>
@@ -2856,6 +2856,9 @@ Rare event (watched_globals_modification): 0
 </ul></p>
 <p class="post-p"><span class="font-semibold">Mess Around!</span> Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?</p>
 <p class="post-p">As always, I'd love to hear from corrections and comments, via <a href="#" id="mlink">Email</a>, on <a href="https://x.com/jeffersglass">Twitter</a>, or on <a href="https://mastodon.social/@jeffglass">Mastodon</a>.</p>
+
+<h2 class="post-h2" id="windows">Addendum: Building for Windows</h2>
+<p class="post-p"></p>
 
 <script>
     /* 1. define variables */
