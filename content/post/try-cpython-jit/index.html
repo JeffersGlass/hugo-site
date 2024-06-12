@@ -2850,15 +2850,26 @@ Rare event (watched_globals_modification): 0
 <ul class="post-ul">
     <li>Check out the freshly-built <code>jit_stencils.h</code> file at the root of the repo, which contains the actual stencils that Python will fill in and JIT at runtime.</li>
     <li>Search for <code class="bg-gray-200">#ifdef _Py_JIT</code> and <code class="bg-gray-200">#ifndef _Py_JIT</code></li>
-    <li>Search for<code class="bg-gray-200">#ifdef _Py_TIER2</code> and <code class="bg-gray-200">#ifndef _Py_TIER2</code></li>
-    <li>Look at <code>jit.c</code></li>
+    <li>Search for <code class="bg-gray-200">#ifdef _Py_TIER2</code> and <code class="bg-gray-200">#ifndef _Py_TIER2</code></li>
+    <li>Look at <code>jit.c</code> to peek at how the JIT is implemented at runtime.</li>
     <li>Look at the <code class="bg-gray-200">tier2_dispatch</code> label in <code>ceval.c</code></li>
 </ul></p>
 <p class="post-p"><span class="font-semibold">Mess Around!</span> Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?</p>
 <p class="post-p">As always, I'd love to hear from corrections and comments, via <a href="#" id="mlink">Email</a>, on <a href="https://x.com/jeffersglass">Twitter</a>, or on <a href="https://mastodon.social/@jeffglass">Mastodon</a>.</p>
 
 <h2 class="post-h2" id="windows">Addendum: Building for Windows</h2>
-<p class="post-p"></p>
+<p class="post-p">If you're building for Windows, instead of having separate <code>configure</code> and <code>make</code> steps, you'll be passing build options directly to <code>PCBuild/build.bat</code>. The equivalent options to those <a href="#configuring">discussed earlier</a> discussed earlier</div> are:</p>
+<div class="grid w-1/2 grid-cols-1 border-2 border-gray-400 align-center md:grid-cols-2 ">
+    <div class="font-semibold bg-gray-200 border-r-2 border-gray-400"><code class="items-center float-right mr-4 text-right">Linux/POSIX</code></div>
+    <div class="font-semibold bg-gray-200"><code>  Windows</code></div>
+    <div class="bg-gray-200 border-r-2 border-gray-400"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes</code></div>
+    <div class="bg-gray-200"><code>--experimental-jit</code></div>
+    <div class="border-r-2 border-gray-400 "><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes-off</code></div>
+    <div class=""><code>--experimental-jit-off</code></div>
+    <div class="bg-gray-200 border-r-2 border-gray-400"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=interpreter</code></div>
+    <div class="bg-gray-200"><code>--experimental-jit-interpreter</code></div>
+</div>
+<p class="post-">You'll also need to unique setup steps for <a href="https://web.archive.org/web/20220907075854/https://cpython-core-tutorial.readthedocs.io/en/latest/build_cpython_windows.html">building Python on Windows</a>, as described by Victor Stinner. The <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT README</a> describes how to install LLVM on Windows as well.</p>
 
 <script>
     /* 1. define variables */
