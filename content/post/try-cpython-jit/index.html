@@ -53,7 +53,8 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 </div>
 <h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
 <p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please <a href="#conclusion">let me know</a> if I'm wrong.) So, we'll have to build our own!</p>
-<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive. This post is written assuming you're building in a POSIX/Linux environment - see the section at the end for <a href="#windows">information on building for Windows</a>.</p>  
+<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive.</p>
+<p class="post-p">This post is written assuming you're building in a POSIX/Linux environment - see the section at the end for <a href="#windows">information on building for Windows</a>.</p>  
 <p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
 <ul class="post-ul">
     <li>Installed <code>git</code> and <code>make</code> </li>
@@ -118,7 +119,8 @@ make
 <p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a special environment variable that will print out what's going on with the JIT in realtime. Setting <code class="codegray">PYTHON_LLTRACE=X</code> will display increasing volumes of information as X increases from 1 to 5.</p>
 
 <p class="post-p">Let's give ourself a short snippet of Python to run, so we can see how the output differs as <code>PYTHON_LLTRACE</code> increases. If this code seems a bit contrived - it is!</p>
-
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">  
 {{< highlight "python3" "linenostart=1" >}}
 # src.py
 x = 0
@@ -129,6 +131,8 @@ for i in range(2000):
         x += i * 2
 print(x)
 {{< /highlight >}}
+</div>
+</div>
 
 <h4 class="underline post-h4"><code class="nocode">LLTRACE=1</code></h4>
 <p class="post-p">The lowest value of <code>LLTRACE</code> will print minimal messages, indicating that traces were created and where but providing no real detail. It also enables the printing of any optimization errors, like <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L441-L443">unknown opcodes</a> or <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L452-L455">running out of space to store traces</a>.</p>
