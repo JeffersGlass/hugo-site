@@ -48,7 +48,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
         <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
         <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
         <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno. (A similar talk appeared at PyConUS 2024 and will be linked here when available).</li>
-        <li>The internals of the <a href="https://github.com/python/cpython/pull/113465">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
+        <li>The internals of the <a href="https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
     </ul>
 </div>
 <h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
@@ -58,6 +58,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <ul class="post-ul">
     <li>Installed <code>git</code> and <code>make</code> </li>
     <li>Cloned the CPython repo locally. All the examples on this page use specifically the <code>v3.13.0b2</code> beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.</li>
+    <li>Installed LLVM as described in the <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT-build README</a>. At time-of-writing you should be using LLVM 18, but that may change any time.</li>
 </ul>
 <h3 class="post-h3" id="configuring">Configuring the JIT</h3>
 <p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script that lives in the root of the CPython repo: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
@@ -65,8 +66,8 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <div class="grid grid-cols-1 border-2 border-gray-400 md:grid-cols-2 gap-y-4">
     <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes</code></div>
     <div class="bg-gray-200">Enables a JIT build; The same as not passing a specific value of this flag at all</div>
-    <div><code class="items-center float-right mr-4 text-right">--enable the-experimental-jit=yes-off</code></div>
-    <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off.</div>
+    <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes-off</code></div>
+    <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off. See the notes on <a href="#PYTHON_JIT">PYTHON_JIT</a> below.</div>
     <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=interpreter</code></div>
     <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted. Provides no performance enhancement, but currently provides more debuggability than the full JIT.</div>
     <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=no</code></div>
@@ -99,6 +100,10 @@ make -j4
 </div>
 </div>
 <p class="post-p">At this point, running with JIT is, on average, about as fast as running without the JIT, so you're not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?</p>
+
+<h3 class="post-h3" id="PYTHON_JIT">Turning the JIT On and Off</h3>
+<p class="post-p">Even if you've built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be acheived by setting the environment variable <code>PYTHON_JIT</code> to <code>"1"</code> (for enabled) or <code>"0"</code> (for disabled). Building with <code>--enable-experimtanl-jit=yes-off</code> will disable the JIT when Python starts. Changing <code>PYTHON_JIT</code> at any point during execution (i.e. by using <code class="codegray">os.environ['PYTHON_JIT'] = 1</code>) will also enable and disable the JIT at runtime.</p>
+<p class="post-p">There's been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbarge collected, etc. However, there's <a href="https://discuss.python.org/t/pep-744-jit-compilation/50756/8">hesitancy to introduce "official" API's while the JIT is still experimental</a>. Which makes sense <span class="italic">No is temporary, yes is forever</span>.</p>
 
 <h3 class="post-h3" id="debugging">Debugging and Displaying Output</h3>
 <p class="post-p">With a debug build of Python, we'll have more options for displaying JIT output. Let's reconfigure and rebuild Python with:</p>
@@ -308,9 +313,8 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, targ
 <p class="post-p">As of Python 3.13.0b2, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
 
 <h4 class="underline post-h4"><code class="nocode">LLTRACE=5</code></h4>
-<p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any* Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
+<p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
 <p class="post-p">Buried in the middle of this, you can see similar JIT/UOp/Trace information as at level 3/4.</p>
-<p class="post-p italic">*Except in frames that are owned by the C Stack, i.e. C extensions calling into Python.</p>
 <pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=5 ./python src.py</code>
 <code>
 Resuming frame for &#39;&lt;module&gt;&#39; in module &#39;_frozen_importlib&#39;
@@ -2812,7 +2816,7 @@ Rare event (watched_globals_modification): 0
 </code>
 </pre>
 
-<p class="post-p">Python bundles a script in its source repo that loads all the stats files in <code>/tmp/py_stats</code> and creates an nice HTML summary of all of them:</p>
+<p class="post-p">Python bundles a script in its source repo that loads all the stats files in <code>/tmp/py_stats</code> and creates an nice Markdown summary of all of them:</p>
 <div class="m-2 border-2 border-gray-400">
 <div class="m-1">
 {{< highlight "shell" "linenostart=1" >}}
@@ -2841,9 +2845,10 @@ Rare event (watched_globals_modification): 0
 <h2 class="post-h2" id="conclusion">Conclusion</h2>
 <p class="post-p">So, what can you do with the JIT? It isn't, at the moment, any fast than CPython without the JIT... so why turn it on?</p>
 <p class="post-p"><span class="font-semibold">Test it Against Your Code.</span> The JIT is brand-spanking-new, and while it passes the full CPython test suite, the real test of its durability is how it survives against real-world code. I'd encourage you to try to turning on the JIT, seeing what happens, and submitting any bugs you find!</p>
-<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> jit ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span>.</p>
+<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span>.</p>
 <p class="post-p">Some specific things to look at in the CPython codebase:
 <ul class="post-ul">
+    <li>Check out the freshly-built <code>jit_stencils.h</code> file at the root of the repo, which contains the actual stencils that Python will fill in and JIT at runtime.</li>
     <li>Search for <code class="bg-gray-200">#ifdef _Py_JIT</code> and <code class="bg-gray-200">#ifndef _Py_JIT</code></li>
     <li>Search for<code class="bg-gray-200">#ifdef _Py_TIER2</code> and <code class="bg-gray-200">#ifndef _Py_TIER2</code></li>
     <li>Look at <code>jit.c</code></li>
