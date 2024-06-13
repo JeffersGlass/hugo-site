@@ -29,3 +29,37 @@ First bad commit: "1ab6356ebec25f216a0eddbd81225abcb93f2d55" https://github.com/
 
 Find good commit:
 ! ((rm -rf ./venv || true) && make clean && ./configure --enable-experimental-jit --with-pydebug && make -j8 && ./python -m venv venv && ./venv/bin/python -m pip install pyperformance)
+
+-----
+
+On 3.13 Branch:
+first bad commit:
+beb653cc24275025708758d444835db2ddbb74e4
+or
+1ab6356ebec25f216a0eddbd81225abcb93f2d55
+
+[3.13] Ensurepip fails when built with `--enable-experimental-jit` and `--with-pydebug` (Linux)
+
+When building for Linux/X64, the 3.13 branch will not run successfully run `python -m ensurepip` if built with both `--enable-experimental-jit` and `--with-pydebug`:
+
+```sh
+git checkout 3.13
+make clean
+./configure --enable-experimental-jit --with-pydebug
+./python -m ensurepip
+```
+
+This fails with an error message like:
+```sh
+subprocess.CalledProcessError: Command '['/home/jglass/Documents/cpython/python', '-W', 'ignore::DeprecationWarning', '-c', '\nimport runpy\nimport sys\nsys.path = [\'/tmp/tmpsu81mj6o/pip-24.0-py3-none-any.whl\'] + sys.path\nsys.argv[1:] = [\'install\', \'--no-cache-dir\', \'--no-index\', \'--find-links\', \'/tmp/tmpsu81mj6o\', \'pip\']\nrunpy.run_module("pip", run_name="__main__", alter_sys=True)\n']' died with <Signals.SIGABRT: 6>.
+```
+
+Building with either config flag individually successfully builds.
+
+Build Details:
+```py
+$ ./python -VV
+Python 3.13.0b2+ (heads/3.13:ff358616ddb, Jun 12 2024, 21:17:57) [GCC 11.4.0]
+```
+
+Built on Ubuntu 22.04; same failure on two separate machines. This build currently succeeds on main (`030b452e`).
