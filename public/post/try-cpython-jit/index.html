@@ -1,0 +1,3189 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>How to Get the New CPython JIT</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/try-cpython-jit/get-jit-featured.png"/>
+<meta name="twitter:title" content="How to Get the New CPython JIT"/>
+<meta name="twitter:description" content="How to Build and Run CPython&#39;s New JIT Compiler"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">How to Get the New CPython JIT</h1>
+				<p>Published June 9, 2024</p>
+				
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/cpython">cpython</a>
+					
+					<a href="../../tags/pyperformance">pyperformance</a>
+					
+					<a href="../../tags/jit">JIT</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					<h2 class="post-h2">TL;DR</h2>
+<p class="post-p">To just build and run with the JIT:</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#09f;font-style:italic"># Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)</span>
+git clone --depth <span style="color:#f60">1</span> --branch v3.13.0b3 https://github.com/python/cpython.git
+<span style="color:#366">cd</span> cpython
+./configure --enable-experimental-jit
+make
+./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+
+<p class="post-p">To include some debug output, to show the JIT is running:</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#09f;font-style:italic"># Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)</span>
+git clone --depth <span style="color:#f60">1</span> --branch v3.13.0b3 https://github.com/python/cpython.git
+<span style="color:#366">cd</span> cpython
+./configure --enable-experimental-jit --with-pydebug
+make
+<span style="color:#033">PYTHON_LLTRACE</span><span style="color:#555">=</span><span style="color:#f60">2</span> ./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+
+<h2 class="post-h2" id="full-story">Trying CPython's JIT</h2>
+<p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
+<p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
+<p class="post-p">Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before <span class="italic">the time that code is actually run.</span> In the case of CPython's new JIT, that's done by a method called <span class="italic font-semibold">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
+<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR's, I want to share the how <span class="italic">you</span> can get a copy of Python with the JIT enabled to play with as well. We'll also see some ways to get additional debug output, for those who really want to see the sausage get made.</p>
+<div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
+    <ul class="post-ul">
+        <li><a href="https://peps.python.org/pep-0744/">PEP 744 - Jit Compilation</a>: an informational PEP on the thinking behind and basic approach to the copy-and-patch technique.</li>
+        <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
+        <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
+        <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno. (A similar talk appeared at PyConUS 2024 and will be linked here when available).</li>
+        <li>The internals of the <a href="https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
+    </ul>
+</div>
+<h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
+<p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please <a href="#conclusion">let me know</a> if I'm wrong.) So, we'll have to build our own!</p>
+<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive.</p>
+<p class="post-p">This post is written assuming you're building in a POSIX/Linux environment - see the section at the end for <a href="#windows">information on building for Windows</a>.</p>  
+<p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
+<ul class="post-ul">
+    <li>Installed <code>git</code> and <code>make</code> </li>
+    <li>Cloned the CPython repo locally. All the examples on this page use specifically the <code>v3.13.0b3</code> beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.</li>
+    <li>Installed LLVM as described in the <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT-build README</a>. At time-of-writing you should be using LLVM 18, but that may change any time.</li>
+</ul>
+<h3 class="post-h3" id="configuring">Configuring the JIT</h3>
+<p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script that lives in the root of the CPython repo: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
+
+<div class="grid grid-cols-1 border-2 border-gray-400 md:grid-cols-2 gap-y-4">
+    <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes</code></div>
+    <div class="bg-gray-200">Enables a JIT build; The same as not passing a specific value of this flag at all</div>
+    <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes-off</code></div>
+    <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off. See the notes on <a href="#PYTHON_JIT">PYTHON_JIT</a> below.</div>
+    <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=interpreter</code></div>
+    <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted... and then they're not actually jitted. It runs exactly the same code as the JIT itself, but skips the copy-and-patch step. Performs worse than running with the full JIT, but currently provides more debuggability.</div>
+    <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=no</code></div>
+    <div>The same as not passing this flag. Just for comprehensiveness, I suppose.</div>
+</div>
+
+<p class="post-p">That's all the configuring you'll need to do! There are some additional configuration flags you <span class="italic">can</span> pass, but we'll touch on those more in the <a href="#debugging">debugging</a> and <a href="#stats">gathering statistics</a> sections.</p>
+
+<h3 class="post-h3" id="building">Building the JIT</h3>
+<p class="post-p">Python's <code>configure</code> script will drop a Makefile into the root of the CPython repo, which has all the configuration options baked in. Once that's finished building, you can simply run <code class="codegray">make</code>... or, if you want a little time back, <code class="codegray">make -jX</code>, where <code>X</code> is the number of separate build threads to run in parallel. Staring with the number of processors on your computer (discoverable by running <code class="codegray">nproc</code>) is a decent place to start, but it's worth experimenting up or down to see how it affects build time.</p>
+<p class="post-p">If you're rebuilding often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what <code class="codegray">make clean</code> (and its more aggressive partner <code class="codegray">make distclean</code>) are for. <code>clean</code> just removes generated files, while <code>distclean</code> removes generated files too, including the Makefile!</p>
+<p class="post-p">So to summarize - once you've cloned the CPython repo, all you need to do to build the JIT is:</p>
+
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./configure --enable-experimental-jit
+make -j4</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+
+<h2 class="post-h2" id="running">Running the JIT</h2>
+<p class="post-p">When the makefile completes, you should have an executable called <code>python</code> sitting in the root of the repo! Running code with it now will make use of the JIT!</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+<p class="post-p">At this point, running with JIT is, on average, about as fast as running without the JIT, so you're not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?</p>
+
+<h3 class="post-h3" id="PYTHON_JIT">Turning the JIT On and Off</h3>
+<p class="post-p">Even if you've built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be achieved by setting the environment variable <code>PYTHON_JIT</code> to <code>"1"</code> (for enabled) or <code>"0"</code> (for disabled). Building with <code>--enable-experimtanl-jit=yes-off</code> will disable the JIT when Python starts. Changing <code>PYTHON_JIT</code> at any point during execution (i.e. by using <code class="codegray">os.environ['PYTHON_JIT'] = 1</code>) will also enable and disable the JIT at runtime.</p>
+<p class="post-p">There's been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbage collected, etc. However, there's <a href="https://discuss.python.org/t/pep-744-jit-compilation/50756/8">hesitancy to introduce "official" API's while the JIT is still experimental</a>. Which makes sense <span class="italic">No is temporary, yes is forever</span>.</p>
+
+<h3 class="post-h3" id="debugging">Debugging and Displaying Output</h3>
+<p class="post-p">With a debug build of Python, we'll have more options for displaying JIT output. Let's reconfigure and rebuild Python with:</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./configure --enable-experimental-jit --with-pydebug
+make</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+<p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a couple of special environment variables that will print out what's going on with the JIT in realtime. Setting <code class="codegray">PYTHON_LLTRACE=X</code> will display increasing volumes of information about individual "traces", or sequences of opcodes/micro-opcodes, as X increases from 1 to 5. Similarly, <code class="codegray">PYTHON_OPT_DEBUG=X</code> prints information about how the optimizer is optimizing traces of micro-opcodes, as X ranges from 1 to 3.</p>
+
+<p class="post-p">Let's give ourself a short snippet of Python to run, so we can see how the output differs as we change these environment variables. If this code seems a bit contrived - it is!</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">  
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#09f;font-style:italic"># src.py</span>
+x <span style="color:#555">=</span> <span style="color:#f60">0</span>
+<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">2000</span>):
+    <span style="color:#069;font-weight:bold">if</span> x <span style="color:#555">%</span> <span style="color:#f60">10</span>:
+        x <span style="color:#555">+=</span> i
+    <span style="color:#069;font-weight:bold">else</span>:
+        x <span style="color:#555">+=</span> i <span style="color:#555">*</span> <span style="color:#f60">2</span>
+<span style="color:#366">print</span>(x)</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=1</code></h4>
+<p class="post-p">The lowest value of <code>LLTRACE</code> will print minimal messages, indicating that traces were created and where but providing no real detail.</p>
+
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=1 ./python src.py</code>
+<code>Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+1999001
+</code></pre>
+
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=2</code></h4>
+
+<p class="post-p">Increasing <code>LLTRACE</code> to two opens up many more details. We can see each UOp as it's added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and <a href="https://github.com/python/cpython/pull/119354#issuecomment-2138473361">target</a> of each UOp if any. (Since the operands are unique-per-run and machine-specific, I'm filtering them out here to make comparison easier.)</p>
+<p class="post-p">You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920">flagged here</a>.</p>
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=2 ./python src.py</code>
+<code>1999001
+    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+       1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
+    29: JUMP_BACKWARD(20)
+       2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0xDEADBEEF)
+       3 ADD_TO_TRACE: _TIER2_RESUME_CHECK (0, target=29, operand=0)
+    11: FOR_ITER_RANGE(28)
+       4 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=11, operand=0xDEADBEEF)
+       5 ADD_TO_TRACE: _ITER_CHECK_RANGE (28, target=11, operand=0)
+       6 ADD_TO_TRACE: _GUARD_NOT_EXHAUSTED_RANGE (28, target=11, operand=0)
+       7 ADD_TO_TRACE: _ITER_NEXT_RANGE (28, target=11, operand=0, error_target=0)
+    13: STORE_NAME(2)
+       8 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=13, operand=0xDEADBEEF)
+       9 ADD_TO_TRACE: _STORE_NAME (2, target=13, operand=0, error_target=0)
+    14: LOAD_NAME(0)
+      10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+    Unsupported opcode LOAD_NAME
+      11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
+    Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+    Optimized trace (length 15):
+       0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF)
+       1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
+       2 OPTIMIZED: _ITER_CHECK_RANGE (28, jump_target=10, operand=0)
+       3 OPTIMIZED: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0)
+       4 OPTIMIZED: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12)
+       5 OPTIMIZED: _SET_IP (0, target=13, operand=0xDEADBEEF)
+       6 OPTIMIZED: _STORE_NAME (2, jump_target=0, operand=0, error_target=13)
+       7 OPTIMIZED: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF)
+       8 OPTIMIZED: _EXIT_TRACE (0, exit_index=0, operand=0)
+       9 OPTIMIZED: _DEOPT (0, target=29, operand=0)
+      10 OPTIMIZED: _EXIT_TRACE (0, exit_index=1, operand=0)
+      11 OPTIMIZED: _EXIT_TRACE (0, exit_index=2, operand=0)
+      12 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xb)
+      13 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xd)
+      14 OPTIMIZED: _DEOPT (0, target=14, operand=0)
+    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+       1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
+    14: LOAD_NAME(0)
+       2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+    Unsupported opcode LOAD_NAME
+    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+       1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
+    14: LOAD_NAME(0)
+       2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+    Unsupported opcode LOAD_NAME
+    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+       1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
+    14: LOAD_NAME(0)
+       2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+    Unsupported opcode LOAD_NAME
+    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+       1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
+    14: LOAD_NAME(0)
+       2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+    Unsupported opcode LOAD_NAME
+    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    
+</code></pre>
+
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=3</code></h4>
+<p class="post-p">In a normal JIT build, <code>PYTHON_LLTRACE=2</code> and <code>PYTHON_LLTRACE=3</code> are exactly the same! (At least as of the current build). But if you build with only the Tier 2 interpreter and not the JIT, you do get a few more messages about side exits and cold exists... or a lot more, depending on your code:</p>
+
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=3 ./python src.py <span class="text-blue-800"># built with --enable-experimental-jit=interpreter</span></code>
+code>Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+   1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
+29: JUMP_BACKWARD(20)
+   2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0xDEADBEEF)
+   3 ADD_TO_TRACE: _TIER2_RESUME_CHECK (0, target=29, operand=0)
+11: FOR_ITER_RANGE(28)
+   4 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=11, operand=0xDEADBEEF)
+   5 ADD_TO_TRACE: _ITER_CHECK_RANGE (28, target=11, operand=0)
+   6 ADD_TO_TRACE: _GUARD_NOT_EXHAUSTED_RANGE (28, target=11, operand=0)
+   7 ADD_TO_TRACE: _ITER_NEXT_RANGE (28, target=11, operand=0, error_target=0)
+13: STORE_NAME(2)
+   8 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=13, operand=0xDEADBEEF)
+   9 ADD_TO_TRACE: _STORE_NAME (2, target=13, operand=0, error_target=0)
+14: LOAD_NAME(0)
+  10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+Unsupported opcode LOAD_NAME
+  11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
+Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+Optimized trace (length 15):
+   0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF)
+   1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
+   2 OPTIMIZED: _ITER_CHECK_RANGE (28, jump_target=10, operand=0)
+   3 OPTIMIZED: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0)
+   4 OPTIMIZED: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12)
+   5 OPTIMIZED: _SET_IP (0, target=13, operand=0xDEADBEEF)
+   6 OPTIMIZED: _STORE_NAME (2, jump_target=0, operand=0, error_target=13)
+   7 OPTIMIZED: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF)
+   8 OPTIMIZED: _EXIT_TRACE (0, exit_index=0, operand=0)
+   9 OPTIMIZED: _DEOPT (0, target=29, operand=0)
+  10 OPTIMIZED: _EXIT_TRACE (0, exit_index=1, operand=0)
+  11 OPTIMIZED: _EXIT_TRACE (0, exit_index=2, operand=0)
+  12 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xb)
+  13 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xd)
+  14 OPTIMIZED: _DEOPT (0, target=14, operand=0)
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0xDEADBEEF) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, target 14 -&gt; LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0xDEADBEEF) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, target 14 -&gt; LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0xDEADBEEF) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, target 14 -&gt; LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0xDEADBEEF) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, target 14 -&gt; LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0xDEADBEEF) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, target 14 -&gt; LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0xDEADBEEF) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+# ... 20,000 more lines of this</code></pre>
+
+<h4 class="underline post-h4"><code class="nocode">LLTRACE=4</code></h4>
+<p class="post-p">As of Python 3.13.0b3, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
+
+<h4 class="underline post-h4"><code class="nocode">PYTHON_LLTRACE=5</code></h4>
+<p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
+<p class="post-p">Buried in the middle of this, you can see similar JIT/UOp/Trace information as at level 3/4.</p>
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=5 ./python src.py</code>
+<code>
+Resuming frame for &#39;&lt;module&gt;&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_CONST 0
+    stack=[&#39;Core implementation of import.\n\nThis module is NOT meant to be directly imported! It has been designed such\nthat it can be bootstrapped into Python as the implementation of import. As\nsuch it requires the injection of specific modules and attributes in order to\nwork. One should use importlib as the public-facing version of this module.\n\n&#39;]
+4: STORE_NAME 0
+    stack=[]
+6: LOAD_CONST 1
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+8: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+10: STORE_NAME 1
+    stack=[]
+12: LOAD_CONST 2
+    stack=[None]
+14: STORE_NAME 2
+    stack=[]
+16: LOAD_CONST 2
+    stack=[None]
+18: STORE_NAME 3
+    stack=[]
+20: LOAD_CONST 2
+    stack=[None]
+22: STORE_NAME 4
+    stack=[]
+24: LOAD_CONST 2
+    stack=[None]
+26: STORE_GLOBAL 5
+    stack=[]
+28: LOAD_CONST 3
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+30: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+32: STORE_NAME 6
+    stack=[]
+34: LOAD_CONST 4
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+36: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+38: STORE_NAME 7
+    stack=[]
+40: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+42: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+44: LOAD_CONST 5
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+46: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+48: LOAD_CONST 6
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_List&#39;]
+50: LOAD_NAME 8
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_List&#39;, &lt;type at 0xDEADBEEF&gt;]
+52: CALL 3
+
+Resuming frame for &#39;_List&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_NAME 0
+    stack=[&#39;_frozen_importlib&#39;]
+4: STORE_NAME 1
+    stack=[]
+6: LOAD_CONST 0
+    stack=[&#39;_List&#39;]
+8: STORE_NAME 2
+    stack=[]
+10: LOAD_CONST 1
+    stack=[55]
+12: STORE_NAME 3
+    stack=[]
+14: LOAD_CONST 2
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+16: STORE_NAME 4
+    stack=[]
+18: LOAD_CONST 3
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+20: STORE_NAME 5
+    stack=[]
+22: RETURN_CONST 4
+    stack=[&lt;type at 0xDEADBEEF&gt;]
+60: STORE_NAME 9
+    stack=[]
+62: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+64: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+66: LOAD_CONST 7
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+68: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+70: LOAD_CONST 8
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_WeakValueDictionary&#39;]
+72: CALL 2
+
+Resuming frame for &#39;_WeakValueDictionary&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_NAME 0
+    stack=[&#39;_frozen_importlib&#39;]
+4: STORE_NAME 1
+    stack=[]
+6: LOAD_CONST 0
+    stack=[&#39;_WeakValueDictionary&#39;]
+8: STORE_NAME 2
+    stack=[]
+10: LOAD_CONST 1
+    stack=[62]
+12: STORE_NAME 3
+    stack=[]
+14: LOAD_CONST 2
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+16: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+18: STORE_NAME 4
+    stack=[]
+20: LOAD_CONST 3
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+22: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+24: STORE_NAME 5
+    stack=[]
+26: LOAD_CONST 4
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+28: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+30: STORE_NAME 6
+    stack=[]
+32: LOAD_CONST 9
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+34: LOAD_CONST 6
+    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;code at 0xDEADBEEF&gt;]
+36: MAKE_FUNCTION
+    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;function at 0xDEADBEEF&gt;]
+38: SET_FUNCTION_ATTRIBUTE 1
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+40: STORE_NAME 7
+    stack=[]
+42: LOAD_CONST 9
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+44: LOAD_CONST 7
+    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;code at 0xDEADBEEF&gt;]
+46: MAKE_FUNCTION
+    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;function at 0xDEADBEEF&gt;]
+48: SET_FUNCTION_ATTRIBUTE 1
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+50: STORE_NAME 8
+    stack=[]
+52: LOAD_CONST 8
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+54: STORE_NAME 9
+    stack=[]
+56: RETURN_CONST 5
+    stack=[&lt;type at 0xDEADBEEF&gt;]
+80: STORE_NAME 10
+    stack=[]
+82: BUILD_MAP 0
+    stack=[&lt;dict at 0xDEADBEEF&gt;]
+84: STORE_NAME 11
+    stack=[]
+86: LOAD_CONST 2
+    stack=[None]
+88: STORE_GLOBAL 12
+    stack=[]
+90: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+92: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+94: LOAD_CONST 9
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+96: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+98: LOAD_CONST 10
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_BlockingOnManager&#39;]
+100: CALL 2
+
+Resuming frame for &#39;_BlockingOnManager&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_NAME 0
+    stack=[&#39;_frozen_importlib&#39;]
+4: STORE_NAME 1
+    stack=[]
+6: LOAD_CONST 0
+    stack=[&#39;_BlockingOnManager&#39;]
+8: STORE_NAME 2
+    stack=[]
+10: LOAD_CONST 1
+    stack=[156]
+12: STORE_NAME 3
+    stack=[]
+14: LOAD_CONST 2
+    stack=[&#39;A context manager responsible to updating ``_blocking_on``.&#39;]
+16: STORE_NAME 4
+    stack=[]
+18: LOAD_CONST 3
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+20: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+22: STORE_NAME 5
+    stack=[]
+24: LOAD_CONST 4
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+26: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+28: STORE_NAME 6
+    stack=[]
+30: LOAD_CONST 5
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+32: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+34: STORE_NAME 7
+    stack=[]
+36: LOAD_CONST 6
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+38: STORE_NAME 8
+    stack=[]
+40: RETURN_CONST 7
+    stack=[&lt;type at 0xDEADBEEF&gt;]
+108: STORE_NAME 13
+    stack=[]
+110: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+112: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+114: LOAD_CONST 11
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+116: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+118: LOAD_CONST 12
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_DeadlockError&#39;]
+120: LOAD_NAME 14
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_DeadlockError&#39;, &lt;type at 0xDEADBEEF&gt;]
+122: CALL 3
+
+Resuming frame for &#39;_DeadlockError&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_NAME 0
+    stack=[&#39;_frozen_importlib&#39;]
+4: STORE_NAME 1
+    stack=[]
+6: LOAD_CONST 0
+    stack=[&#39;_DeadlockError&#39;]
+8: STORE_NAME 2
+    stack=[]
+10: LOAD_CONST 1
+    stack=[178]
+12: STORE_NAME 3
+    stack=[]
+14: LOAD_CONST 2
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+16: STORE_NAME 4
+    stack=[]
+18: RETURN_CONST 3
+    stack=[&lt;type at 0xDEADBEEF&gt;]
+130: STORE_NAME 15
+    stack=[]
+132: LOAD_CONST 13
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+134: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+136: STORE_NAME 16
+    stack=[]
+138: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+140: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+142: LOAD_CONST 14
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+144: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+146: LOAD_CONST 15
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_ModuleLock&#39;]
+148: CALL 2
+
+Resuming frame for &#39;_ModuleLock&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_NAME 0
+    stack=[&#39;_frozen_importlib&#39;]
+4: STORE_NAME 1
+    stack=[]
+6: LOAD_CONST 0
+    stack=[&#39;_ModuleLock&#39;]
+8: STORE_NAME 2
+    stack=[]
+10: LOAD_CONST 1
+    stack=[226]
+12: STORE_NAME 3
+    stack=[]
+14: LOAD_CONST 2
+    stack=[&#39;A recursive lock implementation which is able to detect deadlocks\n(e.g. thread 1 trying to take locks A then B, and thread 2 trying to\ntake locks B then A).\n&#39;]
+16: STORE_NAME 4
+    stack=[]
+18: LOAD_CONST 3
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+20: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+22: STORE_NAME 5
+    stack=[]
+24: LOAD_CONST 4
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+26: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+28: STORE_NAME 6
+    stack=[]
+30: LOAD_CONST 5
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+32: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+34: STORE_NAME 7
+    stack=[]
+36: LOAD_CONST 6
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+38: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+40: STORE_NAME 8
+    stack=[]
+42: LOAD_CONST 7
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+44: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+46: STORE_NAME 9
+    stack=[]
+48: LOAD_CONST 8
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+50: STORE_NAME 10
+    stack=[]
+52: RETURN_CONST 9
+    stack=[&lt;type at 0xDEADBEEF&gt;]
+156: STORE_NAME 17
+    stack=[]
+158: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+160: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+162: LOAD_CONST 16
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+164: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+166: LOAD_CONST 17
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_DummyModuleLock&#39;]
+168: CALL 2
+
+Resuming frame for &#39;_DummyModuleLock&#39; in module &#39;_frozen_importlib&#39;
+    stack=[]
+0: RESUME 0
+    stack=[]
+2: LOAD_NAME 0
+    stack=[&#39;_frozen_importlib&#39;]
+4: STORE_NAME 1
+    stack=[]
+6: LOAD_CONST 0
+    stack=[&#39;_DummyModuleLock&#39;]
+8: STORE_NAME 2
+    stack=[]
+10: LOAD_CONST 1
+    stack=[389]
+12: STORE_NAME 3
+    stack=[]
+14: LOAD_CONST 2
+    stack=[&#39;A simple _ModuleLock equivalent for Python builds without\nmulti-threading support.&#39;]
+16: STORE_NAME 4
+    stack=[]
+18: LOAD_CONST 3
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+20: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+22: STORE_NAME 5
+    stack=[]
+24: LOAD_CONST 4
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+26: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+28: STORE_NAME 6
+    stack=[]
+30: LOAD_CONST 5
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+32: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+34: STORE_NAME 7
+    stack=[]
+36: LOAD_CONST 6
+    stack=[&lt;code at 0xDEADBEEF&gt;]
+38: MAKE_FUNCTION
+    stack=[&lt;function at 0xDEADBEEF&gt;]
+40: STORE_NAME 8
+    stack=[]
+42: LOAD_CONST 7
+    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+44: STORE_NAME 9
+    stack=[]
+46: RETURN_CONST 8
+    stack=[&lt;type at 0xDEADBEEF&gt;]
+176: STORE_NAME 18
+    stack=[]
+178: LOAD_BUILD_CLASS
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+180: PUSH_NULL
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+182: LOAD_CONST 18
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+184: MAKE_FUNCTION
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+186: LOAD_CONST 19
+    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_ModuleLockManager&#39;]
+188: CALL 2
+
+# ... 100,000 lines later
+Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+    1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
+29: JUMP_BACKWARD(20)
+    2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0xDEADBEEF)
+    3 ADD_TO_TRACE: _TIER2_RESUME_CHECK (0, target=29, operand=0)
+11: FOR_ITER_RANGE(28)
+    4 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=11, operand=0xDEADBEEF)
+    5 ADD_TO_TRACE: _ITER_CHECK_RANGE (28, target=11, operand=0)
+    6 ADD_TO_TRACE: _GUARD_NOT_EXHAUSTED_RANGE (28, target=11, operand=0)
+    7 ADD_TO_TRACE: _ITER_NEXT_RANGE (28, target=11, operand=0, error_target=0)
+13: STORE_NAME(2)
+    8 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=13, operand=0xDEADBEEF)
+    9 ADD_TO_TRACE: _STORE_NAME (2, target=13, operand=0, error_target=0)
+14: LOAD_NAME(0)
+    10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
+Unsupported opcode LOAD_NAME
+    11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
+Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+Optimized trace (length 15):
+    0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF)
+    1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
+    2 OPTIMIZED: _ITER_CHECK_RANGE (28, jump_target=10, operand=0)
+    3 OPTIMIZED: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0)
+    4 OPTIMIZED: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12)
+    5 OPTIMIZED: _SET_IP (0, target=13, operand=0xDEADBEEF)
+    6 OPTIMIZED: _STORE_NAME (2, jump_target=0, operand=0, error_target=13)
+    7 OPTIMIZED: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF)
+    8 OPTIMIZED: _EXIT_TRACE (0, exit_index=0, operand=0)
+    9 OPTIMIZED: _DEOPT (0, target=29, operand=0)
+    10 OPTIMIZED: _EXIT_TRACE (0, exit_index=1, operand=0)
+    11 OPTIMIZED: _EXIT_TRACE (0, exit_index=2, operand=0)
+    12 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xb)
+    13 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xd)
+    14 OPTIMIZED: _DEOPT (0, target=14, operand=0)
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+28: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172]
+30: LOAD_CONST 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172, 10]
+32: BINARY_OP 6
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 2]
+36: TO_BOOL_INT
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+48: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172]
+50: LOAD_NAME 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172, 19]
+52: BINARY_OP_ADD_INT 13
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191]
+56: STORE_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+58: ENTER_EXECUTOR 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+28: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191]
+30: LOAD_CONST 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191, 10]
+32: BINARY_OP 6
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 1]
+36: TO_BOOL_INT
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+48: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191]
+50: LOAD_NAME 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191, 20]
+52: BINARY_OP_ADD_INT 13
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211]
+56: STORE_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+58: ENTER_EXECUTOR 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+28: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211]
+30: LOAD_CONST 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211, 10]
+32: BINARY_OP 6
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 1]
+36: TO_BOOL_INT
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+48: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211]
+50: LOAD_NAME 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211, 21]
+52: BINARY_OP_ADD_INT 13
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232]
+56: STORE_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+58: ENTER_EXECUTOR 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+28: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232]
+30: LOAD_CONST 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232, 10]
+32: BINARY_OP 6
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 2]
+36: TO_BOOL_INT
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+48: LOAD_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232]
+50: LOAD_NAME 2
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232, 22]
+52: BINARY_OP_ADD_INT 13
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 254]
+56: STORE_NAME 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+58: ENTER_EXECUTOR 0
+    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    22: FOR_ITER_RANGE 28
+    stack=[<range_iterator at 0x773ee07aab80>, 17]
+26: STORE_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 137]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 137, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 7]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 137]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 137, 17]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 154]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: JUMP_BACKWARD 20
+    stack=[<range_iterator at 0x773ee07aab80>]
+22: FOR_ITER_RANGE 28
+    stack=[<range_iterator at 0x773ee07aab80>, 18]
+26: STORE_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 154]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 154, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 4]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 154]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 154, 18]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 172]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: JUMP_BACKWARD 20
+Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+   1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0x773ee07d83e2)
+29: JUMP_BACKWARD(20)
+   2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0x773ee07d83e2)
+   3 ADD_TO_TRACE: _TIER2_RESUME_CHECK (0, target=29, operand=0)
+11: FOR_ITER_RANGE(28)
+   4 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=11, operand=0x773ee07d83be)
+   5 ADD_TO_TRACE: _ITER_CHECK_RANGE (28, target=11, operand=0)
+   6 ADD_TO_TRACE: _GUARD_NOT_EXHAUSTED_RANGE (28, target=11, operand=0)
+   7 ADD_TO_TRACE: _ITER_NEXT_RANGE (28, target=11, operand=0, error_target=0)
+13: STORE_NAME(2)
+   8 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=13, operand=0x773ee07d83c2)
+   9 ADD_TO_TRACE: _STORE_NAME (2, target=13, operand=0, error_target=0)
+14: LOAD_NAME(0)
+  10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0x773ee07d83c4)
+Unsupported opcode LOAD_NAME
+  11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
+Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+Optimized trace (length 15):
+   0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610)
+   1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
+   2 OPTIMIZED: _ITER_CHECK_RANGE (28, jump_target=10, operand=0)
+   3 OPTIMIZED: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0)
+   4 OPTIMIZED: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12)
+   5 OPTIMIZED: _SET_IP (0, target=13, operand=0x773ee07d83c2)
+   6 OPTIMIZED: _STORE_NAME (2, jump_target=0, operand=0, error_target=13)
+   7 OPTIMIZED: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4)
+   8 OPTIMIZED: _EXIT_TRACE (0, exit_index=0, operand=0)
+   9 OPTIMIZED: _DEOPT (0, target=29, operand=0)
+  10 OPTIMIZED: _EXIT_TRACE (0, exit_index=1, operand=0)
+  11 OPTIMIZED: _EXIT_TRACE (0, exit_index=2, operand=0)
+  12 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xb)
+  13 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xd)
+  14 OPTIMIZED: _DEOPT (0, target=14, operand=0)
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 172]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 172, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 2]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 172]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 172, 19]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 191]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 191]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 191, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 1]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 191]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 191, 20]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 211]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 211]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 211, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 1]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 211]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 211, 21]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 232]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 232]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 232, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 2]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 232]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 232, 22]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 254]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 254]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 254, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 4]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 254]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 254, 23]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 277]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 950, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 277]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 277, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 7]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 277]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 277, 24]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 301]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 934, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 301]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 301, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 1]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 301]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 301, 25]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 326]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 918, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 326]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 326, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 326, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 6]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 326]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 326, 26]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 352]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 902, target 14 -> LOAD_NAME]
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 352]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 352, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 2]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 352]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 352, 27]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 379]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+58: ENTER_EXECUTOR 0
+   0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
+   1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
+   2 uop: _ITER_CHECK_RANGE (28, jump_target=10, operand=0) stack_level=1
+   3 uop: _GUARD_NOT_EXHAUSTED_RANGE (28, jump_target=11, operand=0) stack_level=1
+   4 uop: _ITER_NEXT_RANGE (28, jump_target=0, operand=0, error_target=12) stack_level=1
+   5 uop: _SET_IP (0, target=13, operand=0x773ee07d83c2) stack_level=2
+   6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
+   7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
+   8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 886, target 14 -> LOAD_NAME]Gathering
+   0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
+    stack=[<range_iterator at 0x773ee07aab80>]
+28: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 379]
+30: LOAD_CONST 2
+    stack=[<range_iterator at 0x773ee07aab80>, 379, 10]
+32: BINARY_OP 6
+    stack=[<range_iterator at 0x773ee07aab80>, 9]
+36: TO_BOOL_INT
+    stack=[<range_iterator at 0x773ee07aab80>, True]
+44: POP_JUMP_IF_FALSE 7
+    stack=[<range_iterator at 0x773ee07aab80>]
+48: LOAD_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>, 379]
+50: LOAD_NAME 2
+    stack=[<range_iterator at 0x773ee07aab80>, 379, 28]
+52: BINARY_OP_ADD_INT 13
+    stack=[<range_iterator at 0x773ee07aab80>, 407]
+56: STORE_NAME 0
+    stack=[<range_iterator at 0x773ee07aab80>]
+# 40,00 more lines
+1999001</code></pre>
+
+<h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=1</code></h4>
+<p class="post-p">Once a hot trace has been identified and Python's bytecodes have been broken down into micro-opcodes, the optimizer takes over. It's job is to eliminent unnecessary micro-ops, to make the hot loop of code even shorter.</p>
+<p class="post-p"><code>PYTHON_OPT_DEBUG=1</code> mostly enables printing error messages, like <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L441-L443">unknown opcodes</a> or <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L452-L455">running out of space to store traces</a>. Our little snippet from above isn't showing any error messages, but if we run a short benchmark, we can see the <code>_INIT_CALL_PY_EXACT_ARGS</code> uop complaining about not being able to find the function its operand references:</p>
+
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   ./python -m venv venv
+$   ./venv/bin/python -m pip install pyperformnace
+$   PYTHON_OPT_DEBUG=1 ./venv/bin/python -m pyperformance run -b meteor_contest</code>
+<code>Missing function
+Missing function
+Missing function
+Missing function
+Missing function
+Missing function
+Missing function
+Missing function
+Missing function
+</code>
+</pre>
+
+<h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=2</code></h4>
+<p class="post-p">As of Python 3.13.3, <code>PYTHON_OPT_DEBUG=1</code> and <code>PYTHON_OPT_DEBUG=2</code> are <span class="italic">always exactly the same</span>.</p>
+
+<h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=3</code></h4>
+<p class="post-p">With value 3, <code>PYTHON_OPT_DEBUG</code> will spt out additional information about the UOps being processed, as well as function and code object associated with the UOp <code>_INIT_CALL_PY_EXACT_ARGS</code>. (This is one of those little details that is likely to change... or perhaps already has by the time you read this).</p>
+<!-- <p class="post-p">Let's see the results of running <code>src.py</code> as well as that short benchmark, to see some additional output:</p> -->
+
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-48"><code class="nocode">$   PYTHON_OPT_DEBUG=3 ./python src.py</code>
+<code>   0 abs: _START_EXECUTOR (0, target=32, operand=0x7cd640a50da8) stack_level 1
+    1 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=32, operand=0x7cd640a50da8) stack_level 1
+    2 abs: _TIER2_RESUME_CHECK (0, target=32, operand=0) stack_level 1
+    3 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0x7cd640a50d84) stack_level 1
+    4 abs: _ITER_CHECK_RANGE (34, target=14, operand=0) stack_level 1
+    5 abs: _GUARD_NOT_EXHAUSTED_RANGE (34, target=14, operand=0) stack_level 1
+    6 abs: _ITER_NEXT_RANGE (34, target=14, operand=0, error_target=0) stack_level 2
+    7 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=16, operand=0x7cd640a50d88) stack_level 2
+    8 abs: _STORE_NAME (3, target=16, operand=0, error_target=0) stack_level 1
+    9 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=17, operand=0x7cd640a50d8a) stack_level 1
+</code>
+</pre>
+<!-- 
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-48"><code class="nocode">$   ./python -m venv venv
+$   ./venv/bin/python -m pip install pyperformance
+$   PYTHON_OPT_DEBUG=3 ./venv/bin/python -m pyperformance run -b meteor_contest</code>
+    <code>   0 abs: _START_EXECUTOR (0, target=32, operand=0x7cd640a50da8) stack_level 1
+        1 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=32, operand=0x7cd640a50da8) stack_level 1
+        2 abs: _TIER2_RESUME_CHECK (0, target=32, operand=0) stack_level 1
+        3 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0x7cd640a50d84) stack_level 1
+        4 abs: _ITER_CHECK_RANGE (34, target=14, operand=0) stack_level 1
+        5 abs: _GUARD_NOT_EXHAUSTED_RANGE (34, target=14, operand=0) stack_level 1
+        6 abs: _ITER_NEXT_RANGE (34, target=14, operand=0, error_target=0) stack_level 2
+        7 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=16, operand=0x7cd640a50d88) stack_level 2
+        8 abs: _STORE_NAME (3, target=16, operand=0, error_target=0) stack_level 1
+        9 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=17, operand=0x7cd640a50d8a) stack_level 1
+    </code>
+    </pre> -->
+
+<h2 class="post-h2" id="stats">Gathering Statistics</h2>
+<p class="post-p">Seeing the raw debug output as traces are created, optimized, and exited is useful for debugging the JIT, or perhaps short programs. But once your program grows to any appreciable size, these debug files become simply enormous. (The <code>PYTHON_LLTRACE=3</code> output for the simple snippet above is over 20,00 lines long). In such a case, a collection of collated stats would be more helpful.</p>
+<p class="post-p">Python will generate stats about the Tier 2 interpreter and JIT (and many other things) if configured with yet another configure flag: <code>--enable-pystats</code>. Any code run with the <code class="codegray">-X pystats</code> command line option will dump a statistics files to <code>/tmp/py_stats</code>. Note that this directory must exist <span class="italic">before</span> the code is run, as it will not be created for you.</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#09f;font-style:italic"># Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)</span>
+./configure --enable-experimental-jit --enable-pystats
+make
+mkdir -p /tmp/py_stats
+./python -X pystats src.py</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+
+<p class="post-p">The stats files themselves are fairly readable - and contain statistics about all kinds of things the interpreter did as it ran your code. Here's the actual stats output from running the above snippet - the Tier 2 stats are at the very end, if you care to scroll down:</p>
+<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">opcode[BINARY_SLICE].specializable : 1
+opcode[STORE_SLICE].specializable : 1
+opcode[CACHE].pair_count[POP_TOP] : 22
+opcode[CACHE].pair_count[COPY_FREE_VARS] : 122
+opcode[CACHE].pair_count[MAKE_CELL] : 12
+opcode[CACHE].pair_count[RESUME] : 136
+opcode[CACHE].pair_count[RESUME_CHECK] : 387
+    opcode[BEFORE_WITH].execution_count : 163
+opcode[BEFORE_WITH].pair_count[POP_TOP] : 160
+opcode[BEFORE_WITH].pair_count[STORE_FAST] : 3
+    opcode[BINARY_OP_INPLACE_ADD_UNICODE].execution_count : 12
+opcode[BINARY_OP_INPLACE_ADD_UNICODE].pair_count[JUMP_BACKWARD] : 12
+    opcode[BINARY_SLICE].execution_count : 34
+opcode[BINARY_SLICE].pair_count[BINARY_OP] : 1
+opcode[BINARY_SLICE].pair_count[BUILD_TUPLE] : 7
+opcode[BINARY_SLICE].pair_count[CALL] : 6
+opcode[BINARY_SLICE].pair_count[LOAD_DEREF] : 7
+opcode[BINARY_SLICE].pair_count[STORE_FAST] : 9
+opcode[BINARY_SLICE].pair_count[STORE_NAME] : 1
+opcode[BINARY_SLICE].pair_count[CALL_PY_EXACT_ARGS] : 3
+opcode[BINARY_SUBSCR].specializable : 1
+    opcode[BINARY_SUBSCR].specialization.success : 15
+    opcode[BINARY_SUBSCR].specialization.failure : 4
+    opcode[BINARY_SUBSCR].specialization.hit : 528
+    opcode[BINARY_SUBSCR].specialization.deferred : 70
+    opcode[BINARY_SUBSCR].execution_count : 89
+    opcode[BINARY_SUBSCR].specialization.failure_kinds[0] : 4
+opcode[BINARY_SUBSCR].pair_count[BINARY_SUBSCR] : 4
+opcode[BINARY_SUBSCR].pair_count[FORMAT_SIMPLE] : 4
+opcode[BINARY_SUBSCR].pair_count[POP_TOP] : 1
+opcode[BINARY_SUBSCR].pair_count[PUSH_EXC_INFO] : 5
+opcode[BINARY_SUBSCR].pair_count[RETURN_VALUE] : 1
+opcode[BINARY_SUBSCR].pair_count[BINARY_OP] : 1
+opcode[BINARY_SUBSCR].pair_count[CALL] : 6
+opcode[BINARY_SUBSCR].pair_count[LOAD_CONST] : 1
+opcode[BINARY_SUBSCR].pair_count[LOAD_FAST] : 1
+opcode[BINARY_SUBSCR].pair_count[POP_JUMP_IF_NOT_NONE] : 40
+opcode[BINARY_SUBSCR].pair_count[STORE_FAST] : 7
+opcode[BINARY_SUBSCR].pair_count[STORE_NAME] : 3
+opcode[BINARY_SUBSCR].pair_count[BINARY_SUBSCR_DICT] : 9
+opcode[BINARY_SUBSCR].pair_count[BINARY_SUBSCR_LIST_INT] : 1
+opcode[BINARY_SUBSCR].pair_count[BINARY_SUBSCR_STR_INT] : 1
+opcode[BINARY_SUBSCR].pair_count[BINARY_SUBSCR_TUPLE_INT] : 4
+    opcode[CHECK_EXC_MATCH].execution_count : 97
+opcode[CHECK_EXC_MATCH].pair_count[POP_JUMP_IF_FALSE] : 97
+    opcode[DELETE_SUBSCR].execution_count : 25
+opcode[DELETE_SUBSCR].pair_count[LOAD_GLOBAL] : 2
+opcode[DELETE_SUBSCR].pair_count[LOAD_GLOBAL_MODULE] : 23
+    opcode[EXIT_INIT_CHECK].execution_count : 78
+opcode[EXIT_INIT_CHECK].pair_count[RETURN_VALUE] : 78
+    opcode[FORMAT_SIMPLE].execution_count : 63
+opcode[FORMAT_SIMPLE].pair_count[BUILD_STRING] : 9
+opcode[FORMAT_SIMPLE].pair_count[LOAD_CONST] : 26
+opcode[FORMAT_SIMPLE].pair_count[LOAD_FAST] : 27
+opcode[FORMAT_SIMPLE].pair_count[LOAD_NAME] : 1
+    opcode[GET_ITER].execution_count : 224
+opcode[GET_ITER].pair_count[CALL] : 7
+opcode[GET_ITER].pair_count[EXTENDED_ARG] : 1
+opcode[GET_ITER].pair_count[FOR_ITER] : 28
+opcode[GET_ITER].pair_count[LOAD_FAST_AND_CLEAR] : 55
+opcode[GET_ITER].pair_count[CALL_PY_EXACT_ARGS] : 15
+opcode[GET_ITER].pair_count[FOR_ITER_LIST] : 41
+opcode[GET_ITER].pair_count[FOR_ITER_TUPLE] : 77
+    opcode[INTERPRETER_EXIT].execution_count : 669
+    opcode[LOAD_BUILD_CLASS].execution_count : 84
+opcode[LOAD_BUILD_CLASS].pair_count[PUSH_NULL] : 84
+    opcode[MAKE_FUNCTION].execution_count : 719
+opcode[MAKE_FUNCTION].pair_count[PUSH_NULL] : 1
+opcode[MAKE_FUNCTION].pair_count[CALL] : 69
+opcode[MAKE_FUNCTION].pair_count[LOAD_CONST] : 83
+opcode[MAKE_FUNCTION].pair_count[LOAD_GLOBAL] : 1
+opcode[MAKE_FUNCTION].pair_count[LOAD_NAME] : 1
+opcode[MAKE_FUNCTION].pair_count[SET_FUNCTION_ATTRIBUTE] : 168
+opcode[MAKE_FUNCTION].pair_count[STORE_FAST] : 6
+opcode[MAKE_FUNCTION].pair_count[STORE_NAME] : 390
+    opcode[NOP].execution_count : 703
+opcode[NOP].pair_count[NOP] : 39
+opcode[NOP].pair_count[LOAD_CONST] : 88
+opcode[NOP].pair_count[LOAD_FAST] : 290
+opcode[NOP].pair_count[LOAD_FAST_LOAD_FAST] : 62
+opcode[NOP].pair_count[LOAD_GLOBAL] : 43
+opcode[NOP].pair_count[LOAD_NAME] : 8
+opcode[NOP].pair_count[LOAD_GLOBAL_BUILTIN] : 2
+opcode[NOP].pair_count[LOAD_GLOBAL_MODULE] : 171
+    opcode[POP_EXCEPT].execution_count : 101
+opcode[POP_EXCEPT].pair_count[RETURN_VALUE] : 2
+opcode[POP_EXCEPT].pair_count[EXTENDED_ARG] : 3
+opcode[POP_EXCEPT].pair_count[JUMP_BACKWARD] : 6
+opcode[POP_EXCEPT].pair_count[JUMP_BACKWARD_NO_INTERRUPT] : 67
+opcode[POP_EXCEPT].pair_count[JUMP_FORWARD] : 1
+opcode[POP_EXCEPT].pair_count[LOAD_CONST] : 2
+opcode[POP_EXCEPT].pair_count[LOAD_FAST] : 6
+opcode[POP_EXCEPT].pair_count[RERAISE] : 6
+opcode[POP_EXCEPT].pair_count[RETURN_CONST] : 8
+    opcode[POP_TOP].execution_count : 1394
+opcode[POP_TOP].pair_count[LOAD_BUILD_CLASS] : 15
+opcode[POP_TOP].pair_count[NOP] : 160
+opcode[POP_TOP].pair_count[POP_EXCEPT] : 18
+opcode[POP_TOP].pair_count[RETURN_VALUE] : 59
+opcode[POP_TOP].pair_count[BUILD_LIST] : 2
+opcode[POP_TOP].pair_count[BUILD_MAP] : 1
+opcode[POP_TOP].pair_count[DELETE_NAME] : 3
+opcode[POP_TOP].pair_count[JUMP_BACKWARD] : 136
+opcode[POP_TOP].pair_count[JUMP_FORWARD] : 2
+opcode[POP_TOP].pair_count[LOAD_CONST] : 137
+opcode[POP_TOP].pair_count[LOAD_FAST] : 189
+opcode[POP_TOP].pair_count[LOAD_FAST_CHECK] : 47
+opcode[POP_TOP].pair_count[LOAD_FAST_LOAD_FAST] : 42
+opcode[POP_TOP].pair_count[LOAD_GLOBAL] : 27
+opcode[POP_TOP].pair_count[LOAD_NAME] : 80
+opcode[POP_TOP].pair_count[RERAISE] : 1
+opcode[POP_TOP].pair_count[RETURN_CONST] : 401
+opcode[POP_TOP].pair_count[RESUME] : 5
+opcode[POP_TOP].pair_count[LOAD_GLOBAL_BUILTIN] : 27
+opcode[POP_TOP].pair_count[LOAD_GLOBAL_MODULE] : 25
+opcode[POP_TOP].pair_count[RESUME_CHECK] : 17
+    opcode[PUSH_EXC_INFO].execution_count : 101
+opcode[PUSH_EXC_INFO].pair_count[WITH_EXCEPT_START] : 3
+opcode[PUSH_EXC_INFO].pair_count[LOAD_FAST] : 1
+opcode[PUSH_EXC_INFO].pair_count[LOAD_GLOBAL] : 27
+opcode[PUSH_EXC_INFO].pair_count[LOAD_NAME] : 5
+opcode[PUSH_EXC_INFO].pair_count[LOAD_GLOBAL_BUILTIN] : 65
+    opcode[PUSH_NULL].execution_count : 605
+opcode[PUSH_NULL].pair_count[BUILD_LIST] : 2
+opcode[PUSH_NULL].pair_count[BUILD_MAP] : 6
+opcode[PUSH_NULL].pair_count[CALL] : 35
+opcode[PUSH_NULL].pair_count[LOAD_CONST] : 158
+opcode[PUSH_NULL].pair_count[LOAD_FAST] : 210
+opcode[PUSH_NULL].pair_count[LOAD_FAST_LOAD_FAST] : 101
+opcode[PUSH_NULL].pair_count[LOAD_GLOBAL] : 3
+opcode[PUSH_NULL].pair_count[LOAD_NAME] : 60
+opcode[PUSH_NULL].pair_count[CALL_NON_PY_GENERAL] : 29
+opcode[PUSH_NULL].pair_count[LOAD_GLOBAL_BUILTIN] : 1
+    opcode[RETURN_GENERATOR].execution_count : 25
+opcode[RETURN_GENERATOR].pair_count[CALL] : 7
+opcode[RETURN_GENERATOR].pair_count[LOAD_CONST] : 1
+opcode[RETURN_GENERATOR].pair_count[STORE_NAME] : 2
+opcode[RETURN_GENERATOR].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 5
+opcode[RETURN_GENERATOR].pair_count[CALL_METHOD_DESCRIPTOR_O] : 10
+    opcode[RETURN_VALUE].execution_count : 1008
+opcode[RETURN_VALUE].pair_count[BEFORE_WITH] : 52
+opcode[RETURN_VALUE].pair_count[BINARY_SUBSCR] : 2
+opcode[RETURN_VALUE].pair_count[GET_ITER] : 1
+opcode[RETURN_VALUE].pair_count[INTERPRETER_EXIT] : 176
+opcode[RETURN_VALUE].pair_count[POP_TOP] : 85
+opcode[RETURN_VALUE].pair_count[RETURN_VALUE] : 56
+opcode[RETURN_VALUE].pair_count[TO_BOOL] : 21
+opcode[RETURN_VALUE].pair_count[BUILD_TUPLE] : 5
+opcode[RETURN_VALUE].pair_count[CALL] : 9
+opcode[RETURN_VALUE].pair_count[LIST_APPEND] : 6
+opcode[RETURN_VALUE].pair_count[LOAD_ATTR] : 2
+opcode[RETURN_VALUE].pair_count[LOAD_FAST] : 99
+opcode[RETURN_VALUE].pair_count[LOAD_GLOBAL] : 1
+opcode[RETURN_VALUE].pair_count[POP_JUMP_IF_NONE] : 2
+opcode[RETURN_VALUE].pair_count[STORE_FAST] : 354
+opcode[RETURN_VALUE].pair_count[STORE_GLOBAL] : 2
+opcode[RETURN_VALUE].pair_count[STORE_NAME] : 34
+opcode[RETURN_VALUE].pair_count[SWAP] : 30
+opcode[RETURN_VALUE].pair_count[UNPACK_SEQUENCE] : 9
+opcode[RETURN_VALUE].pair_count[BINARY_SUBSCR_DICT] : 1
+opcode[RETURN_VALUE].pair_count[LOAD_ATTR_SLOT] : 7
+opcode[RETURN_VALUE].pair_count[TO_BOOL_BOOL] : 39
+opcode[RETURN_VALUE].pair_count[UNPACK_SEQUENCE_TWO_TUPLE] : 15
+    opcode[STORE_SLICE].execution_count : 1
+opcode[STORE_SLICE].pair_count[LOAD_FAST] : 1
+opcode[STORE_SUBSCR].specializable : 1
+    opcode[STORE_SUBSCR].specialization.success : 5
+    opcode[STORE_SUBSCR].specialization.hit : 106
+    opcode[STORE_SUBSCR].specialization.deferred : 21
+    opcode[STORE_SUBSCR].execution_count : 26
+opcode[STORE_SUBSCR].pair_count[NOP] : 2
+opcode[STORE_SUBSCR].pair_count[POP_EXCEPT] : 1
+opcode[STORE_SUBSCR].pair_count[LOAD_CONST] : 2
+opcode[STORE_SUBSCR].pair_count[LOAD_FAST] : 1
+opcode[STORE_SUBSCR].pair_count[LOAD_GLOBAL] : 2
+opcode[STORE_SUBSCR].pair_count[LOAD_NAME] : 12
+opcode[STORE_SUBSCR].pair_count[RETURN_CONST] : 1
+opcode[STORE_SUBSCR].pair_count[STORE_SUBSCR_DICT] : 5
+opcode[TO_BOOL].specializable : 1
+    opcode[TO_BOOL].specialization.success : 74
+    opcode[TO_BOOL].specialization.failure : 4
+    opcode[TO_BOOL].specialization.hit : 2864
+    opcode[TO_BOOL].specialization.deferred : 262
+    opcode[TO_BOOL].specialization.miss : 27
+    opcode[TO_BOOL].execution_count : 313
+    opcode[TO_BOOL].specialization.failure_kinds[17] : 4
+opcode[TO_BOOL].pair_count[TO_BOOL] : 4
+opcode[TO_BOOL].pair_count[EXTENDED_ARG] : 6
+opcode[TO_BOOL].pair_count[POP_JUMP_IF_FALSE] : 141
+opcode[TO_BOOL].pair_count[POP_JUMP_IF_TRUE] : 88
+opcode[TO_BOOL].pair_count[TO_BOOL_BOOL] : 41
+opcode[TO_BOOL].pair_count[TO_BOOL_INT] : 5
+opcode[TO_BOOL].pair_count[TO_BOOL_LIST] : 4
+opcode[TO_BOOL].pair_count[TO_BOOL_NONE] : 5
+opcode[TO_BOOL].pair_count[TO_BOOL_STR] : 19
+    opcode[WITH_EXCEPT_START].execution_count : 3
+opcode[WITH_EXCEPT_START].pair_count[TO_BOOL] : 3
+opcode[BINARY_OP].specializable : 1
+    opcode[BINARY_OP].specialization.success : 12
+    opcode[BINARY_OP].specialization.failure : 18
+    opcode[BINARY_OP].specialization.hit : 2113
+    opcode[BINARY_OP].specialization.deferred : 2056
+    opcode[BINARY_OP].execution_count : 2086
+    opcode[BINARY_OP].specialization.failure_kinds[12] : 8
+    opcode[BINARY_OP].specialization.failure_kinds[17] : 1
+    opcode[BINARY_OP].specialization.failure_kinds[21] : 9
+opcode[BINARY_OP].pair_count[BINARY_OP_INPLACE_ADD_UNICODE] : 1
+opcode[BINARY_OP].pair_count[RETURN_VALUE] : 1
+opcode[BINARY_OP].pair_count[TO_BOOL] : 4
+opcode[BINARY_OP].pair_count[BINARY_OP] : 20
+opcode[BINARY_OP].pair_count[CALL] : 2
+opcode[BINARY_OP].pair_count[COMPARE_OP] : 7
+opcode[BINARY_OP].pair_count[COPY] : 1
+opcode[BINARY_OP].pair_count[LOAD_CONST] : 16
+opcode[BINARY_OP].pair_count[LOAD_FAST] : 9
+opcode[BINARY_OP].pair_count[LOAD_GLOBAL] : 3
+opcode[BINARY_OP].pair_count[STORE_FAST] : 5
+opcode[BINARY_OP].pair_count[STORE_NAME] : 6
+opcode[BINARY_OP].pair_count[BINARY_OP_ADD_INT] : 4
+opcode[BINARY_OP].pair_count[BINARY_OP_ADD_UNICODE] : 6
+opcode[BINARY_OP].pair_count[BINARY_OP_MULTIPLY_INT] : 1
+opcode[BINARY_OP].pair_count[COMPARE_OP_INT] : 1
+opcode[BINARY_OP].pair_count[TO_BOOL_INT] : 1999
+    opcode[BUILD_CONST_KEY_MAP].execution_count : 20
+opcode[BUILD_CONST_KEY_MAP].pair_count[RETURN_VALUE] : 3
+opcode[BUILD_CONST_KEY_MAP].pair_count[DICT_UPDATE] : 1
+opcode[BUILD_CONST_KEY_MAP].pair_count[LOAD_CONST] : 13
+opcode[BUILD_CONST_KEY_MAP].pair_count[STORE_FAST] : 3
+    opcode[BUILD_LIST].execution_count : 236
+opcode[BUILD_LIST].pair_count[BINARY_OP] : 1
+opcode[BUILD_LIST].pair_count[BUILD_LIST] : 1
+opcode[BUILD_LIST].pair_count[CALL] : 10
+opcode[BUILD_LIST].pair_count[COMPARE_OP] : 32
+opcode[BUILD_LIST].pair_count[LOAD_CONST] : 10
+opcode[BUILD_LIST].pair_count[LOAD_DEREF] : 4
+opcode[BUILD_LIST].pair_count[LOAD_FAST] : 87
+opcode[BUILD_LIST].pair_count[LOAD_NAME] : 1
+opcode[BUILD_LIST].pair_count[STORE_FAST] : 21
+opcode[BUILD_LIST].pair_count[STORE_FAST_STORE_FAST] : 1
+opcode[BUILD_LIST].pair_count[STORE_GLOBAL] : 1
+opcode[BUILD_LIST].pair_count[STORE_NAME] : 9
+opcode[BUILD_LIST].pair_count[SWAP] : 54
+opcode[BUILD_LIST].pair_count[CALL_METHOD_DESCRIPTOR_O] : 4
+    opcode[BUILD_MAP].execution_count : 121
+opcode[BUILD_MAP].pair_count[EXTENDED_ARG] : 7
+opcode[BUILD_MAP].pair_count[LOAD_ATTR] : 6
+opcode[BUILD_MAP].pair_count[LOAD_CONST] : 12
+opcode[BUILD_MAP].pair_count[LOAD_FAST] : 93
+opcode[BUILD_MAP].pair_count[STORE_NAME] : 3
+    opcode[BUILD_SET].execution_count : 3
+opcode[BUILD_SET].pair_count[LOAD_NAME] : 2
+opcode[BUILD_SET].pair_count[SWAP] : 1
+    opcode[BUILD_STRING].execution_count : 26
+opcode[BUILD_STRING].pair_count[RETURN_VALUE] : 1
+opcode[BUILD_STRING].pair_count[BUILD_LIST] : 1
+opcode[BUILD_STRING].pair_count[CALL] : 1
+opcode[BUILD_STRING].pair_count[LOAD_CONST] : 1
+opcode[BUILD_STRING].pair_count[LOAD_FAST] : 3
+opcode[BUILD_STRING].pair_count[LOAD_NAME] : 1
+opcode[BUILD_STRING].pair_count[SET_ADD] : 1
+opcode[BUILD_STRING].pair_count[STORE_FAST] : 13
+opcode[BUILD_STRING].pair_count[STORE_NAME] : 4
+    opcode[BUILD_TUPLE].execution_count : 210
+opcode[BUILD_TUPLE].pair_count[CHECK_EXC_MATCH] : 6
+opcode[BUILD_TUPLE].pair_count[GET_ITER] : 4
+opcode[BUILD_TUPLE].pair_count[RETURN_VALUE] : 24
+opcode[BUILD_TUPLE].pair_count[BUILD_MAP] : 34
+opcode[BUILD_TUPLE].pair_count[BUILD_TUPLE] : 11
+opcode[BUILD_TUPLE].pair_count[CALL] : 4
+opcode[BUILD_TUPLE].pair_count[LOAD_CONST] : 80
+opcode[BUILD_TUPLE].pair_count[LOAD_NAME] : 22
+opcode[BUILD_TUPLE].pair_count[STORE_FAST] : 2
+opcode[BUILD_TUPLE].pair_count[STORE_NAME] : 2
+opcode[BUILD_TUPLE].pair_count[YIELD_VALUE] : 20
+opcode[BUILD_TUPLE].pair_count[CALL_ISINSTANCE] : 1
+opcode[CALL].specializable : 1
+    opcode[CALL].specialization.success : 222
+    opcode[CALL].specialization.failure : 10
+    opcode[CALL].specialization.hit : 1925
+    opcode[CALL].specialization.deferred : 1018
+    opcode[CALL].specialization.miss : 195
+    opcode[CALL].execution_count : 1055
+    opcode[CALL].specialization.failure_kinds[21] : 1
+    opcode[CALL].specialization.failure_kinds[25] : 10
+    opcode[CALL].specialization.failure_kinds[30] : 1
+opcode[CALL].pair_count[BEFORE_WITH] : 4
+opcode[CALL].pair_count[GET_ITER] : 4
+opcode[CALL].pair_count[POP_TOP] : 70
+opcode[CALL].pair_count[PUSH_EXC_INFO] : 5
+opcode[CALL].pair_count[PUSH_NULL] : 3
+opcode[CALL].pair_count[RETURN_GENERATOR] : 5
+opcode[CALL].pair_count[RETURN_VALUE] : 27
+opcode[CALL].pair_count[TO_BOOL] : 42
+opcode[CALL].pair_count[BINARY_OP] : 1
+opcode[CALL].pair_count[BUILD_TUPLE] : 1
+opcode[CALL].pair_count[CALL] : 46
+opcode[CALL].pair_count[COMPARE_OP] : 2
+opcode[CALL].pair_count[CONTAINS_OP] : 1
+opcode[CALL].pair_count[COPY] : 6
+opcode[CALL].pair_count[COPY_FREE_VARS] : 7
+opcode[CALL].pair_count[LIST_APPEND] : 1
+opcode[CALL].pair_count[LOAD_ATTR] : 1
+opcode[CALL].pair_count[LOAD_CONST] : 18
+opcode[CALL].pair_count[LOAD_FAST] : 33
+opcode[CALL].pair_count[LOAD_GLOBAL] : 10
+opcode[CALL].pair_count[MAKE_CELL] : 15
+opcode[CALL].pair_count[POP_JUMP_IF_NOT_NONE] : 6
+opcode[CALL].pair_count[STORE_DEREF] : 4
+opcode[CALL].pair_count[STORE_FAST] : 51
+opcode[CALL].pair_count[STORE_GLOBAL] : 1
+opcode[CALL].pair_count[STORE_NAME] : 197
+opcode[CALL].pair_count[SWAP] : 1
+opcode[CALL].pair_count[UNPACK_SEQUENCE] : 1
+opcode[CALL].pair_count[YIELD_VALUE] : 2
+opcode[CALL].pair_count[RESUME] : 89
+opcode[CALL].pair_count[CALL_ALLOC_AND_ENTER_INIT] : 4
+opcode[CALL].pair_count[CALL_BOUND_METHOD_EXACT_ARGS] : 8
+opcode[CALL].pair_count[CALL_BOUND_METHOD_GENERAL] : 3
+opcode[CALL].pair_count[CALL_BUILTIN_CLASS] : 4
+opcode[CALL].pair_count[CALL_BUILTIN_FAST] : 23
+opcode[CALL].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 17
+opcode[CALL].pair_count[CALL_BUILTIN_O] : 2
+opcode[CALL].pair_count[CALL_ISINSTANCE] : 8
+opcode[CALL].pair_count[CALL_LEN] : 6
+opcode[CALL].pair_count[CALL_LIST_APPEND] : 5
+opcode[CALL].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 19
+opcode[CALL].pair_count[CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS] : 3
+opcode[CALL].pair_count[CALL_METHOD_DESCRIPTOR_NOARGS] : 2
+opcode[CALL].pair_count[CALL_METHOD_DESCRIPTOR_O] : 11
+opcode[CALL].pair_count[CALL_NON_PY_GENERAL] : 24
+opcode[CALL].pair_count[CALL_PY_EXACT_ARGS] : 57
+opcode[CALL].pair_count[CALL_PY_GENERAL] : 21
+opcode[CALL].pair_count[CALL_STR_1] : 2
+opcode[CALL].pair_count[CALL_TUPLE_1] : 1
+opcode[CALL].pair_count[CALL_TYPE_1] : 2
+opcode[CALL].pair_count[LOAD_GLOBAL_MODULE] : 23
+opcode[CALL].pair_count[RESUME_CHECK] : 156
+    opcode[CALL_FUNCTION_EX].execution_count : 103
+opcode[CALL_FUNCTION_EX].pair_count[RETURN_VALUE] : 59
+opcode[CALL_FUNCTION_EX].pair_count[BUILD_LIST] : 1
+opcode[CALL_FUNCTION_EX].pair_count[COPY_FREE_VARS] : 1
+opcode[CALL_FUNCTION_EX].pair_count[MAKE_CELL] : 1
+opcode[CALL_FUNCTION_EX].pair_count[STORE_FAST] : 33
+opcode[CALL_FUNCTION_EX].pair_count[RESUME] : 2
+opcode[CALL_FUNCTION_EX].pair_count[RESUME_CHECK] : 6
+    opcode[CALL_INTRINSIC_1].execution_count : 12
+opcode[CALL_INTRINSIC_1].pair_count[POP_TOP] : 4
+opcode[CALL_INTRINSIC_1].pair_count[BUILD_MAP] : 3
+opcode[CALL_INTRINSIC_1].pair_count[CALL_FUNCTION_EX] : 5
+    opcode[CALL_KW].execution_count : 133
+opcode[CALL_KW].pair_count[RETURN_VALUE] : 24
+opcode[CALL_KW].pair_count[LOAD_FAST] : 13
+opcode[CALL_KW].pair_count[RAISE_VARARGS] : 10
+opcode[CALL_KW].pair_count[STORE_FAST] : 8
+opcode[CALL_KW].pair_count[STORE_NAME] : 11
+opcode[CALL_KW].pair_count[RESUME] : 3
+opcode[CALL_KW].pair_count[RESUME_CHECK] : 64
+opcode[COMPARE_OP].specializable : 1
+    opcode[COMPARE_OP].specialization.success : 19
+    opcode[COMPARE_OP].specialization.failure : 14
+    opcode[COMPARE_OP].specialization.hit : 543
+    opcode[COMPARE_OP].specialization.deferred : 143
+    opcode[COMPARE_OP].execution_count : 176
+    opcode[COMPARE_OP].specialization.failure_kinds[12] : 1
+    opcode[COMPARE_OP].specialization.failure_kinds[14] : 6
+    opcode[COMPARE_OP].specialization.failure_kinds[15] : 1
+    opcode[COMPARE_OP].specialization.failure_kinds[17] : 4
+    opcode[COMPARE_OP].specialization.failure_kinds[21] : 2
+opcode[COMPARE_OP].pair_count[RETURN_VALUE] : 1
+opcode[COMPARE_OP].pair_count[COMPARE_OP] : 14
+opcode[COMPARE_OP].pair_count[POP_JUMP_IF_FALSE] : 103
+opcode[COMPARE_OP].pair_count[POP_JUMP_IF_TRUE] : 34
+opcode[COMPARE_OP].pair_count[STORE_FAST] : 1
+opcode[COMPARE_OP].pair_count[STORE_NAME] : 3
+opcode[COMPARE_OP].pair_count[YIELD_VALUE] : 1
+opcode[COMPARE_OP].pair_count[COMPARE_OP_INT] : 11
+opcode[COMPARE_OP].pair_count[COMPARE_OP_STR] : 8
+opcode[CONTAINS_OP].specializable : 1
+    opcode[CONTAINS_OP].specialization.success : 11
+    opcode[CONTAINS_OP].specialization.failure : 13
+    opcode[CONTAINS_OP].specialization.hit : 149
+    opcode[CONTAINS_OP].specialization.deferred : 126
+    opcode[CONTAINS_OP].execution_count : 150
+    opcode[CONTAINS_OP].specialization.failure_kinds[0] : 4
+    opcode[CONTAINS_OP].specialization.failure_kinds[10] : 5
+    opcode[CONTAINS_OP].specialization.failure_kinds[11] : 4
+opcode[CONTAINS_OP].pair_count[RETURN_VALUE] : 1
+opcode[CONTAINS_OP].pair_count[CONTAINS_OP] : 13
+opcode[CONTAINS_OP].pair_count[POP_JUMP_IF_FALSE] : 82
+opcode[CONTAINS_OP].pair_count[POP_JUMP_IF_TRUE] : 42
+opcode[CONTAINS_OP].pair_count[STORE_FAST] : 1
+opcode[CONTAINS_OP].pair_count[CONTAINS_OP_DICT] : 7
+opcode[CONTAINS_OP].pair_count[CONTAINS_OP_SET] : 4
+    opcode[CONVERT_VALUE].execution_count : 4
+opcode[CONVERT_VALUE].pair_count[FORMAT_SIMPLE] : 4
+    opcode[COPY].execution_count : 46
+opcode[COPY].pair_count[POP_EXCEPT] : 6
+opcode[COPY].pair_count[TO_BOOL] : 17
+opcode[COPY].pair_count[STORE_FAST_LOAD_FAST] : 1
+opcode[COPY].pair_count[STORE_NAME] : 13
+opcode[COPY].pair_count[TO_BOOL_STR] : 9
+    opcode[COPY_FREE_VARS].execution_count : 167
+opcode[COPY_FREE_VARS].pair_count[RETURN_GENERATOR] : 20
+opcode[COPY_FREE_VARS].pair_count[MAKE_CELL] : 1
+opcode[COPY_FREE_VARS].pair_count[RESUME] : 10
+opcode[COPY_FREE_VARS].pair_count[RESUME_CHECK] : 136
+    opcode[DELETE_FAST].execution_count : 2
+opcode[DELETE_FAST].pair_count[RETURN_CONST] : 2
+    opcode[DELETE_NAME].execution_count : 13
+opcode[DELETE_NAME].pair_count[NOP] : 1
+opcode[DELETE_NAME].pair_count[BUILD_LIST] : 1
+opcode[DELETE_NAME].pair_count[DELETE_NAME] : 3
+opcode[DELETE_NAME].pair_count[JUMP_FORWARD] : 1
+opcode[DELETE_NAME].pair_count[LOAD_CONST] : 5
+opcode[DELETE_NAME].pair_count[LOAD_NAME] : 2
+    opcode[DICT_MERGE].execution_count : 92
+opcode[DICT_MERGE].pair_count[CALL_FUNCTION_EX] : 92
+    opcode[DICT_UPDATE].execution_count : 19
+opcode[DICT_UPDATE].pair_count[BUILD_MAP] : 17
+opcode[DICT_UPDATE].pair_count[EXTENDED_ARG] : 1
+opcode[DICT_UPDATE].pair_count[STORE_NAME] : 1
+    opcode[ENTER_EXECUTOR].execution_count : 1981
+opcode[ENTER_EXECUTOR].pair_count[POP_TOP] : 1
+opcode[ENTER_EXECUTOR].pair_count[LOAD_NAME] : 1980
+    opcode[EXTENDED_ARG].execution_count : 274
+opcode[EXTENDED_ARG].pair_count[FOR_ITER] : 2
+opcode[EXTENDED_ARG].pair_count[JUMP_BACKWARD] : 2
+opcode[EXTENDED_ARG].pair_count[JUMP_BACKWARD_NO_INTERRUPT] : 1
+opcode[EXTENDED_ARG].pair_count[JUMP_FORWARD] : 1
+opcode[EXTENDED_ARG].pair_count[LOAD_CONST] : 259
+opcode[EXTENDED_ARG].pair_count[POP_JUMP_IF_FALSE] : 2
+opcode[EXTENDED_ARG].pair_count[POP_JUMP_IF_NOT_NONE] : 1
+opcode[EXTENDED_ARG].pair_count[POP_JUMP_IF_TRUE] : 4
+opcode[EXTENDED_ARG].pair_count[RETURN_CONST] : 1
+opcode[EXTENDED_ARG].pair_count[FOR_ITER_LIST] : 1
+opcode[FOR_ITER].specializable : 1
+    opcode[FOR_ITER].specialization.success : 29
+    opcode[FOR_ITER].specialization.failure : 8
+    opcode[FOR_ITER].specialization.hit : 913
+    opcode[FOR_ITER].specialization.deferred : 64
+    opcode[FOR_ITER].specialization.miss : 4
+    opcode[FOR_ITER].execution_count : 97
+    opcode[FOR_ITER].specialization.failure_kinds[21] : 2
+    opcode[FOR_ITER].specialization.failure_kinds[29] : 6
+opcode[FOR_ITER].pair_count[FOR_ITER] : 8
+opcode[FOR_ITER].pair_count[LOAD_CONST] : 2
+opcode[FOR_ITER].pair_count[LOAD_FAST] : 2
+opcode[FOR_ITER].pair_count[LOAD_GLOBAL] : 1
+opcode[FOR_ITER].pair_count[RETURN_CONST] : 7
+opcode[FOR_ITER].pair_count[STORE_FAST] : 32
+opcode[FOR_ITER].pair_count[STORE_FAST_LOAD_FAST] : 3
+opcode[FOR_ITER].pair_count[STORE_NAME] : 4
+opcode[FOR_ITER].pair_count[SWAP] : 2
+opcode[FOR_ITER].pair_count[UNPACK_SEQUENCE] : 5
+opcode[FOR_ITER].pair_count[FOR_ITER_LIST] : 14
+opcode[FOR_ITER].pair_count[FOR_ITER_RANGE] : 1
+opcode[FOR_ITER].pair_count[FOR_ITER_TUPLE] : 14
+opcode[FOR_ITER].pair_count[UNPACK_SEQUENCE_TWO_TUPLE] : 2
+    opcode[IMPORT_FROM].execution_count : 45
+opcode[IMPORT_FROM].pair_count[PUSH_EXC_INFO] : 1
+opcode[IMPORT_FROM].pair_count[STORE_NAME] : 44
+    opcode[IMPORT_NAME].execution_count : 64
+opcode[IMPORT_NAME].pair_count[PUSH_EXC_INFO] : 2
+opcode[IMPORT_NAME].pair_count[CALL_INTRINSIC_1] : 4
+opcode[IMPORT_NAME].pair_count[IMPORT_FROM] : 13
+opcode[IMPORT_NAME].pair_count[STORE_FAST] : 4
+opcode[IMPORT_NAME].pair_count[STORE_NAME] : 41
+    opcode[IS_OP].execution_count : 114
+opcode[IS_OP].pair_count[POP_JUMP_IF_FALSE] : 85
+opcode[IS_OP].pair_count[POP_JUMP_IF_TRUE] : 29
+    opcode[JUMP_BACKWARD].execution_count : 755
+opcode[JUMP_BACKWARD].pair_count[NOP] : 1
+opcode[JUMP_BACKWARD].pair_count[EXTENDED_ARG] : 2
+opcode[JUMP_BACKWARD].pair_count[FOR_ITER] : 42
+opcode[JUMP_BACKWARD].pair_count[LOAD_NAME] : 1
+opcode[JUMP_BACKWARD].pair_count[FOR_ITER_LIST] : 475
+opcode[JUMP_BACKWARD].pair_count[FOR_ITER_RANGE] : 17
+opcode[JUMP_BACKWARD].pair_count[FOR_ITER_TUPLE] : 217
+    opcode[JUMP_BACKWARD_NO_INTERRUPT].execution_count : 68
+opcode[JUMP_BACKWARD_NO_INTERRUPT].pair_count[NOP] : 4
+opcode[JUMP_BACKWARD_NO_INTERRUPT].pair_count[LOAD_FAST] : 58
+opcode[JUMP_BACKWARD_NO_INTERRUPT].pair_count[LOAD_FAST_LOAD_FAST] : 1
+opcode[JUMP_BACKWARD_NO_INTERRUPT].pair_count[LOAD_GLOBAL] : 2
+opcode[JUMP_BACKWARD_NO_INTERRUPT].pair_count[LOAD_NAME] : 1
+opcode[JUMP_BACKWARD_NO_INTERRUPT].pair_count[LOAD_GLOBAL_MODULE] : 2
+    opcode[JUMP_FORWARD].execution_count : 74
+opcode[JUMP_FORWARD].pair_count[NOP] : 1
+opcode[JUMP_FORWARD].pair_count[JUMP_BACKWARD] : 1
+opcode[JUMP_FORWARD].pair_count[LOAD_FAST] : 32
+opcode[JUMP_FORWARD].pair_count[LOAD_FAST_LOAD_FAST] : 6
+opcode[JUMP_FORWARD].pair_count[LOAD_GLOBAL] : 10
+opcode[JUMP_FORWARD].pair_count[LOAD_NAME] : 5
+opcode[JUMP_FORWARD].pair_count[SWAP] : 1
+opcode[JUMP_FORWARD].pair_count[LOAD_GLOBAL_BUILTIN] : 5
+opcode[JUMP_FORWARD].pair_count[LOAD_GLOBAL_MODULE] : 13
+    opcode[LIST_APPEND].execution_count : 451
+opcode[LIST_APPEND].pair_count[JUMP_BACKWARD] : 451
+    opcode[LIST_EXTEND].execution_count : 18
+opcode[LIST_EXTEND].pair_count[CALL] : 4
+opcode[LIST_EXTEND].pair_count[CALL_INTRINSIC_1] : 8
+opcode[LIST_EXTEND].pair_count[STORE_NAME] : 6
+opcode[LOAD_ATTR].specializable : 1
+    opcode[LOAD_ATTR].specialization.success : 226
+    opcode[LOAD_ATTR].specialization.failure : 65
+    opcode[LOAD_ATTR].specialization.hit : 2870
+    opcode[LOAD_ATTR].specialization.deferred : 1112
+    opcode[LOAD_ATTR].specialization.miss : 235
+    opcode[LOAD_ATTR].specialization.deopt : 7
+    opcode[LOAD_ATTR].execution_count : 1168
+    opcode[LOAD_ATTR].specialization.failure_kinds[10] : 12
+    opcode[LOAD_ATTR].specialization.failure_kinds[18] : 15
+    opcode[LOAD_ATTR].specialization.failure_kinds[20] : 7
+    opcode[LOAD_ATTR].specialization.failure_kinds[22] : 2
+    opcode[LOAD_ATTR].specialization.failure_kinds[23] : 15
+    opcode[LOAD_ATTR].specialization.failure_kinds[27] : 14
+opcode[LOAD_ATTR].pair_count[BEFORE_WITH] : 2
+opcode[LOAD_ATTR].pair_count[FORMAT_SIMPLE] : 2
+opcode[LOAD_ATTR].pair_count[GET_ITER] : 4
+opcode[LOAD_ATTR].pair_count[PUSH_EXC_INFO] : 15
+opcode[LOAD_ATTR].pair_count[PUSH_NULL] : 41
+opcode[LOAD_ATTR].pair_count[RETURN_VALUE] : 4
+opcode[LOAD_ATTR].pair_count[STORE_SUBSCR] : 2
+opcode[LOAD_ATTR].pair_count[TO_BOOL] : 10
+opcode[LOAD_ATTR].pair_count[BUILD_LIST] : 9
+opcode[LOAD_ATTR].pair_count[CALL] : 75
+opcode[LOAD_ATTR].pair_count[COMPARE_OP] : 2
+opcode[LOAD_ATTR].pair_count[CONTAINS_OP] : 49
+opcode[LOAD_ATTR].pair_count[COPY] : 1
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR] : 122
+opcode[LOAD_ATTR].pair_count[LOAD_CONST] : 79
+opcode[LOAD_ATTR].pair_count[LOAD_DEREF] : 2
+opcode[LOAD_ATTR].pair_count[LOAD_FAST] : 216
+opcode[LOAD_ATTR].pair_count[LOAD_FAST_CHECK] : 1
+opcode[LOAD_ATTR].pair_count[LOAD_FAST_LOAD_FAST] : 31
+opcode[LOAD_ATTR].pair_count[LOAD_GLOBAL] : 22
+opcode[LOAD_ATTR].pair_count[LOAD_NAME] : 53
+opcode[LOAD_ATTR].pair_count[POP_JUMP_IF_NONE] : 7
+opcode[LOAD_ATTR].pair_count[POP_JUMP_IF_NOT_NONE] : 4
+opcode[LOAD_ATTR].pair_count[STORE_FAST] : 102
+opcode[LOAD_ATTR].pair_count[STORE_NAME] : 11
+opcode[LOAD_ATTR].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 10
+opcode[LOAD_ATTR].pair_count[CALL_NON_PY_GENERAL] : 60
+opcode[LOAD_ATTR].pair_count[CALL_PY_GENERAL] : 1
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_CLASS] : 3
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_INSTANCE_VALUE] : 69
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_METHOD_LAZY_DICT] : 1
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 47
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_METHOD_WITH_VALUES] : 12
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_MODULE] : 86
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_PROPERTY] : 4
+opcode[LOAD_ATTR].pair_count[LOAD_ATTR_SLOT] : 9
+    opcode[LOAD_CONST].execution_count : 7302
+opcode[LOAD_CONST].pair_count[BINARY_SLICE] : 25
+opcode[LOAD_CONST].pair_count[BINARY_SUBSCR] : 25
+opcode[LOAD_CONST].pair_count[GET_ITER] : 11
+opcode[LOAD_CONST].pair_count[MAKE_FUNCTION] : 719
+opcode[LOAD_CONST].pair_count[STORE_SLICE] : 1
+opcode[LOAD_CONST].pair_count[STORE_SUBSCR] : 15
+opcode[LOAD_CONST].pair_count[BINARY_OP] : 2039
+opcode[LOAD_CONST].pair_count[BUILD_CONST_KEY_MAP] : 20
+opcode[LOAD_CONST].pair_count[BUILD_LIST] : 10
+opcode[LOAD_CONST].pair_count[BUILD_STRING] : 17
+opcode[LOAD_CONST].pair_count[BUILD_TUPLE] : 25
+opcode[LOAD_CONST].pair_count[CALL] : 199
+opcode[LOAD_CONST].pair_count[CALL_KW] : 133
+opcode[LOAD_CONST].pair_count[COMPARE_OP] : 63
+opcode[LOAD_CONST].pair_count[CONTAINS_OP] : 2
+opcode[LOAD_CONST].pair_count[COPY] : 4
+opcode[LOAD_CONST].pair_count[EXTENDED_ARG] : 129
+opcode[LOAD_CONST].pair_count[IMPORT_NAME] : 64
+opcode[LOAD_CONST].pair_count[JUMP_FORWARD] : 4
+opcode[LOAD_CONST].pair_count[LIST_EXTEND] : 10
+opcode[LOAD_CONST].pair_count[LOAD_ATTR] : 5
+opcode[LOAD_CONST].pair_count[LOAD_CONST] : 961
+opcode[LOAD_CONST].pair_count[LOAD_FAST] : 382
+opcode[LOAD_CONST].pair_count[LOAD_FAST_LOAD_FAST] : 1
+opcode[LOAD_CONST].pair_count[LOAD_GLOBAL] : 5
+opcode[LOAD_CONST].pair_count[LOAD_NAME] : 76
+opcode[LOAD_CONST].pair_count[MAP_ADD] : 323
+opcode[LOAD_CONST].pair_count[RAISE_VARARGS] : 1
+opcode[LOAD_CONST].pair_count[STORE_FAST] : 197
+opcode[LOAD_CONST].pair_count[STORE_GLOBAL] : 9
+opcode[LOAD_CONST].pair_count[STORE_NAME] : 491
+opcode[LOAD_CONST].pair_count[BINARY_OP_ADD_INT] : 5
+opcode[LOAD_CONST].pair_count[BINARY_SUBSCR_DICT] : 2
+opcode[LOAD_CONST].pair_count[BINARY_SUBSCR_LIST_INT] : 4
+opcode[LOAD_CONST].pair_count[BINARY_SUBSCR_STR_INT] : 350
+opcode[LOAD_CONST].pair_count[BINARY_SUBSCR_TUPLE_INT] : 57
+opcode[LOAD_CONST].pair_count[CALL_BOUND_METHOD_EXACT_ARGS] : 45
+opcode[LOAD_CONST].pair_count[CALL_BOUND_METHOD_GENERAL] : 48
+opcode[LOAD_CONST].pair_count[CALL_BUILTIN_FAST] : 184
+opcode[LOAD_CONST].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 7
+opcode[LOAD_CONST].pair_count[CALL_LIST_APPEND] : 27
+opcode[LOAD_CONST].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 29
+opcode[LOAD_CONST].pair_count[CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS] : 1
+opcode[LOAD_CONST].pair_count[CALL_METHOD_DESCRIPTOR_O] : 61
+opcode[LOAD_CONST].pair_count[CALL_NON_PY_GENERAL] : 55
+opcode[LOAD_CONST].pair_count[CALL_PY_EXACT_ARGS] : 8
+opcode[LOAD_CONST].pair_count[CALL_PY_GENERAL] : 11
+opcode[LOAD_CONST].pair_count[COMPARE_OP_INT] : 72
+opcode[LOAD_CONST].pair_count[COMPARE_OP_STR] : 366
+opcode[LOAD_CONST].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 4
+    opcode[LOAD_DEREF].execution_count : 205
+opcode[LOAD_DEREF].pair_count[PUSH_NULL] : 48
+opcode[LOAD_DEREF].pair_count[RETURN_VALUE] : 1
+opcode[LOAD_DEREF].pair_count[TO_BOOL] : 1
+opcode[LOAD_DEREF].pair_count[BUILD_TUPLE] : 20
+opcode[LOAD_DEREF].pair_count[CALL] : 6
+opcode[LOAD_DEREF].pair_count[LIST_EXTEND] : 4
+opcode[LOAD_DEREF].pair_count[LOAD_ATTR] : 2
+opcode[LOAD_DEREF].pair_count[LOAD_CONST] : 12
+opcode[LOAD_DEREF].pair_count[LOAD_FAST] : 101
+opcode[LOAD_DEREF].pair_count[STORE_FAST] : 1
+opcode[LOAD_DEREF].pair_count[CALL_PY_EXACT_ARGS] : 4
+opcode[LOAD_DEREF].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 5
+    opcode[LOAD_FAST].execution_count : 6849
+opcode[LOAD_FAST].pair_count[BEFORE_WITH] : 1
+opcode[LOAD_FAST].pair_count[BINARY_SLICE] : 9
+opcode[LOAD_FAST].pair_count[BINARY_SUBSCR] : 52
+opcode[LOAD_FAST].pair_count[DELETE_SUBSCR] : 25
+opcode[LOAD_FAST].pair_count[FORMAT_SIMPLE] : 28
+opcode[LOAD_FAST].pair_count[GET_ITER] : 179
+opcode[LOAD_FAST].pair_count[PUSH_NULL] : 120
+opcode[LOAD_FAST].pair_count[RETURN_VALUE] : 351
+opcode[LOAD_FAST].pair_count[STORE_SUBSCR] : 7
+opcode[LOAD_FAST].pair_count[TO_BOOL] : 71
+opcode[LOAD_FAST].pair_count[BINARY_OP] : 5
+opcode[LOAD_FAST].pair_count[BUILD_LIST] : 6
+opcode[LOAD_FAST].pair_count[BUILD_MAP] : 55
+opcode[LOAD_FAST].pair_count[BUILD_TUPLE] : 74
+opcode[LOAD_FAST].pair_count[CALL] : 227
+opcode[LOAD_FAST].pair_count[CALL_FUNCTION_EX] : 6
+opcode[LOAD_FAST].pair_count[COMPARE_OP] : 40
+opcode[LOAD_FAST].pair_count[CONTAINS_OP] : 3
+opcode[LOAD_FAST].pair_count[CONVERT_VALUE] : 4
+opcode[LOAD_FAST].pair_count[COPY] : 11
+opcode[LOAD_FAST].pair_count[DICT_MERGE] : 92
+opcode[LOAD_FAST].pair_count[EXTENDED_ARG] : 1
+opcode[LOAD_FAST].pair_count[FOR_ITER] : 11
+opcode[LOAD_FAST].pair_count[IS_OP] : 25
+opcode[LOAD_FAST].pair_count[JUMP_FORWARD] : 6
+opcode[LOAD_FAST].pair_count[LIST_APPEND] : 341
+opcode[LOAD_FAST].pair_count[LIST_EXTEND] : 3
+opcode[LOAD_FAST].pair_count[LOAD_ATTR] : 489
+opcode[LOAD_FAST].pair_count[LOAD_CONST] : 354
+opcode[LOAD_FAST].pair_count[LOAD_DEREF] : 10
+opcode[LOAD_FAST].pair_count[LOAD_FAST] : 38
+opcode[LOAD_FAST].pair_count[LOAD_FAST_CHECK] : 2
+opcode[LOAD_FAST].pair_count[LOAD_FAST_LOAD_FAST] : 1
+opcode[LOAD_FAST].pair_count[LOAD_GLOBAL] : 82
+opcode[LOAD_FAST].pair_count[LOAD_SUPER_ATTR] : 7
+opcode[LOAD_FAST].pair_count[POP_JUMP_IF_NONE] : 52
+opcode[LOAD_FAST].pair_count[POP_JUMP_IF_NOT_NONE] : 302
+opcode[LOAD_FAST].pair_count[STORE_ATTR] : 123
+opcode[LOAD_FAST].pair_count[STORE_FAST] : 25
+opcode[LOAD_FAST].pair_count[STORE_GLOBAL] : 4
+opcode[LOAD_FAST].pair_count[SWAP] : 27
+opcode[LOAD_FAST].pair_count[UNPACK_SEQUENCE] : 2
+opcode[LOAD_FAST].pair_count[BINARY_OP_ADD_UNICODE] : 13
+opcode[LOAD_FAST].pair_count[BINARY_SUBSCR_DICT] : 99
+opcode[LOAD_FAST].pair_count[CALL_ALLOC_AND_ENTER_INIT] : 46
+opcode[LOAD_FAST].pair_count[CALL_BOUND_METHOD_EXACT_ARGS] : 77
+opcode[LOAD_FAST].pair_count[CALL_BOUND_METHOD_GENERAL] : 1
+opcode[LOAD_FAST].pair_count[CALL_BUILTIN_CLASS] : 2
+opcode[LOAD_FAST].pair_count[CALL_BUILTIN_FAST] : 1
+opcode[LOAD_FAST].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 67
+opcode[LOAD_FAST].pair_count[CALL_BUILTIN_O] : 57
+opcode[LOAD_FAST].pair_count[CALL_LEN] : 8
+opcode[LOAD_FAST].pair_count[CALL_LIST_APPEND] : 3
+opcode[LOAD_FAST].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 50
+opcode[LOAD_FAST].pair_count[CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS] : 10
+opcode[LOAD_FAST].pair_count[CALL_METHOD_DESCRIPTOR_O] : 1
+opcode[LOAD_FAST].pair_count[CALL_PY_EXACT_ARGS] : 164
+opcode[LOAD_FAST].pair_count[CALL_PY_GENERAL] : 53
+opcode[LOAD_FAST].pair_count[CALL_STR_1] : 5
+opcode[LOAD_FAST].pair_count[COMPARE_OP_INT] : 74
+opcode[LOAD_FAST].pair_count[COMPARE_OP_STR] : 1
+opcode[LOAD_FAST].pair_count[CONTAINS_OP_SET] : 36
+opcode[LOAD_FAST].pair_count[FOR_ITER_LIST] : 11
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_CLASS] : 29
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_INSTANCE_VALUE] : 1133
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_METHOD_LAZY_DICT] : 1
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 221
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_METHOD_WITH_VALUES] : 17
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_MODULE] : 19
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_PROPERTY] : 58
+opcode[LOAD_FAST].pair_count[LOAD_ATTR_SLOT] : 39
+opcode[LOAD_FAST].pair_count[LOAD_GLOBAL_BUILTIN] : 43
+opcode[LOAD_FAST].pair_count[LOAD_GLOBAL_MODULE] : 316
+opcode[LOAD_FAST].pair_count[LOAD_SUPER_ATTR_ATTR] : 31
+opcode[LOAD_FAST].pair_count[LOAD_SUPER_ATTR_METHOD] : 54
+opcode[LOAD_FAST].pair_count[STORE_ATTR_INSTANCE_VALUE] : 405
+opcode[LOAD_FAST].pair_count[STORE_SUBSCR_DICT] : 53
+opcode[LOAD_FAST].pair_count[TO_BOOL_BOOL] : 152
+opcode[LOAD_FAST].pair_count[TO_BOOL_LIST] : 23
+opcode[LOAD_FAST].pair_count[TO_BOOL_NONE] : 82
+opcode[LOAD_FAST].pair_count[TO_BOOL_STR] : 113
+opcode[LOAD_FAST].pair_count[UNPACK_SEQUENCE_TUPLE] : 10
+    opcode[LOAD_FAST_AND_CLEAR].execution_count : 58
+opcode[LOAD_FAST_AND_CLEAR].pair_count[LOAD_FAST_AND_CLEAR] : 3
+opcode[LOAD_FAST_AND_CLEAR].pair_count[SWAP] : 55
+    opcode[LOAD_FAST_CHECK].execution_count : 52
+opcode[LOAD_FAST_CHECK].pair_count[PUSH_NULL] : 1
+opcode[LOAD_FAST_CHECK].pair_count[CALL] : 2
+opcode[LOAD_FAST_CHECK].pair_count[LOAD_FAST] : 2
+opcode[LOAD_FAST_CHECK].pair_count[POP_JUMP_IF_NOT_NONE] : 47
+    opcode[LOAD_FAST_LOAD_FAST].execution_count : 1340
+opcode[LOAD_FAST_LOAD_FAST].pair_count[BINARY_SUBSCR] : 2
+opcode[LOAD_FAST_LOAD_FAST].pair_count[BINARY_OP] : 5
+opcode[LOAD_FAST_LOAD_FAST].pair_count[BUILD_LIST] : 10
+opcode[LOAD_FAST_LOAD_FAST].pair_count[BUILD_TUPLE] : 47
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL] : 73
+opcode[LOAD_FAST_LOAD_FAST].pair_count[COMPARE_OP] : 3
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CONTAINS_OP] : 7
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_ATTR] : 87
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_CONST] : 23
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_DEREF] : 1
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_FAST] : 154
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_FAST_LOAD_FAST] : 59
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_GLOBAL] : 6
+opcode[LOAD_FAST_LOAD_FAST].pair_count[STORE_ATTR] : 141
+opcode[LOAD_FAST_LOAD_FAST].pair_count[BINARY_OP_ADD_UNICODE] : 72
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL_ALLOC_AND_ENTER_INIT] : 28
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL_BUILTIN_FAST] : 147
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL_ISINSTANCE] : 2
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL_NON_PY_GENERAL] : 27
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL_PY_EXACT_ARGS] : 39
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CALL_PY_GENERAL] : 57
+opcode[LOAD_FAST_LOAD_FAST].pair_count[COMPARE_OP_STR] : 10
+opcode[LOAD_FAST_LOAD_FAST].pair_count[CONTAINS_OP_SET] : 8
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_ATTR_INSTANCE_VALUE] : 7
+opcode[LOAD_FAST_LOAD_FAST].pair_count[LOAD_GLOBAL_BUILTIN] : 36
+opcode[LOAD_FAST_LOAD_FAST].pair_count[STORE_ATTR_INSTANCE_VALUE] : 262
+opcode[LOAD_FAST_LOAD_FAST].pair_count[STORE_ATTR_SLOT] : 27
+opcode[LOAD_GLOBAL].specializable : 1
+    opcode[LOAD_GLOBAL].specialization.success : 247
+    opcode[LOAD_GLOBAL].specialization.hit : 2575
+    opcode[LOAD_GLOBAL].specialization.deferred : 953
+    opcode[LOAD_GLOBAL].specialization.miss : 487
+    opcode[LOAD_GLOBAL].specialization.deopt : 29
+    opcode[LOAD_GLOBAL].execution_count : 713
+opcode[LOAD_GLOBAL].pair_count[BINARY_SUBSCR] : 2
+opcode[LOAD_GLOBAL].pair_count[CHECK_EXC_MATCH] : 15
+opcode[LOAD_GLOBAL].pair_count[FORMAT_SIMPLE] : 1
+opcode[LOAD_GLOBAL].pair_count[GET_ITER] : 1
+opcode[LOAD_GLOBAL].pair_count[RETURN_VALUE] : 4
+opcode[LOAD_GLOBAL].pair_count[TO_BOOL] : 3
+opcode[LOAD_GLOBAL].pair_count[BINARY_OP] : 3
+opcode[LOAD_GLOBAL].pair_count[BUILD_TUPLE] : 6
+opcode[LOAD_GLOBAL].pair_count[CALL] : 49
+opcode[LOAD_GLOBAL].pair_count[COMPARE_OP] : 1
+opcode[LOAD_GLOBAL].pair_count[CONTAINS_OP] : 3
+opcode[LOAD_GLOBAL].pair_count[IS_OP] : 11
+opcode[LOAD_GLOBAL].pair_count[LOAD_ATTR] : 160
+opcode[LOAD_GLOBAL].pair_count[LOAD_CONST] : 19
+opcode[LOAD_GLOBAL].pair_count[LOAD_DEREF] : 5
+opcode[LOAD_GLOBAL].pair_count[LOAD_FAST] : 104
+opcode[LOAD_GLOBAL].pair_count[LOAD_FAST_LOAD_FAST] : 31
+opcode[LOAD_GLOBAL].pair_count[LOAD_GLOBAL] : 30
+opcode[LOAD_GLOBAL].pair_count[POP_JUMP_IF_NONE] : 1
+opcode[LOAD_GLOBAL].pair_count[POP_JUMP_IF_NOT_NONE] : 5
+opcode[LOAD_GLOBAL].pair_count[STORE_ATTR] : 8
+opcode[LOAD_GLOBAL].pair_count[STORE_FAST] : 4
+opcode[LOAD_GLOBAL].pair_count[LOAD_GLOBAL_BUILTIN] : 71
+opcode[LOAD_GLOBAL].pair_count[LOAD_GLOBAL_MODULE] : 176
+    opcode[LOAD_NAME].execution_count : 6822
+opcode[LOAD_NAME].pair_count[BINARY_SUBSCR] : 2
+opcode[LOAD_NAME].pair_count[CHECK_EXC_MATCH] : 3
+opcode[LOAD_NAME].pair_count[FORMAT_SIMPLE] : 12
+opcode[LOAD_NAME].pair_count[GET_ITER] : 3
+opcode[LOAD_NAME].pair_count[PUSH_NULL] : 153
+opcode[LOAD_NAME].pair_count[TO_BOOL] : 72
+opcode[LOAD_NAME].pair_count[BINARY_OP] : 6
+opcode[LOAD_NAME].pair_count[BUILD_LIST] : 1
+opcode[LOAD_NAME].pair_count[BUILD_SET] : 2
+opcode[LOAD_NAME].pair_count[BUILD_TUPLE] : 11
+opcode[LOAD_NAME].pair_count[CALL] : 116
+opcode[LOAD_NAME].pair_count[COMPARE_OP] : 2
+opcode[LOAD_NAME].pair_count[CONTAINS_OP] : 2
+opcode[LOAD_NAME].pair_count[COPY] : 10
+opcode[LOAD_NAME].pair_count[LIST_EXTEND] : 1
+opcode[LOAD_NAME].pair_count[LOAD_ATTR] : 117
+opcode[LOAD_NAME].pair_count[LOAD_CONST] : 2146
+opcode[LOAD_NAME].pair_count[LOAD_FAST] : 2
+opcode[LOAD_NAME].pair_count[LOAD_NAME] : 2055
+opcode[LOAD_NAME].pair_count[STORE_ATTR] : 2
+opcode[LOAD_NAME].pair_count[STORE_NAME] : 104
+opcode[LOAD_NAME].pair_count[BINARY_OP_ADD_INT] : 1996
+opcode[LOAD_NAME].pair_count[CALL_BOUND_METHOD_EXACT_ARGS] : 3
+opcode[LOAD_NAME].pair_count[TO_BOOL_STR] : 1
+opcode[LOAD_SUPER_ATTR].specializable : 1
+    opcode[LOAD_SUPER_ATTR].specialization.success : 3
+    opcode[LOAD_SUPER_ATTR].specialization.hit : 88
+    opcode[LOAD_SUPER_ATTR].specialization.deferred : 4
+    opcode[LOAD_SUPER_ATTR].execution_count : 7
+opcode[LOAD_SUPER_ATTR].pair_count[PUSH_NULL] : 2
+opcode[LOAD_SUPER_ATTR].pair_count[LOAD_FAST_LOAD_FAST] : 2
+opcode[LOAD_SUPER_ATTR].pair_count[LOAD_SUPER_ATTR_ATTR] : 1
+opcode[LOAD_SUPER_ATTR].pair_count[LOAD_SUPER_ATTR_METHOD] : 2
+    opcode[MAKE_CELL].execution_count : 38
+opcode[MAKE_CELL].pair_count[MAKE_CELL] : 4
+opcode[MAKE_CELL].pair_count[RESUME] : 18
+opcode[MAKE_CELL].pair_count[RESUME_CHECK] : 16
+    opcode[MAP_ADD].execution_count : 323
+opcode[MAP_ADD].pair_count[BUILD_MAP] : 1
+opcode[MAP_ADD].pair_count[DICT_UPDATE] : 18
+opcode[MAP_ADD].pair_count[EXTENDED_ARG] : 122
+opcode[MAP_ADD].pair_count[LOAD_CONST] : 182
+opcode[POP_JUMP_IF_FALSE].specializable : 1
+    opcode[POP_JUMP_IF_FALSE].execution_count : 3102
+opcode[POP_JUMP_IF_FALSE].pair_count[NOP] : 51
+opcode[POP_JUMP_IF_FALSE].pair_count[POP_EXCEPT] : 2
+opcode[POP_JUMP_IF_FALSE].pair_count[POP_TOP] : 95
+opcode[POP_JUMP_IF_FALSE].pair_count[BUILD_LIST] : 8
+opcode[POP_JUMP_IF_FALSE].pair_count[EXTENDED_ARG] : 1
+opcode[POP_JUMP_IF_FALSE].pair_count[JUMP_BACKWARD] : 1
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_CONST] : 99
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_DEREF] : 22
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_FAST] : 300
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_FAST_LOAD_FAST] : 36
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_GLOBAL] : 78
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_NAME] : 2048
+opcode[POP_JUMP_IF_FALSE].pair_count[RETURN_CONST] : 133
+opcode[POP_JUMP_IF_FALSE].pair_count[STORE_FAST] : 2
+opcode[POP_JUMP_IF_FALSE].pair_count[STORE_NAME] : 1
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_GLOBAL_BUILTIN] : 50
+opcode[POP_JUMP_IF_FALSE].pair_count[LOAD_GLOBAL_MODULE] : 175
+opcode[POP_JUMP_IF_NONE].specializable : 1
+    opcode[POP_JUMP_IF_NONE].execution_count : 132
+opcode[POP_JUMP_IF_NONE].pair_count[NOP] : 8
+opcode[POP_JUMP_IF_NONE].pair_count[LOAD_CONST] : 4
+opcode[POP_JUMP_IF_NONE].pair_count[LOAD_FAST] : 66
+opcode[POP_JUMP_IF_NONE].pair_count[LOAD_GLOBAL] : 15
+opcode[POP_JUMP_IF_NONE].pair_count[LOAD_GLOBAL_BUILTIN] : 26
+opcode[POP_JUMP_IF_NONE].pair_count[LOAD_GLOBAL_MODULE] : 13
+opcode[POP_JUMP_IF_NOT_NONE].specializable : 1
+    opcode[POP_JUMP_IF_NOT_NONE].execution_count : 615
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[NOP] : 67
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[POP_TOP] : 40
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[JUMP_BACKWARD] : 33
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[LOAD_CONST] : 11
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[LOAD_FAST] : 326
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[LOAD_FAST_CHECK] : 1
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[LOAD_GLOBAL] : 30
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[RETURN_CONST] : 5
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[LOAD_GLOBAL_BUILTIN] : 9
+opcode[POP_JUMP_IF_NOT_NONE].pair_count[LOAD_GLOBAL_MODULE] : 93
+opcode[POP_JUMP_IF_TRUE].specializable : 1
+    opcode[POP_JUMP_IF_TRUE].execution_count : 1145
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_BUILD_CLASS] : 1
+opcode[POP_JUMP_IF_TRUE].pair_count[NOP] : 18
+opcode[POP_JUMP_IF_TRUE].pair_count[POP_TOP] : 7
+opcode[POP_JUMP_IF_TRUE].pair_count[RETURN_VALUE] : 1
+opcode[POP_JUMP_IF_TRUE].pair_count[BUILD_LIST] : 1
+opcode[POP_JUMP_IF_TRUE].pair_count[CALL] : 4
+opcode[POP_JUMP_IF_TRUE].pair_count[JUMP_BACKWARD] : 83
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_CONST] : 31
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_DEREF] : 4
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_FAST] : 663
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_FAST_LOAD_FAST] : 25
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_GLOBAL] : 39
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_NAME] : 33
+opcode[POP_JUMP_IF_TRUE].pair_count[RERAISE] : 3
+opcode[POP_JUMP_IF_TRUE].pair_count[RETURN_CONST] : 1
+opcode[POP_JUMP_IF_TRUE].pair_count[STORE_NAME] : 2
+opcode[POP_JUMP_IF_TRUE].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 2
+opcode[POP_JUMP_IF_TRUE].pair_count[CALL_PY_EXACT_ARGS] : 7
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_GLOBAL_BUILTIN] : 159
+opcode[POP_JUMP_IF_TRUE].pair_count[LOAD_GLOBAL_MODULE] : 61
+    opcode[RAISE_VARARGS].execution_count : 11
+opcode[RAISE_VARARGS].pair_count[PUSH_EXC_INFO] : 4
+opcode[RAISE_VARARGS].pair_count[COPY] : 1
+    opcode[RERAISE].execution_count : 10
+opcode[RERAISE].pair_count[PUSH_EXC_INFO] : 2
+opcode[RERAISE].pair_count[COPY] : 4
+    opcode[RETURN_CONST].execution_count : 872
+opcode[RETURN_CONST].pair_count[EXIT_INIT_CHECK] : 78
+opcode[RETURN_CONST].pair_count[INTERPRETER_EXIT] : 464
+opcode[RETURN_CONST].pair_count[POP_TOP] : 229
+opcode[RETURN_CONST].pair_count[RETURN_VALUE] : 31
+opcode[RETURN_CONST].pair_count[TO_BOOL] : 5
+opcode[RETURN_CONST].pair_count[LOAD_ATTR] : 1
+opcode[RETURN_CONST].pair_count[STORE_FAST] : 55
+opcode[RETURN_CONST].pair_count[STORE_GLOBAL] : 1
+opcode[RETURN_CONST].pair_count[UNPACK_SEQUENCE] : 1
+opcode[RETURN_CONST].pair_count[TO_BOOL_BOOL] : 7
+opcode[SEND].specializable : 1
+    opcode[SET_ADD].execution_count : 1
+opcode[SET_ADD].pair_count[JUMP_BACKWARD] : 1
+    opcode[SET_FUNCTION_ATTRIBUTE].execution_count : 176
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[CALL] : 12
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[LOAD_CONST] : 1
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[LOAD_FAST] : 13
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[LOAD_GLOBAL] : 2
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[SET_FUNCTION_ATTRIBUTE] : 8
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[STORE_DEREF] : 1
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[STORE_FAST] : 39
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[STORE_NAME] : 95
+opcode[SET_FUNCTION_ATTRIBUTE].pair_count[LOAD_GLOBAL_MODULE] : 5
+opcode[STORE_ATTR].specializable : 1
+    opcode[STORE_ATTR].specialization.success : 55
+    opcode[STORE_ATTR].specialization.failure : 22
+    opcode[STORE_ATTR].specialization.hit : 749
+    opcode[STORE_ATTR].specialization.deferred : 220
+    opcode[STORE_ATTR].execution_count : 297
+    opcode[STORE_ATTR].specialization.failure_kinds[2] : 17
+    opcode[STORE_ATTR].specialization.failure_kinds[14] : 1
+    opcode[STORE_ATTR].specialization.failure_kinds[18] : 4
+opcode[STORE_ATTR].pair_count[NOP] : 31
+opcode[STORE_ATTR].pair_count[POP_EXCEPT] : 1
+opcode[STORE_ATTR].pair_count[BUILD_LIST] : 4
+opcode[STORE_ATTR].pair_count[BUILD_MAP] : 1
+opcode[STORE_ATTR].pair_count[JUMP_FORWARD] : 1
+opcode[STORE_ATTR].pair_count[LOAD_CONST] : 10
+opcode[STORE_ATTR].pair_count[LOAD_FAST] : 123
+opcode[STORE_ATTR].pair_count[LOAD_FAST_LOAD_FAST] : 23
+opcode[STORE_ATTR].pair_count[LOAD_GLOBAL] : 8
+opcode[STORE_ATTR].pair_count[RETURN_CONST] : 18
+opcode[STORE_ATTR].pair_count[STORE_ATTR] : 22
+opcode[STORE_ATTR].pair_count[STORE_ATTR_INSTANCE_VALUE] : 54
+opcode[STORE_ATTR].pair_count[STORE_ATTR_SLOT] : 1
+    opcode[STORE_DEREF].execution_count : 17
+opcode[STORE_DEREF].pair_count[LOAD_BUILD_CLASS] : 1
+opcode[STORE_DEREF].pair_count[LOAD_FAST] : 3
+opcode[STORE_DEREF].pair_count[LOAD_GLOBAL] : 1
+opcode[STORE_DEREF].pair_count[STORE_FAST] : 12
+    opcode[STORE_FAST].execution_count : 1763
+opcode[STORE_FAST].pair_count[NOP] : 133
+opcode[STORE_FAST].pair_count[POP_EXCEPT] : 66
+opcode[STORE_FAST].pair_count[POP_TOP] : 1
+opcode[STORE_FAST].pair_count[CALL] : 2
+opcode[STORE_FAST].pair_count[DELETE_FAST] : 2
+opcode[STORE_FAST].pair_count[JUMP_BACKWARD] : 6
+opcode[STORE_FAST].pair_count[JUMP_FORWARD] : 51
+opcode[STORE_FAST].pair_count[LOAD_CONST] : 73
+opcode[STORE_FAST].pair_count[LOAD_DEREF] : 9
+opcode[STORE_FAST].pair_count[LOAD_FAST] : 807
+opcode[STORE_FAST].pair_count[LOAD_FAST_LOAD_FAST] : 120
+opcode[STORE_FAST].pair_count[LOAD_GLOBAL] : 106
+opcode[STORE_FAST].pair_count[STORE_FAST] : 4
+opcode[STORE_FAST].pair_count[STORE_NAME] : 1
+opcode[STORE_FAST].pair_count[SWAP] : 1
+opcode[STORE_FAST].pair_count[CALL_METHOD_DESCRIPTOR_O] : 47
+opcode[STORE_FAST].pair_count[LOAD_GLOBAL_BUILTIN] : 86
+opcode[STORE_FAST].pair_count[LOAD_GLOBAL_MODULE] : 248
+    opcode[STORE_FAST_LOAD_FAST].execution_count : 477
+opcode[STORE_FAST_LOAD_FAST].pair_count[TO_BOOL] : 2
+opcode[STORE_FAST_LOAD_FAST].pair_count[LOAD_CONST] : 352
+opcode[STORE_FAST_LOAD_FAST].pair_count[LOAD_DEREF] : 20
+opcode[STORE_FAST_LOAD_FAST].pair_count[STORE_ATTR] : 1
+opcode[STORE_FAST_LOAD_FAST].pair_count[TO_BOOL_STR] : 102
+    opcode[STORE_FAST_STORE_FAST].execution_count : 89
+opcode[STORE_FAST_STORE_FAST].pair_count[NOP] : 38
+opcode[STORE_FAST_STORE_FAST].pair_count[LOAD_CONST] : 4
+opcode[STORE_FAST_STORE_FAST].pair_count[LOAD_FAST] : 6
+opcode[STORE_FAST_STORE_FAST].pair_count[LOAD_FAST_LOAD_FAST] : 5
+opcode[STORE_FAST_STORE_FAST].pair_count[LOAD_GLOBAL] : 6
+opcode[STORE_FAST_STORE_FAST].pair_count[STORE_FAST] : 18
+opcode[STORE_FAST_STORE_FAST].pair_count[LOAD_GLOBAL_BUILTIN] : 12
+    opcode[STORE_GLOBAL].execution_count : 18
+opcode[STORE_GLOBAL].pair_count[LOAD_BUILD_CLASS] : 1
+opcode[STORE_GLOBAL].pair_count[LOAD_CONST] : 9
+opcode[STORE_GLOBAL].pair_count[LOAD_FAST] : 2
+opcode[STORE_GLOBAL].pair_count[LOAD_GLOBAL] : 4
+opcode[STORE_GLOBAL].pair_count[RETURN_CONST] : 2
+    opcode[STORE_NAME].execution_count : 3511
+opcode[STORE_NAME].pair_count[LOAD_BUILD_CLASS] : 66
+opcode[STORE_NAME].pair_count[NOP] : 12
+opcode[STORE_NAME].pair_count[POP_EXCEPT] : 1
+opcode[STORE_NAME].pair_count[POP_TOP] : 12
+opcode[STORE_NAME].pair_count[RETURN_VALUE] : 7
+opcode[STORE_NAME].pair_count[BUILD_LIST] : 4
+opcode[STORE_NAME].pair_count[BUILD_MAP] : 3
+opcode[STORE_NAME].pair_count[DELETE_NAME] : 6
+opcode[STORE_NAME].pair_count[ENTER_EXECUTOR] : 1981
+opcode[STORE_NAME].pair_count[EXTENDED_ARG] : 1
+opcode[STORE_NAME].pair_count[IMPORT_FROM] : 32
+opcode[STORE_NAME].pair_count[JUMP_BACKWARD] : 19
+opcode[STORE_NAME].pair_count[JUMP_FORWARD] : 3
+opcode[STORE_NAME].pair_count[LOAD_CONST] : 966
+opcode[STORE_NAME].pair_count[LOAD_FAST] : 17
+opcode[STORE_NAME].pair_count[LOAD_NAME] : 288
+opcode[STORE_NAME].pair_count[RETURN_CONST] : 86
+opcode[STORE_NAME].pair_count[STORE_NAME] : 7
+    opcode[SWAP].execution_count : 225
+opcode[SWAP].pair_count[POP_EXCEPT] : 2
+opcode[SWAP].pair_count[POP_TOP] : 33
+opcode[SWAP].pair_count[BUILD_LIST] : 54
+opcode[SWAP].pair_count[BUILD_SET] : 1
+opcode[SWAP].pair_count[FOR_ITER] : 6
+opcode[SWAP].pair_count[LOAD_CONST] : 26
+opcode[SWAP].pair_count[STORE_FAST] : 54
+opcode[SWAP].pair_count[FOR_ITER_TUPLE] : 49
+opcode[UNPACK_SEQUENCE].specializable : 1
+    opcode[UNPACK_SEQUENCE].specialization.success : 9
+    opcode[UNPACK_SEQUENCE].specialization.hit : 88
+    opcode[UNPACK_SEQUENCE].specialization.deferred : 13
+    opcode[UNPACK_SEQUENCE].execution_count : 22
+opcode[UNPACK_SEQUENCE].pair_count[STORE_DEREF] : 1
+opcode[UNPACK_SEQUENCE].pair_count[STORE_FAST_STORE_FAST] : 11
+opcode[UNPACK_SEQUENCE].pair_count[STORE_NAME] : 1
+opcode[UNPACK_SEQUENCE].pair_count[UNPACK_SEQUENCE_TUPLE] : 2
+opcode[UNPACK_SEQUENCE].pair_count[UNPACK_SEQUENCE_TWO_TUPLE] : 7
+    opcode[YIELD_VALUE].execution_count : 29
+opcode[YIELD_VALUE].pair_count[INTERPRETER_EXIT] : 29
+    opcode[RESUME].execution_count : 269
+opcode[RESUME].pair_count[NOP] : 12
+opcode[RESUME].pair_count[POP_TOP] : 3
+opcode[RESUME].pair_count[BUILD_LIST] : 5
+opcode[RESUME].pair_count[LOAD_CONST] : 26
+opcode[RESUME].pair_count[LOAD_DEREF] : 2
+opcode[RESUME].pair_count[LOAD_FAST] : 50
+opcode[RESUME].pair_count[LOAD_FAST_LOAD_FAST] : 9
+opcode[RESUME].pair_count[LOAD_GLOBAL] : 73
+opcode[RESUME].pair_count[LOAD_NAME] : 85
+opcode[RESUME].pair_count[RETURN_CONST] : 4
+    opcode[BINARY_OP_ADD_INT].execution_count : 2005
+opcode[BINARY_OP_ADD_INT].pair_count[LOAD_CONST] : 6
+opcode[BINARY_OP_ADD_INT].pair_count[STORE_FAST] : 1
+opcode[BINARY_OP_ADD_INT].pair_count[STORE_NAME] : 1998
+    opcode[BINARY_OP_ADD_UNICODE].execution_count : 95
+opcode[BINARY_OP_ADD_UNICODE].pair_count[BINARY_OP_INPLACE_ADD_UNICODE] : 11
+opcode[BINARY_OP_ADD_UNICODE].pair_count[BINARY_OP] : 1
+opcode[BINARY_OP_ADD_UNICODE].pair_count[CALL] : 1
+opcode[BINARY_OP_ADD_UNICODE].pair_count[LOAD_FAST] : 37
+opcode[BINARY_OP_ADD_UNICODE].pair_count[STORE_FAST] : 8
+opcode[BINARY_OP_ADD_UNICODE].pair_count[STORE_NAME] : 1
+opcode[BINARY_OP_ADD_UNICODE].pair_count[CALL_PY_GENERAL] : 36
+    opcode[BINARY_OP_MULTIPLY_INT].execution_count : 1
+opcode[BINARY_OP_MULTIPLY_INT].pair_count[BINARY_OP] : 1
+    opcode[BINARY_SUBSCR_DICT].execution_count : 111
+opcode[BINARY_SUBSCR_DICT].pair_count[PUSH_EXC_INFO] : 56
+opcode[BINARY_SUBSCR_DICT].pair_count[PUSH_NULL] : 4
+opcode[BINARY_SUBSCR_DICT].pair_count[CALL] : 2
+opcode[BINARY_SUBSCR_DICT].pair_count[LOAD_FAST] : 2
+opcode[BINARY_SUBSCR_DICT].pair_count[STORE_FAST] : 11
+opcode[BINARY_SUBSCR_DICT].pair_count[CALL_BUILTIN_CLASS] : 1
+opcode[BINARY_SUBSCR_DICT].pair_count[CALL_METHOD_DESCRIPTOR_O] : 35
+    opcode[BINARY_SUBSCR_LIST_INT].execution_count : 5
+opcode[BINARY_SUBSCR_LIST_INT].pair_count[BINARY_OP] : 1
+opcode[BINARY_SUBSCR_LIST_INT].pair_count[BINARY_OP_ADD_UNICODE] : 4
+    opcode[BINARY_SUBSCR_STR_INT].execution_count : 351
+opcode[BINARY_SUBSCR_STR_INT].pair_count[LOAD_CONST] : 351
+    opcode[BINARY_SUBSCR_TUPLE_INT].execution_count : 61
+opcode[BINARY_SUBSCR_TUPLE_INT].pair_count[RETURN_VALUE] : 28
+opcode[BINARY_SUBSCR_TUPLE_INT].pair_count[STORE_FAST] : 33
+    opcode[CALL_ALLOC_AND_ENTER_INIT].execution_count : 78
+opcode[CALL_ALLOC_AND_ENTER_INIT].pair_count[RESUME_CHECK] : 78
+    opcode[CALL_BOUND_METHOD_EXACT_ARGS].specialization.miss : 75
+    opcode[CALL_BOUND_METHOD_EXACT_ARGS].execution_count : 133
+opcode[CALL_BOUND_METHOD_EXACT_ARGS].pair_count[POP_TOP] : 46
+opcode[CALL_BOUND_METHOD_EXACT_ARGS].pair_count[COPY_FREE_VARS] : 10
+opcode[CALL_BOUND_METHOD_EXACT_ARGS].pair_count[RESUME] : 2
+opcode[CALL_BOUND_METHOD_EXACT_ARGS].pair_count[RESUME_CHECK] : 75
+    opcode[CALL_BOUND_METHOD_GENERAL].specialization.miss : 50
+    opcode[CALL_BOUND_METHOD_GENERAL].execution_count : 52
+opcode[CALL_BOUND_METHOD_GENERAL].pair_count[POP_TOP] : 50
+opcode[CALL_BOUND_METHOD_GENERAL].pair_count[RESUME_CHECK] : 2
+    opcode[CALL_BUILTIN_CLASS].execution_count : 11
+opcode[CALL_BUILTIN_CLASS].pair_count[LOAD_FAST] : 9
+opcode[CALL_BUILTIN_CLASS].pair_count[STORE_FAST] : 2
+    opcode[CALL_BUILTIN_FAST].execution_count : 418
+opcode[CALL_BUILTIN_FAST].pair_count[POP_TOP] : 71
+opcode[CALL_BUILTIN_FAST].pair_count[RETURN_VALUE] : 76
+opcode[CALL_BUILTIN_FAST].pair_count[TO_BOOL] : 6
+opcode[CALL_BUILTIN_FAST].pair_count[CALL] : 2
+opcode[CALL_BUILTIN_FAST].pair_count[POP_JUMP_IF_NOT_NONE] : 120
+opcode[CALL_BUILTIN_FAST].pair_count[STORE_FAST] : 3
+opcode[CALL_BUILTIN_FAST].pair_count[CALL_BUILTIN_FAST] : 36
+opcode[CALL_BUILTIN_FAST].pair_count[TO_BOOL_BOOL] : 93
+opcode[CALL_BUILTIN_FAST].pair_count[TO_BOOL_STR] : 11
+    opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].specialization.miss : 8
+    opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].execution_count : 109
+opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].pair_count[BEFORE_WITH] : 2
+opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].pair_count[POP_TOP] : 11
+opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].pair_count[PUSH_EXC_INFO] : 6
+opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].pair_count[RETURN_VALUE] : 41
+opcode[CALL_BUILTIN_FAST_WITH_KEYWORDS].pair_count[STORE_FAST] : 49
+    opcode[CALL_BUILTIN_O].execution_count : 59
+opcode[CALL_BUILTIN_O].pair_count[POP_TOP] : 32
+opcode[CALL_BUILTIN_O].pair_count[TO_BOOL] : 1
+opcode[CALL_BUILTIN_O].pair_count[TO_BOOL_INT] : 26
+    opcode[CALL_ISINSTANCE].execution_count : 46
+opcode[CALL_ISINSTANCE].pair_count[TO_BOOL] : 8
+opcode[CALL_ISINSTANCE].pair_count[TO_BOOL_BOOL] : 38
+    opcode[CALL_LEN].execution_count : 91
+opcode[CALL_LEN].pair_count[TO_BOOL] : 1
+opcode[CALL_LEN].pair_count[BINARY_OP] : 1
+opcode[CALL_LEN].pair_count[LOAD_CONST] : 62
+opcode[CALL_LEN].pair_count[TO_BOOL_INT] : 27
+    opcode[CALL_LIST_APPEND].execution_count : 62
+opcode[CALL_LIST_APPEND].pair_count[NOP] : 29
+opcode[CALL_LIST_APPEND].pair_count[LOAD_CONST] : 3
+opcode[CALL_LIST_APPEND].pair_count[LOAD_FAST] : 2
+opcode[CALL_LIST_APPEND].pair_count[RETURN_CONST] : 28
+    opcode[CALL_METHOD_DESCRIPTOR_FAST].execution_count : 306
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[POP_TOP] : 29
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[RETURN_VALUE] : 6
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[TO_BOOL] : 7
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[LIST_APPEND] : 103
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[LOAD_CONST] : 1
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[LOAD_FAST] : 24
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[STORE_FAST] : 74
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[SWAP] : 2
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[YIELD_VALUE] : 6
+opcode[CALL_METHOD_DESCRIPTOR_FAST].pair_count[TO_BOOL_BOOL] : 54
+    opcode[CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS].execution_count : 14
+opcode[CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS].pair_count[RETURN_VALUE] : 3
+opcode[CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS].pair_count[STORE_FAST] : 11
+    opcode[CALL_METHOD_DESCRIPTOR_NOARGS].execution_count : 7
+opcode[CALL_METHOD_DESCRIPTOR_NOARGS].pair_count[TO_BOOL] : 2
+opcode[CALL_METHOD_DESCRIPTOR_NOARGS].pair_count[TO_BOOL_BOOL] : 5
+    opcode[CALL_METHOD_DESCRIPTOR_O].specialization.miss : 28
+    opcode[CALL_METHOD_DESCRIPTOR_O].execution_count : 196
+opcode[CALL_METHOD_DESCRIPTOR_O].pair_count[POP_TOP] : 77
+opcode[CALL_METHOD_DESCRIPTOR_O].pair_count[RETURN_VALUE] : 48
+opcode[CALL_METHOD_DESCRIPTOR_O].pair_count[LOAD_CONST] : 61
+opcode[CALL_METHOD_DESCRIPTOR_O].pair_count[STORE_FAST] : 5
+opcode[CALL_METHOD_DESCRIPTOR_O].pair_count[UNPACK_SEQUENCE] : 1
+opcode[CALL_METHOD_DESCRIPTOR_O].pair_count[UNPACK_SEQUENCE_TUPLE] : 4
+    opcode[CALL_NON_PY_GENERAL].execution_count : 543
+opcode[CALL_NON_PY_GENERAL].pair_count[BEFORE_WITH] : 46
+opcode[CALL_NON_PY_GENERAL].pair_count[POP_TOP] : 290
+opcode[CALL_NON_PY_GENERAL].pair_count[PUSH_EXC_INFO] : 1
+opcode[CALL_NON_PY_GENERAL].pair_count[CALL] : 1
+opcode[CALL_NON_PY_GENERAL].pair_count[CONTAINS_OP] : 1
+opcode[CALL_NON_PY_GENERAL].pair_count[LOAD_FAST] : 52
+opcode[CALL_NON_PY_GENERAL].pair_count[STORE_FAST] : 116
+opcode[CALL_NON_PY_GENERAL].pair_count[CALL_PY_EXACT_ARGS] : 27
+opcode[CALL_NON_PY_GENERAL].pair_count[CONTAINS_OP_DICT] : 9
+    opcode[CALL_PY_EXACT_ARGS].specialization.miss : 34
+    opcode[CALL_PY_EXACT_ARGS].execution_count : 419
+opcode[CALL_PY_EXACT_ARGS].pair_count[PUSH_EXC_INFO] : 4
+opcode[CALL_PY_EXACT_ARGS].pair_count[COPY_FREE_VARS] : 25
+opcode[CALL_PY_EXACT_ARGS].pair_count[MAKE_CELL] : 5
+opcode[CALL_PY_EXACT_ARGS].pair_count[RESUME] : 4
+opcode[CALL_PY_EXACT_ARGS].pair_count[RESUME_CHECK] : 381
+    opcode[CALL_PY_GENERAL].execution_count : 203
+opcode[CALL_PY_GENERAL].pair_count[COPY_FREE_VARS] : 2
+opcode[CALL_PY_GENERAL].pair_count[RESUME_CHECK] : 201
+    opcode[CALL_STR_1].execution_count : 7
+opcode[CALL_STR_1].pair_count[CALL] : 1
+opcode[CALL_STR_1].pair_count[STORE_FAST] : 5
+opcode[CALL_STR_1].pair_count[CALL_BUILTIN_FAST_WITH_KEYWORDS] : 1
+    opcode[CALL_TUPLE_1].execution_count : 2
+opcode[CALL_TUPLE_1].pair_count[CALL] : 1
+opcode[CALL_TUPLE_1].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 1
+    opcode[CALL_TYPE_1].execution_count : 25
+opcode[CALL_TYPE_1].pair_count[PUSH_NULL] : 25
+    opcode[COMPARE_OP_INT].execution_count : 158
+opcode[COMPARE_OP_INT].pair_count[RETURN_VALUE] : 7
+opcode[COMPARE_OP_INT].pair_count[POP_JUMP_IF_FALSE] : 113
+opcode[COMPARE_OP_INT].pair_count[POP_JUMP_IF_TRUE] : 36
+opcode[COMPARE_OP_INT].pair_count[STORE_FAST] : 2
+    opcode[COMPARE_OP_STR].execution_count : 385
+opcode[COMPARE_OP_STR].pair_count[POP_JUMP_IF_FALSE] : 34
+opcode[COMPARE_OP_STR].pair_count[POP_JUMP_IF_TRUE] : 351
+    opcode[CONTAINS_OP_DICT].execution_count : 101
+opcode[CONTAINS_OP_DICT].pair_count[RETURN_VALUE] : 10
+opcode[CONTAINS_OP_DICT].pair_count[POP_JUMP_IF_FALSE] : 67
+opcode[CONTAINS_OP_DICT].pair_count[STORE_FAST] : 24
+    opcode[CONTAINS_OP_SET].execution_count : 48
+opcode[CONTAINS_OP_SET].pair_count[POP_JUMP_IF_FALSE] : 9
+opcode[CONTAINS_OP_SET].pair_count[POP_JUMP_IF_TRUE] : 39
+    opcode[FOR_ITER_LIST].execution_count : 542
+opcode[FOR_ITER_LIST].pair_count[JUMP_BACKWARD] : 4
+opcode[FOR_ITER_LIST].pair_count[JUMP_FORWARD] : 1
+opcode[FOR_ITER_LIST].pair_count[LOAD_FAST] : 9
+opcode[FOR_ITER_LIST].pair_count[LOAD_GLOBAL] : 2
+opcode[FOR_ITER_LIST].pair_count[RETURN_CONST] : 16
+opcode[FOR_ITER_LIST].pair_count[STORE_FAST] : 100
+opcode[FOR_ITER_LIST].pair_count[STORE_FAST_LOAD_FAST] : 370
+opcode[FOR_ITER_LIST].pair_count[UNPACK_SEQUENCE] : 2
+opcode[FOR_ITER_LIST].pair_count[UNPACK_SEQUENCE_TWO_TUPLE] : 38
+    opcode[FOR_ITER_RANGE].execution_count : 18
+opcode[FOR_ITER_RANGE].pair_count[STORE_NAME] : 18
+    opcode[FOR_ITER_TUPLE].specialization.miss : 4
+    opcode[FOR_ITER_TUPLE].execution_count : 357
+opcode[FOR_ITER_TUPLE].pair_count[DELETE_NAME] : 1
+opcode[FOR_ITER_TUPLE].pair_count[LOAD_FAST] : 25
+opcode[FOR_ITER_TUPLE].pair_count[LOAD_FAST_LOAD_FAST] : 4
+opcode[FOR_ITER_TUPLE].pair_count[LOAD_GLOBAL] : 1
+opcode[FOR_ITER_TUPLE].pair_count[LOAD_NAME] : 2
+opcode[FOR_ITER_TUPLE].pair_count[RETURN_CONST] : 17
+opcode[FOR_ITER_TUPLE].pair_count[STORE_FAST] : 135
+opcode[FOR_ITER_TUPLE].pair_count[STORE_FAST_LOAD_FAST] : 103
+opcode[FOR_ITER_TUPLE].pair_count[STORE_NAME] : 7
+opcode[FOR_ITER_TUPLE].pair_count[SWAP] : 51
+opcode[FOR_ITER_TUPLE].pair_count[UNPACK_SEQUENCE] : 1
+opcode[FOR_ITER_TUPLE].pair_count[UNPACK_SEQUENCE_TWO_TUPLE] : 10
+    opcode[LOAD_ATTR_CLASS].execution_count : 32
+opcode[LOAD_ATTR_CLASS].pair_count[LOAD_CONST] : 10
+opcode[LOAD_ATTR_CLASS].pair_count[LOAD_FAST] : 11
+opcode[LOAD_ATTR_CLASS].pair_count[STORE_FAST] : 11
+    opcode[LOAD_ATTR_INSTANCE_VALUE].execution_count : 1209
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[BEFORE_WITH] : 56
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[GET_ITER] : 7
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[RETURN_VALUE] : 40
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[STORE_SUBSCR] : 2
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[TO_BOOL] : 30
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[BUILD_LIST] : 30
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL] : 11
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[COMPARE_OP] : 8
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[COPY] : 8
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_ATTR] : 70
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_CONST] : 50
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_FAST] : 149
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_FAST_LOAD_FAST] : 65
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_GLOBAL] : 2
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[POP_JUMP_IF_NONE] : 58
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[POP_JUMP_IF_NOT_NONE] : 64
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[STORE_FAST] : 52
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL_LEN] : 77
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL_LIST_APPEND] : 27
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 24
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL_METHOD_DESCRIPTOR_O] : 27
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL_PY_EXACT_ARGS] : 35
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[CALL_PY_GENERAL] : 24
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 135
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_ATTR_METHOD_WITH_VALUES] : 46
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[LOAD_GLOBAL_MODULE] : 36
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[STORE_SUBSCR_DICT] : 48
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[TO_BOOL_BOOL] : 1
+opcode[LOAD_ATTR_INSTANCE_VALUE].pair_count[TO_BOOL_LIST] : 27
+    opcode[LOAD_ATTR_METHOD_LAZY_DICT].execution_count : 2
+opcode[LOAD_ATTR_METHOD_LAZY_DICT].pair_count[CALL] : 1
+opcode[LOAD_ATTR_METHOD_LAZY_DICT].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 1
+    opcode[LOAD_ATTR_METHOD_NO_DICT].execution_count : 591
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[CALL] : 4
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_CONST] : 137
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_DEREF] : 3
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_FAST] : 264
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_FAST_CHECK] : 1
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_GLOBAL] : 5
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 27
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[CALL_METHOD_DESCRIPTOR_NOARGS] : 5
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_GLOBAL_BUILTIN] : 1
+opcode[LOAD_ATTR_METHOD_NO_DICT].pair_count[LOAD_GLOBAL_MODULE] : 144
+    opcode[LOAD_ATTR_METHOD_WITH_VALUES].execution_count : 102
+opcode[LOAD_ATTR_METHOD_WITH_VALUES].pair_count[CALL] : 5
+opcode[LOAD_ATTR_METHOD_WITH_VALUES].pair_count[LOAD_FAST] : 36
+opcode[LOAD_ATTR_METHOD_WITH_VALUES].pair_count[LOAD_FAST_LOAD_FAST] : 9
+opcode[LOAD_ATTR_METHOD_WITH_VALUES].pair_count[CALL_PY_EXACT_ARGS] : 52
+    opcode[LOAD_ATTR_MODULE].specialization.miss : 235
+    opcode[LOAD_ATTR_MODULE].execution_count : 979
+opcode[LOAD_ATTR_MODULE].pair_count[FORMAT_SIMPLE] : 11
+opcode[LOAD_ATTR_MODULE].pair_count[GET_ITER] : 4
+opcode[LOAD_ATTR_MODULE].pair_count[PUSH_NULL] : 91
+opcode[LOAD_ATTR_MODULE].pair_count[TO_BOOL] : 1
+opcode[LOAD_ATTR_MODULE].pair_count[CALL] : 35
+opcode[LOAD_ATTR_MODULE].pair_count[CONTAINS_OP] : 28
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_ATTR] : 18
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_CONST] : 41
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_FAST] : 179
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_FAST_LOAD_FAST] : 31
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_GLOBAL] : 1
+opcode[LOAD_ATTR_MODULE].pair_count[POP_JUMP_IF_NONE] : 9
+opcode[LOAD_ATTR_MODULE].pair_count[STORE_FAST] : 45
+opcode[LOAD_ATTR_MODULE].pair_count[CALL_NON_PY_GENERAL] : 267
+opcode[LOAD_ATTR_MODULE].pair_count[CALL_PY_EXACT_ARGS] : 1
+opcode[LOAD_ATTR_MODULE].pair_count[CALL_TYPE_1] : 10
+opcode[LOAD_ATTR_MODULE].pair_count[CONTAINS_OP_DICT] : 45
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 74
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_ATTR_MODULE] : 11
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_ATTR_SLOT] : 73
+opcode[LOAD_ATTR_MODULE].pair_count[LOAD_GLOBAL_BUILTIN] : 1
+opcode[LOAD_ATTR_MODULE].pair_count[TO_BOOL_LIST] : 3
+    opcode[LOAD_ATTR_PROPERTY].execution_count : 62
+opcode[LOAD_ATTR_PROPERTY].pair_count[RESUME_CHECK] : 62
+    opcode[LOAD_ATTR_SLOT].execution_count : 128
+opcode[LOAD_ATTR_SLOT].pair_count[TO_BOOL] : 1
+opcode[LOAD_ATTR_SLOT].pair_count[CALL] : 1
+opcode[LOAD_ATTR_SLOT].pair_count[LOAD_CONST] : 19
+opcode[LOAD_ATTR_SLOT].pair_count[LOAD_FAST] : 71
+opcode[LOAD_ATTR_SLOT].pair_count[STORE_FAST] : 8
+opcode[LOAD_ATTR_SLOT].pair_count[CALL_BUILTIN_FAST] : 27
+opcode[LOAD_ATTR_SLOT].pair_count[TO_BOOL_INT] : 1
+    opcode[LOAD_GLOBAL_BUILTIN].specialization.miss : 378
+    opcode[LOAD_GLOBAL_BUILTIN].execution_count : 753
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[CHECK_EXC_MATCH] : 73
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[RETURN_VALUE] : 13
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[BUILD_TUPLE] : 1
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[CALL] : 8
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_ATTR] : 8
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_CONST] : 1
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_DEREF] : 88
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_FAST] : 341
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_FAST_LOAD_FAST] : 132
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_GLOBAL] : 6
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[CALL_BUILTIN_CLASS] : 4
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[CALL_ISINSTANCE] : 34
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[CALL_NON_PY_GENERAL] : 9
+opcode[LOAD_GLOBAL_BUILTIN].pair_count[LOAD_GLOBAL_MODULE] : 35
+    opcode[LOAD_GLOBAL_MODULE].specialization.miss : 109
+    opcode[LOAD_GLOBAL_MODULE].execution_count : 2309
+opcode[LOAD_GLOBAL_MODULE].pair_count[FORMAT_SIMPLE] : 1
+opcode[LOAD_GLOBAL_MODULE].pair_count[GET_ITER] : 6
+opcode[LOAD_GLOBAL_MODULE].pair_count[TO_BOOL] : 1
+opcode[LOAD_GLOBAL_MODULE].pair_count[BUILD_TUPLE] : 2
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL] : 11
+opcode[LOAD_GLOBAL_MODULE].pair_count[COMPARE_OP] : 2
+opcode[LOAD_GLOBAL_MODULE].pair_count[CONTAINS_OP] : 41
+opcode[LOAD_GLOBAL_MODULE].pair_count[IS_OP] : 78
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_ATTR] : 80
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_CONST] : 46
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_FAST] : 435
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_FAST_LOAD_FAST] : 238
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_GLOBAL] : 5
+opcode[LOAD_GLOBAL_MODULE].pair_count[POP_JUMP_IF_NONE] : 3
+opcode[LOAD_GLOBAL_MODULE].pair_count[POP_JUMP_IF_NOT_NONE] : 26
+opcode[LOAD_GLOBAL_MODULE].pair_count[STORE_FAST] : 2
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL_ISINSTANCE] : 1
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL_METHOD_DESCRIPTOR_FAST] : 155
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL_NON_PY_GENERAL] : 72
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL_PY_EXACT_ARGS] : 7
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL_TUPLE_1] : 1
+opcode[LOAD_GLOBAL_MODULE].pair_count[CALL_TYPE_1] : 13
+opcode[LOAD_GLOBAL_MODULE].pair_count[CONTAINS_OP_DICT] : 40
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_ATTR_METHOD_NO_DICT] : 105
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_ATTR_METHOD_WITH_VALUES] : 27
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_ATTR_MODULE] : 863
+opcode[LOAD_GLOBAL_MODULE].pair_count[LOAD_GLOBAL_MODULE] : 44
+opcode[LOAD_GLOBAL_MODULE].pair_count[TO_BOOL_STR] : 4
+    opcode[LOAD_SUPER_ATTR_ATTR].execution_count : 32
+opcode[LOAD_SUPER_ATTR_ATTR].pair_count[PUSH_NULL] : 32
+    opcode[LOAD_SUPER_ATTR_METHOD].execution_count : 56
+opcode[LOAD_SUPER_ATTR_METHOD].pair_count[LOAD_FAST_LOAD_FAST] : 56
+    opcode[RESUME_CHECK].execution_count : 1581
+opcode[RESUME_CHECK].pair_count[NOP] : 46
+opcode[RESUME_CHECK].pair_count[POP_TOP] : 25
+opcode[RESUME_CHECK].pair_count[BUILD_LIST] : 7
+opcode[RESUME_CHECK].pair_count[LOAD_CONST] : 96
+opcode[RESUME_CHECK].pair_count[LOAD_DEREF] : 28
+opcode[RESUME_CHECK].pair_count[LOAD_FAST] : 455
+opcode[RESUME_CHECK].pair_count[LOAD_FAST_LOAD_FAST] : 92
+opcode[RESUME_CHECK].pair_count[LOAD_GLOBAL] : 45
+opcode[RESUME_CHECK].pair_count[RETURN_CONST] : 21
+opcode[RESUME_CHECK].pair_count[LOAD_GLOBAL_BUILTIN] : 132
+opcode[RESUME_CHECK].pair_count[LOAD_GLOBAL_MODULE] : 634
+    opcode[STORE_ATTR_INSTANCE_VALUE].execution_count : 721
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[NOP] : 25
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[BUILD_LIST] : 79
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[JUMP_FORWARD] : 3
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[LOAD_CONST] : 116
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[LOAD_FAST] : 162
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[LOAD_FAST_LOAD_FAST] : 158
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[LOAD_GLOBAL] : 5
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[RETURN_CONST] : 121
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[LOAD_GLOBAL_BUILTIN] : 27
+opcode[STORE_ATTR_INSTANCE_VALUE].pair_count[LOAD_GLOBAL_MODULE] : 25
+    opcode[STORE_ATTR_SLOT].execution_count : 28
+opcode[STORE_ATTR_SLOT].pair_count[LOAD_FAST] : 28
+    opcode[STORE_SUBSCR_DICT].execution_count : 106
+opcode[STORE_SUBSCR_DICT].pair_count[NOP] : 25
+opcode[STORE_SUBSCR_DICT].pair_count[POP_EXCEPT] : 4
+opcode[STORE_SUBSCR_DICT].pair_count[LOAD_FAST] : 28
+opcode[STORE_SUBSCR_DICT].pair_count[LOAD_GLOBAL] : 2
+opcode[STORE_SUBSCR_DICT].pair_count[LOAD_GLOBAL_MODULE] : 47
+    opcode[TO_BOOL_BOOL].execution_count : 430
+opcode[TO_BOOL_BOOL].pair_count[POP_JUMP_IF_FALSE] : 140
+opcode[TO_BOOL_BOOL].pair_count[POP_JUMP_IF_TRUE] : 290
+    opcode[TO_BOOL_INT].execution_count : 2058
+opcode[TO_BOOL_INT].pair_count[POP_JUMP_IF_FALSE] : 2030
+opcode[TO_BOOL_INT].pair_count[POP_JUMP_IF_TRUE] : 28
+    opcode[TO_BOOL_LIST].execution_count : 57
+opcode[TO_BOOL_LIST].pair_count[POP_JUMP_IF_FALSE] : 29
+opcode[TO_BOOL_LIST].pair_count[POP_JUMP_IF_TRUE] : 28
+    opcode[TO_BOOL_NONE].specialization.miss : 27
+    opcode[TO_BOOL_NONE].execution_count : 87
+opcode[TO_BOOL_NONE].pair_count[POP_JUMP_IF_FALSE] : 86
+opcode[TO_BOOL_NONE].pair_count[POP_JUMP_IF_TRUE] : 1
+    opcode[TO_BOOL_STR].execution_count : 259
+opcode[TO_BOOL_STR].pair_count[POP_JUMP_IF_FALSE] : 84
+opcode[TO_BOOL_STR].pair_count[POP_JUMP_IF_TRUE] : 175
+    opcode[UNPACK_SEQUENCE_TUPLE].execution_count : 16
+opcode[UNPACK_SEQUENCE_TUPLE].pair_count[STORE_FAST_STORE_FAST] : 16
+    opcode[UNPACK_SEQUENCE_TWO_TUPLE].execution_count : 72
+opcode[UNPACK_SEQUENCE_TWO_TUPLE].pair_count[STORE_DEREF] : 11
+opcode[UNPACK_SEQUENCE_TWO_TUPLE].pair_count[STORE_FAST_STORE_FAST] : 61
+Calls to PyEval_EvalDefault: 679
+Calls to Python functions inlined: 1196
+Frames pushed: 1903
+Frame objects created: 102
+Calls via PyEval_EvalFrame[0] : 679
+Calls via PyEval_EvalFrame[1] : 629
+Calls via PyEval_EvalFrame[2] : 50
+Calls via PyEval_EvalFrame[3] : 18
+Calls via PyEval_EvalFrame[4] : 527
+Calls via PyEval_EvalFrame[5] : 84
+Calls via PyEval_EvalFrame[6] : 4
+Calls via PyEval_EvalFrame[7] : 10
+Calls via PyEval_EvalFrame[8] : 95
+Calls via PyEval_EvalFrame[9] : 4
+Object allocations from freelist: 3191
+Object frees to freelist: 5085
+Object allocations: 29444
+Object allocations to 512 bytes: 28835
+Object allocations to 4 kbytes: 578
+Object allocations over 4 kbytes: 31
+Object frees: 21940
+Object inline values: 184
+Object interpreter increfs: 20080
+Object interpreter decrefs: 33480
+Object increfs: 67249
+Object decrefs: 69485
+Object materialize dict (on request): 0
+Object materialize dict (new key): 0
+Object materialize dict (too big): 0
+Object materialize dict (str subclass): 0
+Object method cache hits: 2287
+Object method cache misses: 1228
+Object method cache collisions: 447
+Object method cache dunder hits: 3331
+Object method cache dunder misses: 293
+GC[0] collections: 0
+GC[0] object visits: 0
+GC[0] objects collected: 0
+GC[1] collections: 0
+GC[1] object visits: 31346
+GC[1] objects collected: 24
+GC[2] collections: 0
+GC[2] object visits: 96004
+GC[2] objects collected: 1742
+Optimization attempts: 5
+Optimization traces created: 1
+Optimization traces executed: 3964
+Optimization uops executed: 19816
+Optimization trace stack overflow: 0
+Optimization trace stack underflow: 0
+Optimization trace too long: 0
+Optimization trace too short: 4
+Optimization inner loop: 0
+Optimization recursive call: 0
+Optimization low confidence: 0
+Executors invalidated: 0
+Trace length[1]: 0
+Trace length[2]: 0
+Trace length[4]: 0
+Trace length[8]: 0
+Trace length[16]: 1
+Trace length[32]: 0
+Trace length[64]: 0
+Trace length[128]: 0
+Trace length[256]: 0
+Trace length[512]: 0
+Trace length[1024]: 0
+Trace length[2048]: 0
+Trace length[4096]: 0
+Trace length[8192]: 0
+Trace length[16384]: 0
+Trace length[32768]: 0
+Trace length[65536]: 0
+Trace length[131072]: 0
+Trace length[262144]: 0
+Trace length[524288]: 0
+Trace length[1048576]: 0
+Trace length[2097152]: 0
+Trace length[4194304]: 0
+Trace length[8388608]: 0
+Trace length[16777216]: 0
+Trace length[33554432]: 0
+Trace length[67108864]: 0
+Trace length[134217728]: 0
+Trace length[268435456]: 0
+Trace length[536870912]: 0
+Trace length[1073741824]: 0
+Trace length[2147483648]: 0
+Trace run length[1]: 0
+Trace run length[2]: 0
+Trace run length[4]: 0
+Trace run length[8]: 0
+Trace run length[16]: 0
+Trace run length[32]: 0
+Trace run length[64]: 0
+Trace run length[128]: 0
+Trace run length[256]: 0
+Trace run length[512]: 0
+Trace run length[1024]: 0
+Trace run length[2048]: 0
+Trace run length[4096]: 0
+Trace run length[8192]: 0
+Trace run length[16384]: 0
+Trace run length[32768]: 0
+Trace run length[65536]: 0
+Trace run length[131072]: 0
+Trace run length[262144]: 0
+Trace run length[524288]: 0
+Trace run length[1048576]: 0
+Trace run length[2097152]: 0
+Trace run length[4194304]: 0
+Trace run length[8388608]: 0
+Trace run length[16777216]: 0
+Trace run length[33554432]: 0
+Trace run length[67108864]: 0
+Trace run length[134217728]: 0
+Trace run length[268435456]: 0
+Trace run length[536870912]: 0
+Trace run length[1073741824]: 0
+Trace run length[2147483648]: 0
+Optimized trace length[1]: 0
+Optimized trace length[2]: 0
+Optimized trace length[4]: 0
+Optimized trace length[8]: 0
+Optimized trace length[16]: 1
+Optimized trace length[32]: 0
+Optimized trace length[64]: 0
+Optimized trace length[128]: 0
+Optimized trace length[256]: 0
+Optimized trace length[512]: 0
+Optimized trace length[1024]: 0
+Optimized trace length[2048]: 0
+Optimized trace length[4096]: 0
+Optimized trace length[8192]: 0
+Optimized trace length[16384]: 0
+Optimized trace length[32768]: 0
+Optimized trace length[65536]: 0
+Optimized trace length[131072]: 0
+Optimized trace length[262144]: 0
+Optimized trace length[524288]: 0
+Optimized trace length[1048576]: 0
+Optimized trace length[2097152]: 0
+Optimized trace length[4194304]: 0
+Optimized trace length[8388608]: 0
+Optimized trace length[16777216]: 0
+Optimized trace length[33554432]: 0
+Optimized trace length[67108864]: 0
+Optimized trace length[134217728]: 0
+Optimized trace length[268435456]: 0
+Optimized trace length[536870912]: 0
+Optimized trace length[1073741824]: 0
+Optimized trace length[2147483648]: 0
+Optimization optimizer attempts: 1
+Optimization optimizer successes: 1
+Optimization optimizer failure no memory: 0
+Optimizer remove globals builtins changed: 0
+Optimizer remove globals incorrect keys: 0
+uops[_STORE_NAME].execution_count : 1981
+uops[_EXIT_TRACE].execution_count : 1982
+uops[_SET_IP].execution_count : 1981
+uops[_CHECK_VALIDITY].execution_count : 1981
+uops[_COLD_EXIT].execution_count : 1982
+uops[_GUARD_NOT_EXHAUSTED_RANGE].execution_count : 1982
+uops[_GUARD_NOT_EXHAUSTED_RANGE].specialization.miss : 1
+uops[_ITER_CHECK_RANGE].execution_count : 1982
+uops[_ITER_NEXT_RANGE].execution_count : 1981
+uops[_START_EXECUTOR].execution_count : 1982
+uops[_TIER2_RESUME_CHECK].execution_count : 1982
+unsupported_opcode[LOAD_NAME].count : 5
+Rare event (set_class): 0
+Rare event (set_bases): 0
+Rare event (set_eval_frame_func): 0
+Rare event (builtin_dict): 0
+Rare event (func_modification): 0
+Rare event (watched_dict_modification): 0
+Rare event (watched_globals_modification): 0
+</code>
+</pre>
+
+<p class="post-p">Python bundles a script in its source repo that loads all the stats files in <code>/tmp/py_stats</code> and creates an nice Markdown summary of all of them:</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./python ./Tools/scripts/summarize_stats.py</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+
+<iframe src="../../html/src_stats.html" frameborder="0" class="w-full border-2 border-gray-400 h-96"></iframe>
+    
+<p class="post-p">If you scroll through the <span class="font-semibold">Optimization (Tier 2) Stats</span>, you'll see things like Optimization Attempts, number of Traces Created, how many UOps were executed and which ones. The Faster CPython team maintains <a href="https://github.com/faster-cpython/ideas/blob/main/pystats_docs.md">separate documentation on this section</a>, since it's evolving rapidly.</p>
+<p class="post-p">To see what the output looks like with a more significant and varied workload, you can run a quick version of the <code>pyperformance</code> suite of benchmarks. Assuming you've built with pystats enabled, try:</p>
+<div class="m-2 border-2 border-gray-400">
+<div class="m-1">
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./python -m venv venv
+./venv/bin/python -m pip install pyperformance
+./venv/bin/python -m pyperformance run --debug-single-value</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</div>
+<p class="post-p">This will create quite a few (~87!) temporary venvs and run each benchmark a single time, gathering stats as it goes. Running <code>summarize_stats.py</code> over these generated stats gives us something like:</p>
+
+<iframe src="../../html/pystats_stats.html" frameborder="2" class="w-full border-2 border-gray-400 h-96"></iframe>
+
+<h2 class="post-h2" id="conclusion">Conclusion</h2>
+<p class="post-p">So, what can you do with the JIT? It isn't, at the moment, any fast than CPython without the JIT... so why turn it on?</p>
+<p class="post-p"><span class="font-semibold">Test it Against Your Code.</span> The JIT is brand-spanking-new, and while it passes the full CPython test suite, the real test of its durability is how it survives against real-world code. I'd encourage you to try to turning on the JIT, seeing what happens, and submitting any bugs you find!</p>
+<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span>.</p>
+<p class="post-p">Some specific things to look at in the CPython codebase:
+<ul class="post-ul">
+    <li>Check out the freshly-built <code>jit_stencils.h</code> file at the root of the repo, which contains the actual stencils that Python will fill in and JIT at runtime.</li>
+    <li>Search for <code class="bg-gray-200">#ifdef _Py_JIT</code> and <code class="bg-gray-200">#ifndef _Py_JIT</code></li>
+    <li>Search for <code class="bg-gray-200">#ifdef _Py_TIER2</code> and <code class="bg-gray-200">#ifndef _Py_TIER2</code></li>
+    <li>Look at <code>jit.c</code> to peek at how the JIT is implemented at runtime.</li>
+    <li>Look at the <code class="bg-gray-200">tier2_dispatch</code> label in <code>ceval.c</code></li>
+</ul></p>
+<p class="post-p"><span class="font-semibold">Mess Around!</span> Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?</p>
+<p class="post-p">As always, I'd love to hear from corrections and comments, via <a href="#" id="mlink">Email</a>, on <a href="https://x.com/jeffersglass">Twitter</a>, or on <a href="https://mastodon.social/@jeffglass">Mastodon</a>.</p>
+
+<h2 class="post-h2" id="windows">Addendum: Building for Windows</h2>
+<p class="post-p">If you're building for Windows, instead of having separate <code>configure</code> and <code>make</code> steps, you'll be passing build options directly to <code>PCBuild/build.bat</code>. The equivalent options to those <a href="#configuring">discussed earlier</a> discussed earlierare:</p>
+<div class="grid w-full grid-cols-2 m-auto border-2 border-gray-400 lg:w-3/4 align-center ">
+    <div class="font-semibold bg-gray-200 border-r-2 border-gray-400"><code class="items-center mr-4 text-right lg:float-right">Linux/POSIX</code></div>
+    <div class="font-semibold bg-gray-200 pl-4"><code>  Windows</code></div>
+    <div class="bg-gray-200 border-r-2 border-gray-400"><code class="items-center mr-4 text-right lg:float-right">--enable-experimental-jit=yes</code></div>
+    <div class="bg-gray-200 pl-4"><code>--experimental-jit</code></div>
+    <div class="border-r-2 border-gray-400 "><code class="items-center mr-4 text-right lg:float-right">--enable-experimental-jit=yes-off</code></div>
+    <div class="pl-4"><code>--experimental-jit-off</code></div>
+    <div class="bg-gray-200 border-r-2 border-gray-400"><code class="items-center mr-4 text-right lg:float-right">--enable-experimental-jit=interpreter</code></div>
+    <div class="bg-gray-200 pl-4"><code>--experimental-jit-interpreter</code></div>
+</div>
+<p class="post-">You'll also need to follow the unique setup steps for <a href="https://web.archive.org/web/20220907075854/https://cpython-core-tutorial.readthedocs.io/en/latest/build_cpython_windows.html">building Python on Windows</a>, as described by Victor Stinner. The <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT README</a> describes how to install LLVM on Windows as well.</p>
+
+<script>
+    /* 1. define variables */
+    var me = "glass.jeffrey";
+    var place = "gmail.com";
+    
+    /* 2. find email link to replace */
+    var elink = document.getElementById("mlink");
+    
+    /* 3. replace link href with variables  */
+    elink.href = `mailto:${me}@${place}`;
+    </script>
+
+<style>
+code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+    --tw-text-opacity: 1;
+    color: rgba(5, 120, 85, var(--tw-text-opacity));
+}
+code.codegray{
+    background-color: #e5e7eb;
+}
+</style>
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2024. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>
