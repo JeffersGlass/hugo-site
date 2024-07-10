@@ -4,6 +4,8 @@ date: 2024-06-09T15:43:59-04:00
 draft: true
 tags:
 - python
+- cpython
+- pyperformnace
 - JIT
 description: "How to Build and Run CPython's New JIT Compiler"
 slug_image: get-jit-featured.png
@@ -14,7 +16,7 @@ slug_image: get-jit-featured.png
 <div class="m-1">
 {{< highlight "sh" "linenostart=1" >}}
 # Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)
-git clone --depth 1 --branch v3.13.0b2 https://github.com/python/cpython.git
+git clone --depth 1 --branch v3.13.0b3 https://github.com/python/cpython.git
 cd cpython
 ./configure --enable-experimental-jit
 make
@@ -28,7 +30,7 @@ make
 <div class="m-1">
 {{< highlight "sh" "linenostart=1" >}}
 # Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)
-git clone --depth 1 --branch v3.13.0b2 https://github.com/python/cpython.git
+git clone --depth 1 --branch v3.13.0b3 https://github.com/python/cpython.git
 cd cpython
 ./configure --enable-experimental-jit --with-pydebug
 make
@@ -58,7 +60,7 @@ PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
 <p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
 <ul class="post-ul">
     <li>Installed <code>git</code> and <code>make</code> </li>
-    <li>Cloned the CPython repo locally. All the examples on this page use specifically the <code>v3.13.0b2</code> beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.</li>
+    <li>Cloned the CPython repo locally. All the examples on this page use specifically the <code>v3.13.0b3</code> beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.</li>
     <li>Installed LLVM as described in the <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT-build README</a>. At time-of-writing you should be using LLVM 18, but that may change any time.</li>
 </ul>
 <h3 class="post-h3" id="configuring">Configuring the JIT</h3>
@@ -103,8 +105,8 @@ make -j4
 <p class="post-p">At this point, running with JIT is, on average, about as fast as running without the JIT, so you're not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?</p>
 
 <h3 class="post-h3" id="PYTHON_JIT">Turning the JIT On and Off</h3>
-<p class="post-p">Even if you've built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be acheived by setting the environment variable <code>PYTHON_JIT</code> to <code>"1"</code> (for enabled) or <code>"0"</code> (for disabled). Building with <code>--enable-experimtanl-jit=yes-off</code> will disable the JIT when Python starts. Changing <code>PYTHON_JIT</code> at any point during execution (i.e. by using <code class="codegray">os.environ['PYTHON_JIT'] = 1</code>) will also enable and disable the JIT at runtime.</p>
-<p class="post-p">There's been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbarge collected, etc. However, there's <a href="https://discuss.python.org/t/pep-744-jit-compilation/50756/8">hesitancy to introduce "official" API's while the JIT is still experimental</a>. Which makes sense <span class="italic">No is temporary, yes is forever</span>.</p>
+<p class="post-p">Even if you've built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be achieved by setting the environment variable <code>PYTHON_JIT</code> to <code>"1"</code> (for enabled) or <code>"0"</code> (for disabled). Building with <code>--enable-experimtanl-jit=yes-off</code> will disable the JIT when Python starts. Changing <code>PYTHON_JIT</code> at any point during execution (i.e. by using <code class="codegray">os.environ['PYTHON_JIT'] = 1</code>) will also enable and disable the JIT at runtime.</p>
+<p class="post-p">There's been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbage collected, etc. However, there's <a href="https://discuss.python.org/t/pep-744-jit-compilation/50756/8">hesitancy to introduce "official" API's while the JIT is still experimental</a>. Which makes sense <span class="italic">No is temporary, yes is forever</span>.</p>
 
 <h3 class="post-h3" id="debugging">Debugging and Displaying Output</h3>
 <p class="post-p">With a debug build of Python, we'll have more options for displaying JIT output. Let's reconfigure and rebuild Python with:</p>
@@ -314,7 +316,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, targ
 # ... 20,000 more lines of this</code></pre>
 
 <h4 class="underline post-h4"><code class="nocode">LLTRACE=4</code></h4>
-<p class="post-p">As of Python 3.13.0b2, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
+<p class="post-p">As of Python 3.13.0b3, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
 
 <h4 class="underline post-h4"><code class="nocode">PYTHON_LLTRACE=5</code></h4>
 <p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
@@ -1266,7 +1268,7 @@ Missing function
 </pre>
 
 <h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=2</code></h4>
-<p class="post-p">As of Python 3.13.0b2, <code>PYTHON_OPT_DEBUG=1</code> and <code>PYTHON_OPT_DEBUG=2</code> are <span class="italic">always exactly the same</span>.</p>
+<p class="post-p">As of Python 3.13.3, <code>PYTHON_OPT_DEBUG=1</code> and <code>PYTHON_OPT_DEBUG=2</code> are <span class="italic">always exactly the same</span>.</p>
 
 <h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=3</code></h4>
 <p class="post-p">With value 3, <code>PYTHON_OPT_DEBUG</code> will spt out additional information about the UOps being processed, as well as function and code object associated with the UOp <code>_INIT_CALL_PY_EXACT_ARGS</code>. (This is one of those little details that is likely to change... or perhaps already has by the time you read this).</p>
