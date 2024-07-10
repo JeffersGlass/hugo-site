@@ -1,156 +1,209 @@
----
-title: "How to Get the New CPython JIT"
-date: 2024-06-09T15:43:59-04:00
-draft: false
-tags:
-- python
-- cpython
-- pyperformance
-- JIT
-description: "How to Build and Run CPython's New JIT Compiler"
-slug_image: get-jit-featured.png
----
-<h2 class="post-h2">TL;DR</h2>
-<p class="post-p">To just build and run with the JIT:</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "sh" "linenostart=1" >}}
-# Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)
-git clone --depth 1 --branch v3.13.0b3 https://github.com/python/cpython.git
-cd cpython
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>JIT on Jeff Glass</title>
+    <link>https://jeff.glass/tags/jit/</link>
+    <description>Recent content in JIT on Jeff Glass</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 09 Jun 2024 15:43:59 -0400</lastBuildDate><atom:link href="https://jeff.glass/tags/jit/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to Get the New CPython JIT</title>
+      <link>https://jeff.glass/post/try-cpython-jit/</link>
+      <pubDate>Sun, 09 Jun 2024 15:43:59 -0400</pubDate>
+      
+      <guid>https://jeff.glass/post/try-cpython-jit/</guid>
+      <description>&lt;h2 class=&#34;post-h2&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;To just build and run with the JIT:&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)&lt;/span&gt;
+git clone --depth &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; --branch v3.13.0b3 https://github.com/python/cpython.git
+&lt;span style=&#34;color:#366&#34;&gt;cd&lt;/span&gt; cpython
 ./configure --enable-experimental-jit
 make
-./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
-{{< /highlight >}}
-</div>
-</div>
+./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<p class="post-p">To include some debug output, to show the JIT is running:</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "sh" "linenostart=1" >}}
-# Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)
-git clone --depth 1 --branch v3.13.0b3 https://github.com/python/cpython.git
-cd cpython
+&lt;p class=&#34;post-p&#34;&gt;To include some debug output, to show the JIT is running:&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)&lt;/span&gt;
+git clone --depth &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; --branch v3.13.0b3 https://github.com/python/cpython.git
+&lt;span style=&#34;color:#366&#34;&gt;cd&lt;/span&gt; cpython
 ./configure --enable-experimental-jit --with-pydebug
 make
-PYTHON_LLTRACE=2 ./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
-{{< /highlight >}}
-</div>
-</div>
+&lt;span style=&#34;color:#033&#34;&gt;PYTHON_LLTRACE&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt; ./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<h2 class="post-h2" id="full-story">Trying CPython's JIT</h2>
-<p class="post-p">If you haven't read <a href="https://github.com/python/cpython/pull/113465">Brandt Bucher's incredible rhyming Christmas Day PR</a>, drop everything and go do it. Right now.</p>
-<p class="post-p">Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?</p>
-<p class="post-p">Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that's possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before <span class="italic">the time that code is actually run.</span> In the case of CPython's new JIT, that's done by a method called <span class="italic font-semibold">copy-and-patch</span>, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with 'holes' left for external symbols and constants that can be 'stencilled in' at runtime. Pretty neat!</p>
-<p class="post-p">I won't claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR's, I want to share the how <span class="italic">you</span> can get a copy of Python with the JIT enabled to play with as well. We'll also see some ways to get additional debug output, for those who really want to see the sausage get made.</p>
-<div class="info-banner">For more background on JITs and copy-and-patch specifically, see:
-    <ul class="post-ul">
-        <li><a href="https://peps.python.org/pep-0744/">PEP 744 - Jit Compilation</a>: an informational PEP on the thinking behind and basic approach to the copy-and-patch technique.</li>
-        <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
-        <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
-        <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno. (A similar talk appeared at PyConUS 2024 and will be linked here when available).</li>
-        <li>The internals of the <a href="https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
-    </ul>
-</div>
-<h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
-<p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please <a href="#conclusion">let me know</a> if I'm wrong.) So, we'll have to build our own!</p>
-<p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive.</p>
-<p class="post-p">This post is written assuming you're building in a POSIX/Linux environment - see the section at the end for <a href="#windows">information on building for Windows</a>.</p>  
-<p class="post-p">Suffice to say, we'll pick up assuming you have:</p>
-<ul class="post-ul">
-    <li>Installed <code>git</code> and <code>make</code> </li>
-    <li>Cloned the CPython repo locally. All the examples on this page use specifically the <code>v3.13.0b3</code> beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.</li>
-    <li>Installed LLVM as described in the <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT-build README</a>. At time-of-writing you should be using LLVM 18, but that may change any time.</li>
-</ul>
-<h3 class="post-h3" id="configuring">Configuring the JIT</h3>
-<p class="post-p">The key step that enables a JIT build is a specific flag passed to the <code>./configure</code> script that lives in the root of the CPython repo: <code>--enable-experimental-jit</code>. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:</p>
+&lt;h2 class=&#34;post-h2&#34; id=&#34;full-story&#34;&gt;Trying CPython&#39;s JIT&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;If you haven&#39;t read &lt;a href=&#34;https://github.com/python/cpython/pull/113465&#34;&gt;Brandt Bucher&#39;s incredible rhyming Christmas Day PR&lt;/a&gt;, drop everything and go do it. Right now.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Welcome back! I see that big smile on your face - that poem is really something no? But what does it all mean?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Essentially, CPython now has a Just-In-Time compiler implementation, at least in distributions where that&#39;s possible. There are many flavors of JIT, but their common feature is emitting machine code very shortly before &lt;span class=&#34;italic&#34;&gt;the time that code is actually run.&lt;/span&gt; In the case of CPython&#39;s new JIT, that&#39;s done by a method called &lt;span class=&#34;italic font-semibold&#34;&gt;copy-and-patch&lt;/span&gt;, where small snippets of code (one per Python micro-opcode) are pre-compiled to machine code, with &#39;holes&#39; left for external symbols and constants that can be &#39;stencilled in&#39; at runtime. Pretty neat!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;I won&#39;t claim to be a JIT expert, or anything close. But I am a tinkerer, and I encourage you to be the same. After a few months of playing with the JIT and submitting a few small related PR&#39;s, I want to share the how &lt;span class=&#34;italic&#34;&gt;you&lt;/span&gt; can get a copy of Python with the JIT enabled to play with as well. We&#39;ll also see some ways to get additional debug output, for those who really want to see the sausage get made.&lt;/p&gt;
+&lt;div class=&#34;info-banner&#34;&gt;For more background on JITs and copy-and-patch specifically, see:
+    &lt;ul class=&#34;post-ul&#34;&gt;
+        &lt;li&gt;&lt;a href=&#34;https://peps.python.org/pep-0744/&#34;&gt;PEP 744 - Jit Compilation&lt;/a&gt;: an informational PEP on the thinking behind and basic approach to the copy-and-patch technique.&lt;/li&gt;
+        &lt;li&gt;The &lt;a href=&#34;https://dl.acm.org/doi/10.1145/3485513&#34;&gt;whitepaper&lt;/a&gt;: &lt;span class=&#34;italic&#34;&gt;Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode&lt;/span&gt;&lt;/li&gt;
+        &lt;li&gt;Haoran Xu&#39;s &lt;a href=&#34;https://sillycross.github.io/2023/05/12/2023-05-12/&#34;&gt;blogpost&lt;/a&gt;: &lt;span class=&#34;italic&#34;&gt;Building a baseline JIT for Lua automatically&lt;/span&gt;&lt;/li&gt;
+        &lt;li&gt;The &lt;a href=&#34;https://www.youtube.com/watch?v=HxSHIpEQRjs&#34;&gt;video of Brandt&#39;s Presentation&lt;/a&gt; at this year&#39;s CPython Core Sprint in Brno. (A similar talk appeared at PyConUS 2024 and will be linked here when available).&lt;/li&gt;
+        &lt;li&gt;The internals of the &lt;a href=&#34;https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d&#34;&gt;pull request itself.&lt;/a&gt; While it&#39;s been almost four months since it&#39;s been merged, and the JIT has evolved quite a bit since then, I&#39;d recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;building-top&#34;&gt; Building CPython with a JIT&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;I don&#39;t know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please &lt;a href=&#34;#conclusion&#34;&gt;let me know&lt;/a&gt; if I&#39;m wrong.) So, we&#39;ll have to build our own!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;The CPython core puts a lot of effort into making Python straightforward to build. I won&#39;t rehash their &lt;a href=&#34;https://devguide.python.org/getting-started/setup-building/&#34;&gt;setup and build&lt;/a&gt; instructions here, as they&#39;re fairly comprehensive.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;This post is written assuming you&#39;re building in a POSIX/Linux environment - see the section at the end for &lt;a href=&#34;#windows&#34;&gt;information on building for Windows&lt;/a&gt;.&lt;/p&gt;  
+&lt;p class=&#34;post-p&#34;&gt;Suffice to say, we&#39;ll pick up assuming you have:&lt;/p&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Installed &lt;code&gt;git&lt;/code&gt; and &lt;code&gt;make&lt;/code&gt; &lt;/li&gt;
+    &lt;li&gt;Cloned the CPython repo locally. All the examples on this page use specifically the &lt;code&gt;v3.13.0b3&lt;/code&gt; beta branch - the JIT is evolving quickly, your experience may vary with another branch/tag.&lt;/li&gt;
+    &lt;li&gt;Installed LLVM as described in the &lt;a href=&#34;https://github.com/python/cpython/blob/main/Tools/jit/README.md&#34;&gt;JIT-build README&lt;/a&gt;. At time-of-writing you should be using LLVM 18, but that may change any time.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 class=&#34;post-h3&#34; id=&#34;configuring&#34;&gt;Configuring the JIT&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;The key step that enables a JIT build is a specific flag passed to the &lt;code&gt;./configure&lt;/code&gt; script that lives in the root of the CPython repo: &lt;code&gt;--enable-experimental-jit&lt;/code&gt;. Passing this flag will create a Makefile with the JIT build enabled! But there are actually multiple potential values for this flag:&lt;/p&gt;
 
-<div class="grid grid-cols-1 border-2 border-gray-400 md:grid-cols-2 gap-y-4">
-    <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes</code></div>
-    <div class="bg-gray-200">Enables a JIT build; The same as not passing a specific value of this flag at all</div>
-    <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=yes-off</code></div>
-    <div>Enables a built that will have the JIT, but it will be disabled by default. May be useful if you're doing some testing of the behavior of turning the JIT itself on and off. See the notes on <a href="#PYTHON_JIT">PYTHON_JIT</a> below.</div>
-    <div class="bg-gray-200"><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=interpreter</code></div>
-    <div class="bg-gray-200">Enables just the Tier 2 Interpreter, but <span class="italic">not</span> the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted... and then they're not actually jitted. It runs exactly the same code as the JIT itself, but skips the copy-and-patch step. Performs worse than running with the full JIT, but currently provides more debuggability.</div>
-    <div><code class="items-center float-right mr-4 text-right">--enable-experimental-jit=no</code></div>
-    <div>The same as not passing this flag. Just for comprehensiveness, I suppose.</div>
-</div>
+&lt;div class=&#34;grid grid-cols-1 border-2 border-gray-400 md:grid-cols-2 gap-y-4&#34;&gt;
+    &lt;div class=&#34;bg-gray-200&#34;&gt;&lt;code class=&#34;items-center float-right mr-4 text-right&#34;&gt;--enable-experimental-jit=yes&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200&#34;&gt;Enables a JIT build; The same as not passing a specific value of this flag at all&lt;/div&gt;
+    &lt;div&gt;&lt;code class=&#34;items-center float-right mr-4 text-right&#34;&gt;--enable-experimental-jit=yes-off&lt;/code&gt;&lt;/div&gt;
+    &lt;div&gt;Enables a built that will have the JIT, but it will be disabled by default. May be useful if you&#39;re doing some testing of the behavior of turning the JIT itself on and off. See the notes on &lt;a href=&#34;#PYTHON_JIT&#34;&gt;PYTHON_JIT&lt;/a&gt; below.&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200&#34;&gt;&lt;code class=&#34;items-center float-right mr-4 text-right&#34;&gt;--enable-experimental-jit=interpreter&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200&#34;&gt;Enables just the Tier 2 Interpreter, but &lt;span class=&#34;italic&#34;&gt;not&lt;/span&gt; the JIT. This is basically all the machinery of the JIT up to the point where specific stencils are selected to be emitted... and then they&#39;re not actually jitted. It runs exactly the same code as the JIT itself, but skips the copy-and-patch step. Performs worse than running with the full JIT, but currently provides more debuggability.&lt;/div&gt;
+    &lt;div&gt;&lt;code class=&#34;items-center float-right mr-4 text-right&#34;&gt;--enable-experimental-jit=no&lt;/code&gt;&lt;/div&gt;
+    &lt;div&gt;The same as not passing this flag. Just for comprehensiveness, I suppose.&lt;/div&gt;
+&lt;/div&gt;
 
-<p class="post-p">That's all the configuring you'll need to do! There are some additional configuration flags you <span class="italic">can</span> pass, but we'll touch on those more in the <a href="#debugging">debugging</a> and <a href="#stats">gathering statistics</a> sections.</p>
+&lt;p class=&#34;post-p&#34;&gt;That&#39;s all the configuring you&#39;ll need to do! There are some additional configuration flags you &lt;span class=&#34;italic&#34;&gt;can&lt;/span&gt; pass, but we&#39;ll touch on those more in the &lt;a href=&#34;#debugging&#34;&gt;debugging&lt;/a&gt; and &lt;a href=&#34;#stats&#34;&gt;gathering statistics&lt;/a&gt; sections.&lt;/p&gt;
 
-<h3 class="post-h3" id="building">Building the JIT</h3>
-<p class="post-p">Python's <code>configure</code> script will drop a Makefile into the root of the CPython repo, which has all the configuration options baked in. Once that's finished building, you can simply run <code class="codegray">make</code>... or, if you want a little time back, <code class="codegray">make -jX</code>, where <code>X</code> is the number of separate build threads to run in parallel. Staring with the number of processors on your computer (discoverable by running <code class="codegray">nproc</code>) is a decent place to start, but it's worth experimenting up or down to see how it affects build time.</p>
-<p class="post-p">If you're rebuilding often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what <code class="codegray">make clean</code> (and its more aggressive partner <code class="codegray">make distclean</code>) are for. <code>clean</code> just removes generated files, while <code>distclean</code> removes generated files too, including the Makefile!</p>
-<p class="post-p">So to summarize - once you've cloned the CPython repo, all you need to do to build the JIT is:</p>
+&lt;h3 class=&#34;post-h3&#34; id=&#34;building&#34;&gt;Building the JIT&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Python&#39;s &lt;code&gt;configure&lt;/code&gt; script will drop a Makefile into the root of the CPython repo, which has all the configuration options baked in. Once that&#39;s finished building, you can simply run &lt;code class=&#34;codegray&#34;&gt;make&lt;/code&gt;... or, if you want a little time back, &lt;code class=&#34;codegray&#34;&gt;make -jX&lt;/code&gt;, where &lt;code&gt;X&lt;/code&gt; is the number of separate build threads to run in parallel. Staring with the number of processors on your computer (discoverable by running &lt;code class=&#34;codegray&#34;&gt;nproc&lt;/code&gt;) is a decent place to start, but it&#39;s worth experimenting up or down to see how it affects build time.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;If you&#39;re rebuilding often, or weird things start happening with the build, you may need to clean up after yourself and start fresh. This is what &lt;code class=&#34;codegray&#34;&gt;make clean&lt;/code&gt; (and its more aggressive partner &lt;code class=&#34;codegray&#34;&gt;make distclean&lt;/code&gt;) are for. &lt;code&gt;clean&lt;/code&gt; just removes generated files, while &lt;code&gt;distclean&lt;/code&gt; removes generated files too, including the Makefile!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;So to summarize - once you&#39;ve cloned the CPython repo, all you need to do to build the JIT is:&lt;/p&gt;
 
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "shell" "linenostart=1" >}}
-./configure --enable-experimental-jit
-make -j4
-{{< /highlight >}}
-</div>
-</div>
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./configure --enable-experimental-jit
+make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<h2 class="post-h2" id="running">Running the JIT</h2>
-<p class="post-p">When the makefile completes, you should have an executable called <code>python</code> sitting in the root of the repo! Running code with it now will make use of the JIT!</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "shell" "linenostart=1" >}}
-./python -c $'x=0\nfor i in range(1000):\n x+=i\nprint(x)'
-{{< /highlight >}}
-</div>
-</div>
-<p class="post-p">At this point, running with JIT is, on average, about as fast as running without the JIT, so you're not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?</p>
+&lt;h2 class=&#34;post-h2&#34; id=&#34;running&#34;&gt;Running the JIT&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;When the makefile completes, you should have an executable called &lt;code&gt;python&lt;/code&gt; sitting in the root of the repo! Running code with it now will make use of the JIT!&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;At this point, running with JIT is, on average, about as fast as running without the JIT, so you&#39;re not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?&lt;/p&gt;
 
-<h3 class="post-h3" id="PYTHON_JIT">Turning the JIT On and Off</h3>
-<p class="post-p">Even if you've built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be achieved by setting the environment variable <code>PYTHON_JIT</code> to <code>"1"</code> (for enabled) or <code>"0"</code> (for disabled). Building with <code>--enable-experimtanl-jit=yes-off</code> will disable the JIT when Python starts. Changing <code>PYTHON_JIT</code> at any point during execution (i.e. by using <code class="codegray">os.environ['PYTHON_JIT'] = 1</code>) will also enable and disable the JIT at runtime.</p>
-<p class="post-p">There's been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbage collected, etc. However, there's <a href="https://discuss.python.org/t/pep-744-jit-compilation/50756/8">hesitancy to introduce "official" API's while the JIT is still experimental</a>. Which makes sense <span class="italic">No is temporary, yes is forever</span>.</p>
+&lt;h3 class=&#34;post-h3&#34; id=&#34;PYTHON_JIT&#34;&gt;Turning the JIT On and Off&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Even if you&#39;ve built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be achieved by setting the environment variable &lt;code&gt;PYTHON_JIT&lt;/code&gt; to &lt;code&gt;&#34;1&#34;&lt;/code&gt; (for enabled) or &lt;code&gt;&#34;0&#34;&lt;/code&gt; (for disabled). Building with &lt;code&gt;--enable-experimtanl-jit=yes-off&lt;/code&gt; will disable the JIT when Python starts. Changing &lt;code&gt;PYTHON_JIT&lt;/code&gt; at any point during execution (i.e. by using &lt;code class=&#34;codegray&#34;&gt;os.environ[&#39;PYTHON_JIT&#39;] = 1&lt;/code&gt;) will also enable and disable the JIT at runtime.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;There&#39;s been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbage collected, etc. However, there&#39;s &lt;a href=&#34;https://discuss.python.org/t/pep-744-jit-compilation/50756/8&#34;&gt;hesitancy to introduce &#34;official&#34; API&#39;s while the JIT is still experimental&lt;/a&gt;. Which makes sense &lt;span class=&#34;italic&#34;&gt;No is temporary, yes is forever&lt;/span&gt;.&lt;/p&gt;
 
-<h3 class="post-h3" id="debugging">Debugging and Displaying Output</h3>
-<p class="post-p">With a debug build of Python, we'll have more options for displaying JIT output. Let's reconfigure and rebuild Python with:</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "shell" "linenostart=1" >}}
-./configure --enable-experimental-jit --with-pydebug
-make
-{{< /highlight >}}
-</div>
-</div>
-<p class="post-p">We now have a debug build of Python! For our purposes, this will enable us to run with a couple of special environment variables that will print out what's going on with the JIT in realtime. Setting <code class="codegray">PYTHON_LLTRACE=X</code> will display increasing volumes of information about individual "traces", or sequences of opcodes/micro-opcodes, as X increases from 1 to 5. Similarly, <code class="codegray">PYTHON_OPT_DEBUG=X</code> prints information about how the optimizer is optimizing traces of micro-opcodes, as X ranges from 1 to 3.</p>
+&lt;h3 class=&#34;post-h3&#34; id=&#34;debugging&#34;&gt;Debugging and Displaying Output&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;With a debug build of Python, we&#39;ll have more options for displaying JIT output. Let&#39;s reconfigure and rebuild Python with:&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./configure --enable-experimental-jit --with-pydebug
+make&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;We now have a debug build of Python! For our purposes, this will enable us to run with a couple of special environment variables that will print out what&#39;s going on with the JIT in realtime. Setting &lt;code class=&#34;codegray&#34;&gt;PYTHON_LLTRACE=X&lt;/code&gt; will display increasing volumes of information about individual &#34;traces&#34;, or sequences of opcodes/micro-opcodes, as X increases from 1 to 5. Similarly, &lt;code class=&#34;codegray&#34;&gt;PYTHON_OPT_DEBUG=X&lt;/code&gt; prints information about how the optimizer is optimizing traces of micro-opcodes, as X ranges from 1 to 3.&lt;/p&gt;
 
-<p class="post-p">Let's give ourself a short snippet of Python to run, so we can see how the output differs as we change these environment variables. If this code seems a bit contrived - it is!</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">  
-{{< highlight "python3" "linenostart=1" >}}
-# src.py
-x = 0
-for i in range(2000):
-    if x % 10:
-        x += i
-    else:
-        x += i * 2
-print(x)
-{{< /highlight >}}
-</div>
-</div>
+&lt;p class=&#34;post-p&#34;&gt;Let&#39;s give ourself a short snippet of Python to run, so we can see how the output differs as we change these environment variables. If this code seems a bit contrived - it is!&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;  
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# src.py&lt;/span&gt;
+x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;2000&lt;/span&gt;):
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; x &lt;span style=&#34;color:#555&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;:
+        x &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; i
+    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
+        x &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; i &lt;span style=&#34;color:#555&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt;
+&lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(x)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<h4 class="underline post-h4"><code class="nocode">LLTRACE=1</code></h4>
-<p class="post-p">The lowest value of <code>LLTRACE</code> will print minimal messages, indicating that traces were created and where but providing no real detail.</p>
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=1&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The lowest value of &lt;code&gt;LLTRACE&lt;/code&gt; will print minimal messages, indicating that traces were created and where but providing no real detail.&lt;/p&gt;
 
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=1 ./python src.py</code>
-<code>Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=1 ./python src.py&lt;/code&gt;
+&lt;code&gt;Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
 1999001
-</code></pre>
+&lt;/code&gt;&lt;/pre&gt;
 
-<h4 class="underline post-h4"><code class="nocode">LLTRACE=2</code></h4>
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=2&lt;/code&gt;&lt;/h4&gt;
 
-<p class="post-p">Increasing <code>LLTRACE</code> to two opens up many more details. We can see each UOp as it's added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and <a href="https://github.com/python/cpython/pull/119354#issuecomment-2138473361">target</a> of each UOp if any. (Since the operands are unique-per-run and machine-specific, I'm filtering them out here to make comparison easier.)</p>
-<p class="post-p">You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920">flagged here</a>.</p>
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=2 ./python src.py</code>
-<code>1999001
-    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+&lt;p class=&#34;post-p&#34;&gt;Increasing &lt;code&gt;LLTRACE&lt;/code&gt; to two opens up many more details. We can see each UOp as it&#39;s added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and &lt;a href=&#34;https://github.com/python/cpython/pull/119354#issuecomment-2138473361&#34;&gt;target&lt;/a&gt; of each UOp if any. (Since the operands are unique-per-run and machine-specific, I&#39;m filtering them out here to make comparison easier.)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are &lt;a href=&#34;https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920&#34;&gt;flagged here&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=2 ./python src.py&lt;/code&gt;
+&lt;code&gt;1999001
+    Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
     29: JUMP_BACKWARD(20)
        2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0xDEADBEEF)
@@ -167,7 +220,7 @@ print(x)
       10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
     Unsupported opcode LOAD_NAME
       11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
-    Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+    Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
     Optimized trace (length 15):
        0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF)
        1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
@@ -184,38 +237,38 @@ print(x)
       12 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xb)
       13 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xd)
       14 OPTIMIZED: _DEOPT (0, target=14, operand=0)
-    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+    Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
     14: LOAD_NAME(0)
        2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
     Unsupported opcode LOAD_NAME
-    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
-    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+    No trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
     14: LOAD_NAME(0)
        2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
     Unsupported opcode LOAD_NAME
-    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
-    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+    No trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
     14: LOAD_NAME(0)
        2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
     Unsupported opcode LOAD_NAME
-    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
-    Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
+    No trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=14, operand=0xDEADBEEF)
     14: LOAD_NAME(0)
        2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
     Unsupported opcode LOAD_NAME
-    No trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
+    No trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 28 (too short)
     
-</code></pre>
+&lt;/code&gt;&lt;/pre&gt;
 
-<h4 class="underline post-h4"><code class="nocode">LLTRACE=3</code></h4>
-<p class="post-p">In a normal JIT build, <code>PYTHON_LLTRACE=2</code> and <code>PYTHON_LLTRACE=3</code> are exactly the same! (At least as of the current build). But if you build with only the Tier 2 interpreter and not the JIT, you do get a few more messages about side exits and cold exists... or a lot more, depending on your code:</p>
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=3&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;In a normal JIT build, &lt;code&gt;PYTHON_LLTRACE=2&lt;/code&gt; and &lt;code&gt;PYTHON_LLTRACE=3&lt;/code&gt; are exactly the same! (At least as of the current build). But if you build with only the Tier 2 interpreter and not the JIT, you do get a few more messages about side exits and cold exists... or a lot more, depending on your code:&lt;/p&gt;
 
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=3 ./python src.py <span class="text-blue-800"># built with --enable-experimental-jit=interpreter</span></code>
-code>Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=3 ./python src.py &lt;span class=&#34;text-blue-800&#34;&gt;# built with --enable-experimental-jit=interpreter&lt;/span&gt;&lt;/code&gt;
+code&gt;Optimizing &amp;lt;module&amp;gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
    1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
 29: JUMP_BACKWARD(20)
    2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0xDEADBEEF)
@@ -232,7 +285,7 @@ code>Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte
   10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
 Unsupported opcode LOAD_NAME
   11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
-Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+Created a proto-trace for &amp;lt;module&amp;gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
 Optimized trace (length 15):
    0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF)
    1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
@@ -258,7 +311,7 @@ Optimized trace (length 15):
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, target 14 -&gt; LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, target 14 -&amp;gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -269,7 +322,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, tar
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, target 14 -&gt; LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, target 14 -&amp;gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -280,7 +333,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, tar
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, target 14 -&gt; LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, target 14 -&amp;gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -291,7 +344,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, target 14 -&gt; LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, target 14 -&amp;gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -302,7 +355,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, target 14 -&gt; LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, target 14 -&amp;gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -313,28 +366,28 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0xDEADBEEF) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-# ... 20,000 more lines of this</code></pre>
+# ... 20,000 more lines of this&lt;/code&gt;&lt;/pre&gt;
 
-<h4 class="underline post-h4"><code class="nocode">LLTRACE=4</code></h4>
-<p class="post-p">As of Python 3.13.0b3, <code>PYTHON_LLTRACE=3</code> and <code>PYTHON_LLTRACE=4</code> are <span class="italic">always exactly the same</span>. So let's move on to the big kahuna:</p>
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=4&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;As of Python 3.13.0b3, &lt;code&gt;PYTHON_LLTRACE=3&lt;/code&gt; and &lt;code&gt;PYTHON_LLTRACE=4&lt;/code&gt; are &lt;span class=&#34;italic&#34;&gt;always exactly the same&lt;/span&gt;. So let&#39;s move on to the big kahuna:&lt;/p&gt;
 
-<h4 class="underline post-h4"><code class="nocode">PYTHON_LLTRACE=5</code></h4>
-<p class="post-p">You want debug info? Oh boy do we have debug info. And a lot of it isn't even related to the JIT. With <code>PYTHON_LLTRACE=5</code>, any Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.</p>
-<p class="post-p">Buried in the middle of this, you can see similar JIT/UOp/Trace information as at level 3/4.</p>
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=5 ./python src.py</code>
-<code>
-Resuming frame for &#39;&lt;module&gt;&#39; in module &#39;_frozen_importlib&#39;
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=5&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;You want debug info? Oh boy do we have debug info. And a lot of it isn&#39;t even related to the JIT. With &lt;code&gt;PYTHON_LLTRACE=5&lt;/code&gt;, any Python bytecodes that are executed in the interpreter are printed and the stack dumped at that point. You also get notes when stack frames are left or resumed.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Buried in the middle of this, you can see similar JIT/UOp/Trace information as at level 3/4.&lt;/p&gt;
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=5 ./python src.py&lt;/code&gt;
+&lt;code&gt;
+Resuming frame for &amp;#39;&amp;lt;module&amp;gt;&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_CONST 0
-    stack=[&#39;Core implementation of import.\n\nThis module is NOT meant to be directly imported! It has been designed such\nthat it can be bootstrapped into Python as the implementation of import. As\nsuch it requires the injection of specific modules and attributes in order to\nwork. One should use importlib as the public-facing version of this module.\n\n&#39;]
+    stack=[&amp;#39;Core implementation of import.\n\nThis module is NOT meant to be directly imported! It has been designed such\nthat it can be bootstrapped into Python as the implementation of import. As\nsuch it requires the injection of specific modules and attributes in order to\nwork. One should use importlib as the public-facing version of this module.\n\n&amp;#39;]
 4: STORE_NAME 0
     stack=[]
 6: LOAD_CONST 1
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 8: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 10: STORE_NAME 1
     stack=[]
 12: LOAD_CONST 2
@@ -354,41 +407,41 @@ Resuming frame for &#39;&lt;module&gt;&#39; in module &#39;_frozen_importlib&#39
 26: STORE_GLOBAL 5
     stack=[]
 28: LOAD_CONST 3
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 30: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 32: STORE_NAME 6
     stack=[]
 34: LOAD_CONST 4
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 36: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 38: STORE_NAME 7
     stack=[]
 40: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 42: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 44: LOAD_CONST 5
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 46: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 48: LOAD_CONST 6
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_List&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_List&amp;#39;]
 50: LOAD_NAME 8
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_List&#39;, &lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_List&amp;#39;, &amp;lt;type at 0xDEADBEEF&amp;gt;]
 52: CALL 3
 
-Resuming frame for &#39;_List&#39; in module &#39;_frozen_importlib&#39;
+Resuming frame for &amp;#39;_List&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_NAME 0
-    stack=[&#39;_frozen_importlib&#39;]
+    stack=[&amp;#39;_frozen_importlib&amp;#39;]
 4: STORE_NAME 1
     stack=[]
 6: LOAD_CONST 0
-    stack=[&#39;_List&#39;]
+    stack=[&amp;#39;_List&amp;#39;]
 8: STORE_NAME 2
     stack=[]
 10: LOAD_CONST 1
@@ -396,39 +449,39 @@ Resuming frame for &#39;_List&#39; in module &#39;_frozen_importlib&#39;
 12: STORE_NAME 3
     stack=[]
 14: LOAD_CONST 2
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 16: STORE_NAME 4
     stack=[]
 18: LOAD_CONST 3
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 20: STORE_NAME 5
     stack=[]
 22: RETURN_CONST 4
-    stack=[&lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;type at 0xDEADBEEF&amp;gt;]
 60: STORE_NAME 9
     stack=[]
 62: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 64: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 66: LOAD_CONST 7
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 68: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 70: LOAD_CONST 8
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_WeakValueDictionary&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_WeakValueDictionary&amp;#39;]
 72: CALL 2
 
-Resuming frame for &#39;_WeakValueDictionary&#39; in module &#39;_frozen_importlib&#39;
+Resuming frame for &amp;#39;_WeakValueDictionary&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_NAME 0
-    stack=[&#39;_frozen_importlib&#39;]
+    stack=[&amp;#39;_frozen_importlib&amp;#39;]
 4: STORE_NAME 1
     stack=[]
 6: LOAD_CONST 0
-    stack=[&#39;_WeakValueDictionary&#39;]
+    stack=[&amp;#39;_WeakValueDictionary&amp;#39;]
 8: STORE_NAME 2
     stack=[]
 10: LOAD_CONST 1
@@ -436,53 +489,53 @@ Resuming frame for &#39;_WeakValueDictionary&#39; in module &#39;_frozen_importl
 12: STORE_NAME 3
     stack=[]
 14: LOAD_CONST 2
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 16: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 18: STORE_NAME 4
     stack=[]
 20: LOAD_CONST 3
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 22: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 24: STORE_NAME 5
     stack=[]
 26: LOAD_CONST 4
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 28: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 30: STORE_NAME 6
     stack=[]
 32: LOAD_CONST 9
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 34: LOAD_CONST 6
-    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 36: MAKE_FUNCTION
-    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 38: SET_FUNCTION_ATTRIBUTE 1
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 40: STORE_NAME 7
     stack=[]
 42: LOAD_CONST 9
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 44: LOAD_CONST 7
-    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 46: MAKE_FUNCTION
-    stack=[&lt;tuple at 0xDEADBEEF&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 48: SET_FUNCTION_ATTRIBUTE 1
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 50: STORE_NAME 8
     stack=[]
 52: LOAD_CONST 8
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 54: STORE_NAME 9
     stack=[]
 56: RETURN_CONST 5
-    stack=[&lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;type at 0xDEADBEEF&amp;gt;]
 80: STORE_NAME 10
     stack=[]
 82: BUILD_MAP 0
-    stack=[&lt;dict at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;dict at 0xDEADBEEF&amp;gt;]
 84: STORE_NAME 11
     stack=[]
 86: LOAD_CONST 2
@@ -490,27 +543,27 @@ Resuming frame for &#39;_WeakValueDictionary&#39; in module &#39;_frozen_importl
 88: STORE_GLOBAL 12
     stack=[]
 90: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 92: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 94: LOAD_CONST 9
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 96: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 98: LOAD_CONST 10
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_BlockingOnManager&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_BlockingOnManager&amp;#39;]
 100: CALL 2
 
-Resuming frame for &#39;_BlockingOnManager&#39; in module &#39;_frozen_importlib&#39;
+Resuming frame for &amp;#39;_BlockingOnManager&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_NAME 0
-    stack=[&#39;_frozen_importlib&#39;]
+    stack=[&amp;#39;_frozen_importlib&amp;#39;]
 4: STORE_NAME 1
     stack=[]
 6: LOAD_CONST 0
-    stack=[&#39;_BlockingOnManager&#39;]
+    stack=[&amp;#39;_BlockingOnManager&amp;#39;]
 8: STORE_NAME 2
     stack=[]
 10: LOAD_CONST 1
@@ -518,59 +571,59 @@ Resuming frame for &#39;_BlockingOnManager&#39; in module &#39;_frozen_importlib
 12: STORE_NAME 3
     stack=[]
 14: LOAD_CONST 2
-    stack=[&#39;A context manager responsible to updating ``_blocking_on``.&#39;]
+    stack=[&amp;#39;A context manager responsible to updating ``_blocking_on``.&amp;#39;]
 16: STORE_NAME 4
     stack=[]
 18: LOAD_CONST 3
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 20: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 22: STORE_NAME 5
     stack=[]
 24: LOAD_CONST 4
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 26: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 28: STORE_NAME 6
     stack=[]
 30: LOAD_CONST 5
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 32: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 34: STORE_NAME 7
     stack=[]
 36: LOAD_CONST 6
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 38: STORE_NAME 8
     stack=[]
 40: RETURN_CONST 7
-    stack=[&lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;type at 0xDEADBEEF&amp;gt;]
 108: STORE_NAME 13
     stack=[]
 110: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 112: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 114: LOAD_CONST 11
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 116: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 118: LOAD_CONST 12
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_DeadlockError&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_DeadlockError&amp;#39;]
 120: LOAD_NAME 14
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_DeadlockError&#39;, &lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_DeadlockError&amp;#39;, &amp;lt;type at 0xDEADBEEF&amp;gt;]
 122: CALL 3
 
-Resuming frame for &#39;_DeadlockError&#39; in module &#39;_frozen_importlib&#39;
+Resuming frame for &amp;#39;_DeadlockError&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_NAME 0
-    stack=[&#39;_frozen_importlib&#39;]
+    stack=[&amp;#39;_frozen_importlib&amp;#39;]
 4: STORE_NAME 1
     stack=[]
 6: LOAD_CONST 0
-    stack=[&#39;_DeadlockError&#39;]
+    stack=[&amp;#39;_DeadlockError&amp;#39;]
 8: STORE_NAME 2
     stack=[]
 10: LOAD_CONST 1
@@ -578,41 +631,41 @@ Resuming frame for &#39;_DeadlockError&#39; in module &#39;_frozen_importlib&#39
 12: STORE_NAME 3
     stack=[]
 14: LOAD_CONST 2
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 16: STORE_NAME 4
     stack=[]
 18: RETURN_CONST 3
-    stack=[&lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;type at 0xDEADBEEF&amp;gt;]
 130: STORE_NAME 15
     stack=[]
 132: LOAD_CONST 13
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 134: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 136: STORE_NAME 16
     stack=[]
 138: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 140: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 142: LOAD_CONST 14
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 144: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 146: LOAD_CONST 15
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_ModuleLock&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_ModuleLock&amp;#39;]
 148: CALL 2
 
-Resuming frame for &#39;_ModuleLock&#39; in module &#39;_frozen_importlib&#39;
+Resuming frame for &amp;#39;_ModuleLock&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_NAME 0
-    stack=[&#39;_frozen_importlib&#39;]
+    stack=[&amp;#39;_frozen_importlib&amp;#39;]
 4: STORE_NAME 1
     stack=[]
 6: LOAD_CONST 0
-    stack=[&#39;_ModuleLock&#39;]
+    stack=[&amp;#39;_ModuleLock&amp;#39;]
 8: STORE_NAME 2
     stack=[]
 10: LOAD_CONST 1
@@ -620,69 +673,69 @@ Resuming frame for &#39;_ModuleLock&#39; in module &#39;_frozen_importlib&#39;
 12: STORE_NAME 3
     stack=[]
 14: LOAD_CONST 2
-    stack=[&#39;A recursive lock implementation which is able to detect deadlocks\n(e.g. thread 1 trying to take locks A then B, and thread 2 trying to\ntake locks B then A).\n&#39;]
+    stack=[&amp;#39;A recursive lock implementation which is able to detect deadlocks\n(e.g. thread 1 trying to take locks A then B, and thread 2 trying to\ntake locks B then A).\n&amp;#39;]
 16: STORE_NAME 4
     stack=[]
 18: LOAD_CONST 3
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 20: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 22: STORE_NAME 5
     stack=[]
 24: LOAD_CONST 4
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 26: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 28: STORE_NAME 6
     stack=[]
 30: LOAD_CONST 5
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 32: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 34: STORE_NAME 7
     stack=[]
 36: LOAD_CONST 6
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 38: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 40: STORE_NAME 8
     stack=[]
 42: LOAD_CONST 7
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 44: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 46: STORE_NAME 9
     stack=[]
 48: LOAD_CONST 8
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 50: STORE_NAME 10
     stack=[]
 52: RETURN_CONST 9
-    stack=[&lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;type at 0xDEADBEEF&amp;gt;]
 156: STORE_NAME 17
     stack=[]
 158: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 160: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 162: LOAD_CONST 16
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 164: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 166: LOAD_CONST 17
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_DummyModuleLock&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_DummyModuleLock&amp;#39;]
 168: CALL 2
 
-Resuming frame for &#39;_DummyModuleLock&#39; in module &#39;_frozen_importlib&#39;
+Resuming frame for &amp;#39;_DummyModuleLock&amp;#39; in module &amp;#39;_frozen_importlib&amp;#39;
     stack=[]
 0: RESUME 0
     stack=[]
 2: LOAD_NAME 0
-    stack=[&#39;_frozen_importlib&#39;]
+    stack=[&amp;#39;_frozen_importlib&amp;#39;]
 4: STORE_NAME 1
     stack=[]
 6: LOAD_CONST 0
-    stack=[&#39;_DummyModuleLock&#39;]
+    stack=[&amp;#39;_DummyModuleLock&amp;#39;]
 8: STORE_NAME 2
     stack=[]
 10: LOAD_CONST 1
@@ -690,55 +743,55 @@ Resuming frame for &#39;_DummyModuleLock&#39; in module &#39;_frozen_importlib&#
 12: STORE_NAME 3
     stack=[]
 14: LOAD_CONST 2
-    stack=[&#39;A simple _ModuleLock equivalent for Python builds without\nmulti-threading support.&#39;]
+    stack=[&amp;#39;A simple _ModuleLock equivalent for Python builds without\nmulti-threading support.&amp;#39;]
 16: STORE_NAME 4
     stack=[]
 18: LOAD_CONST 3
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 20: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 22: STORE_NAME 5
     stack=[]
 24: LOAD_CONST 4
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 26: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 28: STORE_NAME 6
     stack=[]
 30: LOAD_CONST 5
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 32: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 34: STORE_NAME 7
     stack=[]
 36: LOAD_CONST 6
-    stack=[&lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;code at 0xDEADBEEF&amp;gt;]
 38: MAKE_FUNCTION
-    stack=[&lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;function at 0xDEADBEEF&amp;gt;]
 40: STORE_NAME 8
     stack=[]
 42: LOAD_CONST 7
-    stack=[&lt;tuple at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;tuple at 0xDEADBEEF&amp;gt;]
 44: STORE_NAME 9
     stack=[]
 46: RETURN_CONST 8
-    stack=[&lt;type at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;type at 0xDEADBEEF&amp;gt;]
 176: STORE_NAME 18
     stack=[]
 178: LOAD_BUILD_CLASS
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;]
 180: PUSH_NULL
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;]
 182: LOAD_CONST 18
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;code at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;code at 0xDEADBEEF&amp;gt;]
 184: MAKE_FUNCTION
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;]
 186: LOAD_CONST 19
-    stack=[&lt;builtin_function_or_method at 0xDEADBEEF&gt;, &lt;nil&gt;, &lt;function at 0xDEADBEEF&gt;, &#39;_ModuleLockManager&#39;]
+    stack=[&amp;lt;builtin_function_or_method at 0xDEADBEEF&amp;gt;, &amp;lt;nil&amp;gt;, &amp;lt;function at 0xDEADBEEF&amp;gt;, &amp;#39;_ModuleLockManager&amp;#39;]
 188: CALL 2
 
 # ... 100,000 lines later
-Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+Optimizing &amp;lt;module&amp;gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
     1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
 29: JUMP_BACKWARD(20)
     2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0xDEADBEEF)
@@ -755,7 +808,7 @@ Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offs
     10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0xDEADBEEF)
 Unsupported opcode LOAD_NAME
     11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
-Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+Created a proto-trace for &amp;lt;module&amp;gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
 Optimized trace (length 15):
     0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0xDEADBEEF)
     1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
@@ -772,135 +825,135 @@ Optimized trace (length 15):
     12 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xb)
     13 OPTIMIZED: _ERROR_POP_N (1, target=0, operand=0xd)
     14 OPTIMIZED: _DEOPT (0, target=14, operand=0)
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 28: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 172]
 30: LOAD_CONST 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172, 10]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 172, 10]
 32: BINARY_OP 6
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 2]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 2]
 36: TO_BOOL_INT
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 48: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 172]
 50: LOAD_NAME 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 172, 19]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 172, 19]
 52: BINARY_OP_ADD_INT 13
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 191]
 56: STORE_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 58: ENTER_EXECUTOR 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 28: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 191]
 30: LOAD_CONST 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191, 10]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 191, 10]
 32: BINARY_OP 6
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 1]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 1]
 36: TO_BOOL_INT
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 48: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 191]
 50: LOAD_NAME 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 191, 20]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 191, 20]
 52: BINARY_OP_ADD_INT 13
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 211]
 56: STORE_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 58: ENTER_EXECUTOR 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 28: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 211]
 30: LOAD_CONST 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211, 10]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 211, 10]
 32: BINARY_OP 6
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 1]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 1]
 36: TO_BOOL_INT
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 48: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 211]
 50: LOAD_NAME 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 211, 21]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 211, 21]
 52: BINARY_OP_ADD_INT 13
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 232]
 56: STORE_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 58: ENTER_EXECUTOR 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 28: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 232]
 30: LOAD_CONST 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232, 10]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 232, 10]
 32: BINARY_OP 6
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 2]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 2]
 36: TO_BOOL_INT
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, True]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 48: LOAD_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 232]
 50: LOAD_NAME 2
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 232, 22]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 232, 22]
 52: BINARY_OP_ADD_INT 13
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;, 254]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;, 254]
 56: STORE_NAME 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
 58: ENTER_EXECUTOR 0
-    stack=[&lt;range_iterator at 0xDEADBEEF&gt;]
+    stack=[&amp;lt;range_iterator at 0xDEADBEEF&amp;gt;]
     22: FOR_ITER_RANGE 28
-    stack=[<range_iterator at 0x773ee07aab80>, 17]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 17]
 26: STORE_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 137]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 137]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 137, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 137, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 7]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 7]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 137]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 137]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 137, 17]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 137, 17]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 154]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 154]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: JUMP_BACKWARD 20
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 22: FOR_ITER_RANGE 28
-    stack=[<range_iterator at 0x773ee07aab80>, 18]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 18]
 26: STORE_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 154]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 154]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 154, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 154, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 4]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 4]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 154]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 154]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 154, 18]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 154, 18]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 172]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 172]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: JUMP_BACKWARD 20
-Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
+Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
    1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0x773ee07d83e2)
 29: JUMP_BACKWARD(20)
    2 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=29, operand=0x773ee07d83e2)
@@ -917,7 +970,7 @@ Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
   10 ADD_TO_TRACE: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0x773ee07d83c4)
 Unsupported opcode LOAD_NAME
   11 ADD_TO_TRACE: _EXIT_TRACE (0, target=14, operand=0)
-Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
+Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
 Optimized trace (length 15):
    0 OPTIMIZED: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610)
    1 OPTIMIZED: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0)
@@ -943,27 +996,27 @@ Optimized trace (length 15):
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 172]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 172]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 172, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 172, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 2]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 2]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 172]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 172]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 172, 19]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 172, 19]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 191]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 191]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -974,27 +1027,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1030, tar
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 191]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 191]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 191, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 191, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 1]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 1]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 191]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 191]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 191, 20]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 191, 20]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 211]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 211]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1005,27 +1058,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 1014, tar
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 211]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 211]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 211, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 211, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 1]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 1]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 211]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 211]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 211, 21]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 211, 21]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 232]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 232]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1036,27 +1089,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 998, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 232]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 232]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 232, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 232, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 2]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 2]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 232]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 232]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 232, 22]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 232, 22]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 254]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 254]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1067,27 +1120,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 982, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 254]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 254]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 254, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 254, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 4]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 4]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 254]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 254]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 254, 23]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 254, 23]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 277]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 277]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1098,27 +1151,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 950, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 950, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 277]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 277]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 277, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 277, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 7]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 7]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 277]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 277]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 277, 24]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 277, 24]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 301]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 301]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1129,27 +1182,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 950, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 934, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 934, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 301]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 301]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 301, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 301, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 1]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 1]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 301]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 301]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 301, 25]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 301, 25]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 326]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 326]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1160,29 +1213,29 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 934, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 918, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 918, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 326]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 326]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 326, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 326, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 326, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 326, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 6]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 6]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 326]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 326]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 326, 26]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 326, 26]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 352]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 352]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1193,27 +1246,27 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 918, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 902, target 14 -> LOAD_NAME]
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 902, target 14 -&gt; LOAD_NAME]
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 352]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 352]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 352, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 352, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 2]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 2]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 352]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 352]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 352, 27]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 352, 27]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 379]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 379]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 58: ENTER_EXECUTOR 0
    0 uop: _START_EXECUTOR (0, jump_target=9, operand=0x773ee1169610) stack_level=1
    1 uop: _TIER2_RESUME_CHECK (0, jump_target=9, operand=0) stack_level=1
@@ -1224,38 +1277,38 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 902, targ
    6 uop: _STORE_NAME (2, jump_target=0, operand=0, error_target=13) stack_level=2
    7 uop: _CHECK_VALIDITY (0, jump_target=14, operand=0x773ee07d83c4) stack_level=1
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
-SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 886, target 14 -> LOAD_NAME]Gathering
+SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 886, target 14 -&gt; LOAD_NAME]Gathering
    0 uop: _COLD_EXIT (0, target=0, operand=0) stack_level=1
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 28: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 379]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 379]
 30: LOAD_CONST 2
-    stack=[<range_iterator at 0x773ee07aab80>, 379, 10]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 379, 10]
 32: BINARY_OP 6
-    stack=[<range_iterator at 0x773ee07aab80>, 9]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 9]
 36: TO_BOOL_INT
-    stack=[<range_iterator at 0x773ee07aab80>, True]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, True]
 44: POP_JUMP_IF_FALSE 7
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 48: LOAD_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>, 379]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 379]
 50: LOAD_NAME 2
-    stack=[<range_iterator at 0x773ee07aab80>, 379, 28]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 379, 28]
 52: BINARY_OP_ADD_INT 13
-    stack=[<range_iterator at 0x773ee07aab80>, 407]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;, 407]
 56: STORE_NAME 0
-    stack=[<range_iterator at 0x773ee07aab80>]
+    stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 # 40,00 more lines
-1999001</code></pre>
+1999001&lt;/code&gt;&lt;/pre&gt;
 
-<h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=1</code></h4>
-<p class="post-p">Once a hot trace has been identified and Python's bytecodes have been broken down into micro-opcodes, the optimizer takes over. It's job is to eliminent unnecessary micro-ops, to make the hot loop of code even shorter.</p>
-<p class="post-p"><code>PYTHON_OPT_DEBUG=1</code> mostly enables printing error messages, like <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L441-L443">unknown opcodes</a> or <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L452-L455">running out of space to store traces</a>. Our little snippet from above isn't showing any error messages, but if we run a short benchmark, we can see the <code>_INIT_CALL_PY_EXACT_ARGS</code> uop complaining about not being able to find the function its operand references:</p>
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_OPT_DEBUG=1&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;Once a hot trace has been identified and Python&#39;s bytecodes have been broken down into micro-opcodes, the optimizer takes over. It&#39;s job is to eliminent unnecessary micro-ops, to make the hot loop of code even shorter.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;code&gt;PYTHON_OPT_DEBUG=1&lt;/code&gt; mostly enables printing error messages, like &lt;a href=&#34;https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L441-L443&#34;&gt;unknown opcodes&lt;/a&gt; or &lt;a href=&#34;https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer_analysis.c#L452-L455&#34;&gt;running out of space to store traces&lt;/a&gt;. Our little snippet from above isn&#39;t showing any error messages, but if we run a short benchmark, we can see the &lt;code&gt;_INIT_CALL_PY_EXACT_ARGS&lt;/code&gt; uop complaining about not being able to find the function its operand references:&lt;/p&gt;
 
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   ./python -m venv venv
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   ./python -m venv venv
 $   ./venv/bin/python -m pip install pyperformnace
-$   PYTHON_OPT_DEBUG=1 ./venv/bin/python -m pyperformance run -b meteor_contest</code>
-<code>Missing function
+$   PYTHON_OPT_DEBUG=1 ./venv/bin/python -m pyperformance run -b meteor_contest&lt;/code&gt;
+&lt;code&gt;Missing function
 Missing function
 Missing function
 Missing function
@@ -1264,18 +1317,18 @@ Missing function
 Missing function
 Missing function
 Missing function
-</code>
-</pre>
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=2</code></h4>
-<p class="post-p">As of Python 3.13.3, <code>PYTHON_OPT_DEBUG=1</code> and <code>PYTHON_OPT_DEBUG=2</code> are <span class="italic">always exactly the same</span>.</p>
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_OPT_DEBUG=2&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;As of Python 3.13.3, &lt;code&gt;PYTHON_OPT_DEBUG=1&lt;/code&gt; and &lt;code&gt;PYTHON_OPT_DEBUG=2&lt;/code&gt; are &lt;span class=&#34;italic&#34;&gt;always exactly the same&lt;/span&gt;.&lt;/p&gt;
 
-<h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=3</code></h4>
-<p class="post-p">With value 3, <code>PYTHON_OPT_DEBUG</code> will spt out additional information about the UOps being processed, as well as function and code object associated with the UOp <code>_INIT_CALL_PY_EXACT_ARGS</code>. (This is one of those little details that is likely to change... or perhaps already has by the time you read this).</p>
-<!-- <p class="post-p">Let's see the results of running <code>src.py</code> as well as that short benchmark, to see some additional output:</p> -->
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_OPT_DEBUG=3&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;With value 3, &lt;code&gt;PYTHON_OPT_DEBUG&lt;/code&gt; will spt out additional information about the UOps being processed, as well as function and code object associated with the UOp &lt;code&gt;_INIT_CALL_PY_EXACT_ARGS&lt;/code&gt;. (This is one of those little details that is likely to change... or perhaps already has by the time you read this).&lt;/p&gt;
+&lt;!-- &lt;p class=&#34;post-p&#34;&gt;Let&#39;s see the results of running &lt;code&gt;src.py&lt;/code&gt; as well as that short benchmark, to see some additional output:&lt;/p&gt; --&gt;
 
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-48"><code class="nocode">$   PYTHON_OPT_DEBUG=3 ./python src.py</code>
-<code>   0 abs: _START_EXECUTOR (0, target=32, operand=0x7cd640a50da8) stack_level 1
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-48&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_OPT_DEBUG=3 ./python src.py&lt;/code&gt;
+&lt;code&gt;   0 abs: _START_EXECUTOR (0, target=32, operand=0x7cd640a50da8) stack_level 1
     1 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=32, operand=0x7cd640a50da8) stack_level 1
     2 abs: _TIER2_RESUME_CHECK (0, target=32, operand=0) stack_level 1
     3 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0x7cd640a50d84) stack_level 1
@@ -1285,13 +1338,13 @@ Missing function
     7 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=16, operand=0x7cd640a50d88) stack_level 2
     8 abs: _STORE_NAME (3, target=16, operand=0, error_target=0) stack_level 1
     9 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=17, operand=0x7cd640a50d8a) stack_level 1
-</code>
-</pre>
-<!-- 
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-48"><code class="nocode">$   ./python -m venv venv
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;!-- 
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-48&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   ./python -m venv venv
 $   ./venv/bin/python -m pip install pyperformance
-$   PYTHON_OPT_DEBUG=3 ./venv/bin/python -m pyperformance run -b meteor_contest</code>
-    <code>   0 abs: _START_EXECUTOR (0, target=32, operand=0x7cd640a50da8) stack_level 1
+$   PYTHON_OPT_DEBUG=3 ./venv/bin/python -m pyperformance run -b meteor_contest&lt;/code&gt;
+    &lt;code&gt;   0 abs: _START_EXECUTOR (0, target=32, operand=0x7cd640a50da8) stack_level 1
         1 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=32, operand=0x7cd640a50da8) stack_level 1
         2 abs: _TIER2_RESUME_CHECK (0, target=32, operand=0) stack_level 1
         3 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=14, operand=0x7cd640a50d84) stack_level 1
@@ -1301,26 +1354,35 @@ $   PYTHON_OPT_DEBUG=3 ./venv/bin/python -m pyperformance run -b meteor_contest<
         7 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=16, operand=0x7cd640a50d88) stack_level 2
         8 abs: _STORE_NAME (3, target=16, operand=0, error_target=0) stack_level 1
         9 abs: _CHECK_VALIDITY_AND_SET_IP (0, target=17, operand=0x7cd640a50d8a) stack_level 1
-    </code>
-    </pre> -->
+    &lt;/code&gt;
+    &lt;/pre&gt; --&gt;
 
-<h2 class="post-h2" id="stats">Gathering Statistics</h2>
-<p class="post-p">Seeing the raw debug output as traces are created, optimized, and exited is useful for debugging the JIT, or perhaps short programs. But once your program grows to any appreciable size, these debug files become simply enormous. (The <code>PYTHON_LLTRACE=3</code> output for the simple snippet above is over 20,00 lines long). In such a case, a collection of collated stats would be more helpful.</p>
-<p class="post-p">Python will generate stats about the Tier 2 interpreter and JIT (and many other things) if configured with yet another configure flag: <code>--enable-pystats</code>. Any code run with the <code class="codegray">-X pystats</code> command line option will dump a statistics files to <code>/tmp/py_stats</code>. Note that this directory must exist <span class="italic">before</span> the code is run, as it will not be created for you.</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "shell" "linenostart=1" >}}
-# Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)
+&lt;h2 class=&#34;post-h2&#34; id=&#34;stats&#34;&gt;Gathering Statistics&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;Seeing the raw debug output as traces are created, optimized, and exited is useful for debugging the JIT, or perhaps short programs. But once your program grows to any appreciable size, these debug files become simply enormous. (The &lt;code&gt;PYTHON_LLTRACE=3&lt;/code&gt; output for the simple snippet above is over 20,00 lines long). In such a case, a collection of collated stats would be more helpful.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Python will generate stats about the Tier 2 interpreter and JIT (and many other things) if configured with yet another configure flag: &lt;code&gt;--enable-pystats&lt;/code&gt;. Any code run with the &lt;code class=&#34;codegray&#34;&gt;-X pystats&lt;/code&gt; command line option will dump a statistics files to &lt;code&gt;/tmp/py_stats&lt;/code&gt;. Note that this directory must exist &lt;span class=&#34;italic&#34;&gt;before&lt;/span&gt; the code is run, as it will not be created for you.&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# Install Python Build Dependencies (https://devguide.python.org/getting-started/setup-building/)&lt;/span&gt;
 ./configure --enable-experimental-jit --enable-pystats
 make
 mkdir -p /tmp/py_stats
-./python -X pystats src.py
-{{< /highlight >}}
-</div>
-</div>
+./python -X pystats src.py&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<p class="post-p">The stats files themselves are fairly readable - and contain statistics about all kinds of things the interpreter did as it ran your code. Here's the actual stats output from running the above snippet - the Tier 2 stats are at the very end, if you care to scroll down:</p>
-<pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">opcode[BINARY_SLICE].specializable : 1
+&lt;p class=&#34;post-p&#34;&gt;The stats files themselves are fairly readable - and contain statistics about all kinds of things the interpreter did as it ran your code. Here&#39;s the actual stats output from running the above snippet - the Tier 2 stats are at the very end, if you care to scroll down:&lt;/p&gt;
+&lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;opcode[BINARY_SLICE].specializable : 1
 opcode[STORE_SLICE].specializable : 1
 opcode[CACHE].pair_count[POP_TOP] : 22
 opcode[CACHE].pair_count[COPY_FREE_VARS] : 122
@@ -2875,77 +2937,89 @@ Rare event (builtin_dict): 0
 Rare event (func_modification): 0
 Rare event (watched_dict_modification): 0
 Rare event (watched_globals_modification): 0
-</code>
-</pre>
+&lt;/code&gt;
+&lt;/pre&gt;
 
-<p class="post-p">Python bundles a script in its source repo that loads all the stats files in <code>/tmp/py_stats</code> and creates an nice Markdown summary of all of them:</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "shell" "linenostart=1" >}}
-./python ./Tools/scripts/summarize_stats.py
-{{< /highlight >}}
-</div>
-</div>
+&lt;p class=&#34;post-p&#34;&gt;Python bundles a script in its source repo that loads all the stats files in &lt;code&gt;/tmp/py_stats&lt;/code&gt; and creates an nice Markdown summary of all of them:&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./python ./Tools/scripts/summarize_stats.py&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<iframe src="/html/src_stats.html" frameborder="0" class="w-full border-2 border-gray-400 h-96"></iframe>
+&lt;iframe src=&#34;../../html/src_stats.html&#34; frameborder=&#34;0&#34; class=&#34;w-full border-2 border-gray-400 h-96&#34;&gt;&lt;/iframe&gt;
     
-<p class="post-p">If you scroll through the <span class="font-semibold">Optimization (Tier 2) Stats</span>, you'll see things like Optimization Attempts, number of Traces Created, how many UOps were executed and which ones. The Faster CPython team maintains <a href="https://github.com/faster-cpython/ideas/blob/main/pystats_docs.md">separate documentation on this section</a>, since it's evolving rapidly.</p>
-<p class="post-p">To see what the output looks like with a more significant and varied workload, you can run a quick version of the <code>pyperformance</code> suite of benchmarks. Assuming you've built with pystats enabled, try:</p>
-<div class="m-2 border-2 border-gray-400">
-<div class="m-1">
-{{< highlight "shell" "linenostart=1" >}}
-./python -m venv venv
+&lt;p class=&#34;post-p&#34;&gt;If you scroll through the &lt;span class=&#34;font-semibold&#34;&gt;Optimization (Tier 2) Stats&lt;/span&gt;, you&#39;ll see things like Optimization Attempts, number of Traces Created, how many UOps were executed and which ones. The Faster CPython team maintains &lt;a href=&#34;https://github.com/faster-cpython/ideas/blob/main/pystats_docs.md&#34;&gt;separate documentation on this section&lt;/a&gt;, since it&#39;s evolving rapidly.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To see what the output looks like with a more significant and varied workload, you can run a quick version of the &lt;code&gt;pyperformance&lt;/code&gt; suite of benchmarks. Assuming you&#39;ve built with pystats enabled, try:&lt;/p&gt;
+&lt;div class=&#34;m-2 border-2 border-gray-400&#34;&gt;
+&lt;div class=&#34;m-1&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./python -m venv venv
 ./venv/bin/python -m pip install pyperformance
-./venv/bin/python -m pyperformance run --debug-single-value
-{{< /highlight >}}
-</div>
-</div>
-<p class="post-p">This will create quite a few (~87!) temporary venvs and run each benchmark a single time, gathering stats as it goes. Running <code>summarize_stats.py</code> over these generated stats gives us something like:</p>
+./venv/bin/python -m pyperformance run --debug-single-value&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;This will create quite a few (~87!) temporary venvs and run each benchmark a single time, gathering stats as it goes. Running &lt;code&gt;summarize_stats.py&lt;/code&gt; over these generated stats gives us something like:&lt;/p&gt;
 
-<iframe src="/html/pystats_stats.html" frameborder="2" class="w-full border-2 border-gray-400 h-96"></iframe>
+&lt;iframe src=&#34;../../html/pystats_stats.html&#34; frameborder=&#34;2&#34; class=&#34;w-full border-2 border-gray-400 h-96&#34;&gt;&lt;/iframe&gt;
 
-<h2 class="post-h2" id="conclusion">Conclusion</h2>
-<p class="post-p">So, what can you do with the JIT? It isn't, at the moment, any fast than CPython without the JIT... so why turn it on?</p>
-<p class="post-p"><span class="font-semibold">Test it Against Your Code.</span> The JIT is brand-spanking-new, and while it passes the full CPython test suite, the real test of its durability is how it survives against real-world code. I'd encourage you to try to turning on the JIT, seeing what happens, and submitting any bugs you find!</p>
-<p class="post-p"><span class="font-semibold">Dive Deeper.</span> Have a look in the CPython code at what the configure flags we added actually do - where does <code>lltrace</code> come from? How does <code>--enable-experimental-jit</code> ultimately impact how <code>make</code> runs? <span class="italic">(This is more fodder for future blog posts - but in the meantime, go digging!)</span>.</p>
-<p class="post-p">Some specific things to look at in the CPython codebase:
-<ul class="post-ul">
-    <li>Check out the freshly-built <code>jit_stencils.h</code> file at the root of the repo, which contains the actual stencils that Python will fill in and JIT at runtime.</li>
-    <li>Search for <code class="bg-gray-200">#ifdef _Py_JIT</code> and <code class="bg-gray-200">#ifndef _Py_JIT</code></li>
-    <li>Search for <code class="bg-gray-200">#ifdef _Py_TIER2</code> and <code class="bg-gray-200">#ifndef _Py_TIER2</code></li>
-    <li>Look at <code>jit.c</code> to peek at how the JIT is implemented at runtime.</li>
-    <li>Look at the <code class="bg-gray-200">tier2_dispatch</code> label in <code>ceval.c</code></li>
-</ul></p>
-<p class="post-p"><span class="font-semibold">Mess Around!</span> Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?</p>
-<p class="post-p">As always, I'd love to hear from corrections and comments, via <a href="#" id="mlink">Email</a>, on <a href="https://x.com/jeffersglass">Twitter</a>, or on <a href="https://mastodon.social/@jeffglass">Mastodon</a>.</p>
+&lt;h2 class=&#34;post-h2&#34; id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;So, what can you do with the JIT? It isn&#39;t, at the moment, any fast than CPython without the JIT... so why turn it on?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;font-semibold&#34;&gt;Test it Against Your Code.&lt;/span&gt; The JIT is brand-spanking-new, and while it passes the full CPython test suite, the real test of its durability is how it survives against real-world code. I&#39;d encourage you to try to turning on the JIT, seeing what happens, and submitting any bugs you find!&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;font-semibold&#34;&gt;Dive Deeper.&lt;/span&gt; Have a look in the CPython code at what the configure flags we added actually do - where does &lt;code&gt;lltrace&lt;/code&gt; come from? How does &lt;code&gt;--enable-experimental-jit&lt;/code&gt; ultimately impact how &lt;code&gt;make&lt;/code&gt; runs? &lt;span class=&#34;italic&#34;&gt;(This is more fodder for future blog posts - but in the meantime, go digging!)&lt;/span&gt;.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Some specific things to look at in the CPython codebase:
+&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Check out the freshly-built &lt;code&gt;jit_stencils.h&lt;/code&gt; file at the root of the repo, which contains the actual stencils that Python will fill in and JIT at runtime.&lt;/li&gt;
+    &lt;li&gt;Search for &lt;code class=&#34;bg-gray-200&#34;&gt;#ifdef _Py_JIT&lt;/code&gt; and &lt;code class=&#34;bg-gray-200&#34;&gt;#ifndef _Py_JIT&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Search for &lt;code class=&#34;bg-gray-200&#34;&gt;#ifdef _Py_TIER2&lt;/code&gt; and &lt;code class=&#34;bg-gray-200&#34;&gt;#ifndef _Py_TIER2&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Look at &lt;code&gt;jit.c&lt;/code&gt; to peek at how the JIT is implemented at runtime.&lt;/li&gt;
+    &lt;li&gt;Look at the &lt;code class=&#34;bg-gray-200&#34;&gt;tier2_dispatch&lt;/code&gt; label in &lt;code&gt;ceval.c&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;&lt;span class=&#34;font-semibold&#34;&gt;Mess Around!&lt;/span&gt; Play around with the JIT and micro-ops. What patterns of loops and calls tend to lead to traces that can be well-optimized by the JIT? Can you create tooling that guides code toward optimizable hot patterns?&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;As always, I&#39;d love to hear from corrections and comments, via &lt;a href=&#34;#&#34; id=&#34;mlink&#34;&gt;Email&lt;/a&gt;, on &lt;a href=&#34;https://x.com/jeffersglass&#34;&gt;Twitter&lt;/a&gt;, or on &lt;a href=&#34;https://mastodon.social/@jeffglass&#34;&gt;Mastodon&lt;/a&gt;.&lt;/p&gt;
 
-<h2 class="post-h2" id="windows">Addendum: Building for Windows</h2>
-<p class="post-p">If you're building for Windows, instead of having separate <code>configure</code> and <code>make</code> steps, you'll be passing build options directly to <code>PCBuild/build.bat</code>. The equivalent options to those <a href="#configuring">discussed earlier</a> discussed earlierare:</p>
-<div class="grid w-full grid-cols-2 m-auto border-2 border-gray-400 lg:w-3/4 align-center ">
-    <div class="font-semibold bg-gray-200 border-r-2 border-gray-400"><code class="items-center mr-4 text-right lg:float-right">Linux/POSIX</code></div>
-    <div class="font-semibold bg-gray-200 pl-4"><code>  Windows</code></div>
-    <div class="bg-gray-200 border-r-2 border-gray-400"><code class="items-center mr-4 text-right lg:float-right">--enable-experimental-jit=yes</code></div>
-    <div class="bg-gray-200 pl-4"><code>--experimental-jit</code></div>
-    <div class="border-r-2 border-gray-400 "><code class="items-center mr-4 text-right lg:float-right">--enable-experimental-jit=yes-off</code></div>
-    <div class="pl-4"><code>--experimental-jit-off</code></div>
-    <div class="bg-gray-200 border-r-2 border-gray-400"><code class="items-center mr-4 text-right lg:float-right">--enable-experimental-jit=interpreter</code></div>
-    <div class="bg-gray-200 pl-4"><code>--experimental-jit-interpreter</code></div>
-</div>
-<p class="post-">You'll also need to follow the unique setup steps for <a href="https://web.archive.org/web/20220907075854/https://cpython-core-tutorial.readthedocs.io/en/latest/build_cpython_windows.html">building Python on Windows</a>, as described by Victor Stinner. The <a href="https://github.com/python/cpython/blob/main/Tools/jit/README.md">JIT README</a> describes how to install LLVM on Windows as well.</p>
+&lt;h2 class=&#34;post-h2&#34; id=&#34;windows&#34;&gt;Addendum: Building for Windows&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;If you&#39;re building for Windows, instead of having separate &lt;code&gt;configure&lt;/code&gt; and &lt;code&gt;make&lt;/code&gt; steps, you&#39;ll be passing build options directly to &lt;code&gt;PCBuild/build.bat&lt;/code&gt;. The equivalent options to those &lt;a href=&#34;#configuring&#34;&gt;discussed earlier&lt;/a&gt; discussed earlierare:&lt;/p&gt;
+&lt;div class=&#34;grid w-full grid-cols-2 m-auto border-2 border-gray-400 lg:w-3/4 align-center &#34;&gt;
+    &lt;div class=&#34;font-semibold bg-gray-200 border-r-2 border-gray-400&#34;&gt;&lt;code class=&#34;items-center mr-4 text-right lg:float-right&#34;&gt;Linux/POSIX&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;font-semibold bg-gray-200 pl-4&#34;&gt;&lt;code&gt;  Windows&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200 border-r-2 border-gray-400&#34;&gt;&lt;code class=&#34;items-center mr-4 text-right lg:float-right&#34;&gt;--enable-experimental-jit=yes&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200 pl-4&#34;&gt;&lt;code&gt;--experimental-jit&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;border-r-2 border-gray-400 &#34;&gt;&lt;code class=&#34;items-center mr-4 text-right lg:float-right&#34;&gt;--enable-experimental-jit=yes-off&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;pl-4&#34;&gt;&lt;code&gt;--experimental-jit-off&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200 border-r-2 border-gray-400&#34;&gt;&lt;code class=&#34;items-center mr-4 text-right lg:float-right&#34;&gt;--enable-experimental-jit=interpreter&lt;/code&gt;&lt;/div&gt;
+    &lt;div class=&#34;bg-gray-200 pl-4&#34;&gt;&lt;code&gt;--experimental-jit-interpreter&lt;/code&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p class=&#34;post-&#34;&gt;You&#39;ll also need to follow the unique setup steps for &lt;a href=&#34;https://web.archive.org/web/20220907075854/https://cpython-core-tutorial.readthedocs.io/en/latest/build_cpython_windows.html&#34;&gt;building Python on Windows&lt;/a&gt;, as described by Victor Stinner. The &lt;a href=&#34;https://github.com/python/cpython/blob/main/Tools/jit/README.md&#34;&gt;JIT README&lt;/a&gt; describes how to install LLVM on Windows as well.&lt;/p&gt;
 
-<script>
+&lt;script&gt;
     /* 1. define variables */
-    var me = "glass.jeffrey";
-    var place = "gmail.com";
+    var me = &#34;glass.jeffrey&#34;;
+    var place = &#34;gmail.com&#34;;
     
     /* 2. find email link to replace */
-    var elink = document.getElementById("mlink");
+    var elink = document.getElementById(&#34;mlink&#34;);
     
     /* 3. replace link href with variables  */
     elink.href = `mailto:${me}@${place}`;
-    </script>
+    &lt;/script&gt;
 
-<style>
+&lt;style&gt;
 code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
     --tw-text-opacity: 1;
     color: rgba(5, 120, 85, var(--tw-text-opacity));
@@ -2953,4 +3027,9 @@ code:not(.nocode):not(.language-python):not(.language-python3):not(.language-htm
 code.codegray{
     background-color: #e5e7eb;
 }
-</style>
+&lt;/style&gt;</description>
+      &lt;
+    </item>
+    
+  </channel>
+</rss>
