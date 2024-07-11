@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Talk: The CPython JIT (Chipy 2024)</title>
+	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
+	
+	
+	
+	
+	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
+	
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://jeff.glass/post/chipyjit2024/chipylogo_featured.png"/>
+<meta name="twitter:title" content="Talk: The CPython JIT (Chipy 2024)"/>
+<meta name="twitter:description" content="Description Here"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+
+	
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
+}
+</script>
+
+
+	<link rel="icon" href="../../favicon.ico?v=2"> 
+	
+</head>
+<body>
+	
+	<main>
+		<header>
+
+<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
+    
+    <div class="flex-none hidden lg:flex">
+        <div class="flex-none px-2">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+        <div class="flex-none menu-item-green ">
+            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Home
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            Projects
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
+        </div>
+        <div class="flex-none menu-item-green">
+            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
+            One-Offs
+        </div>
+    </div>
+    
+    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
+        <div class="flex-none menu-item-green mobile-menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </div>
+        <div class="flex-none">
+            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
+                <a href='../../' class= "no-style-link">Jeff Glass</a>
+            </span>
+        </div>
+    </div>
+    
+    
+    <div class="hidden text-green-200 transition mobile-menu">
+            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
+            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
+            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
+            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
+    </div>
+    
+    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
+        </div>
+        <div class="flex-none menu-item-green social-buttons">
+            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
+        </div>
+    </div>
+</div>
+</header>
+<script>
+    const btn = document.querySelector("div.mobile-menu-button")
+    const mobileMenu = document.querySelector(".mobile-menu")
+    const largeMenu = document.querySelector(".large-menu")
+    const socialButtons = document.querySelector(".social-buttons")
+
+    btn.addEventListener("click", () =>{
+        openMenu();
+    })
+
+    function openMenu() {
+        mobileMenu.classList.toggle("hidden");
+        largeMenu.classList.toggle("hidden");
+        socialButtons.classList.add("hidden");
+    }
+
+    
+    const smSize = 640;
+    const mdSize = 768;
+    const largeSize = 1024;
+    window.addEventListener('resize', function(event) {
+        if (event.target.screen.width > smSize ){
+            mobileMenu.classList.add("hidden");
+            largeMenu.classList.remove("hidden");
+        }
+    }, true);
+</script>
+
+		<div class="w-full bg-green-800 bg-opacity-10">
+			<div class="pt-16"></div>
+			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
+				<h1 class="pb-2 text-4xl">Talk: The CPython JIT (Chipy 2024)</h1>
+				<p>Published July 11, 2024</p>
+				
+				
+				<div>
+					<span>Tags:</span>
+					
+					<a href="../../tags/talks">talks</a>
+					
+					<a href="../../tags/python">python</a>
+					
+					<a href="../../tags/jit">jit</a>
+					
+				</div>
+				
+				
+				<hr>
+				<div>
+					
+<p>On May 17, 2024, I had the pleasure of delivering a talk, <span class="italic">The CPython Jit</span>, at <a href="https://www.chipy.org/">The Chicago Python Meetup Group   </a>. All of the slides, supporting details, links, repos, and live demos are available here.</p>
+
+<h2 class="post-h2" id="slides">Slides</h2>
+<p>Below are the slides presented along with the talk:</p>
+<center><iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRmoj8mG7Mf80w9EVumCrXXI322jirsJcxkwjsyeiYOR0ltQmNo5y0epGpo1Ni4vp65JtfK34-JUvrg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe></center>
+
+<h2 class="post-h2">Resources</h2>
+
+<p class="post-p">
+    For more background on JITs and copy-and-patch specifically, see:
+    <ul class="post-ul">
+        <li><a href="https://peps.python.org/pep-0744/">PEP 744 - Jit Compilation</a>: an informational PEP on the thinking behind and basic approach to the copy-and-patch technique.</li>
+        <li>The <a href="https://dl.acm.org/doi/10.1145/3485513">whitepaper</a>: <span class="italic">Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode</span></li>
+        <li>Haoran Xu's <a href="https://sillycross.github.io/2023/05/12/2023-05-12/">blogpost</a>: <span class="italic">Building a baseline JIT for Lua automatically</span></li>
+        <li>The <a href="https://www.youtube.com/watch?v=HxSHIpEQRjs">video of Brandt's Presentation</a> at this year's CPython Core Sprint in Brno. (A similar talk appeared at PyConUS 2024 and will be linked here when available).</li>
+        <li>The internals of the <a href="https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
+        <li>My <a href="../../post/try-cpython-jit">recent blog post on building the CPython JIT</a>.</li>
+    </ul>
+</p>
+
+
+				</div>
+				
+			</article>
+			<footer>
+    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
+        <p class="">All contents © Jeff Glass 2024. All rights reserved.</p>
+        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
+    </div>
+</footer>
+		</div>
+	</main>
+
+
+	
+</body>
+</html>
