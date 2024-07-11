@@ -139,8 +139,8 @@ make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;p class=&#34;post-p&#34;&gt;At this point, running with JIT is, on average, about as fast as running without the JIT, so you&#39;re not likely to have seen a blazingly fast speedup. So, how can we demonstrate that the JIT is indeed running?&lt;/p&gt;
 
-&lt;h3 class=&#34;post-h3&#34; id=&#34;PYTHON_JIT&#34;&gt;Turning the JIT On and Off&lt;/h3&gt;
-&lt;p class=&#34;post-p&#34;&gt;Even if you&#39;ve built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be achieved by setting the environment variable &lt;code&gt;PYTHON_JIT&lt;/code&gt; to &lt;code&gt;&#34;1&#34;&lt;/code&gt; (for enabled) or &lt;code&gt;&#34;0&#34;&lt;/code&gt; (for disabled). Building with &lt;code&gt;--enable-experimtanl-jit=yes-off&lt;/code&gt; will disable the JIT when Python starts. Changing &lt;code&gt;PYTHON_JIT&lt;/code&gt; at any point during execution (i.e. by using &lt;code class=&#34;codegray&#34;&gt;os.environ[&#39;PYTHON_JIT&#39;] = 1&lt;/code&gt;) will also enable and disable the JIT at runtime.&lt;/p&gt;
+&lt;h3 class=&#34;post-h3&#34; id=&#34;PYTHON_JIT&#34;&gt;Turning the JIT On and Off for Different Runs&lt;/h3&gt;
+&lt;p class=&#34;post-p&#34;&gt;Even if you&#39;ve built Python with the JIT, it can be useful to switch JIT execution on and off for different executions, or even within the same program. This can be achieved by configuring the Python build with with &lt;code&gt;--enable-experimtanl-jit=yes-off&lt;/code&gt; will disable the JIT when Python starts. Setting the environment variable &lt;code&gt;PYTHON_JIT&lt;/code&gt; to &lt;code&gt;&#34;1&#34;&lt;/code&gt; (for enabled) or &lt;code&gt;&#34;0&#34;&lt;/code&gt; (for disabled) prior to Python startup will then determine whether the JIT is active or not.&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;There&#39;s been some musing that having a Pythonic API to control the JIT - switch it on and off, controlling maximum member usage, possibly how fast cold traces get garbage collected, etc. However, there&#39;s &lt;a href=&#34;https://discuss.python.org/t/pep-744-jit-compilation/50756/8&#34;&gt;hesitancy to introduce &#34;official&#34; API&#39;s while the JIT is still experimental&lt;/a&gt;. Which makes sense &lt;span class=&#34;italic&#34;&gt;No is temporary, yes is forever&lt;/span&gt;.&lt;/p&gt;
 
 &lt;h3 class=&#34;post-h3&#34; id=&#34;debugging&#34;&gt;Debugging and Displaying Output&lt;/h3&gt;
@@ -189,17 +189,17 @@ x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;colo
 &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=1&lt;/code&gt;&lt;/h4&gt;
-&lt;p class=&#34;post-p&#34;&gt;The lowest value of &lt;code&gt;LLTRACE&lt;/code&gt; will print minimal messages, indicating that traces were created and where but providing no real detail.&lt;/p&gt;
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=1&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;The lowest value of &lt;code&gt;PYTHON_LLTRACE&lt;/code&gt; will print minimal messages, indicating that traces were created and where but providing no real detail.&lt;/p&gt;
 
 &lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=1 ./python src.py&lt;/code&gt;
 &lt;code&gt;Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
 1999001
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=2&lt;/code&gt;&lt;/h4&gt;
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=2&lt;/code&gt;&lt;/h4&gt;
 
-&lt;p class=&#34;post-p&#34;&gt;Increasing &lt;code&gt;LLTRACE&lt;/code&gt; to two opens up many more details. We can see each UOp as it&#39;s added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and &lt;a href=&#34;https://github.com/python/cpython/pull/119354#issuecomment-2138473361&#34;&gt;target&lt;/a&gt; of each UOp if any. (Since the operands are unique-per-run and machine-specific, I&#39;m filtering them out here to make comparison easier.)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Increasing &lt;code&gt;PYTHON_LLTRACE&lt;/code&gt; to two opens up many more details. We can see each UOp as it&#39;s added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and &lt;a href=&#34;https://github.com/python/cpython/pull/119354#issuecomment-2138473361&#34;&gt;target&lt;/a&gt; of each UOp if any. (Since the operands are unique-per-run and machine-specific, I&#39;m filtering them out here to make comparison easier.)&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are &lt;a href=&#34;https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920&#34;&gt;flagged here&lt;/a&gt;.&lt;/p&gt;
 &lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=2 ./python src.py&lt;/code&gt;
 &lt;code&gt;1999001
@@ -264,8 +264,8 @@ x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;colo
     
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=3&lt;/code&gt;&lt;/h4&gt;
-&lt;p class=&#34;post-p&#34;&gt;In a normal JIT build, &lt;code&gt;PYTHON_LLTRACE=2&lt;/code&gt; and &lt;code&gt;PYTHON_LLTRACE=3&lt;/code&gt; are exactly the same! (At least as of the current build). But if you build with only the Tier 2 interpreter and not the JIT, you do get a few more messages about side exits and cold exists... or a lot more, depending on your code:&lt;/p&gt;
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=3&lt;/code&gt;&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;In a normal JIT build, &lt;code&gt;PYTHON_LLTRACE=2&lt;/code&gt; and &lt;code&gt;PYTHON_LLTRACE=3&lt;/code&gt; are exactly the same! (At least as of the current build). But if you build with only the Tier 2 interpreter and not the JIT, you do get a few more messages about side exits and cold exits... or a lot more, depending on your code:&lt;/p&gt;
 
 &lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=3 ./python src.py &lt;span class=&#34;text-blue-800&#34;&gt;# built with --enable-experimental-jit=interpreter&lt;/span&gt;&lt;/code&gt;
 code&gt;Optimizing &amp;lt;module&amp;gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
@@ -368,7 +368,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 966, targ
    8 uop: _EXIT_TRACE (0, exit_index=0, operand=0) stack_level=1
 # ... 20,000 more lines of this&lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;LLTRACE=4&lt;/code&gt;&lt;/h4&gt;
+&lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=4&lt;/code&gt;&lt;/h4&gt;
 &lt;p class=&#34;post-p&#34;&gt;As of Python 3.13.0b3, &lt;code&gt;PYTHON_LLTRACE=3&lt;/code&gt; and &lt;code&gt;PYTHON_LLTRACE=4&lt;/code&gt; are &lt;span class=&#34;italic&#34;&gt;always exactly the same&lt;/span&gt;. So let&#39;s move on to the big kahuna:&lt;/p&gt;
 
 &lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=5&lt;/code&gt;&lt;/h4&gt;
