@@ -1,0 +1,96 @@
+---
+title: "__Frank__"
+date: 2025-03-11T10:37:00-05:00
+draft: true
+tags:
+- post
+description: "Implementing __frankenstein__"
+---
+
+<h2 class="post-h2">Adding <code>__frank__</code> to the REPL</h2>
+
+<code>
+    >>> dir()
+    ['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__']
+
+    __package__: "_pyrepl"
+</code>
+
+Look up pyrepl pacakge (Lib/_pyrepl)
+In <code>__main__</code>: 
+
+<code>
+    # Important: don't add things to this module, as they will end up in the REPL's
+    # default globals.  Use _pyrepl.main instead.
+</code>
+
+Well:
+
+<code>
+    __frank__ = """Letter 1
+To Mrs. Saville, England.
+
+St. Petersburgh, Dec. 11th, 17—.
+
+You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking."""
+
+if __name__ == "__main__":
+    from .main import interactive_console as __pyrepl_interactive_console
+    __pyrepl_interactive_console()
+</code>
+
+And then:
+<code>
+    >>> __frank__
+'Letter 1\nTo Mrs. Saville, England.\n\nSt. Petersburgh, Dec. 11th, 17—.\n\nYou will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking.'
+>>> 
+</code>
+
+Well, that gets <code>__frank__</code> into the REPL (or at least, a short version of it). But it feels like just a bit of a hack - the fact that the new REPL is written in Python makes it trivially easy to slap things into the global variables... But how about if we want it in the interpreter normally:
+
+<h2 class="post-h2"><code>__frank__</code> into Builtins</h2>
+
+We can programmatically alter the builtins module:
+
+<code>
+    import builtins
+
+builtins.__frank__ = """Letter 1
+To Mrs. Saville, England.
+
+St. Petersburgh, Dec. 11th, 17—.
+
+You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking."""
+
+print(__frank__)
+</code>
+
+Went down a bit of a rabbit-hole to find where the Ellipsis is defined (PyTypeObject PyEllipsis_Type in sliceobject.c)... but we don't really want a singleton, we want a string set at ____ time, more like __doc__.
+
+Oooo pycore_global_strings.h is a great name.
+It reference generate_global_objects.py:
+    Regexes for _Py_ID and _Py_DECLARE_STR
+    For printing out, say, "&lt;module&gt;" or other similar name
+    generate_global_objects.py:
+        Scans through the folders ('Modules', 'Objects', 'Parser', 'PC', 'Programs', 'Python')
+        For any files ending in .c or .h, 
+        Walk the file for instances of _Py_ID or _Py_DECLARE_STR
+        Make these a globally available string name...
+        Still not quite what we want
+
+<code>
+    _Py_DECLARE_STR(__frank__, "Letter 1 \
+To Mrs. Saville, England. \
+\
+St. Petersburgh, Dec. 11th, 17—. \");
+</code>
+
+Let's go back to builtins
+
+dir(__builtins__)
+
+<code>
+    ['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException', 'BaseExceptionGroup', 'BlockingIOError', 'BrokenPipeError', 'BufferError', 'BytesWarning', 'ChildProcessError', 'ConnectionAbortedError', 'ConnectionError', 'ConnectionRefusedError', 'ConnectionResetError', 'DeprecationWarning', 'EOFError', 'Ellipsis', 'EncodingWarning', 'EnvironmentError', 'Exception', 'ExceptionGroup', 'False', 'FileExistsError', 'FileNotFoundError', 'FloatingPointError', 'FutureWarning', 'GeneratorExit', 'IOError', 'ImportError', 'ImportWarning', 'IndentationError', 'IndexError', 'InterruptedError', 'IsADirectoryError', 'KeyError', 'KeyboardInterrupt', 'LookupError', 'MemoryError', 'ModuleNotFoundError', 'NameError', 'None', 'NotADirectoryError', 'NotImplemented', 'NotImplementedError', 'OSError', 'OverflowError', 'PendingDeprecationWarning', 'PermissionError', 'ProcessLookupError', 'PythonFinalizationError', 'RecursionError', 'ReferenceError', 'ResourceWarning', 'RuntimeError', 'RuntimeWarning', 'StopAsyncIteration', 'StopIteration', 'SyntaxError', 'SyntaxWarning', 'SystemError', 'SystemExit', 'TabError', 'TimeoutError', 'True', 'TypeError', 'UnboundLocalError', 'UnicodeDecodeError', 'UnicodeEncodeError', 'UnicodeError', 'UnicodeTranslateError', 'UnicodeWarning', 'UserWarning', 'ValueError', 'Warning', 'ZeroDivisionError', '_', '_IncompleteInputError', '__build_class__', '__debug__', '__doc__', '__import__', '__loader__', '__name__', '__package__', '__spec__', 'abs', 'aiter', 'all', 'anext', 'any', 'ascii', 'bin', 'bool', 'breakpoint', 'bytearray', 'bytes', 'callable', 'chr', 'classmethod', 'compile', 'complex', 'copyright', 'credits', 'delattr', 'dict', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'exit', 'filter', 'float', 'format', 'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'license', 'list', 'locals', 'map', 'max', 'memoryview', 'min', 'next', 'object', 'oct', 'open', 'ord', 'pow', 'print', 'property', 'quit', 'range', 'repr', 'reversed', 'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple', 'type', 'vars', 'zip']
+</code>
+
+Looking for a not-too-common example of something... warnings are not quite the thing... divmod leads to <code>bltinomdule.c</code>
