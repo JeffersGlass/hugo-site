@@ -176,7 +176,7 @@ git clone --depth <span style="color:#f60">1</span> --branch v3.13.0b3 https://g
 <span style="color:#366">cd</span> cpython
 ./configure --enable-experimental-jit
 make
-./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
+./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(5000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -200,7 +200,7 @@ git clone --depth <span style="color:#f60">1</span> --branch v3.13.0b3 https://g
 <span style="color:#366">cd</span> cpython
 ./configure --enable-experimental-jit --with-pydebug
 make
-<span style="color:#033">PYTHON_LLTRACE</span><span style="color:#555">=</span><span style="color:#f60">2</span> ./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
+<span style="color:#033">PYTHON_LLTRACE</span><span style="color:#555">=</span><span style="color:#f60">2</span> ./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(5000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -220,6 +220,8 @@ make
         <li>The internals of the <a href="https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d">pull request itself.</a> While it's been almost four months since it's been merged, and the JIT has evolved quite a bit since then, I'd recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.</li>
     </ul>
 </div>
+<h2 class="post-h2" id="updates">Updates</h2>
+<ul class="post-ul"><li><b>March 14, 2025</b> As of late 2024, the JIT threshhold values <a href="https://github.com/python/cpython/issues/126795">have increased</a> from around 16 to around 4096. The code samples have been updated to make them applicable with thse new values.</li></ul>
 <h2 class="post-h2" id="building-top"> Building CPython with a JIT</h2>
 <p class="post-p">I don't know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please <a href="#conclusion">let me know</a> if I'm wrong.) So, we'll have to build our own!</p>
 <p class="post-p">The CPython core puts a lot of effort into making Python straightforward to build. I won't rehash their <a href="https://devguide.python.org/getting-started/setup-building/">setup and build</a> instructions here, as they're fairly comprehensive.</p>
@@ -275,7 +277,7 @@ make -j4</code></pre></td></tr></table>
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
+<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">./python -c <span style="color:#c30">$&#39;x=0\nfor i in range(5000):\n x+=i\nprint(x)&#39;</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -321,7 +323,7 @@ make</code></pre></td></tr></table>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#09f;font-style:italic"># src.py</span>
 x <span style="color:#555">=</span> <span style="color:#f60">0</span>
-<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">2000</span>):
+<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">5000</span>):
     <span style="color:#069;font-weight:bold">if</span> x <span style="color:#555">%</span> <span style="color:#f60">10</span>:
         x <span style="color:#555">+=</span> i
     <span style="color:#069;font-weight:bold">else</span>:
@@ -337,7 +339,7 @@ x <span style="color:#555">=</span> <span style="color:#f60">0</span>
 
 <pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=1 ./python src.py</code>
 <code>Created a proto-trace for <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
-1999001
+12497500
 </code></pre>
 
 <h4 class="underline post-h4"><code class="nocode">PYTHON_LLTRACE=2</code></h4>
@@ -345,7 +347,7 @@ x <span style="color:#555">=</span> <span style="color:#f60">0</span>
 <p class="post-p">Increasing <code>PYTHON_LLTRACE</code> to two opens up many more details. We can see each UOp as it's added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and <a href="https://github.com/python/cpython/pull/119354#issuecomment-2138473361">target</a> of each UOp if any. (Since the operands are unique-per-run and machine-specific, I'm filtering them out here to make comparison easier.)</p>
 <p class="post-p">You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are <a href="https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920">flagged here</a>.</p>
 <pre class="py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72"><code class="nocode">$   PYTHON_LLTRACE=2 ./python src.py</code>
-<code>1999001
+<code>12497500
     Optimizing <module> (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
     29: JUMP_BACKWARD(20)
@@ -1442,7 +1444,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 886, targ
 56: STORE_NAME 0
     stack=[<range_iterator at 0x773ee07aab80>]
 # 40,00 more lines
-1999001</code></pre>
+12497500</code></pre>
 
 <h4 class="underline post-h4"><code class="nocode">PYTHON_OPT_DEBUG=1</code></h4>
 <p class="post-p">Once a hot trace has been identified and Python's bytecodes have been broken down into micro-opcodes, the optimizer takes over. It's job is to eliminent unnecessary micro-ops, to make the hot loop of code even shorter.</p>
