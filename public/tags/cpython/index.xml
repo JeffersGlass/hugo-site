@@ -33,7 +33,7 @@ git clone --depth &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; --branch
 &lt;span style=&#34;color:#366&#34;&gt;cd&lt;/span&gt; cpython
 ./configure --enable-experimental-jit
 make
-./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(5000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -57,7 +57,7 @@ git clone --depth &lt;span style=&#34;color:#f60&#34;&gt;1&lt;/span&gt; --branch
 &lt;span style=&#34;color:#366&#34;&gt;cd&lt;/span&gt; cpython
 ./configure --enable-experimental-jit --with-pydebug
 make
-&lt;span style=&#34;color:#033&#34;&gt;PYTHON_LLTRACE&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt; ./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;span style=&#34;color:#033&#34;&gt;PYTHON_LLTRACE&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#f60&#34;&gt;2&lt;/span&gt; ./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(5000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -77,6 +77,8 @@ make
         &lt;li&gt;The internals of the &lt;a href=&#34;https://github.com/python/cpython/commit/f6d9e5926b6138994eaa60d1c36462e36105733d&#34;&gt;pull request itself.&lt;/a&gt; While it&#39;s been almost four months since it&#39;s been merged, and the JIT has evolved quite a bit since then, I&#39;d recommend that PR as a starting place. Things are essentially the same, but somewhat more complex now. Starting from simpler days is probably best.&lt;/li&gt;
     &lt;/ul&gt;
 &lt;/div&gt;
+&lt;h2 class=&#34;post-h2&#34; id=&#34;updates&#34;&gt;Updates&lt;/h2&gt;
+&lt;ul class=&#34;post-ul&#34;&gt;&lt;li&gt;&lt;b&gt;March 14, 2025&lt;/b&gt; As of late 2024, the JIT threshhold values &lt;a href=&#34;https://github.com/python/cpython/issues/126795&#34;&gt;have increased&lt;/a&gt; from around 16 to around 4096. The code samples have been updated to make them applicable with thse new values.&lt;/li&gt;&lt;/ul&gt;
 &lt;h2 class=&#34;post-h2&#34; id=&#34;building-top&#34;&gt; Building CPython with a JIT&lt;/h2&gt;
 &lt;p class=&#34;post-p&#34;&gt;I don&#39;t know of any major platforms that are distributing pre-built binaries of CPython with the JIT built-in. (Please &lt;a href=&#34;#conclusion&#34;&gt;let me know&lt;/a&gt; if I&#39;m wrong.) So, we&#39;ll have to build our own!&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;The CPython core puts a lot of effort into making Python straightforward to build. I won&#39;t rehash their &lt;a href=&#34;https://devguide.python.org/getting-started/setup-building/&#34;&gt;setup and build&lt;/a&gt; instructions here, as they&#39;re fairly comprehensive.&lt;/p&gt;
@@ -132,7 +134,7 @@ make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code&gt;&lt;span style=&#34;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(1000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;./python -c &lt;span style=&#34;color:#c30&#34;&gt;$&amp;#39;x=0\nfor i in range(5000):\n x+=i\nprint(x)&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -178,7 +180,7 @@ make&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;color:#09f;font-style:italic&#34;&gt;# src.py&lt;/span&gt;
 x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
-&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;2000&lt;/span&gt;):
+&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;range&lt;/span&gt;(&lt;span style=&#34;color:#f60&#34;&gt;5000&lt;/span&gt;):
     &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; x &lt;span style=&#34;color:#555&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;10&lt;/span&gt;:
         x &lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt; i
     &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;:
@@ -194,7 +196,7 @@ x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;colo
 
 &lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=1 ./python src.py&lt;/code&gt;
 &lt;code&gt;Created a proto-trace for &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 22 -- length 11
-1999001
+12497500
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_LLTRACE=2&lt;/code&gt;&lt;/h4&gt;
@@ -202,7 +204,7 @@ x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;colo
 &lt;p class=&#34;post-p&#34;&gt;Increasing &lt;code&gt;PYTHON_LLTRACE&lt;/code&gt; to two opens up many more details. We can see each UOp as it&#39;s added to a new trace, and which bytecodes they correspond to. Also included is information about the opcode, operand, and &lt;a href=&#34;https://github.com/python/cpython/pull/119354#issuecomment-2138473361&#34;&gt;target&lt;/a&gt; of each UOp if any. (Since the operands are unique-per-run and machine-specific, I&#39;m filtering them out here to make comparison easier.)&lt;/p&gt;
 &lt;p class=&#34;post-p&#34;&gt;You can also see the result after the trace has been optimized, and some of the UOps removed. Additionally, any Bytecodes that are not currently supported by the optimizer are &lt;a href=&#34;https://github.com/python/cpython/blob/3a83b172af1bde6032ecca7c1a2e6b82d06325e1/Python/optimizer.c#L918-L920&#34;&gt;flagged here&lt;/a&gt;.&lt;/p&gt;
 &lt;pre class=&#34;py-4 m-2 overflow-y-scroll bg-gray-200 border-2 border-gray-600 max-h-72&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;$   PYTHON_LLTRACE=2 ./python src.py&lt;/code&gt;
-&lt;code&gt;1999001
+&lt;code&gt;12497500
     Optimizing &lt;module&gt; (/home/jglass/Documents/cpython/src.py:1) at byte offset 58
        1 ADD_TO_TRACE: _START_EXECUTOR (0, target=29, operand=0xDEADBEEF)
     29: JUMP_BACKWARD(20)
@@ -1299,7 +1301,7 @@ SIDE EXIT: [UOp _EXIT_TRACE (0, exit_index=0, operand=0), exit 0, temp 886, targ
 56: STORE_NAME 0
     stack=[&lt;range_iterator at 0x773ee07aab80&gt;]
 # 40,00 more lines
-1999001&lt;/code&gt;&lt;/pre&gt;
+12497500&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 class=&#34;underline post-h4&#34;&gt;&lt;code class=&#34;nocode&#34;&gt;PYTHON_OPT_DEBUG=1&lt;/code&gt;&lt;/h4&gt;
 &lt;p class=&#34;post-p&#34;&gt;Once a hot trace has been identified and Python&#39;s bytecodes have been broken down into micro-opcodes, the optimizer takes over. It&#39;s job is to eliminent unnecessary micro-ops, to make the hot loop of code even shorter.&lt;/p&gt;
