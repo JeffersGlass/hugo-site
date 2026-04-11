@@ -1,0 +1,223 @@
+/* SPy Playground Styles */
+
+:root {
+    --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    font-family: var(--ui-font);
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+/* Loading indicator */
+#loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    font-family: var(--ui-font);
+}
+
+#loading-indicator img {
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    margin-bottom: 20px;
+    transform-style: preserve-3d;
+}
+
+@keyframes spin {
+    0% { transform: perspective(400px) rotateY(0deg); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+#loading-indicator h2 {
+    margin: 10px 0;
+    color: #333;
+}
+
+#loading-indicator p {
+    color: #666;
+    font-size: 14px;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2em;
+    color: #333;
+}
+
+/* Main container */
+#editor {
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    width: 80%;
+}
+
+/* Button area */
+#editor ~ div {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+button.base-button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Command buttons (for running spy commands) */
+button.run-button {
+    background-color: #0066cc;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button.label-button {
+    background-color: rgba(0,0,0,0);
+    padding: 8px 16px;
+    cursor: default;
+}
+
+button.run-button:hover {
+    background-color: #0052a3;
+}
+
+button.run-button:active {
+    background-color: #003d7a;
+}
+
+/* Prevent labels from shrinking below their text width in flex containers */
+.ltk-label {
+    min-width: max-content;
+    font-family: var(--ui-font);
+}
+
+/* Backend selector dropdown */
+#backend-select {
+    box-sizing: border-box;
+    height: 32.5px;
+    padding: 0 8px;
+    border-radius: 4px;
+    border: 1px solid #0052a3;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #0066cc;
+    color: white;
+}
+
+/* Terminal output */
+#terminal {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    margin-top: 15px;
+    border: 2px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    min-height: 200px;
+    overflow: auto;
+    position: relative;
+}
+
+#html-output {
+    position: relative;
+}
+
+/* Maximize/restore button shown in the upper-right of output areas */
+.maximize-btn {
+    position: absolute;
+    top: 20px;  /* #terminal has padding:15px; stay inside the dark py-terminal area */
+    right: 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #aaa;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 1px 5px;
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.maximize-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+#html-output .maximize-btn {
+    top: 6px;
+    right: 8px;
+    border-color: rgba(0, 0, 0, 0.25);
+    color: #555;
+}
+
+#html-output .maximize-btn:hover {
+    background: rgba(0, 0, 0, 0.07);
+    color: #000;
+}
+
+/* Maximized state: fill the entire viewport */
+#terminal.maximized,
+#html-output.maximized {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    overflow: auto;
+    background-color: #1e1e1e;
+}
+
+/* Stretch py-terminal to fill the maximized container */
+#terminal.maximized py-terminal {
+    display: block !important;
+    min-height: calc(100vh - 30px);
+}
+
+#html-output.maximized iframe {
+    height: 100vh !important;
+}
+
+/* When maximized, fix the button to the viewport corner so it's always visible */
+.maximized .maximize-btn {
+    position: fixed !important;
+    top: 8px !important;
+    right: 8px !important;
+    background: rgba(80, 80, 80, 0.85) !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Command prompt - only style the "$ spy" prompt span */
+.command-prompt {
+    font-family: monospace;
+    color: #666;
+}
