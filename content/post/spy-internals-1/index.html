@@ -1,0 +1,57 @@
+---
+title: "Spy Internals 1"
+date: 2026-06-04T07:30:39-05:00
+draft: true
+tags:
+- Spy
+description: "Description Here"
+---
+
+<p class="post-p">I've been <a href="https://github.com/spylang/spy/pulls?q=is%3Apr+is%3Aclosed+author%3AJeffersGlass">hacking</a> on Antonio Cuni's <a href="http://github.com/spylang/spy">SPy</a> ("Static Python") project for a few months now; mostly on <a href="https://github.com/spylang/spy/pull/512">documentation</a> and the <a href="https://github.com/spylang/spy/pull/332">CLI</a>, but also a <a href="https://github.com/spylang/spy/pull/395">couple</a> of <a href="https://github.com/spylang/spy/pull/345">features</a> and some dev <a href="https://github.com/spylang/spy/pull/537">QoL</a> <a href="https://github.com/spylang/spy/pull/283">enhancements</a>. I thought I would write down what I've learned about SPy's internals and mechanisms, both for myself and for anyone else who wants to jump into the codebase</p>
+
+<p class="post-p">Consider this a snapshot of SPy at this moment in time - if you're reading this in the near or far future, know that SPy is changing fast. I've tried to note areas where it seems like things are most fluid, but that's just a best guess.</p>
+
+<h2 class="post-h2">What is Spy?</h2>
+
+<p class="post-p">Antonio wrote a <a href="https://antocuni.eu/2025/10/29/inside-spy-part-1-motivations-and-goals/">whole blog post of what SPy is and why it exists</a>, that's well worth reading. </p>
+
+<blockquote class="p-2 mx-6 my-4 italic bg-gray-200 border-l-4 border-gray-800">SPy is an interpreter and a compiler for a statically typed variant of Python, with focus on performance.
+<p>...</p>
+<p>SPy is a thought experiment to determine how much dynamicity we can remove from Python while still feeling Pythonic.</p>
+</blockquote>
+
+In essence, SPy is a very Python-like language, that's aimed to be relatively easy for Python developers to write, which allows for high-performance compilation to c (or WASM or other backends). Unless you're writing advanced library code, it looks very much like CPython:
+
+<div class="p-4">
+{{< highlight python3 >}}
+# hello.spy
+def add(x: i32, y: i32) -> i32:
+    return x + y
+
+
+def main() -> None:
+    print("Hello from SPy")
+    print(add(10, 20))
+{{< /highlight >}}
+</div>
+
+If you want to see what SPy looks like, check out the <a href="https://github.com/spylang/spy/tree/main/examples">examples on GitHub</a>.
+
+<h2 class="post-h2">App Level vs. Interp Level</h2>
+
+<p class="post-p">With SPy a deliberately python-like language, it's important to distinguish between objects, classes, etc that are inside the SPy interpreter and those that are part of the Python source that <i>implements</i> the interpreter. The former are <b>app-level</b> objects and the latter, low-level, implementation details are <b>interp-level</b> objects.</p>
+
+<p class="post-p">By way of comparison, in CPython, the app-level code would be Python, and the interp-level code would be C. These labels aren't really needed in something like CPython where the code <i>looks</i> very different, making it obvious whether you're lookng at Python code or interpreter implementation details. But in SPy, where the user-code and the interpreter-implementation-code are so similar, it's useful to have labels for each.</p>
+
+<p class="post-p">
+    There is a naming system for variables which helps distinguish the two. From <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/object.py#L4">a comment in object.py</a>: 
+    <blockquote class="p-2 mx-6 my-4 font-mono bg-gray-200 border-l-4 border-gray-800 leading-12">
+    In interp-level code, variables and fields which contains references to app-level objects are always prefixed with w_, which stans for "wrapped": e.g., the app-level SPy object `100` is represented by the interp-level instance `W_I32(100)`, which is a wrapper around the interp-level object `100`.
+    </blockquote>
+</p>
+
+<p>The (necessary) distinction between the two means that a fair amount of wrapping and unwrapping of variable types is necessary within the interpreter. See, for instance, <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L600-L677">vm.wrap()</a> and the various flavors of <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L699-L751">vm.unwrap()</a>, which convert, say, a string like <code class="code">hello</code> inside the interpeter into a SPy string, which to the interpreter is a <code class="code">W_Str('hello')</code>.</p>
+
+
+<h2 class="post-h2">Opspecs and Opimpls</h2>
+
