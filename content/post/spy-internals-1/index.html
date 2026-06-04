@@ -50,8 +50,275 @@ If you want to see what SPy looks like, check out the <a href="https://github.co
     </blockquote>
 </p>
 
-<p>The (necessary) distinction between the two means that a fair amount of wrapping and unwrapping of variable types is necessary within the interpreter. See, for instance, <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L600-L677">vm.wrap()</a> and the various flavors of <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L699-L751">vm.unwrap()</a>, which convert, say, a string like <code class="code">hello</code> inside the interpeter into a SPy string, which to the interpreter is a <code class="code">W_Str('hello')</code>.</p>
+<p class="post-p">The (necessary) distinction between the two means that a fair amount of wrapping and unwrapping of variable types is necessary within the interpreter. See, for instance, <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L600-L677">vm.wrap()</a> and the various flavors of <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L699-L751">vm.unwrap()</a>, which convert, say, a string like <code class="code">hello</code> inside the interpeter into a SPy string, which to the interpreter is a <code class="code">W_Str('hello')</code>.</p>
+
+<h2 class="post-h2">MetaArg, OpImpl, OpSpec, and Operators</h2>
+
+<p class="post-p">As a worked example, let's take a sample piece of SPy code and see how it is executed inside the interpreter, from the point that the program has already been parsed, imports mported, symbols identified, and we're ready to actually execute code:
+
+{{< highlight python3 >}}
+def main() -> None:
+    a: int = 1
+    b: int = 2
+    c = a + b # <<< Our focus
+{{< /highlight >}}
+</p>
+
+<p class="post-p">Following the assignments on lines 2 and 3, both <code class="code">a</code> and <code class="code">b</code> are <code class="code"><a href="https://github.com/spylang/spy/blob/main/spy/vm/primitive.py#L55">W_Int32</a></code> objects with <code class="code">value=1</code> and <code class="code">2</code> respectively. The frame representing <code class="code">main()</code> tracks that those local variables <code class="code">a</code> and <code class="code">b</code> not only point to those values, but that the symbols are <code class="code">blue</code> and that their type is known to be <code class="code">i32</code>.</p>
+
+{{< highlight python3 "linenos=false">}}
+{ 
+    'a': LocalVar(varname='a',
+               color='blue',
+               w_T=<spy type 'i32'>,
+               w_val=W_I32(1)),
+    'b': LocalVar(varname='b',
+               color='blue',
+               w_T=<spy type 'i32'>,
+               w_val=W_I32(2))
+}
+{{< /highlight >}}
+
+<p class="post-p">After parsing into an AST, line 4 of our code above has become:</p>
+<div class="m-2">
+{{< highlight python3>}}
+VarDef(
+    kind=None,
+    name=StrLiteral(value='c'),
+    type=Name(id='int'),
+    value=BinOp(
+        op='+',
+        left=Name(id='a'),
+        right=Name(id='b'),
+    ),
+),
+{{< /highlight >}}
+</div>
+
+<p class="post-p">The <code class="code">BinOp</code> expression gets evaluated by <a href="https://github.com/spylang/spy/blob/main/spy/vm/astframe.py#L1089-L1094">AstFrame.eval_expr_BinOp()</a>:</p>
+
+{{< highlight python3 >}}
+# spy/vm/astframe.py::AstFrame::eval_expr_BinOp()
+def eval_expr_BinOp(self, binop: ast.BinOp) -> W_MetaArg:
+    w_OP = OP_from_token(binop.op)  # e.g., w_ADD, w_MUL, etc.
+    wam_l = self.eval_expr(binop.left)
+    wam_r = self.eval_expr(binop.right)
+    w_opimpl = self.vm.call_OP(binop.loc, w_OP, [wam_l, wam_r])
+    return self.eval_opimpl(binop, w_opimpl, [wam_l, wam_r])
+{{< /highlight >}}
+
+<p class="post-p">Let's examine the lines of this function one by one.</p>
+
+<h3 class="post-h3">Line 2: <span class="inline px-1 font-mono text-green-600">w_OP = OP_from_token(binop.op)</span></h3>
+
+<p class="post-p"><code class="code">OP_from_token</code> looks up the symbol it was given in a <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/__init__.py#L73-L95">table in the interpreter</a> to get back a function name, in this case <code class="code"><a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/binop.py#L229-L242">OP.w_ADD</a></code>.</p>
+
+<p class="post-p">
+{{< highlight python3 >}}
+# spy/vm/modules/operator/binop.py
+@OP.builtin_func(color="blue")
+def w_ADD(vm: "SPyVM", wam_l: W_MetaArg, wam_r: W_MetaArg) -> W_OpImpl:
+    from spy.vm.typechecker import typecheck_opspec
+
+    w_ltype = wam_l.w_static_T
+    if w_opspec := MM.get_binary_opspec("+", wam_l, wam_r):
+        pass
+    elif w_add := w_ltype.lookup_func(vm, "__add__"):
+        w_opspec = vm.fast_metacall(w_add, [wam_l, wam_r])
+    else:
+        w_opspec = W_OpSpec.NULL
+    return typecheck_opspec(
+        vm, w_opspec, [wam_l, wam_r], dispatch="multi", errmsg="cannot do `{0}` + `{1}`"
+    )
+{{< /highlight >}}
+</p>
+
+<p class="post-p">The <code class="code">OP.w_ADD</code> function does two lookups - first, to see if the the types of its left and right operands are in a <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/binop.py#L19-L226">pre-computed table for operations</a>, or, failing that, if the left operand implements an <code class="code">__add__</code> method. In this case, the lookup is successful, since an appropriate operation <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/binop.py#L76">was declared</a> by the line <code class="code">MM.register("+",  "i32", "i32", OP.w_i32_add)</code>. </p>
+
+<p class="post-p"><code class="code">OP.w_i32_add</code> is generated dynamically when <a href="https://github.com/spylang/spy/blob/main/spy/vm/modules/operator/opimpl_int.py">opimpl_int.py</a> is imported by the <code class="code">operator</code> module. It substitutes in i32 where necessary into the 'template':
+{{< highlight python3 >}}
+# spy/vm/modules/operator/opimpl_int.py
+@OP.builtin_func(f"{T}_add")
+def w_add(vm: "SPyVM", w_a: WT, w_b: WT) -> WT:
+    return _binop(vm, w_a, w_b, lambda a, b: a + b)
+{{< /highlight >}}
+</p>
+
+<p class="post-p">... where <code class="code">_binop() is</code>:
+{{< highlight python3 >}}
+# spy/vm/modules/operator/opimpl_int.py
+def _binop(vm: "SPyVM", w_a: WT, w_b: WT, fn: Any) -> Any:
+    a = w_a.value
+    b = w_b.value
+    res = fn(a, b)
+    return vm.wrap(res)
+{{< /highlight >}}
+</p>
+
+<p class="post-p">So, we finally have our operation which claims claims to know how to add two i32 ints together - it takes their <code class="code">values</code>, adds them together in python (via the lambda), wraps them up in a new integer, and returns that. It's important here to note that what we've determined is called in SPy terminology an <code class="code bold">OpSpec</code> (class <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/opspec.py#L308">W_OpSpec</a>), which contains the types that the operation is receiving and the type that it's emitting.</p>
+
+<p>To turn that <code class="code">OpSpec</code> (which was determined based on the static types of our objects) into an <code class="code">OpImpl</code> that's ready to be executed, there's one more one more <b><i>very important</i></b> part of the code of<code class="code">w_ADD</code> - namely, <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/typechecker.py#L37-L142"></a></p>
+
+<p class="italic post-p">This function is long, but some pseudocode will help:</p>
+
+{{< highlight python3 >}}
+# spy/vm/typechecker.py
+
+# If the opspec is Null (i.e. if lookup failed in previous step), error out
+# If the opspec is defined to always just turn a constant, return a simple OpImpl that returns that constant
+
+# Create function signatures from both the OpSpec we received ('w_out_functype') and deduce one from the arguments we got ('w_in_functype')
+# Check that the number of arguments received matches the number of arguments the opspec expects
+# Check that all arguments respect the color of the OpSpec (i.e. can't pass red arguments to a blue function)
+# Insert any type conversions as needed
+# Emit an OpImpl with the function definition, a reference to the original operation (lambda in this case) and args with conversions
+
+{{< /highlight >}}
+
+We've gotten through line 2 of <code class="code">eval_expr_BinOp</code> from above!</p>
 
 
-<h2 class="post-h2">Opspecs and Opimpls</h2>
+<h3 class="post-h3">Line 3 & 4: <span class="inline px-1 font-mono text-green-600">wam_l = self.eval_expr(binop.left); wam_r = self.eval_expr(binop.right)</span></h3>
 
+
+
+
+
+<!--
+D:\spy\spy\vm\opspec.py(1):
+"""
+OpSpec and OpImpl is the central concept to understand of SPy operators work.
+
+Conceptually, the following SPy code:
+   c = a + b
+
+is roughly equivalent to:
+   arg_a = MetaArg('red', STATIC_TYPE(a))
+   arg_b = MetaArg('red', STATIC_TYPE(b))
+   opimpl = operator.ADD(arg_a, arg_b)
+   c = opimpl(a, b)
+
+I.e., the execution of an operator happens in three-steps:
+  1. We call the OPERATOR to determine the OpSpec
+  2. The VM convert the OpSpec into an executable OpImpl
+  3. We call the OpImpl to determine the final results.
+
+Point (2) is where typechecking happens and can fail.
+
+Note that OPERATORTs don't receive the actual values of operands. Instead,
+they receive MetaArgs, which represents "abstract values", of which we know only
+the static type.
+
+Then, the OpImpl receives the actual values and compute the result.
+
+This scheme is designed in such a way that the call to OPERATOR() is always
+blue and can be optimized away during redshifting.
+"""
+
+D:\spy\spy\vm\opspec.py(55):
+""" MetaArg
+    A value which carries some extra information.
+    This is a central part of how SPy works.
+
+    In order to preserve the same semantics between interp and compile,
+    operation dispatch must be done on STATIC types. The same object can have
+    different static types, and thus respond to different operations. For
+    example:
+        x: MyClass = ...
+        y: object = x
+
+    x and y are identical, but have different static types.
+
+    The main job of MetaArgs is to keep track of the color and the static type
+    of objects inside the ASTFrame.  As the name suggests, they are then
+    passed as arguments to OPERATORs, which can then use the static type to
+    dispatch to the proper OpSpec.
+
+    Moreover, they carry around extra information which are used to produce
+    better error messages, when needed:
+      - loc: the source code location where this object comes from
+      - sym: the symbol associated with this objects (if any)
+
+    In interpreter mode, MetaArgs represent concrete values, so they carry an
+    actualy object + its static type.
+
+    During redshifting, red MetaArgs are abstract: they carry around only the
+    static types.
+
+    Blue MetaArg always have an associated value.
+
+    The naming convention for variables of type W_MetaArg is wam_xxx (for
+    Wrapped Argument Meta), because it's "quicker" to pronounce that the more
+    correct wma_xxx.
+    """
+
+
+D:\spy\spy\vm\opimpl.py(50):
+"""
+    The typechecked counterpart of OpSpec.
+
+    OpSpec specifies how an operation must be done, e.g. "call this function
+    with these two arguments".
+
+    typechecker.typecheck() transforms an OpSpec into an OpImpl, which is
+    ready to be executed. In particular, OpImpl contains all the conversions
+    which might be necessary to perform, in case the signature of the function
+    doesn't match the type of the MetaArgs.
+
+    OpImpl is not a function, but behaves like one: it expects a certain
+    number of positional arguments with certain types, and it has a return
+    type and a color. For simplicity, we use `w_functype` for this purpose,
+    but it's important to understand that it's not a function (in particular,
+    it cannot be called by normal means).
+
+    When execute()d, W_OpImpl transforms the input args_w into the "real"
+    args_w which is passed to w_func.
+
+    The transformation rules are stored into a list of ArgSpec, which
+    effectively encodes a mini-AST.
+    """
+
+
+D:\spy\spy\vm\modules\operator\__init__.py(1):
+"""
+SPy `operator` module.
+
+This is a central piece of how SPy works. First, some lexicon:
+
+  - "generic operator", also known as "operator": a blue function which takes
+    two types and return an opimpl
+
+  - "opimpl": a red function which takes two operands and return the result
+
+Basically, this means that the following code:
+
+    c = a + b
+
+Is roughly equivalent to this:
+
+    Ta = STATIC_TYPE(a)
+    Tb = STATIC_TYPE(b)
+    c = operator.ADD(Ta, Tb)(a, b)
+
+The dispatch ALWAYS happens on the static types of operands. So for example,
+if you have the following code:
+
+    a: object = 1
+    b: object = 2
+    a + b
+
+It's a SPyTypeError, because we don't have an opimpl for "object + object".
+
+The exception is the type `dynamic`:
+
+    a: dynamic = 1
+    b: dynamic = 2
+    a + b
+
+In this case, the dispatch will be done on the dynamic type of the operands.
+
+Note that for bootstrap reason, the OPERATOR module is defined in vm/b.py, and
+re-exported here.
+"""
+
+-->
