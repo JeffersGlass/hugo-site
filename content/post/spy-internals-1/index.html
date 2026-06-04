@@ -156,30 +156,55 @@ def _binop(vm: "SPyVM", w_a: WT, w_b: WT, fn: Any) -> Any:
 </p>
 
 <p class="post-p">So, we finally have our operation which claims claims to know how to add two i32 ints together - it takes their <code class="code">values</code>, adds them together in python (via the lambda), wraps them up in a new integer, and returns that. It's important here to note that what we've determined is called in SPy terminology an <code class="code bold">OpSpec</code> (class <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/opspec.py#L308">W_OpSpec</a>), which contains the types that the operation is receiving and the type that it's emitting.</p>
-
-<p>To turn that <code class="code">OpSpec</code> (which was determined based on the static types of our objects) into an <code class="code">OpImpl</code> that's ready to be executed, there's one more one more <b><i>very important</i></b> part of the code of<code class="code">w_ADD</code> - namely, <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/typechecker.py#L37-L142"></a></p>
-
-<p class="italic post-p">This function is long, but some pseudocode will help:</p>
-
-{{< highlight python3 >}}
-# spy/vm/typechecker.py
-
-# If the opspec is Null (i.e. if lookup failed in previous step), error out
-# If the opspec is defined to always just turn a constant, return a simple OpImpl that returns that constant
-
-# Create function signatures from both the OpSpec we received ('w_out_functype') and deduce one from the arguments we got ('w_in_functype')
-# Check that the number of arguments received matches the number of arguments the opspec expects
-# Check that all arguments respect the color of the OpSpec (i.e. can't pass red arguments to a blue function)
-# Insert any type conversions as needed
-# Emit an OpImpl with the function definition, a reference to the original operation (lambda in this case) and args with conversions
-
-{{< /highlight >}}
+<p class="postp"></p>
 
 We've gotten through line 2 of <code class="code">eval_expr_BinOp</code> from above!</p>
 
 
 <h3 class="post-h3">Line 3 & 4: <span class="inline px-1 font-mono text-green-600">wam_l = self.eval_expr(binop.left); wam_r = self.eval_expr(binop.right)</span></h3>
 
+<p class="post-p">We recursively evaluate the left and right sides of the binary expression. What we get back from these evaluations are <code class="code">MetaArg</code>s, which carry around not only the value (when being evaluated), but the color and static type they represent.</p>
+
+<h3 class="post-h3">Line 5: <span class="inline px-1 font-mono text-green-600">w_opimpl = self.vm.call_OP(binop.loc, w_OP, [wam_l, wam_r])</span></h3>
+
+<p>Now that we know the static types of our arguments, we can convert the <code class="code">OpSpec</code> (which was determined based on the static types of our objects) into an <code class="code">OpImpl</code> that's ready to be executed, including any necessary type conversions and type checks, which . There's a <b><i>very important</i></b> part of the code of<code class="code">w_ADD</code> - namely, <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/typechecker.py#L37-L142"></a></p>
+
+<p class="italic post-p">This function is long, but some pseudocode will help:</p>
+
+<p class="post-p">
+    {{< highlight python3 >}}
+    # spy/vm/typechecker.py
+    
+    # If the opspec is Null (i.e. if lookup failed in previous step), error out
+    # If the opspec is defined to always just turn a constant, return a simple OpImpl that returns that constant
+    
+    # Create function signatures from both the OpSpec we received ('w_out_functype') and deduce one from the arguments we got ('w_in_functype')
+    # Check that the number of arguments received matches the number of arguments the opspec expects
+    # Check that all arguments respect the color of the OpSpec (i.e. can't pass red arguments to a blue function)
+    # Insert any type conversions as needed
+    # Emit an OpImpl with the function definition, a reference to the original operation (lambda in this case) and args with conversions
+    
+    {{< /highlight >}}
+</p>
+
+<p class="post-p">Once everything is typechecked by the above, we untimately get back an <code class="code">OpImpl</code> that references the original function. <code>call_OP</code> ultimately calls <code class="code">w_ADD()</code>, which calls <code class="code">typecheck_opspec()</code>, which returns the relevant <code class="code">OpImpl</code>.</p>
+
+<h3 class="post-h3">Line 6: <span class="inline px-1 font-mono text-green-600">return self.eval_opimpl(binop, w_opimpl, [wam_l, wam_r])</span></h3>
+
+<p class="post-p">Here's where the final evaluation happens:</p>
+<ul class="post-ul">
+<li><code class="code">ASTFrame.eval_opimpl</code> delegates to <code class="code">vm.eval_opimpl()</code></li>
+<li>...which does some shenanigans around the color of the result and then delegates to <code class="code">W_OpImpl._execute()</code></li>
+<li>...This recursively calls any necessary type conversions, then delegates to <code class="code">vm.fast_call(self.w_func, real_args_w)</code></li>
+<li>...For red functions, this just delegates to <code class="code">vm._raw_call(w_func, w_args)</code></li>
+<li>...This checks the arg count and param count again, then delegates to <code class="code">BuiltinFunc.raw_call()</code></li>
+<li>...which calls <code class="code">self._pyfunc</code>, which is ultimately a reference to the lambda defined long long ago!</li>
+</ul>
+
+
+<p class="post-p">
+Popping back up the call chain, we end up back in <code class="code">eval_expr_BinOp</code>, where our result is a <code class="code">MetaArg</code> with a value of <code class="code">W_I32(3)
+</code></p>
 
 
 
