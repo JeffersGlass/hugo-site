@@ -1,17 +1,17 @@
 ---
-title: "Spy Internals 1"
+title: "SPy Internals"
 date: 2026-06-04T07:30:39-05:00
 draft: true
 tags:
 - Spy
-description: "Description Here"
+description: "The fine details of how code is interpreted and executed in SPy"
 ---
 
 <p class="post-p">I've been <a href="https://github.com/spylang/spy/pulls?q=is%3Apr+is%3Aclosed+author%3AJeffersGlass">hacking</a> on Antonio Cuni's <a href="http://github.com/spylang/spy">SPy</a> ("Static Python") project for a few months now; mostly on <a href="https://github.com/spylang/spy/pull/512">documentation</a> and the <a href="https://github.com/spylang/spy/pull/332">CLI</a>, but also a <a href="https://github.com/spylang/spy/pull/395">couple</a> of <a href="https://github.com/spylang/spy/pull/345">features</a> and some dev <a href="https://github.com/spylang/spy/pull/537">QoL</a> <a href="https://github.com/spylang/spy/pull/283">enhancements</a>. I thought I would write down what I've learned about SPy's internals and mechanisms, both for myself and for anyone else who wants to jump into the codebase</p>
 
 <p class="post-p">Consider this a snapshot of SPy at this moment in time - if you're reading this in the near or far future, know that SPy is changing fast. I've tried to note areas where it seems like things are most fluid, but that's just a best guess.</p>
 
-<h2 class="post-h2">What is Spy?</h2>
+<h2 class="post-h2">What is SPy?</h2>
 
 <p class="post-p">Antonio wrote a <a href="https://antocuni.eu/2025/10/29/inside-spy-part-1-motivations-and-goals/">whole blog post of what SPy is and why it exists</a>, that's well worth reading. </p>
 
@@ -22,7 +22,7 @@ description: "Description Here"
 
 In essence, SPy is a very Python-like language, that's aimed to be relatively easy for Python developers to write, which allows for high-performance compilation to c (or WASM or other backends). Unless you're writing advanced library code, it looks very much like CPython:
 
-<div class="p-4">
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 >}}
 # hello.spy
 def add(x: i32, y: i32) -> i32:
@@ -50,42 +50,46 @@ If you want to see what SPy looks like, check out the <a href="https://github.co
     </blockquote>
 </p>
 
-<p class="post-p">The (necessary) distinction between the two means that a fair amount of wrapping and unwrapping of variable types is necessary within the interpreter. See, for instance, <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L600-L677">vm.wrap()</a> and the various flavors of <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L699-L751">vm.unwrap()</a>, which convert, say, a string like <code class="code">hello</code> inside the interpeter into a SPy string, which to the interpreter is a <code class="code">W_Str('hello')</code>.</p>
+<p class="post-p">The (necessary) distinction between the two means that a fair amount of wrapping and unwrapping of variable types is necessary within the interpreter. See, for instance, <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L600-L677">vm.wrap()</a> and the various flavors of <a href="https://github.com/spylang/spy/blob/3b3f5228694cb43ca96e41b12860a310d157a2bd/spy/vm/vm.py#L699-L751">vm.unwrap()</a>, which convert, say, a string like <code class="code">hello</code> inside the interpreter into a SPy string, which to the interpreter is a <code class="code">W_Str('hello')</code>.</p>
 
 <h2 class="post-h2">MetaArg, OpImpl, OpSpec, and Operators</h2>
 
 <p class="post-p">As a worked example, let's take a sample piece of SPy code and see how it is executed inside the interpreter, from the point that the program has already been parsed, imports mported, symbols identified, and we're ready to actually execute code:
 
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 >}}
 def main() -> None:
     a: int = 1
     b: int = 2
     c = a + b # <<< Our focus
 {{< /highlight >}}
+</div>
 </p>
 
 <p class="post-p">Following the assignments on lines 2 and 3, both <code class="code">a</code> and <code class="code">b</code> are <code class="code"><a href="https://github.com/spylang/spy/blob/main/spy/vm/primitive.py#L55">W_Int32</a></code> objects with <code class="code">value=1</code> and <code class="code">2</code> respectively. The frame representing <code class="code">main()</code> tracks that those local variables <code class="code">a</code> and <code class="code">b</code> not only point to those values, but that the symbols are <code class="code">blue</code> and that their type is known to be <code class="code">i32</code>.</p>
 
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 "linenos=false">}}
-{ 
+{
     'a': LocalVar(varname='a',
-               color='blue',
-               w_T=<spy type 'i32'>,
-               w_val=W_I32(1)),
+                color='blue',
+                w_T=<spy type 'i32'>,
+                w_val=W_I32(1)),
     'b': LocalVar(varname='b',
-               color='blue',
-               w_T=<spy type 'i32'>,
-               w_val=W_I32(2))
+                color='blue',
+                w_T=<spy type 'i32'>,
+                w_val=W_I32(2))
 }
 {{< /highlight >}}
+</div>
 
 <p class="post-p">After parsing into an AST, line 4 of our code above has become:</p>
-<div class="m-2">
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3>}}
-VarDef(
-    kind=None,
-    name=StrLiteral(value='c'),
-    type=Name(id='int'),
+Assign(
+    target=SingleTarget(
+        name=StrLiteral(value='c'),
+    ),
     value=BinOp(
         op='+',
         left=Name(id='a'),
@@ -97,6 +101,7 @@ VarDef(
 
 <p class="post-p">The <code class="code">BinOp</code> expression gets evaluated by <a href="https://github.com/spylang/spy/blob/main/spy/vm/astframe.py#L1089-L1094">AstFrame.eval_expr_BinOp()</a>:</p>
 
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 >}}
 # spy/vm/astframe.py::AstFrame::eval_expr_BinOp()
 def eval_expr_BinOp(self, binop: ast.BinOp) -> W_MetaArg:
@@ -106,14 +111,16 @@ def eval_expr_BinOp(self, binop: ast.BinOp) -> W_MetaArg:
     w_opimpl = self.vm.call_OP(binop.loc, w_OP, [wam_l, wam_r])
     return self.eval_opimpl(binop, w_opimpl, [wam_l, wam_r])
 {{< /highlight >}}
+</div>
 
 <p class="post-p">Let's examine the lines of this function one by one.</p>
 
-<h3 class="post-h3">Line 2: <span class="inline px-1 font-mono text-green-600">w_OP = OP_from_token(binop.op)</span></h3>
+<h3 class="post-h3">Line 3: <span class="inline px-1 font-mono text-green-600">w_OP = OP_from_token(binop.op)</span></h3>
 
 <p class="post-p"><code class="code">OP_from_token</code> looks up the symbol it was given in a <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/__init__.py#L73-L95">table in the interpreter</a> to get back a function name, in this case <code class="code"><a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/binop.py#L229-L242">OP.w_ADD</a></code>.</p>
 
 <p class="post-p">
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 >}}
 # spy/vm/modules/operator/binop.py
 @OP.builtin_func(color="blue")
@@ -131,20 +138,24 @@ def w_ADD(vm: "SPyVM", wam_l: W_MetaArg, wam_r: W_MetaArg) -> W_OpImpl:
         vm, w_opspec, [wam_l, wam_r], dispatch="multi", errmsg="cannot do `{0}` + `{1}`"
     )
 {{< /highlight >}}
+</div>
 </p>
 
 <p class="post-p">The <code class="code">OP.w_ADD</code> function does two lookups - first, to see if the the types of its left and right operands are in a <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/binop.py#L19-L226">pre-computed table for operations</a>, or, failing that, if the left operand implements an <code class="code">__add__</code> method. In this case, the lookup is successful, since an appropriate operation <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/modules/operator/binop.py#L76">was declared</a> by the line <code class="code">MM.register("+",  "i32", "i32", OP.w_i32_add)</code>. </p>
 
 <p class="post-p"><code class="code">OP.w_i32_add</code> is generated dynamically when <a href="https://github.com/spylang/spy/blob/main/spy/vm/modules/operator/opimpl_int.py">opimpl_int.py</a> is imported by the <code class="code">operator</code> module. It substitutes in i32 where necessary into the 'template':
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 >}}
 # spy/vm/modules/operator/opimpl_int.py
 @OP.builtin_func(f"{T}_add")
 def w_add(vm: "SPyVM", w_a: WT, w_b: WT) -> WT:
     return _binop(vm, w_a, w_b, lambda a, b: a + b)
 {{< /highlight >}}
+</div>
 </p>
 
 <p class="post-p">... where <code class="code">_binop() is</code>:
+<div class="p-2 border-2 border-rounded-md border-gray-400">
 {{< highlight python3 >}}
 # spy/vm/modules/operator/opimpl_int.py
 def _binop(vm: "SPyVM", w_a: WT, w_b: WT, fn: Any) -> Any:
@@ -153,43 +164,46 @@ def _binop(vm: "SPyVM", w_a: WT, w_b: WT, fn: Any) -> Any:
     res = fn(a, b)
     return vm.wrap(res)
 {{< /highlight >}}
+</div>
 </p>
 
 <p class="post-p">So, we finally have our operation which claims claims to know how to add two i32 ints together - it takes their <code class="code">values</code>, adds them together in python (via the lambda), wraps them up in a new integer, and returns that. It's important here to note that what we've determined is called in SPy terminology an <code class="code bold">OpSpec</code> (class <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/opspec.py#L308">W_OpSpec</a>), which contains the types that the operation is receiving and the type that it's emitting.</p>
 <p class="postp"></p>
 
-We've gotten through line 2 of <code class="code">eval_expr_BinOp</code> from above!</p>
+We've gotten through line 3 of <code class="code">eval_expr_BinOp</code> from above!</p>
 
 
-<h3 class="post-h3">Line 3 & 4: <span class="inline px-1 font-mono text-green-600">wam_l = self.eval_expr(binop.left); wam_r = self.eval_expr(binop.right)</span></h3>
+<h3 class="post-h3">Line 4 & 5: <span class="inline px-1 font-mono text-green-600">wam_l = self.eval_expr(binop.left); wam_r = self.eval_expr(binop.right)</span></h3>
 
 <p class="post-p">We recursively evaluate the left and right sides of the binary expression. What we get back from these evaluations are <code class="code">MetaArg</code>s, which carry around not only the value (when being evaluated), but the color and static type they represent.</p>
 
-<h3 class="post-h3">Line 5: <span class="inline px-1 font-mono text-green-600">w_opimpl = self.vm.call_OP(binop.loc, w_OP, [wam_l, wam_r])</span></h3>
+<h3 class="post-h3">Line 6: <span class="inline px-1 font-mono text-green-600">w_opimpl = self.vm.call_OP(binop.loc, w_OP, [wam_l, wam_r])</span></h3>
 
-<p>Now that we know the static types of our arguments, we can convert the <code class="code">OpSpec</code> (which was determined based on the static types of our objects) into an <code class="code">OpImpl</code> that's ready to be executed, including any necessary type conversions and type checks, which . There's a <b><i>very important</i></b> part of the code of<code class="code">w_ADD</code> - namely, <a href="https://github.com/spylang/spy/blob/abc288b9fe58b13c65d7d289d7ee9cc782e41d20/spy/vm/typechecker.py#L37-L142"></a></p>
+<p>Now that we know the static types of our arguments, we can convert the <code class="code">OpSpec</code> (which was determined based on the static types of our objects) into an <code class="code">OpImpl</code> that's ready to be executed, including any necessary type conversions and type checks . There's a <b><i>very important</i></b> part of the code of<code class="code">w_ADD</code> - namely, <a href="https://github.com/spylang/spy/blob/d8b4399ca9415708ff25b38370bbcb217619a24d/spy/vm/typechecker.py#L37-L142"><code class="code">typecheck_opspec()</code></a>, which handles the actual conversion of the OpSpec into an OpImpl.</p>
 
-<p class="italic post-p">This function is long, but some pseudocode will help:</p>
+<p class="post-p"><code class="code">typecheck_opspec()</code> is long, but some pseudocode will help:</p>
 
 <p class="post-p">
-    {{< highlight python3 >}}
-    # spy/vm/typechecker.py
-    
-    # If the opspec is Null (i.e. if lookup failed in previous step), error out
-    # If the opspec is defined to always just turn a constant, return a simple OpImpl that returns that constant
-    
-    # Create function signatures from both the OpSpec we received ('w_out_functype') and deduce one from the arguments we got ('w_in_functype')
-    # Check that the number of arguments received matches the number of arguments the opspec expects
-    # Check that all arguments respect the color of the OpSpec (i.e. can't pass red arguments to a blue function)
-    # Insert any type conversions as needed
-    # Emit an OpImpl with the function definition, a reference to the original operation (lambda in this case) and args with conversions
-    
-    {{< /highlight >}}
+<div class="p-2 border-2 border-rounded-md border-gray-400">
+{{< highlight python3 >}}
+# spy/vm/typechecker.py
+
+def typecheck_opspec(vm: "SPyVM", w_opspec: W_OpSpec, in_args_wam: list[W_MetaArg], *, dispatch: DispatchKind, errmsg: str,) -> W_OpImpl:
+# If the opspec is Null (i.e. if lookup failed in previous step), error out
+# If the opspec is defined to always just return a constant, return a simple OpImpl that returns that constant
+
+# Create function signatures from both the OpSpec we received ('w_out_functype') and the function signature of the arguments we got ('w_in_functype')
+# Check that the number of arguments received matches the number of arguments the opspec expects
+# Check that all arguments respect the color of the OpSpec (i.e. can't pass red arguments to a blue function)
+# Insert any type conversions as needed
+# Emit an OpImpl with the function definition, a reference to the original operation (the lambda in this case) and args with conversions
+{{< /highlight >}}
+</div>
 </p>
 
 <p class="post-p">Once everything is typechecked by the above, we untimately get back an <code class="code">OpImpl</code> that references the original function. <code>call_OP</code> ultimately calls <code class="code">w_ADD()</code>, which calls <code class="code">typecheck_opspec()</code>, which returns the relevant <code class="code">OpImpl</code>.</p>
 
-<h3 class="post-h3">Line 6: <span class="inline px-1 font-mono text-green-600">return self.eval_opimpl(binop, w_opimpl, [wam_l, wam_r])</span></h3>
+<h3 class="post-h3">Line 7: <span class="inline px-1 font-mono text-green-600">return self.eval_opimpl(binop, w_opimpl, [wam_l, wam_r])</span></h3>
 
 <p class="post-p">Here's where the final evaluation happens:</p>
 <ul class="post-ul">
