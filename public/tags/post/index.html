@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>post</title>
+	<title>Post</title>
 	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
 	
 	
@@ -12,26 +12,16 @@
 	
 	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
 	<link rel="alternate" type="application/rss+xml" href="../../tags/post/index.xml" title="Jeff Glass">
-	<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="post"/>
-<meta name="twitter:description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd"/>
+	
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Post">
+  <meta name="twitter:description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
 	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
 	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
 
 	
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
-}
-</script>
-
 
 	<link rel="icon" href="../../favicon.ico?v=2"> 
 	
@@ -45,7 +35,7 @@ if (!doNotTrack) {
     <div class="flex-none hidden lg:flex">
         <div class="flex-none px-2">
             <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">Jeff Glass</a>
+                <a href='../../' class= "no-style-link">jeff.glass</a>
             </span>
         </div>
         <div class="flex-none menu-item-green ">
@@ -73,7 +63,7 @@ if (!doNotTrack) {
         </div>
         <div class="flex-none">
             <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">Jeff Glass</a>
+                <a href='../../' class= "no-style-link">jeff.glass</a>
             </span>
         </div>
     </div>
@@ -147,7 +137,221 @@ if (!doNotTrack) {
         
             <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
         
-        <h1><a href="https://jeff.glass/post/pycon2023/" class="text-2xl">Pycon2023</a></h1>
+        <h1><a href="http://localhost:1313/post/__frank__/" class="text-2xl">__Frank__</a></h1>
+        <p>Last updated <time datetime="2025-03-11T10:37:00">11.03.2025 10:37</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <h2 class="post-h2">Adding <code>__frank__</code> to the REPL</h2>
+
+<code>
+    >>> dir()
+    ['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__']
+
+    __package__: "_pyrepl"
+</code>
+
+Look up pyrepl pacakge (Lib/_pyrepl)
+In <code>__main__</code>: 
+
+<code>
+    # Important: don't add things to this module, as they will end up in the REPL's
+    # default globals.  Use _pyrepl.main instead.
+</code>
+
+Well:
+
+<code>
+    __frank__ = """Letter 1
+To Mrs. Saville, England.
+
+St. Petersburgh, Dec. 11th, 17—.
+
+You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking."""
+
+if __name__ == "__main__":
+    from .main import interactive_console as __pyrepl_interactive_console
+    __pyrepl_interactive_console()
+</code>
+
+And then:
+<code>
+    >>> __frank__
+'Letter 1\nTo Mrs. Saville, England.\n\nSt. Petersburgh, Dec. 11th, 17—.\n\nYou will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking.'
+>>> 
+</code>
+
+Well, that gets <code>__frank__</code> into the REPL (or at least, a short version of it). But it feels like just a bit of a hack - the fact that the new REPL is written in Python makes it trivially easy to slap things into the global variables... But how about if we want it in the interpreter normally:
+
+<h2 class="post-h2"><code>__frank__</code> into Builtins</h2>
+
+We can programmatically alter the builtins module:
+
+<code>
+    import builtins
+
+builtins.__frank__ = """Letter 1
+To Mrs. Saville, England.
+
+St. Petersburgh, Dec. 11th, 17—.
+
+You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking."""
+
+print(__frank__)
+</code>
+
+Went down a bit of a rabbit-hole to find where the Ellipsis is defined (PyTypeObject PyEllipsis_Type in sliceobject.c)... but we don't really want a singleton, we want a string set at ____ time, more like __doc__.
+
+Oooo pycore_global_strings.h is a great name.
+It reference generate_global_objects.py:
+    Regexes for _Py_ID and _Py_DECLARE_STR
+    For printing out, say, "&lt;module&gt;" or other similar name
+    generate_global_objects.py:
+        Scans through the folders ('Modules', 'Objects', 'Parser', 'PC', 'Programs', 'Python')
+        For any files ending in .c or .h, 
+        Walk the file for instances of _Py_ID or _Py_DECLARE_STR
+        Make these a globally available string name...
+        Still not quite what we want
+
+<code>
+    _Py_DECLARE_STR(__frank__, "Letter 1 \
+To Mrs. Saville, England. \
+\
+St. Petersburgh, Dec. 11th, 17—. \");
+</code>
+
+Let's go back to builtins
+
+dir(__builtins__)
+
+<code>
+    ['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException', 'BaseExceptionGroup', 'BlockingIOError', 'BrokenPipeError', 'BufferError', 'BytesWarning', 'ChildProcessError', 'ConnectionAbortedError', 'ConnectionError', 'ConnectionRefusedError', 'ConnectionResetError', 'DeprecationWarning', 'EOFError', 'Ellipsis', 'EncodingWarning', 'EnvironmentError', 'Exception', 'ExceptionGroup', 'False', 'FileExistsError', 'FileNotFoundError', 'FloatingPointError', 'FutureWarning', 'GeneratorExit', 'IOError', 'ImportError', 'ImportWarning', 'IndentationError', 'IndexError', 'InterruptedError', 'IsADirectoryError', 'KeyError', 'KeyboardInterrupt', 'LookupError', 'MemoryError', 'ModuleNotFoundError', 'NameError', 'None', 'NotADirectoryError', 'NotImplemented', 'NotImplementedError', 'OSError', 'OverflowError', 'PendingDeprecationWarning', 'PermissionError', 'ProcessLookupError', 'PythonFinalizationError', 'RecursionError', 'ReferenceError', 'ResourceWarning', 'RuntimeError', 'RuntimeWarning', 'StopAsyncIteration', 'StopIteration', 'SyntaxError', 'SyntaxWarning', 'SystemError', 'SystemExit', 'TabError', 'TimeoutError', 'True', 'TypeError', 'UnboundLocalError', 'UnicodeDecodeError', 'UnicodeEncodeError', 'UnicodeError', 'UnicodeTranslateError', 'UnicodeWarning', 'UserWarning', 'ValueError', 'Warning', 'ZeroDivisionError', '_', '_IncompleteInputError', '__build_class__', '__debug__', '__doc__', '__import__', '__loader__', '__name__', '__package__', '__spec__', 'abs', 'aiter', 'all', 'anext', 'any', 'ascii', 'bin', 'bool', 'breakpoint', 'bytearray', 'bytes', 'callable', 'chr', 'classmethod', 'compile', 'complex', 'copyright', 'credits', 'delattr', 'dict', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'exit', 'filter', 'float', 'format', 'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'license', 'list', 'locals', 'map', 'max', 'memoryview', 'min', 'next', 'object', 'oct', 'open', 'ord', 'pow', 'print', 'property', 'quit', 'range', 'repr', 'reversed', 'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple', 'type', 'vars', 'zip']
+</code>
+
+Looking for a not-too-common example of something... warnings are not quite the thing... divmod leads to <code>bltinomdule.c</code>
+
+Uses argument clinic, which I've never really understood.
+
+There's a howto from 3.10 that's not in 3.11 or later... https://docs.python.org/3.10/howto/clinic.html
+
+Looking in Object.c: 
+    none_repr: PyUnicode_FromString("None")
+    PyObject_Dir (dir implementation) returns 
+
+credits (!!!!) Just some text!
+
+Ooooooh site.py. How cursed.
+
+Adding
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/profiling-cpython/" class="text-2xl">Profiling Cpython</a></h1>
+        <p>Last updated <time datetime="2024-07-11T10:25:54">11.07.2024 10:25</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    https://vstinner.github.io/journey-to-stable-benchmark-system.html
+
+https://www.kernel.org/doc/Documentation/IRQ-affinity.txt
+
+https://lwn.net/Articles/549580/
+
+https://ubuntu.com/blog/real-time-kernel-tuning
+
+https://www.acontis.com/en/ubuntu-linux-realtime-howto.html
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/wasm-python-input-issues/" class="text-2xl">Web Assembly, Python, and the Input Challenge</a></h1>
+        <p>Last updated <time datetime="2023-10-10T10:06:07">10.10.2023 10:06</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+            <a href="../../tags/python">python</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <p class="post-p">One of the challenges in translating Python to the web is this very simple piece of example code, pulled <a href="https://docs.python.org/3/tutorial/controlflow.html#if-statements">straight from the Python docs:</a></p>
+                    
+                        <a href="http://localhost:1313/post/wasm-python-input-issues/">Read more...</a>
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/pyscript-gets-worker-threads/" class="text-2xl">Pyscript Gets Worker Threads</a></h1>
+        <p>Last updated <time datetime="2023-04-21T12:47:17">21.04.2023 12:47</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <h2>What's Different?</h2>
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/pyscript-gets-micropython/" class="text-2xl">Pyscript Gets Micropython</a></h1>
+        <p>Last updated <time datetime="2023-04-21T12:45:16">21.04.2023 12:45</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <h2 class="post-h2">What Can't Micropython Do</h2>
+<h4 class="post-p">The "standard libraries" are different - eg</h4>
+<h4 class="post-h4">No concept of package import</h4>
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/pycon2023/" class="text-2xl">Pycon2023</a></h1>
         <p>Last updated <time datetime="2023-04-21T12:13:15">21.04.2023 12:13</time></p>
         
             <a href="../../tags/post">post</a>
@@ -155,9 +359,160 @@ if (!doNotTrack) {
 
         <div class="col-span-2 overflow-auto">
                 
-                    PyScript Tutorial: Build Yourself a PyScript Nicholas Tollervey and Paul Everett Host - probably the biggest announcement of last year's Pycon Paul Everett - one of the originators of PSF?
+                    <h2 class="post-h2">PyScript Tutorial:</h2>
+<h2 class="post-h2">Build Yourself a PyScript</h2>
+Nicholas Tollervey and Paul Everett
+Host - probably the biggest announcement of last year's Pycon
+Paul Everett - one of the originators of PSF? 
+Nicholas Tollervey - Classically trained orchestral musician
+    Writer for the Guardian, O'Reilly Book, philosophy Background
+    A principal engineer at Anaconda for PyScript
+
+Interpreters - Micropython and CPython
+
+An incredible moment where Paul swore, quietly under his breath, which was then faithfully transcribed to the captioning screen. Paul said "The AI Lies", to which the Human captioner subtitled [Your captioner is human]. Which paul noted is exactly what the AI would say.
+
+We're still using the old pyodide syntax... should be using add_event_listener
+"There are wrapper functions in PyScript that do the wrapping for you" - good note
+
+Origin Private File System
+SQLLite
+
+Enabling large classes of people to get involved coding a simpler way than HelloWorld
+PyPercard
+Open source
+not just 99%
                     
-                        <a href="https://jeff.glass/post/pycon2023/">Read more...</a>
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/pyodide-0-23/" class="text-2xl">Pyodide 0.23</a></h1>
+        <p>Last updated <time datetime="2023-03-31T19:33:34">31.03.2023 19:33</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <h4 class="post-h4"><code>runPython</code> and <code>runPythonAsync</code> now take a <code>locals</code> argument</h4>
+<p class="post-p">(<a href="https://github.com/pyodide/pyodide/pull/3618">#3618</a>)</p>
+<p class="post-p">An unrelated bug but a related subject, <code>eval_code</code> and <code>eval_code_aysync</code> now handle their locals argument correct (<a href="https://github.com/pyodide/pyodide/pull/3580">#3580</a>)</p>
+                    
+                        <a href="http://localhost:1313/post/pyodide-0-23/">Read more...</a>
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/runpython/" class="text-2xl">Runpython</a></h1>
+        <p>Last updated <time datetime="2022-10-21T11:42:59">21.10.2022 11:42</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <h2 id="runPythonAsync"class="post-h2">Epilog: <code>runPython()</code> and <code>runPythonAsync()</code></h2>
+<p class="post-p">The following information in pretty deep-in-the-weeds for an end user of PyScript/Pyodide, but I thought I would take this chance to clear up some misunderstandings about the functionality of pyodide's <code>runPython()</code> and <code>runPythonAsync()</code></p>
+                    
+                        <a href="http://localhost:1313/post/runpython/">Read more...</a>
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/pyscript-rich-test/" class="text-2xl">Pyscript Rich Live Test</a></h1>
+        <p>Last updated <time datetime="2022-08-16T08:17:25">16.08.2022 08:17</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <py-env>
+    - rich
+    - Faker
+    - paths:
+        - ./livepatch.py
+        - ./liverunner.py
+</py-env>
+<script src="https://pyscript.net/releases/2022.06.1/pyscript.js" defer></script>
+<py-script src="../pyscript-rich/_richsetup.py"></py-script>
+<py-script src="./livepatch.py"></py-script>
+<py-script src="./livedemo.py"></py-script>
+<py-script src="table_movie.py"></py-script>
+<div class="grid grid-cols-2">
+    <div>
+        <py-script src="./liverunner.py"></py-script>
+        <div id="live-div"></div>
+    </div>
+    <div id="movie-div"></div>
+</div>
+<div class="h-96"></div>
+<div class="h-96"></div>
+<p class="post-p">To adapt table_movie:
+    <ul class="post-ul">
+        <li>Don't import rich Live; run livepatch first instead to define new Live class</li>
+        <li>Instead of Console() import and run get_console()</li>
+        <li>Rename console variable to c</li>
+        <li>Change @contextmanger to @asynccontextmanager, with try/finally (necessary?)</li>
+        <li>Change signature of with Live(...) to include div_id</li>
+        <li>with beat becomes async with beat</li>
+        <li>Literally? That's it!</li>
+    </ul>
+</p>
+                    
+                        <a href="http://localhost:1313/post/pyscript-rich-test/">Read more...</a>
+                    
+                
+        </div>
+    </div>
+</article> 
+			
+				<article class="flex flex-grow w-96">
+	<div class="flex-grow h-48 p-2 m-1 border-2 border-gray-100 rounded-lg bg-gray-50 drop-shadow-xl">
+        
+            <img src="../../svg/notfound.svg" class="float-right object-scale-down h-full ml-2 border-2 border-gray-400 rounded-3xl w-36 bg-pygray">
+        
+        <h1><a href="http://localhost:1313/post/pyscript-interactive-module-dev/" class="text-2xl">Pyscript Interactive Module Dev</a></h1>
+        <p>Last updated <time datetime="2022-08-15T11:48:01">15.08.2022 11:48</time></p>
+        
+            <a href="../../tags/post">post</a>
+        
+
+        <div class="col-span-2 overflow-auto">
+                
+                    <ul class="post-ul">
+    <li>Fork the Rich repository</li>
+    <li>Download locally</li>
+    <li>Run tests using <code class="code"></code></li>
+    <li>Use <a href="https://code.visualstudio.com/updates/v1_23#_run-code-actions-on-save">VS Code Run on Save to build
+            wheel on Save</a></li>
+    <li>Use VS code live server to serve wheel locally</li>
+    <li>import into pyscript via py-env:</li>
+</ul>
+</p>
+                    
+                        <a href="http://localhost:1313/post/pyscript-interactive-module-dev/">Read more...</a>
                     
                 
         </div>
@@ -175,7 +530,7 @@ if (!doNotTrack) {
 	
 <footer>
     <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
-        <p class="">All contents © Jeff Glass 2022. All rights reserved.</p>
+        <p class="">All contents © Jeff Glass 2026. All rights reserved.</p>
         <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
     </div>
 </footer>

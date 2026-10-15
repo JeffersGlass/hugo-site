@@ -1,161 +1,213 @@
 <!DOCTYPE html>
-<html lang="en-us">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Soft Shutdown and Consistent Boot on Power Loss</title>
-	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
-	
-	
-	
-	
-	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
-	
-	<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://jeff.glass/post/quick-dirty-system-power/feather_feature.jpg"/>
-<meta name="twitter:title" content="Soft Shutdown and Consistent Boot on Power Loss"/>
-<meta name="twitter:description" content="Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not."/>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Soft Shutdown and Consistent Boot on Power Loss :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.
+" />
+<meta name="keywords" content="" />
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
-	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+  <meta name="robots" content="noodp" />
 
-	
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
-}
-</script>
+<link rel="canonical" href="http://localhost:1313/post/quick-dirty-system-power/" />
 
 
-	<link rel="icon" href="../../favicon.ico?v=2"> 
-	
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-BZTF8S6M1E');
+        }
+      </script>
+
+
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/style.min.0e0c818b114bb71e1764792fa49e7afb438cb82cd6a9027a945736279ec3823e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/code.min.c4581949edab7810737609fc5568852bcd908945f14561e366dcd2300a370545.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/main.min.36833afd348409fc6c3d09d0897c5833d9d5bf1ff31f5e60ea3ee42ce2b1268c.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/syntax.min.a2cc694a9b481f15d41722bffc2cc54eea4c4f74fd9072b0b33253604c22606e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://localhost:1313/favicon.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Soft Shutdown and Consistent Boot on Power Loss">
+<meta property="og:description" content="Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.
+" />
+<meta property="og:url" content="http://localhost:1313/post/quick-dirty-system-power/" />
+<meta property="og:site_name" content="Terminal" />
+
+
+  
+
+<meta property="og:image" content="http://localhost:1313/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-03-13 00:05:00 -0500 -0500" />
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
-	
-	<main>
-		<header>
 
-<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
-    
-    <div class="flex-none hidden lg:flex">
-        <div class="flex-none px-2">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-        <div class="flex-none menu-item-green ">
-            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Home
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Projects
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            One-Offs
-        </div>
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="../../">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
     </div>
     
-    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
-        <div class="flex-none menu-item-green mobile-menu-button">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </div>
-        <div class="flex-none">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-    </div>
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="../../about">About</a></li>
+        
+      
+        
+          <li><a href="../../showcase">Showcase</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
     
     
-    <div class="hidden text-green-200 transition mobile-menu">
-            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
-            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
-            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
-            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
-    </div>
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
     
-    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
-            </svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
-        </div>
-    </div>
-</div>
+      
+        
+          <li><a href="../../about" >About</a></li>
+        
+      
+        
+          <li><a href="../../showcase" >Showcase</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
 </header>
-<script>
-    const btn = document.querySelector("div.mobile-menu-button")
-    const mobileMenu = document.querySelector(".mobile-menu")
-    const largeMenu = document.querySelector(".large-menu")
-    const socialButtons = document.querySelector(".social-buttons")
 
-    btn.addEventListener("click", () =>{
-        openMenu();
-    })
 
-    function openMenu() {
-        mobileMenu.classList.toggle("hidden");
-        largeMenu.classList.toggle("hidden");
-        socialButtons.classList.add("hidden");
-    }
-
+  <div class="content">
     
-    const smSize = 640;
-    const mdSize = 768;
-    const largeSize = 1024;
-    window.addEventListener('resize', function(event) {
-        if (event.target.screen.width > smSize ){
-            mobileMenu.classList.add("hidden");
-            largeMenu.classList.remove("hidden");
-        }
-    }, true);
-</script>
+<article class="post">
+  <h1 class="post-title">
+    <a href="http://localhost:1313/post/quick-dirty-system-power/">Soft Shutdown and Consistent Boot on Power Loss</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2022-03-13</time></div>
 
-		<div class="w-full bg-green-800 bg-opacity-10">
-			<div class="pt-16"></div>
-			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
-				<h1 class="pb-2 text-4xl">Soft Shutdown and Consistent Boot on Power Loss</h1>
-				<p>Published March 13, 2022</p>
-				
-				
-				<div>
-					<span>Tags:</span>
-					
-					<a href="../../tags/electronics">electronics</a>
-					
-					<a href="../../tags/arduino">arduino</a>
-					
-					<a href="../../tags/python">python</a>
-					
-				</div>
-				
-				
-				<hr>
-				<div>
-					<p class="italic post-p">Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.</p>
+  
+    <span class="post-tags">
+      
+      #<a href="http://localhost:1313/tags/electronics/">electronics</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/arduino/">arduino</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/python/">python</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p class="italic post-p">Tl;DR Computers hate having their power abruptly cut. A UPS, an Adafruit Feather board, and some python hackery keeps computers booting and shutting down gracefully when power is yanked and restored, deliberately or not.</p>
 <p class="font-bold post-p">Update: The <a href="https://hackaday.com/2022/03/18/power-cycling-museum-computers-on-the-cheap/">comments on the Hackaday post</a> had a lot of other interesting solutions, some of which I'd considered and some of which I didn't. Skip to the <a href="#othersolutions">Other Solutions</a> for evaluation of these.</p>
 <hr/>
 <p class="post-p">My dayjob involves solving technical problems for a large, multi-acre education facility with over 400 computer-driven interactives. To prolong the life of these devices (many of which are built around off-the-shelf computers and monitors), we like to power them down after operating hours and start them up in the morning. These are mostly windows machines, and just like a desktop they <span class="italic">love</span> to be rebooted.</p>
@@ -182,192 +234,95 @@ if (!doNotTrack) {
 <p class="post-p">Here's what I came up with. It's not terrible robust, secure, or debuggable, but it's getting the job done for now. The client script runs on the computer connected to a UPS, and is triggered when the UPS switches to battery power. The server runs on as many connected computers as we want, and should be set to run at startup. The (static) IPs of the computers running the server script must be enterred in the client script.</p>
 <p class="code-title">client.py</p>
 <div class="overflow-y-scroll h-124">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#c30">&#34;&#34;&#34;
-</span><span style="color:#c30">This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
-</span><span style="color:#c30">This program (&#39;client&#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
-</span><span style="color:#c30">The server program should be running on any computers that need to be shutdown in this context.
-</span><span style="color:#c30">This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
-</span><span style="color:#c30">&#34;&#34;&#34;</span>
-
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">socket</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">os</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">time</span> <span style="color:#069;font-weight:bold">import</span> sleep
-
-socket<span style="color:#555">.</span>setdefaulttimeout(<span style="color:#f60">10</span>)
-PORT <span style="color:#555">=</span> <span style="color:#f60">1933</span>
-MSG <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#39;SHUTDOWN NOW&#39;</span>
-RSP <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#34;SHUTDOWN CONFIRMED&#34;</span>
-
-deviceIPs <span style="color:#555">=</span> [
-    <span style="color:#c30">&#34;172.16.0.2&#34;</span>
-]
-attempts <span style="color:#555">=</span> <span style="color:#f60">0</span>
-MAX_ATTEMPTS <span style="color:#555">=</span> <span style="color:#f60">5</span>
-
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;Client program is contacting remote computers to shut them down&#34;</span>)
-
-<span style="color:#069;font-weight:bold">while</span> <span style="color:#366">len</span>(deviceIPs) <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>:
-    attempts <span style="color:#555">+=</span> <span style="color:#f60">1</span>
-    <span style="color:#069;font-weight:bold">if</span> attempts <span style="color:#555">&gt;</span> MAX_ATTEMPTS:
-        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;System could not shut down the following IPs: </span><span style="color:#a00">{</span>deviceIPs<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Shutting down self in 15 seconds&#34;</span>)
-        sleep(<span style="color:#f60">15</span>)
-        <span style="color:#069;font-weight:bold">break</span>
-    <span style="color:#069;font-weight:bold">for</span> ip <span style="color:#000;font-weight:bold">in</span> deviceIPs:
-        <span style="color:#069;font-weight:bold">with</span> socket<span style="color:#555">.</span>socket(socket<span style="color:#555">.</span>AF_INET, socket<span style="color:#555">.</span>SOCK_STREAM) <span style="color:#069;font-weight:bold">as</span> s:
-            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Attempting to connect tp </span><span style="color:#a00">{</span>ip<span style="color:#a00">}</span><span style="color:#c30">, attempt </span><span style="color:#a00">{</span>attempts<span style="color:#a00">}</span><span style="color:#c30"> of </span><span style="color:#a00">{</span>MAX_ATTEMPTS<span style="color:#a00">}</span><span style="color:#c30"> (timeout is </span><span style="color:#a00">{</span><span style="color:#366">int</span>(socket<span style="color:#555">.</span>getdefaulttimeout())<span style="color:#a00">}</span><span style="color:#c30">s)&#34;</span>)
-            <span style="color:#069;font-weight:bold">try</span>:
-                s<span style="color:#555">.</span>connect((ip, PORT))
-            <span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">TimeoutError</span> <span style="color:#069;font-weight:bold">as</span> err:
-                <span style="color:#366">print</span>(<span style="color:#c30">&#34;Connection timed out&#34;</span>)
-                <span style="color:#069;font-weight:bold">continue</span>
-            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Connection successful, sending message: </span><span style="color:#a00">{</span>MSG<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-            s<span style="color:#555">.</span>sendall(MSG)
-            data <span style="color:#555">=</span> s<span style="color:#555">.</span>recv(<span style="color:#f60">1024</span>)
-            <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Received </span><span style="color:#a00">{</span><span style="color:#366">repr</span>(data)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-            <span style="color:#069;font-weight:bold">if</span> data[:<span style="color:#366">len</span>(RSP)] <span style="color:#555">==</span> RSP:
-                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Received shutdown confirmation message from host at ip </span><span style="color:#a00">{</span>ip<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-                deviceIPs<span style="color:#555">.</span>remove(ip)
-            <span style="color:#069;font-weight:bold">else</span>:
-                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Got some other message than we expected from host at ip </span><span style="color:#a00">{</span>ip<span style="color:#a00">}</span><span style="color:#c30">: </span><span style="color:#a00">{</span>data<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-    sleep(<span style="color:#f60">1</span>)
-<span style="color:#069;font-weight:bold">else</span>:
-    <span style="color:#366">print</span>(<span style="color:#c30">&#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&#34;</span>)
-    sleep(<span style="color:#f60">10</span>)
-os<span style="color:#555">.</span>system(<span style="color:#c30">&#34;shutdown /s /f /t 10&#34;</span>)</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">This is one of a pair of programs meant to allow one computer to shutdown many computers in an exhibit context.
+</span></span></span><span class="line"><span class="cl"><span class="s2">This program (&#39;client&#39;) is meant to run on the singular computer that recveives a set signal to shutdown the exhibit. This signal may come from a button or switch, a system log (Say, via UPS), etc, which then runs this script.
+</span></span></span><span class="line"><span class="cl"><span class="s2">The server program should be running on any computers that need to be shutdown in this context.
+</span></span></span><span class="line"><span class="cl"><span class="s2">This client program steps through the list of provided servers and tells them to shut down, then shuts itself down.
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">socket</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">socket</span><span class="o">.</span><span class="n">setdefaulttimeout</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">PORT</span> <span class="o">=</span> <span class="mi">1933</span>
+</span></span><span class="line"><span class="cl"><span class="n">MSG</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;SHUTDOWN NOW&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">RSP</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;SHUTDOWN CONFIRMED&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">deviceIPs</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;172.16.0.2&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">MAX_ATTEMPTS</span> <span class="o">=</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Client program is contacting remote computers to shut them down&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">deviceIPs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">attempts</span> <span class="o">&gt;</span> <span class="n">MAX_ATTEMPTS</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;System could not shut down the following IPs: </span><span class="si">{</span><span class="n">deviceIPs</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Shutting down self in 15 seconds&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sleep</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">deviceIPs</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Attempting to connect tp </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">, attempt </span><span class="si">{</span><span class="n">attempts</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">MAX_ATTEMPTS</span><span class="si">}</span><span class="s2"> (timeout is </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">getdefaulttimeout</span><span class="p">())</span><span class="si">}</span><span class="s2">s)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">ip</span><span class="p">,</span> <span class="n">PORT</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Connection timed out&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Connection successful, sending message: </span><span class="si">{</span><span class="n">MSG</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">s</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">MSG</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Received </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">data</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">RSP</span><span class="p">)]</span> <span class="o">==</span> <span class="n">RSP</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Received shutdown confirmation message from host at ip </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">deviceIPs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Got some other message than we expected from host at ip </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Successfully shut down all remote IPs, shutting down self in 10 seconds&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&#34;shutdown /s /f /t 10&#34;</span><span class="p">)</span></span></span></code></pre></div>
 </div>
 <p class="pb-8 post-img-caption">Scroll to see full code</p>
 <p class="code-title">server.py</p>
 <div class="overflow-y-scroll h-124">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#c30">&#34;&#34;&#34;
-</span><span style="color:#c30">This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
-</span><span style="color:#c30">This program (&#39;server&#39;) runs on any computer that is NOT receiving the direct singal to shut down.
-</span><span style="color:#c30">The &#39;client&#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
-</span><span style="color:#c30">&#34;&#34;&#34;</span>
-
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">socket</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">os</span>
-
-HOST <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
-PORT <span style="color:#555">=</span> <span style="color:#f60">1933</span>
-MSG <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#34;SHUTDOWN NOW&#34;</span>
-RSP <span style="color:#555">=</span> <span style="color:#c30">b</span><span style="color:#c30">&#34;SHUTDOWN CONFIRMED&#34;</span>
-
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;Server program is listening for shutdown commands from primary client&#34;</span>)
-
-<span style="color:#069;font-weight:bold">with</span> socket<span style="color:#555">.</span>socket(socket<span style="color:#555">.</span>AF_INET, socket<span style="color:#555">.</span>SOCK_STREAM) <span style="color:#069;font-weight:bold">as</span> s:
-    s<span style="color:#555">.</span>bind((HOST, PORT))
-    s<span style="color:#555">.</span>listen()
-    conn, addr <span style="color:#555">=</span> s<span style="color:#555">.</span>accept()
-    <span style="color:#069;font-weight:bold">with</span> conn:
-        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Connected by </span><span style="color:#a00">{</span>addr<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-        <span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
-            data <span style="color:#555">=</span> conn<span style="color:#555">.</span>recv(<span style="color:#f60">1024</span>)
-            <span style="color:#069;font-weight:bold">if</span> data[:<span style="color:#366">len</span>(MSG)] <span style="color:#555">==</span> MSG:
-                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Got shutdown MSG </span><span style="color:#a00">{</span>data<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-                conn<span style="color:#555">.</span>sendall(RSP)
-                os<span style="color:#555">.</span>system(<span style="color:#c30">&#34;shutdown /s /f /t 10&#34;</span>)
-            <span style="color:#069;font-weight:bold">else</span>: 
-                <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Got </span><span style="color:#a00">{</span>data<span style="color:#a00">= }</span><span style="color:#c30"> instead of expected </span><span style="color:#a00">{</span>data[:<span style="color:#366">len</span>(MSG)]<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-            <span style="color:#069;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">not</span> data:
-                <span style="color:#069;font-weight:bold">break</span></code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">This is one of a pair of programs meant to allow one computer to shut down many computers in an exhibit context.
+</span></span></span><span class="line"><span class="cl"><span class="s2">This program (&#39;server&#39;) runs on any computer that is NOT receiving the direct singal to shut down.
+</span></span></span><span class="line"><span class="cl"><span class="s2">The &#39;client&#39; program should run on the singular computer in the exhibit context that receives the signal to shutdown the exhibit (from a UPS, switch, etc)
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">socket</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">PORT</span> <span class="o">=</span> <span class="mi">1933</span>
+</span></span><span class="line"><span class="cl"><span class="n">MSG</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;SHUTDOWN NOW&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">RSP</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;SHUTDOWN CONFIRMED&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Server program is listening for shutdown commands from primary client&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Connected by </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">data</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">MSG</span><span class="p">)]</span> <span class="o">==</span> <span class="n">MSG</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Got shutdown MSG </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">RSP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&#34;shutdown /s /f /t 10&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span> 
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Got </span><span class="si">{</span><span class="n">data</span><span class="si">= }</span><span class="s2"> instead of expected </span><span class="si">{</span><span class="n">data</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">MSG</span><span class="p">)]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span></span></span></code></pre></div>
 </div>
 <p class="post-img-caption">Scroll to see full code</p>
 <p class="post-h2">Startup</p>
@@ -381,164 +336,82 @@ RSP <span style="color:#555">=</span> <span style="color:#c30">b</span><span sty
 <p class="post-p">So, I bashed together the following code to wake up, establish a network connection, and send a Wake-On-LAN message to each MAC address in a given array every 15 seconds or so:</p>
 <p class="code-title">code.py</p>
 <div class="overflow-y-scroll h-124">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#09f;font-style:italic"># SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries</span>
-<span style="color:#09f;font-style:italic"># SPDX-License-Identifier: MIT</span>
-
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">board</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">busio</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">digitalio</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">neopixel</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">time</span> <span style="color:#069;font-weight:bold">import</span> sleep
-
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">adafruit_wiznet5k.adafruit_wiznet5k</span> <span style="color:#069;font-weight:bold">import</span> WIZNET5K, SNMR_UDP, SNSR_SOCK_UDP
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">adafruit_wiznet5k.adafruit_wiznet5k_socket</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">socket</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">adafruit_requests</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">requests</span>
-
-pixel <span style="color:#555">=</span> neopixel<span style="color:#555">.</span>NeoPixel(board<span style="color:#555">.</span>NEOPIXEL, <span style="color:#f60">1</span>)
-
-targetMACs <span style="color:#555">=</span> [
-    [<span style="color:#f60">0x12</span>,<span style="color:#f60">0x34</span>,<span style="color:#f60">0x56</span>,<span style="color:#f60">0x78</span>,<span style="color:#f60">0x9A</span>,<span style="color:#f60">0xBC</span>], <span style="color:#09f;font-style:italic">#Computer NW</span>
-    [<span style="color:#f60">0x12</span>,<span style="color:#f60">0x34</span>,<span style="color:#f60">0x56</span>,<span style="color:#f60">0x78</span>,<span style="color:#f60">0x9A</span>,<span style="color:#f60">0xBD</span>], <span style="color:#09f;font-style:italic">#Computer NE</span>
-    <span style="color:#09f;font-style:italic">#... more computers as necessary</span>
-    ]
-
-<span style="color:#09f;font-style:italic"># Initialize ethernet interface with DHCP</span>
-cs <span style="color:#555">=</span> digitalio<span style="color:#555">.</span>DigitalInOut(board<span style="color:#555">.</span>D10)
-spi_bus <span style="color:#555">=</span> busio<span style="color:#555">.</span>SPI(board<span style="color:#555">.</span>SCK, MOSI<span style="color:#555">=</span>board<span style="color:#555">.</span>MOSI, MISO<span style="color:#555">=</span>board<span style="color:#555">.</span>MISO)
-eth <span style="color:#555">=</span> WIZNET5K(spi_bus, cs, is_dhcp<span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>)
-
-ip <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;172.16.0.10&#34;</span>)
-subnet_mask <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;255.255.0.0&#34;</span>)
-gateway <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;172.16.0.10&#34;</span>)
-dns <span style="color:#555">=</span> eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#34;172.16.0.10&#34;</span>)
-eth<span style="color:#555">.</span>ifconfig <span style="color:#555">=</span> (ip, subnet_mask, gateway, dns)
-<span style="color:#09f;font-style:italic">#If using DHCP, uncomment the following line</span>
-<span style="color:#09f;font-style:italic">#eth.ifconfig = (ip, subnet_mask, None, None)</span>
-
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;Assigned Ethernet Address: &#34;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(eth<span style="color:#555">.</span>pretty_ip(eth<span style="color:#555">.</span>ip_address)))
-
-<span style="color:#09f;font-style:italic">#Built-in neopixel will be purple while waiting for Ethernet to connect</span>
-pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">255</span>,<span style="color:#f60">0</span>,<span style="color:#f60">255</span>)
-
-retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
-<span style="color:#069;font-weight:bold">while</span> retry:
-    retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>
-    <span style="color:#069;font-weight:bold">try</span>:
-        eth<span style="color:#555">.</span>socket_connect(<span style="color:#f60">0</span>, eth<span style="color:#555">.</span>unpretty_ip(<span style="color:#c30">&#39;172.16.255.255&#39;</span>), <span style="color:#f60">556</span>, conn_mode<span style="color:#555">=</span>SNMR_UDP)
-    <span style="color:#069;font-weight:bold">except</span> <span style="color:#c00;font-weight:bold">AssertionError</span> <span style="color:#069;font-weight:bold">as</span> err:
-        <span style="color:#366">print</span>(<span style="color:#366">str</span>(err) <span style="color:#555">+</span> <span style="color:#c30">&#34;, retrying in 10 Seconds&#34;</span>)
-        retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
-        sleep(<span style="color:#f60">10</span>)
-
-    status <span style="color:#555">=</span> eth<span style="color:#555">.</span>socket_status(<span style="color:#f60">0</span>)
-    <span style="color:#069;font-weight:bold">if</span> [<span style="color:#366">int</span>(b) <span style="color:#069;font-weight:bold">for</span> b <span style="color:#000;font-weight:bold">in</span> status] <span style="color:#555">==</span> [SNSR_SOCK_UDP]:
-        <span style="color:#366">print</span>(<span style="color:#c30">&#34;Socket 0 connected as UDP&#34;</span>)
-    <span style="color:#069;font-weight:bold">else</span>:
-        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Socket not connected, status is </span><span style="color:#a00">{</span>status<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-        retry <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>
-        sleep(<span style="color:#f60">10</span>)
-
-<span style="color:#09f;font-style:italic">#Built in neopixel will be blue when standing by to send WOL packets</span>
-pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">0</span>,<span style="color:#f60">0</span>,<span style="color:#f60">255</span>)
-sleep(<span style="color:#f60">5</span>)
-
-<span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
-<span style="color:#09f;font-style:italic">#Built in neopixel will be green when sending WOL packets</span>
-    pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">0</span>,<span style="color:#f60">255</span>,<span style="color:#f60">0</span>)
-    <span style="color:#069;font-weight:bold">for</span> i, target <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(targetMACs):
-        
-        fullPacket <span style="color:#555">=</span> <span style="color:#366">bytearray</span>([<span style="color:#f60">0xFF</span>] <span style="color:#555">*</span> <span style="color:#f60">6</span> <span style="color:#555">+</span> target <span style="color:#555">*</span> <span style="color:#f60">16</span>)
-        <span style="color:#366">print</span>(<span style="color:#c30">f</span><span style="color:#c30">&#34;Sending WoL packet to computer </span><span style="color:#a00">{</span>i<span style="color:#a00">}</span><span style="color:#c30"> with mac address </span><span style="color:#a00">{</span>eth<span style="color:#555">.</span>pretty_mac(target)<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-        eth<span style="color:#555">.</span>socket_write(<span style="color:#f60">0</span>, fullPacket, <span style="color:#f60">1</span>)
-        
-        sleep(<span style="color:#f60">.1</span>)
-
-    pixel[<span style="color:#f60">0</span>] <span style="color:#555">=</span> (<span style="color:#f60">0</span>,<span style="color:#f60">0</span>,<span style="color:#f60">255</span>)
-    sleep(<span style="color:#f60">15</span>)
-
-eth<span style="color:#555">.</span>socket_close(<span style="color:#f60">0</span>)</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="c1"># SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># SPDX-License-Identifier: MIT</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">board</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">busio</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">digitalio</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">neopixel</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">adafruit_wiznet5k.adafruit_wiznet5k</span> <span class="kn">import</span> <span class="n">WIZNET5K</span><span class="p">,</span> <span class="n">SNMR_UDP</span><span class="p">,</span> <span class="n">SNSR_SOCK_UDP</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">adafruit_wiznet5k.adafruit_wiznet5k_socket</span> <span class="k">as</span> <span class="nn">socket</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">adafruit_requests</span> <span class="k">as</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">pixel</span> <span class="o">=</span> <span class="n">neopixel</span><span class="o">.</span><span class="n">NeoPixel</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">NEOPIXEL</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">targetMACs</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mh">0x12</span><span class="p">,</span><span class="mh">0x34</span><span class="p">,</span><span class="mh">0x56</span><span class="p">,</span><span class="mh">0x78</span><span class="p">,</span><span class="mh">0x9A</span><span class="p">,</span><span class="mh">0xBC</span><span class="p">],</span> <span class="c1">#Computer NW</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mh">0x12</span><span class="p">,</span><span class="mh">0x34</span><span class="p">,</span><span class="mh">0x56</span><span class="p">,</span><span class="mh">0x78</span><span class="p">,</span><span class="mh">0x9A</span><span class="p">,</span><span class="mh">0xBD</span><span class="p">],</span> <span class="c1">#Computer NE</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">#... more computers as necessary</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Initialize ethernet interface with DHCP</span>
+</span></span><span class="line"><span class="cl"><span class="n">cs</span> <span class="o">=</span> <span class="n">digitalio</span><span class="o">.</span><span class="n">DigitalInOut</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">D10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">spi_bus</span> <span class="o">=</span> <span class="n">busio</span><span class="o">.</span><span class="n">SPI</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">SCK</span><span class="p">,</span> <span class="n">MOSI</span><span class="o">=</span><span class="n">board</span><span class="o">.</span><span class="n">MOSI</span><span class="p">,</span> <span class="n">MISO</span><span class="o">=</span><span class="n">board</span><span class="o">.</span><span class="n">MISO</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span> <span class="o">=</span> <span class="n">WIZNET5K</span><span class="p">(</span><span class="n">spi_bus</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">is_dhcp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ip</span> <span class="o">=</span> <span class="n">eth</span><span class="o">.</span><span class="n">unpretty_ip</span><span class="p">(</span><span class="s2">&#34;172.16.0.10&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">subnet_mask</span> <span class="o">=</span> <span class="n">eth</span><span class="o">.</span><span class="n">unpretty_ip</span><span class="p">(</span><span class="s2">&#34;255.255.0.0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">gateway</span> <span class="o">=</span> <span class="n">eth</span><span class="o">.</span><span class="n">unpretty_ip</span><span class="p">(</span><span class="s2">&#34;172.16.0.10&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">dns</span> <span class="o">=</span> <span class="n">eth</span><span class="o">.</span><span class="n">unpretty_ip</span><span class="p">(</span><span class="s2">&#34;172.16.0.10&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">.</span><span class="n">ifconfig</span> <span class="o">=</span> <span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">subnet_mask</span><span class="p">,</span> <span class="n">gateway</span><span class="p">,</span> <span class="n">dns</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#If using DHCP, uncomment the following line</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#eth.ifconfig = (ip, subnet_mask, None, None)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Assigned Ethernet Address: &#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eth</span><span class="o">.</span><span class="n">pretty_ip</span><span class="p">(</span><span class="n">eth</span><span class="o">.</span><span class="n">ip_address</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#Built-in neopixel will be purple while waiting for Ethernet to connect</span>
+</span></span><span class="line"><span class="cl"><span class="n">pixel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">retry</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="n">retry</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">retry</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">eth</span><span class="o">.</span><span class="n">socket_connect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">eth</span><span class="o">.</span><span class="n">unpretty_ip</span><span class="p">(</span><span class="s1">&#39;172.16.255.255&#39;</span><span class="p">),</span> <span class="mi">556</span><span class="p">,</span> <span class="n">conn_mode</span><span class="o">=</span><span class="n">SNMR_UDP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&#34;, retrying in 10 Seconds&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">retry</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">status</span> <span class="o">=</span> <span class="n">eth</span><span class="o">.</span><span class="n">socket_status</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">status</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="n">SNSR_SOCK_UDP</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Socket 0 connected as UDP&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Socket not connected, status is </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">retry</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#Built in neopixel will be blue when standing by to send WOL packets</span>
+</span></span><span class="line"><span class="cl"><span class="n">pixel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#Built in neopixel will be green when sending WOL packets</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pixel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">targetMACs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">fullPacket</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="mh">0xFF</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="n">target</span> <span class="o">*</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Sending WoL packet to computer </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> with mac address </span><span class="si">{</span><span class="n">eth</span><span class="o">.</span><span class="n">pretty_mac</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">eth</span><span class="o">.</span><span class="n">socket_write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">fullPacket</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">pixel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sleep</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">.</span><span class="n">socket_close</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></span></span></code></pre></div>
 </div>
 <p class="post-img-caption">Scroll to see full code</p>
 <p class="post-p">If you're making use of this code yourself, you'll need the following libraries in your CIRCUITPY/libs folder:</p>
@@ -630,7 +503,7 @@ eth<span style="color:#555">.</span>socket_close(<span style="color:#f60">0</spa
     <li>Copy the <code class="code">server.py</code> code from above to a convienient file location on the computer (desktop, My Documents, etc).</li>
     <li>Create a shortcut to the <code class="code">server.py</code> script in your startup folder. In Windows 10, this is located by default at: <code class="code">C:/users/{username}/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup.</code> Any shortcuts/executables in this folder get executed automatically when Windows boots.</li>
 </ul>
-<h2 id="othersolutions" class="post-h2">Other Solutions Considered (March 21, 2022)</h2>
+<h2 id="othersolutions" class="post-h2">Other Solutions Considered (March 21, 2022)<a href="#othersolutions" class="hanchor" ariaLabel="Anchor">#</a> </h2>
 <p class="post-p">The commenters <a href="https://hackaday.com/2022/03/18/power-cycling-museum-computers-on-the-cheap/">over at Hackaday</a> had some opinions and thoughts about other ways to accomplish this - which is great! It's certainly a fairly large nail and there are lots of hammers. Hackaday Columnist Chris Wilkinson even asked readers "how [they] would have tackled this problem? Sound off in the comments below." And boy did they. </p>
 <p class="post-p">So, let me address some of the proposed solutions and concerns, with some background that I didn't provide in the original post.</p>
 <h3 class="post-h3">Scheduled Shutdown</h3>
@@ -659,19 +532,68 @@ eth<span style="color:#555">.</span>socket_close(<span style="color:#f60">0</spa
 <h3 class="post-h3">Virtualization</h3>
 <img src="commentvirtualized.PNG" alt="A screenshot of a hackaday comment, suggesting using virtualization to run all the interactives" class="post-img">
 <p class="post-p">Make all the intereactives virtualized and run in their own VMs?? Now there's something that would never have crossed my mind. It's probably way out of scope for the kind of retrofit work that I've been tasked with doing, but it's a nifty idea if we had the will and archetechture to handle it.</p>
-				</div>
-				
-			</article>
-			<footer>
-    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
-        <p class="">All contents © Jeff Glass 2026. All rights reserved.</p>
-        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
-    </div>
+      </div></div>
+
+  
+    
+<div class="pagination">
+  <div class="pagination__title">
+    <span class="pagination__title-h">Read other posts</span>
+    <hr />
+  </div>
+  <div class="pagination__buttons">
+    
+      <a href="http://localhost:1313/post/cloud-resume-challenge-improving-hits/" class="button inline prev">
+        &lt; [<span class="button__text">Improving Website Experience with AWS Cloudfront Stats</span>]
+      </a>
+    
+    
+      ::
+    
+    
+      <a href="http://localhost:1313/post/cloud-resume-challenge-aliases/" class="button inline next">
+         [<span class="button__text">Aliases</span>] &gt;
+      </a>
+    
+  </div>
+</div>
+
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2026 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
 </footer>
-		</div>
-	</main>
 
 
-	
+
+
+
+
+<script type="text/javascript" src="../../bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
 </body>
 </html>

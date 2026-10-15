@@ -1,163 +1,213 @@
 <!DOCTYPE html>
-<html lang="en-us">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Asyncio in PyScript</title>
-	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
-	
-	
-	
-	
-	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
-	
-	<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://jeff.glass/post/pyscript-asyncio/pyscript_future_featured.png"/>
-<meta name="twitter:title" content="Asyncio in PyScript"/>
-<meta name="twitter:description" content="Working with concurrency in PyScript"/>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Asyncio in PyScript :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Working with concurrency in PyScript" />
+<meta name="keywords" content="" />
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
-	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+  <meta name="robots" content="noodp" />
 
-	
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
-}
-</script>
+<link rel="canonical" href="http://localhost:1313/post/pyscript-asyncio/" />
 
 
-	<link rel="icon" href="../../favicon.ico?v=2"> 
-	
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-BZTF8S6M1E');
+        }
+      </script>
+
+
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/style.min.0e0c818b114bb71e1764792fa49e7afb438cb82cd6a9027a945736279ec3823e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/code.min.c4581949edab7810737609fc5568852bcd908945f14561e366dcd2300a370545.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/main.min.36833afd348409fc6c3d09d0897c5833d9d5bf1ff31f5e60ea3ee42ce2b1268c.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/syntax.min.a2cc694a9b481f15d41722bffc2cc54eea4c4f74fd9072b0b33253604c22606e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://localhost:1313/favicon.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Asyncio in PyScript">
+<meta property="og:description" content="Working with concurrency in PyScript" />
+<meta property="og:url" content="http://localhost:1313/post/pyscript-asyncio/" />
+<meta property="og:site_name" content="Terminal" />
+
+
+  
+
+<meta property="og:image" content="http://localhost:1313/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-10-21 03:05:14 -0500 CDT" />
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
-	
-	<main>
-		<header>
 
-<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
-    
-    <div class="flex-none hidden lg:flex">
-        <div class="flex-none px-2">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-        <div class="flex-none menu-item-green ">
-            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Home
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Projects
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            One-Offs
-        </div>
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="../../">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
     </div>
     
-    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
-        <div class="flex-none menu-item-green mobile-menu-button">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </div>
-        <div class="flex-none">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-    </div>
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="../../about">About</a></li>
+        
+      
+        
+          <li><a href="../../showcase">Showcase</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
     
     
-    <div class="hidden text-green-200 transition mobile-menu">
-            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
-            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
-            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
-            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
-    </div>
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
     
-    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
-            </svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
-        </div>
-    </div>
-</div>
+      
+        
+          <li><a href="../../about" >About</a></li>
+        
+      
+        
+          <li><a href="../../showcase" >Showcase</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
 </header>
-<script>
-    const btn = document.querySelector("div.mobile-menu-button")
-    const mobileMenu = document.querySelector(".mobile-menu")
-    const largeMenu = document.querySelector(".large-menu")
-    const socialButtons = document.querySelector(".social-buttons")
 
-    btn.addEventListener("click", () =>{
-        openMenu();
-    })
 
-    function openMenu() {
-        mobileMenu.classList.toggle("hidden");
-        largeMenu.classList.toggle("hidden");
-        socialButtons.classList.add("hidden");
-    }
-
+  <div class="content">
     
-    const smSize = 640;
-    const mdSize = 768;
-    const largeSize = 1024;
-    window.addEventListener('resize', function(event) {
-        if (event.target.screen.width > smSize ){
-            mobileMenu.classList.add("hidden");
-            largeMenu.classList.remove("hidden");
-        }
-    }, true);
-</script>
+<article class="post">
+  <h1 class="post-title">
+    <a href="http://localhost:1313/post/pyscript-asyncio/">Asyncio in PyScript</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2022-10-21</time></div>
 
-		<div class="w-full bg-green-800 bg-opacity-10">
-			<div class="pt-16"></div>
-			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
-				<h1 class="pb-2 text-4xl">Asyncio in PyScript</h1>
-				<p>Published October 21, 2022</p>
-				
-				
-				<div>
-					<span>Tags:</span>
-					
-					<a href="../../tags/pyscript">pyscript</a>
-					
-					<a href="../../tags/python">python</a>
-					
-					<a href="../../tags/asyncio">asyncio</a>
-					
-					<a href="../../tags/pyodide">pyodide</a>
-					
-				</div>
-				
-				
-				<hr>
-				<div>
-					<style>
+  
+    <span class="post-tags">
+      
+      #<a href="http://localhost:1313/tags/pyscript/">pyscript</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/python/">python</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/asyncio/">asyncio</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/pyodide/">pyodide</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <style>
     code:not(.nocode){
         --tw-text-opacity: 1;
         color: rgba(5, 120, 85, var(--tw-text-opacity));
@@ -174,56 +224,28 @@ if (!doNotTrack) {
 <p class="post-p">The typical way of writing these "cooperative" pieces of code is to declare <code class="nocode">Coroutines</code> using the <code>async def</code> keyword, then execute them with one of the many <a href="https://docs.python.org/3/library/asyncio-task.html#running-an-asyncio-program">asyncio execution methods</a>. Within a coroutine, the <code>await</code> keyword is used to indicate that control of the event loop (thread) should pause execution of the coroutine and move on to any others that are waiting. A statement like <code class="code">await foo()</code> means "suspend execution of the surrounding coroutine until the result of <code>foo()</code> is returned.</p>
 <p class="post-p">An example you can run in a regular terminal:</p>
 <div class="mx-2">
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-
-<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">up_down</span>():
-    <span style="color:#366">print</span>(<span style="color:#c30">&#34;What goes up&#34;</span>)
-    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-    <span style="color:#366">print</span>(<span style="color:#c30">&#34;Must come down&#34;</span>)
-
-<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">throw_things_up</span>():
-    <span style="color:#09f;font-style:italic"># asyncio.gather() runs multiple awaitable things and gathers their return values (or errors)</span>
-    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>gather(up_down(), up_down(), up_down())
-
-asyncio<span style="color:#555">.</span>run(throw_things_up())
-
-<span style="color:#09f;font-style:italic"># ------ Output ------</span>
-
-What goes up
-What goes up
-What goes up
-<span style="color:#09f;font-style:italic"># ~1 second gap here</span>
-Must come down
-Must come down
-Must come down</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">up_down</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;What goes up&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Must come down&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">throw_things_up</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># asyncio.gather() runs multiple awaitable things and gathers their return values (or errors)</span>
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">up_down</span><span class="p">(),</span> <span class="n">up_down</span><span class="p">(),</span> <span class="n">up_down</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">throw_things_up</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ------ Output ------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">What</span> <span class="n">goes</span> <span class="n">up</span>
+</span></span><span class="line"><span class="cl"><span class="n">What</span> <span class="n">goes</span> <span class="n">up</span>
+</span></span><span class="line"><span class="cl"><span class="n">What</span> <span class="n">goes</span> <span class="n">up</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ~1 second gap here</span>
+</span></span><span class="line"><span class="cl"><span class="n">Must</span> <span class="n">come</span> <span class="n">down</span>
+</span></span><span class="line"><span class="cl"><span class="n">Must</span> <span class="n">come</span> <span class="n">down</span>
+</span></span><span class="line"><span class="cl"><span class="n">Must</span> <span class="n">come</span> <span class="n">down</span></span></span></code></pre></div>
 </div>
 
 <p class="post-p">This is just a quick and dirty primer - if asnyc/await/asyncio is a wholly new subject for you, I recommend the excellent <a href="https://realpython.com/async-io-python/#the-10000-foot-view-of-async-io">Real Python article on Asyncio</a> for a deeper understanding before moving on.</p>
@@ -268,46 +290,30 @@ Must come down</code></pre></td></tr></table>
     <div>
         <h4 class="post-h4"><code class="nocode">create_task()</code></h4>
         <div class="flex items-stretch flex-col-reverse space-y-2   md:flex-row-reverse md:space-x-2 md:space-x-reverse  ">
-    <div class="flex flex-col items-stretch w-full md:w-1/2">
-        <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
-        <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124">
-            <py-script class="px-2" src="clock.py"></py-script>
-            <div id="clock-output"></div>
+            <div class="flex flex-col items-stretch w-full md:w-1/2">
+                <div class="flex-none w-full italic h-7">Live PyScript Results:</div>
+                <div class="flex-auto w-full px-2 overflow-y-auto bg-gray-200 border-2 border-gray-400 max-h-124">
+                    <py-script class="px-2" src="clock.py"></py-script>
+                    <div id="clock-output"></div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2">
+                <p class="code-title">clock.py</p>
+                
+                
+                <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+        </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+        </span></span><span class="line"><span class="cl">
+        </span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">clock_forever</span><span class="p">():</span>
+        </span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+        </span></span><span class="line"><span class="cl">        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        </span></span><span class="line"><span class="cl">        <span class="n">Element</span><span class="p">(</span><span class="s1">&#39;clock-output&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">hour</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">second</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+        </span></span><span class="line"><span class="cl">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        </span></span><span class="line"><span class="cl">
+        </span></span><span class="line"><span class="cl"><span class="n">PyScript</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">clock_forever</span><span class="p">())</span></span></span></code></pre></div>
+                
+            </div>
         </div>
-    </div>
-    <div class="w-full md:w-1/2">
-        <p class="code-title">clock.py</p>
-        
-        
-        <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">datetime</span> <span style="color:#069;font-weight:bold">import</span> datetime
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-
-<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">clock_forever</span>():
-    <span style="color:#069;font-weight:bold">while</span>(<span style="color:#069;font-weight:bold">True</span>):
-        now <span style="color:#555">=</span> datetime<span style="color:#555">.</span>now()
-        Element(<span style="color:#c30">&#39;clock-output&#39;</span>)<span style="color:#555">.</span>write(<span style="color:#c30">f</span><span style="color:#c30">&#34;</span><span style="color:#a00">{</span>now<span style="color:#555">.</span>hour<span style="color:#a00">}</span><span style="color:#c30">:</span><span style="color:#a00">{</span>now<span style="color:#555">.</span>minute<span style="color:#a00">:</span><span style="color:#c30">02</span><span style="color:#a00">}</span><span style="color:#c30">:</span><span style="color:#a00">{</span>now<span style="color:#555">.</span>second<span style="color:#a00">:</span><span style="color:#c30">02</span><span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-
-PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>create_task(clock_forever())</code></pre></td></tr></table>
-</div>
-</div>
-        
-    </div>
-</div>
         <p class="post-p"><a href="https://docs.python.org/3/library/asyncio-task.html#task-object">As the Python Documentation says</a>: <span class="italic">Tasks are used to run coroutines in event loops. If a coroutine awaits [on a future], the Task suspends execution of the coroutine and waits for the completion of the Future.</span></p>
         <p class="post-p">This is the key behavior we want when we want coroutines (including async functions defined with <code>async def</code>) to run concurrently.</p>
     </div>
@@ -316,37 +322,21 @@ PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>cr
         <div class="grid grid-cols-2">
             <div>
                 <div>
-    <p class="code-title">timer.py</p>
-    
-    
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">functools</span> <span style="color:#069;font-weight:bold">import</span> partial
-
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">finish_in</span>(seconds):
-    <span style="color:#069;font-weight:bold">if</span> seconds <span style="color:#555">&lt;=</span> <span style="color:#f60">0</span>:
-        Element(<span style="color:#c30">&#39;timer-output&#39;</span>)<span style="color:#555">.</span>write(<span style="color:#c30">&#34;DONE!&#34;</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
-    <span style="color:#069;font-weight:bold">else</span>:
-        Element(<span style="color:#c30">&#39;timer-output&#39;</span>)<span style="color:#555">.</span>write(seconds, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
-        PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>call_later(<span style="color:#f60">1</span>, finish_in, seconds<span style="color:#555">-</span><span style="color:#f60">1</span>)
-
-PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>call_soon(finish_in, <span style="color:#f60">5</span>)</code></pre></td></tr></table>
-</div>
-</div>
-    
-</div>
+                    <p class="code-title">timer.py</p>
+                    
+                    
+                    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">finish_in</span><span class="p">(</span><span class="n">seconds</span><span class="p">):</span>
+                </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">Element</span><span class="p">(</span><span class="s1">&#39;timer-output&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&#34;DONE!&#34;</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">Element</span><span class="p">(</span><span class="s1">&#39;timer-output&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">PyScript</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">finish_in</span><span class="p">,</span> <span class="n">seconds</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="n">PyScript</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">call_soon</span><span class="p">(</span><span class="n">finish_in</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></span></span></code></pre></div>
+                    
+                </div>
                 <py-script src="timer.py"></py-script>
             </div>
             <div class="flex flex-col items-stretch w-full">
@@ -365,134 +355,72 @@ PyScript<span style="color:#555">.</span>loop<span style="color:#555">.</span>ca
         <div class="grid grid-cols-2">
             <div>
                 <div>
-    <p class="code-title">race.py</p>
-    
-    
-    <div class="overflow-y-scroll h-124">
-    
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">functools</span> <span style="color:#069;font-weight:bold">import</span> partial
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">random</span>
-
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide.ffi.wrappers</span> <span style="color:#069;font-weight:bold">import</span> add_event_listener
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> document
-
-<span style="color:#09f;font-style:italic">#Our awaitable coroutine - we&#39;ll use asyncio.gather() to run lots of these</span>
-<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">racer</span>(lane_element):
-    speed <span style="color:#555">=</span> random<span style="color:#555">.</span>random() <span style="color:#555">+</span> <span style="color:#f60">.4</span>
-    lane_element<span style="color:#555">.</span>value <span style="color:#555">=</span> <span style="color:#f60">0</span>
-    <span style="color:#069;font-weight:bold">while</span> lane_element<span style="color:#555">.</span>value <span style="color:#555">&lt;</span> <span style="color:#f60">100</span>:
-        lane_element<span style="color:#555">.</span>value <span style="color:#555">+=</span> speed
-        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">.1</span>)
-    
-    <span style="color:#09f;font-style:italic">#race is over for this lane; change border color</span>
-    lane_element<span style="color:#555">.</span>classList<span style="color:#555">.</span>remove(<span style="color:#c30">&#39;border-yellow-700&#39;</span>)
-    lane_element<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#39;border-green-500&#39;</span>)
-    
-
-NUM_RACERS <span style="color:#555">=</span> <span style="color:#f60">5</span>
-
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">run_race</span>():
-    racers <span style="color:#555">=</span> []
-
-    <span style="color:#09f;font-style:italic">#clear output</span>
-    output <span style="color:#555">=</span> document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#39;race-output&#39;</span>)
-    <span style="color:#069;font-weight:bold">while</span> output<span style="color:#555">.</span>firstChild:
-        output<span style="color:#555">.</span>removeChild(output<span style="color:#555">.</span>firstChild)
-
-    <span style="color:#069;font-weight:bold">for</span> n <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(NUM_RACERS):
-        <span style="color:#09f;font-style:italic">#Create new progress bars as lanes for our &#34;racers&#34;</span>
-        new_lane <span style="color:#555">=</span> document<span style="color:#555">.</span>createElement(<span style="color:#c30">&#34;progress&#34;</span>)
-        new_lane<span style="color:#555">.</span>id <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;lane-</span><span style="color:#a00">{</span>n<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
-        new_lane<span style="color:#555">.</span>max <span style="color:#555">=</span> <span style="color:#f60">100</span>
-        new_lane<span style="color:#555">.</span>classList<span style="color:#555">.</span>add(<span style="color:#c30">&#39;border-4&#39;</span>, <span style="color:#c30">&#39;border-yellow-500&#39;</span>, <span style="color:#c30">&#39;m-2&#39;</span>, <span style="color:#c30">&#39;h-6&#39;</span>, <span style="color:#c30">&#39;w-11/12&#39;</span>)
-        
-
-        <span style="color:#09f;font-style:italic">#Add the progress bars and labels to the document</span>
-        document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;race-output&#34;</span>)<span style="color:#555">.</span>appendChild(new_lane)
-
-        racers<span style="color:#555">.</span>append(racer(new_lane))
-
-    <span style="color:#09f;font-style:italic"># Return a Promise representing the results.</span>
-    <span style="color:#09f;font-style:italic"># If you don&#39;t need the results, no need to return or await this</span>
-    <span style="color:#069;font-weight:bold">return</span> asyncio<span style="color:#555">.</span>gather(<span style="color:#555">*</span>racers)
-
-<span style="color:#09f;font-style:italic">#Run the race over and over</span>
-<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">race_monitor</span>():
-    <span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
-        results <span style="color:#555">=</span> run_race()
-        <span style="color:#069;font-weight:bold">await</span> results
-        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-
-<span style="color:#09f;font-style:italic">#Start the monitoring task</span>
-asyncio<span style="color:#555">.</span>create_task(race_monitor())</code></pre></td></tr></table>
-</div>
-</div>
-    
-    </div>
-    <p class="post-img-caption">Scroll to see complete code</p>
-    
-</div>
+                    <p class="code-title">race.py</p>
+                    
+                    
+                    <div class="overflow-y-scroll h-124">
+                    
+                    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+                </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+                </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pyodide.ffi.wrappers</span> <span class="kn">import</span> <span class="n">add_event_listener</span>
+                </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">js</span> <span class="kn">import</span> <span class="n">document</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="c1">#Our awaitable coroutine - we&#39;ll use asyncio.gather() to run lots of these</span>
+                </span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">racer</span><span class="p">(</span><span class="n">lane_element</span><span class="p">):</span>
+                </span></span><span class="line"><span class="cl">    <span class="n">speed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">+</span> <span class="mf">.4</span>
+                </span></span><span class="line"><span class="cl">    <span class="n">lane_element</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+                </span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">lane_element</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">lane_element</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="n">speed</span>
+                </span></span><span class="line"><span class="cl">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">    
+                </span></span><span class="line"><span class="cl">    <span class="c1">#race is over for this lane; change border color</span>
+                </span></span><span class="line"><span class="cl">    <span class="n">lane_element</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;border-yellow-700&#39;</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">    <span class="n">lane_element</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;border-green-500&#39;</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">    
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="n">NUM_RACERS</span> <span class="o">=</span> <span class="mi">5</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">run_race</span><span class="p">():</span>
+                </span></span><span class="line"><span class="cl">    <span class="n">racers</span> <span class="o">=</span> <span class="p">[]</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl">    <span class="c1">#clear output</span>
+                </span></span><span class="line"><span class="cl">    <span class="n">output</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s1">&#39;race-output&#39;</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">output</span><span class="o">.</span><span class="n">firstChild</span><span class="p">:</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">output</span><span class="o">.</span><span class="n">removeChild</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">firstChild</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_RACERS</span><span class="p">):</span>
+                </span></span><span class="line"><span class="cl">        <span class="c1">#Create new progress bars as lanes for our &#34;racers&#34;</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">new_lane</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s2">&#34;progress&#34;</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">new_lane</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;lane-</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&#34;</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">new_lane</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mi">100</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">new_lane</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;border-4&#39;</span><span class="p">,</span> <span class="s1">&#39;border-yellow-500&#39;</span><span class="p">,</span> <span class="s1">&#39;m-2&#39;</span><span class="p">,</span> <span class="s1">&#39;h-6&#39;</span><span class="p">,</span> <span class="s1">&#39;w-11/12&#39;</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">        
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl">        <span class="c1">#Add the progress bars and labels to the document</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s2">&#34;race-output&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">new_lane</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl">        <span class="n">racers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">racer</span><span class="p">(</span><span class="n">new_lane</span><span class="p">))</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl">    <span class="c1"># Return a Promise representing the results.</span>
+                </span></span><span class="line"><span class="cl">    <span class="c1"># If you don&#39;t need the results, no need to return or await this</span>
+                </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">racers</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="c1">#Run the race over and over</span>
+                </span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">race_monitor</span><span class="p">():</span>
+                </span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                </span></span><span class="line"><span class="cl">        <span class="n">results</span> <span class="o">=</span> <span class="n">run_race</span><span class="p">()</span>
+                </span></span><span class="line"><span class="cl">        <span class="k">await</span> <span class="n">results</span>
+                </span></span><span class="line"><span class="cl">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                </span></span><span class="line"><span class="cl">
+                </span></span><span class="line"><span class="cl"><span class="c1">#Start the monitoring task</span>
+                </span></span><span class="line"><span class="cl"><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">race_monitor</span><span class="p">())</span></span></span></code></pre></div>
+                    
+                    </div>
+                    <p class="post-img-caption">Scroll to see complete code</p>
+                    
+                </div>
                 <py-script src="race.py"></py-script>
             </div>
             <div class="flex flex-col items-stretch w-full">
@@ -511,27 +439,27 @@ asyncio<span style="color:#555">.</span>create_task(race_monitor())</code></pre>
 <p class="post-p">PyScript/Pyodide has an interesting quirk that allows an additional way of working with coroutines, that has to to with what's called <span class="italic">"Top-Level Await"</span>. If you've written async/await code before, you might be familiar with Python yelling at you for trying to use 'await' outside of a coroutine, like so:</p>
 <div class="grid grid-cols-1 md:grid-cols-2">
     <div class="h-full m-2 overflow-x-auto">
-<div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-    <span style="color:#366">print</span>(<span style="color:#c30">&#34;One plus two is... wait for it...&#34;</span>)
-    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-    <span style="color:#366">print</span>(<span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">2</span>)
-    <span style="color:#555">----</span>
-    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#555">^</span>
-    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#c00;font-weight:bold">SyntaxError</span>: <span style="color:#c30">&#39;await&#39;</span> outside function</code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="kn">import</span> <span class="nn">asyncio</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;One plus two is... wait for it...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">----</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;&gt;&gt;</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;&gt;&gt;</span> <span class="o">^</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;&gt;&gt;</span> <span class="ne">SyntaxError</span><span class="p">:</span> <span class="s1">&#39;await&#39;</span> <span class="n">outside</span> <span class="n">function</span></span></span></code></pre></div>
     </div>
     <div class="h-full m-2 overflow-x-auto">
-    <div class="highlight"><pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">add_slowly</span>():
-        <span style="color:#366">print</span>(<span style="color:#c30">&#34;One plus two is... wait for it...&#34;</span>)
-        <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-        <span style="color:#366">print</span>(<span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">2</span>)
-
-    <span style="color:#069;font-weight:bold">await</span> add_slowly()
-    <span style="color:#555">----</span>
-    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#555">^</span>
-    <span style="color:#555">&gt;&gt;&gt;</span> <span style="color:#c00;font-weight:bold">SyntaxError</span>: <span style="color:#c30">&#39;await&#39;</span> outside <span style="color:#069;font-weight:bold">async</span> function</code></pre></div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">add_slowly</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;One plus two is... wait for it...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">add_slowly</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="o">----</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="o">^</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="ne">SyntaxError</span><span class="p">:</span> <span class="s1">&#39;await&#39;</span> <span class="n">outside</span> <span class="k">async</span> <span class="n">function</span></span></span></code></pre></div>
     </div>
 </div>
 <p class="post-p">However, if you run those same pieces of code in PyScript, they work just fine!</p>
@@ -545,33 +473,19 @@ asyncio<span style="color:#555">.</span>create_task(race_monitor())</code></pre>
     </div>
     <div class="w-full md:w-1/2">
         <div>
-    <p class="code-title">bad_add.py</p>
-    
-    
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-<span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">add_slowly</span>():
-    Element(<span style="color:#c30">&#34;out&#34;</span>)<span style="color:#555">.</span>write(<span style="color:#c30">&#34;One plus two is... wait for it...&#34;</span>)
-    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">5</span>)
-    Element(<span style="color:#c30">&#34;out&#34;</span>)<span style="color:#555">.</span>write(<span style="color:#f60">1</span><span style="color:#555">+</span><span style="color:#f60">2</span>, append<span style="color:#555">=</span><span style="color:#069;font-weight:bold">True</span>)
-
-<span style="color:#09f;font-style:italic">#This isn&#39;t normally possible:</span>
-<span style="color:#069;font-weight:bold">await</span> add_slowly()</code></pre></td></tr></table>
-</div>
-</div>
-    
-</div>
+            <p class="code-title">bad_add.py</p>
+            
+            
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+        </span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">add_slowly</span><span class="p">():</span>
+        </span></span><span class="line"><span class="cl">    <span class="n">Element</span><span class="p">(</span><span class="s2">&#34;out&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&#34;One plus two is... wait for it...&#34;</span><span class="p">)</span>
+        </span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        </span></span><span class="line"><span class="cl">    <span class="n">Element</span><span class="p">(</span><span class="s2">&#34;out&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        </span></span><span class="line"><span class="cl">
+        </span></span><span class="line"><span class="cl"><span class="c1">#This isn&#39;t normally possible:</span>
+        </span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">add_slowly</span><span class="p">()</span></span></span></code></pre></div>
+            
+        </div>
         </div>
     </div>
 </div>
@@ -587,77 +501,51 @@ asyncio<span style="color:#555">.</span>create_task(race_monitor())</code></pre>
 <p class="post-p">See the following pair of demos, both of which run with top-level await</p>
 <div class="grid grid-cols-1 md:gap-2 md:grid-cols-2">
     <div>
-    <p class="code-title">sleep_1.py</p>
-    
-    
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> count
-
-output_1 <span style="color:#555">=</span> Element(<span style="color:#c30">&#34;output-1&#34;</span>)
-<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> count():
-    output_1<span style="color:#555">.</span>write(<span style="color:#c30">f</span><span style="color:#c30">&#34;Counted to </span><span style="color:#a00">{</span>i<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span>)
-</code></pre></td></tr></table>
-</div>
-</div>
-    
-</div>
+        <p class="code-title">sleep_1.py</p>
+        
+        
+        <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+    </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+    </span></span><span class="line"><span class="cl">
+    </span></span><span class="line"><span class="cl"><span class="n">output_1</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&#34;output-1&#34;</span><span class="p">)</span>
+    </span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+    </span></span><span class="line"><span class="cl">    <span class="n">output_1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Counted to </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+    </span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    </span></span></code></pre></div>
+        
+    </div>
     <div>
-    <p class="code-title">sleep_2.py</p>
-    
-    
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">itertools</span> <span style="color:#069;font-weight:bold">import</span> count
-
-output_2 <span style="color:#555">=</span> Element(<span style="color:#c30">&#34;output-2&#34;</span>)
-<span style="color:#069;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">in</span> count():
-    output_2<span style="color:#555">.</span>write(<span style="color:#c30">f</span><span style="color:#c30">&#34;Counted to </span><span style="color:#a00">{</span>i<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-    <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">.7</span>) <span style="color:#09f;font-style:italic">#Note the smaller sleep time!</span>
-</code></pre></td></tr></table>
-</div>
-</div>
-    
-</div>
+        <p class="code-title">sleep_2.py</p>
+        
+        
+        <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+    </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+    </span></span><span class="line"><span class="cl">
+    </span></span><span class="line"><span class="cl"><span class="n">output_2</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s2">&#34;output-2&#34;</span><span class="p">)</span>
+    </span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+    </span></span><span class="line"><span class="cl">    <span class="n">output_2</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Counted to </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+    </span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.7</span><span class="p">)</span> <span class="c1">#Note the smaller sleep time!</span>
+    </span></span></code></pre></div>
+        
+    </div>
 <py-script>
     import asyncio
-from itertools import count
-
-output_1 = Element("output-1")
-for i in count():
-    output_1.write(f"Counted to {i}")
-    await asyncio.sleep(1)
+    from itertools import count
+    
+    output_1 = Element("output-1")
+    for i in count():
+        output_1.write(f"Counted to {i}")
+        await asyncio.sleep(1)
 
 </py-script>
 <py-script>
     import asyncio
-from itertools import count
-
-output_2 = Element("output-2")
-for i in count():
-    output_2.write(f"Counted to {i}")
-    await asyncio.sleep(.7) #Note the smaller sleep time!
+    from itertools import count
+    
+    output_2 = Element("output-2")
+    for i in count():
+        output_2.write(f"Counted to {i}")
+        await asyncio.sleep(.7) #Note the smaller sleep time!
 
 </py-script>
 </div>
@@ -679,19 +567,68 @@ for i in count():
 <p class="post-p">But when I moved on to the much-more-integrated <a href="../../project/richdemo/">Rich on PyScript Project</a>, I had a hell of a time reasoning about what processes would be completed when, how to cancel and monitor them etc. from the Python side - starting that project with an asyncio/Webloop approach from the beginning would have been radially easier.</p>
 <p class="post-p">Finally, remember that while <code>async/await</code> in PyScript/Pyodide works <span class="italic">mostly</span> like it does on desktop or terminal, because there's an intermediate layer of reimplementation in Webloop, not all behaviors are guaranteed to be exactly the same. Troubleshoot and test thoroughly, and <span class="italic">don't block the loop!</span></p>
 
-				</div>
-				
-			</article>
-			<footer>
-    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
-        <p class="">All contents © Jeff Glass 2026. All rights reserved.</p>
-        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
-    </div>
+      </div></div>
+
+  
+    
+<div class="pagination">
+  <div class="pagination__title">
+    <span class="pagination__title-h">Read other posts</span>
+    <hr />
+  </div>
+  <div class="pagination__buttons">
+    
+      <a href="http://localhost:1313/post/pyscript-why-create-proxy/" class="button inline prev">
+        &lt; [<span class="button__text">PyScript - Why Do We Need create_proxy()?</span>]
+      </a>
+    
+    
+      ::
+    
+    
+      <a href="http://localhost:1313/post/whats-new-pyscript-2022-09-1/" class="button inline next">
+         [<span class="button__text">Whats New in Pyscript 2022.09.1</span>] &gt;
+      </a>
+    
+  </div>
+</div>
+
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2026 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
 </footer>
-		</div>
-	</main>
 
 
-	
+
+
+
+
+<script type="text/javascript" src="../../bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
 </body>
 </html>

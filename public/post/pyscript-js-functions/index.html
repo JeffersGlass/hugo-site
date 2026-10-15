@@ -1,165 +1,213 @@
 <!DOCTYPE html>
-<html lang="en-us">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Pyscript/Pyodide and JS Object Passing</title>
-	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
-	
-	
-	
-	
-	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
-	
-	<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://jeff.glass/post/pyscript-js-functions/pyjs_featured.jpg"/>
-<meta name="twitter:title" content="Pyscript/Pyodide and JS Object Passing"/>
-<meta name="twitter:description" content="How to Pass Objects from Python to JavaScript and Back"/>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Pyscript/Pyodide and JS Object Passing :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="How to Pass Objects from Python to JavaScript and Back" />
+<meta name="keywords" content="" />
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
-	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+  <meta name="robots" content="noodp" />
 
-	
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
-}
-</script>
+<link rel="canonical" href="http://localhost:1313/post/pyscript-js-functions/" />
 
 
-	<link rel="icon" href="../../favicon.ico?v=2"> 
-	
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-BZTF8S6M1E');
+        }
+      </script>
+
+
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/style.min.0e0c818b114bb71e1764792fa49e7afb438cb82cd6a9027a945736279ec3823e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/code.min.c4581949edab7810737609fc5568852bcd908945f14561e366dcd2300a370545.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/main.min.36833afd348409fc6c3d09d0897c5833d9d5bf1ff31f5e60ea3ee42ce2b1268c.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/syntax.min.a2cc694a9b481f15d41722bffc2cc54eea4c4f74fd9072b0b33253604c22606e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://localhost:1313/favicon.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Pyscript/Pyodide and JS Object Passing">
+<meta property="og:description" content="How to Pass Objects from Python to JavaScript and Back" />
+<meta property="og:url" content="http://localhost:1313/post/pyscript-js-functions/" />
+<meta property="og:site_name" content="Terminal" />
+
+
+  
+
+<meta property="og:image" content="http://localhost:1313/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-08-21 07:38:14 -0500 CDT" />
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
-	
-	<main>
-		<header>
 
-<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
-    
-    <div class="flex-none hidden lg:flex">
-        <div class="flex-none px-2">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-        <div class="flex-none menu-item-green ">
-            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Home
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Projects
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            One-Offs
-        </div>
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="../../">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
     </div>
     
-    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
-        <div class="flex-none menu-item-green mobile-menu-button">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </div>
-        <div class="flex-none">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-    </div>
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="../../about">About</a></li>
+        
+      
+        
+          <li><a href="../../showcase">Showcase</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
     
     
-    <div class="hidden text-green-200 transition mobile-menu">
-            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
-            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
-            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
-            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
-    </div>
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
     
-    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
-            </svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
-        </div>
-    </div>
-</div>
+      
+        
+          <li><a href="../../about" >About</a></li>
+        
+      
+        
+          <li><a href="../../showcase" >Showcase</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
 </header>
-<script>
-    const btn = document.querySelector("div.mobile-menu-button")
-    const mobileMenu = document.querySelector(".mobile-menu")
-    const largeMenu = document.querySelector(".large-menu")
-    const socialButtons = document.querySelector(".social-buttons")
 
-    btn.addEventListener("click", () =>{
-        openMenu();
-    })
 
-    function openMenu() {
-        mobileMenu.classList.toggle("hidden");
-        largeMenu.classList.toggle("hidden");
-        socialButtons.classList.add("hidden");
-    }
-
+  <div class="content">
     
-    const smSize = 640;
-    const mdSize = 768;
-    const largeSize = 1024;
-    window.addEventListener('resize', function(event) {
-        if (event.target.screen.width > smSize ){
-            mobileMenu.classList.add("hidden");
-            largeMenu.classList.remove("hidden");
-        }
-    }, true);
-</script>
+<article class="post">
+  <h1 class="post-title">
+    <a href="http://localhost:1313/post/pyscript-js-functions/">Pyscript/Pyodide and JS Object Passing</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2022-08-21</time></div>
 
-		<div class="w-full bg-green-800 bg-opacity-10">
-			<div class="pt-16"></div>
-			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
-				<h1 class="pb-2 text-4xl">Pyscript/Pyodide and JS Object Passing</h1>
-				<p>Published August 21, 2022</p>
-				
-				<p>Updated February 7, 2023</p>
-				
-				
-				<div>
-					<span>Tags:</span>
-					
-					<a href="../../tags/python">Python</a>
-					
-					<a href="../../tags/pyscript">PyScript</a>
-					
-					<a href="../../tags/pyodide">Pyodide</a>
-					
-					<a href="../../tags/javascript">Javascript</a>
-					
-				</div>
-				
-				
-				<hr>
-				<div>
-					<p class="post-p">A question I've been seeing quite a bit over in the <a href="https://discord.gg/RUYqNXRN">Unofficial PyScript Community Discord</a> is: <span class="italic font-semibold">How do you pass objects back and forth between JavaScript and PyScript/Pyodide?</span> So I've created recipies below for passing objects back and forth between JavaScript and Python; the specifics are somewhat different depending on whether we're working in PyScript or directly in Pyodide, so both options are illustrated below.</p>
+  
+    <span class="post-tags">
+      
+      #<a href="http://localhost:1313/tags/python/">Python</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/pyscript/">PyScript</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/pyodide/">Pyodide</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/javascript/">Javascript</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p class="post-p">A question I've been seeing quite a bit over in the <a href="https://discord.gg/RUYqNXRN">Unofficial PyScript Community Discord</a> is: <span class="italic font-semibold">How do you pass objects back and forth between JavaScript and PyScript/Pyodide?</span> So I've created recipies below for passing objects back and forth between JavaScript and Python; the specifics are somewhat different depending on whether we're working in PyScript or directly in Pyodide, so both options are illustrated below.</p>
 <p class="post-p">Currently, you can:
     <ul class="">
         <li>✅ Pass objects from JavaScript to Python running in PyScript</li>
@@ -174,191 +222,85 @@ if (!doNotTrack) {
 <p class="post-p">We can use the simple <code class="code">from js import ...</code> to import JavaScript objects directly into PyScript.</p>
 <h3 class="code-title">Javascript to Python (PyScript)</h3>
 <div class="mb-6">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;
-    name <span style="color:#555">=</span> <span style="color:#c30">&#34;Jeff&#34;</span> <span style="color:#09f;font-style:italic">//A JS variable
-</span><span style="color:#09f;font-style:italic"></span>    <span style="color:#09f;font-style:italic">// Define a JS Function
-</span><span style="color:#09f;font-style:italic"></span>    <span style="color:#069;font-weight:bold">function</span> addTwoNumbers(x, y){
-        <span style="color:#069;font-weight:bold">return</span> x <span style="color:#555">+</span> y;
-    }
-&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
-&lt;<span style="color:#309;font-weight:bold">py-script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#09f;font-style:italic"># Import and use JS function in Python</span>
-    <span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> name, addTwoNumbers, console
-    console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;Hello &#34;</span> <span style="color:#555">+</span> name <span style="color:#555">+</span> <span style="color:#c30">&#34;.Adding 1 and 2 in Javascript: &#34;</span> <span style="color:#555">+</span> <span style="color:#366">str</span>(addTwoNumbers(<span style="color:#f60">1</span>, <span style="color:#f60">2</span>)))</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">py-script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span> <span class="o">=</span> <span class="s2">&#34;Jeff&#34;</span> <span class="c1">//A JS variable
+</span></span></span><span class="line"><span class="cl">    <span class="c1">// Define a JS Function
+</span></span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">addTwoNumbers</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">py-script</span><span class="p">&gt;</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="c1"># Import and use JS function in Python</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">js</span> <span class="kn">import</span> <span class="n">name</span><span class="p">,</span> <span class="n">addTwoNumbers</span><span class="p">,</span> <span class="n">console</span>
+</span></span><span class="line"><span class="cl">    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&#34;Hello &#34;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&#34;.Adding 1 and 2 in Javascript: &#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addTwoNumbers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">py-script</span><span class="p">&gt;</span></span></span></code></pre></div>
 </div>
 <h2 class="text-xl font-semibold post-p">JavaScript to Python (Pyodide)</h2>
 <p class="post-p">We can also use <code class="code">from js import ...</code> to import JavaScript objects directly into Python in Pyodide. The syntax is identical to the PyScript example above - the &lt;py-script&gt; calls the <code class="code">runPython</code> function for us (among other things).</p>
 <h3 class="code-title">Javascript to Python (Pyodide)</h3>
 <div class="mb-6">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;
-    name <span style="color:#555">=</span> <span style="color:#c30">&#34;Jeff&#34;</span> <span style="color:#09f;font-style:italic">//A JS variable
-</span><span style="color:#09f;font-style:italic"></span>    <span style="color:#09f;font-style:italic">// Define a JS Function
-</span><span style="color:#09f;font-style:italic"></span>    <span style="color:#069;font-weight:bold">function</span> addTwoNumbers(x, y){
-        <span style="color:#069;font-weight:bold">return</span> x <span style="color:#555">+</span> y;
-    }
-
-    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">function</span> main() {
-        <span style="color:#069;font-weight:bold">let</span> pyodide <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">await</span> loadPyodide();
-        result <span style="color:#555">=</span> pyodide.runPython(<span style="color:#c30">`
-</span><span style="color:#c30">            # Import and use JS function in Python
-</span><span style="color:#c30">            from js import name, addTwoNumbers, console
-</span><span style="color:#c30">            console.log(&#34;Hello &#34; + name + &#34;.Adding 1 and 2 in Javascript: &#34; + str(addTwoNumbers(1, 2)))
-</span><span style="color:#c30">        `</span>);
-    }
-    main();
-&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span> <span class="o">=</span> <span class="s2">&#34;Jeff&#34;</span> <span class="c1">//A JS variable
+</span></span></span><span class="line"><span class="cl">    <span class="c1">// Define a JS Function
+</span></span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">addTwoNumbers</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">async</span> <span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nx">pyodide</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">loadPyodide</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span> <span class="o">=</span> <span class="nx">pyodide</span><span class="p">.</span><span class="nx">runPython</span><span class="p">(</span><span class="sb">`
+</span></span></span><span class="line"><span class="cl"><span class="sb">            # Import and use JS function in Python
+</span></span></span><span class="line"><span class="cl"><span class="sb">            from js import name, addTwoNumbers, console
+</span></span></span><span class="line"><span class="cl"><span class="sb">            console.log(&#34;Hello &#34; + name + &#34;.Adding 1 and 2 in Javascript: &#34; + str(addTwoNumbers(1, 2)))
+</span></span></span><span class="line"><span class="cl"><span class="sb">        `</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">main</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 </div>
 <h2 class="text-xl font-semibold post-p">Python (Pyodide) to JavaScript</h2>
 <p class="post-p">Just as we imported objects from the javascript global scope using the <code class="code">from js import ...</code> syntax, we can create new objects in the global scope by assigning new objects to the js "module":</p>
 <div class="mb-6">
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">    &lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;module&#34;</span>&gt;
-        <span style="color:#069;font-weight:bold">const</span> pyodideRuntime <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">await</span> loadPyodide();
-        pyodideRuntime.runPython(<span style="color:#c30">`
-</span><span style="color:#c30">            import js
-</span><span style="color:#c30">            name = &#34;Jeff&#34; # A Python variable
-</span><span style="color:#c30">            # Define a Python function
-</span><span style="color:#c30">            def multiplyTwoNumbers(x, y):
-</span><span style="color:#c30">                return (x * y)
-</span><span style="color:#c30">            js.mult = multiplyTwoNumbers
-</span><span style="color:#c30">            js.name = name
-</span><span style="color:#c30">        `</span>);
-        <span style="color:#09f;font-style:italic">// Access and call it in JavaScript
-</span><span style="color:#09f;font-style:italic"></span>        console.log(<span style="color:#c30">&#34;Multiplying 2 and 3 in Python: &#34;</span> <span style="color:#555">+</span> mult(<span style="color:#f60">2</span>,<span style="color:#f60">3</span>));
-        console.log(<span style="color:#c30">&#34;You&#39;re welcome, &#34;</span> <span style="color:#555">+</span> name)
-    &lt;/<span style="color:#309;font-weight:bold">script</span>&gt;
-    </code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">pyodideRuntime</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">loadPyodide</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pyodideRuntime</span><span class="p">.</span><span class="nx">runPython</span><span class="p">(</span><span class="sb">`
+</span></span></span><span class="line"><span class="cl"><span class="sb">        import js
+</span></span></span><span class="line"><span class="cl"><span class="sb">        name = &#34;Jeff&#34; # A Python variable
+</span></span></span><span class="line"><span class="cl"><span class="sb">        # Define a Python function
+</span></span></span><span class="line"><span class="cl"><span class="sb">        def multiplyTwoNumbers(x, y):
+</span></span></span><span class="line"><span class="cl"><span class="sb">            return (x * y)
+</span></span></span><span class="line"><span class="cl"><span class="sb">        js.mult = multiplyTwoNumbers
+</span></span></span><span class="line"><span class="cl"><span class="sb">        js.name = name
+</span></span></span><span class="line"><span class="cl"><span class="sb">    `</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Access and call it in JavaScript
+</span></span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Multiplying 2 and 3 in Python: &#34;</span> <span class="o">+</span> <span class="nx">mult</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;You&#39;re welcome, &#34;</span> <span class="o">+</span> <span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 <p class="post-p">Alternatively, once PyScript has initialized the Pyodide runtime, the JS object <code class="code">pyodide.globals</code> is a mapping that represents the global Python namespace. We can use the <code class="code">get()</code> method to retrieve an object from this mapping and make use of it in JavaScript.</p>
 <h3 class="code-title">Python (Pyodide) to JavaScript</h3>
 <div class="mb-6">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span> <span style="color:#309">type</span><span style="color:#555">=</span><span style="color:#c30">&#34;module&#34;</span>&gt;
-    <span style="color:#069;font-weight:bold">const</span> pyodideRuntime <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">await</span> loadPyodide();
-    pyodideRuntime.runPython(<span style="color:#c30">`
-</span><span style="color:#c30">        name = &#34;Jeff&#34; # A Python variable
-</span><span style="color:#c30">        # Define a Python function
-</span><span style="color:#c30">        def multiplyTwoNumbers(x, y):
-</span><span style="color:#c30">            return (x * y)
-</span><span style="color:#c30">    `</span>);
-    <span style="color:#09f;font-style:italic">// Access and call it in JavaScript
-</span><span style="color:#09f;font-style:italic"></span>    <span style="color:#069;font-weight:bold">let</span> mult <span style="color:#555">=</span> pyodideRuntime.globals.get(<span style="color:#c30">&#39;multiplyTwoNumbers&#39;</span>);
-    console.log(<span style="color:#c30">&#34;Multiplying 2 and 3 in Python: &#34;</span> <span style="color:#555">+</span> mult(<span style="color:#f60">2</span>,<span style="color:#f60">3</span>));
-    console.log(<span style="color:#c30">&#34;You&#39;re welcome, &#34;</span> <span style="color:#555">+</span> pyodideRuntime.globals.get(<span style="color:#c30">&#39;name&#39;</span>))
-&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">pyodideRuntime</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">loadPyodide</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pyodideRuntime</span><span class="p">.</span><span class="nx">runPython</span><span class="p">(</span><span class="sb">`
+</span></span></span><span class="line"><span class="cl"><span class="sb">        name = &#34;Jeff&#34; # A Python variable
+</span></span></span><span class="line"><span class="cl"><span class="sb">        # Define a Python function
+</span></span></span><span class="line"><span class="cl"><span class="sb">        def multiplyTwoNumbers(x, y):
+</span></span></span><span class="line"><span class="cl"><span class="sb">            return (x * y)
+</span></span></span><span class="line"><span class="cl"><span class="sb">    `</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Access and call it in JavaScript
+</span></span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">mult</span> <span class="o">=</span> <span class="nx">pyodideRuntime</span><span class="p">.</span><span class="nx">globals</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;multiplyTwoNumbers&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Multiplying 2 and 3 in Python: &#34;</span> <span class="o">+</span> <span class="nx">mult</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;You&#39;re welcome, &#34;</span> <span class="o">+</span> <span class="nx">pyodideRuntime</span><span class="p">.</span><span class="nx">globals</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 </div>
 <h3 class="text-lg font-semibold">Python (PyScript) to JavaScript</h3>
 <a id="commentary"></a>
 <p class="post-p">Either of the methods in the Pyodide section above will work for creating JavaScript objects from within PyScript. However, if you wish to be more declarative when creating variables with specific names, you can use a more verbose method, as follows:</p>
 <p class="post-p">First, we define a javascript function which takes an object and a string, then binds that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.</p>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;
-    <span style="color:#069;font-weight:bold">function</span> createObject(object, variableName){
-        globalThis[variableName] <span style="color:#555">=</span> object
-    }
-&lt;/<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">createObject</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">variableName</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">globalThis</span><span class="p">[</span><span class="nx">variableName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">object</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 <p class="post-p">This takes a Python Object and creates a variable pointing to it in the JavaScript global scope. So what if we made a JavaScript variable point at... the Python global namespace?</p>
 <div>
     <p class="code-title">exportGlobals.py</p>
@@ -396,193 +338,73 @@ createObject(create_proxy(globals()), &#34;pyodideGlobals&#34;)</code></pre>
 
 
 
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">buttonOutput <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;button-output&#34;</span>)
-
-<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;x&#34;</span>).addEventListener(<span style="color:#c30">&#34;click&#34;</span>, () =&gt; {
-    buttonOutput.innerHTML <span style="color:#555">+=</span> pyodideGlobals.get(<span style="color:#c30">&#39;x&#39;</span>) <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;br&gt;&#34;</span>
-});
-
-<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;y&#34;</span>).addEventListener(<span style="color:#c30">&#34;click&#34;</span>, () =&gt; {
-    buttonOutput.innerHTML <span style="color:#555">+=</span> pyodideGlobals.get(<span style="color:#c30">&#39;y&#39;</span>) <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;br&gt;&#34;</span>
-});
-
-<span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;z&#34;</span>).addEventListener(<span style="color:#c30">&#34;click&#34;</span>, () =&gt; {
-    buttonOutput.innerHTML <span style="color:#555">+=</span> pyodideGlobals.get(<span style="color:#c30">&#39;z&#39;</span>) <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;br&gt;&#34;</span>
-});</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">buttonOutput</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;button-output&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;x&#34;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">buttonOutput</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="nx">pyodideGlobals</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&#34;&lt;br&gt;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;y&#34;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">buttonOutput</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="nx">pyodideGlobals</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&#34;&lt;br&gt;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;z&#34;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">buttonOutput</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="nx">pyodideGlobals</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&#34;&lt;br&gt;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 </div>
 <h3 class="mt-4 text-lg font-semibold">A Deeper Dive</h3>
 <p class="post-p">We don't have to export the entire Python global namespace as an object if we don't want to. The example below shows exporting a single list and a lambda function as JavaScript variables, using the same <code class="code">createObject</code> function above.</p>
 <p class="info-banner">Again, this method is significantly more verbose than simple assigning to the <code class="code">js</code> module; however, you may find it useful if you wish to expand/extend the behavior of <code class="code">createObject()</code></p>
 <p class="post-p">Note that the names of the JavaScript variable and the Python variable don't have to be similar/identical/different - I've named them similarly (<code>'names'</code> and <code>'names_js'</code>, <code>'mutliplier'</code> and <code>'multiplier_js'</code>) for readability.</p>
 <span class="code-title">Python (PyScript) to JavaScript</span>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">js</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide</span> <span style="color:#069;font-weight:bold">import</span> create_proxy, to_js
-
-names <span style="color:#555">=</span> [<span style="color:#c30">&#34;Jeff Glass&#34;</span>]
-js<span style="color:#555">.</span>createObject(create_proxy(names), <span style="color:#c30">&#34;names_js&#34;</span>)
-
-multiplier <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span> z: z <span style="color:#555">*</span> <span style="color:#f60">2</span>
-js<span style="color:#555">.</span>createObject(create_proxy(multiplier), <span style="color:#c30">&#34;multiplier_js&#34;</span>)</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">py-script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">js</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pyodide</span> <span class="kn">import</span> <span class="n">create_proxy</span><span class="p">,</span> <span class="n">to_js</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;Jeff Glass&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">js</span><span class="o">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">create_proxy</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="s2">&#34;names_js&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">multiplier</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">z</span> <span class="o">*</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="n">js</span><span class="o">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">create_proxy</span><span class="p">(</span><span class="n">multiplier</span><span class="p">),</span> <span class="s2">&#34;multiplier_js&#34;</span><span class="p">)</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">py-script</span><span class="p">&gt;</span></span></span></code></pre></div>
 <p class="post-p">The code above binds the JavaScript variable <code class="code">names_js</code> to a PyProxy of the Python list <code class="code">names</code>, and the JavaScript variables <code class="code">multiplier_js</code> to a PyProxy for the Python lambda function <code class="code">multiplier</code>.</p>
 <p class="post-p">Of course, this means we have to use the createObject function to "export" the objects from Python before we can use them in JavaScript. But this may be preferred for your use case.</p>
 <p class="post-p">With those objects created, we can refer to/call them like any other JS objects. To see this, let's add two buttons: one that references our function and list from within JavaScript ("use-python-objects"), and one that adds some names to our list so we can see it change ("add-name").</p>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">py-env</span>&gt;
-    - faker
-&lt;/<span style="color:#309;font-weight:bold">py-env</span>&gt;
-
-&lt;<span style="color:#309;font-weight:bold">py-script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide</span> <span style="color:#069;font-weight:bold">import</span> create_proxy
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">faker</span> <span style="color:#069;font-weight:bold">import</span> Faker
-
-fake <span style="color:#555">=</span> Faker()
-
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">add_a_name</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
-    new_name <span style="color:#555">=</span> fake<span style="color:#555">.</span>name()
-    console<span style="color:#555">.</span>log(<span style="color:#c30">f</span><span style="color:#c30">&#34;Adding </span><span style="color:#a00">{</span>new_name<span style="color:#a00">}</span><span style="color:#c30"> to names&#34;</span>)
-    names<span style="color:#555">.</span>append(new_name)
-
-Element(<span style="color:#c30">&#34;add-name&#34;</span>)<span style="color:#555">.</span>element<span style="color:#555">.</span>addEventListener(<span style="color:#c30">&#34;click&#34;</span>, create_proxy(add_a_name))</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;/<span style="color:#309;font-weight:bold">py-script</span>&gt;
- </code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">py-env</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    - faker
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">py-env</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">py-script</span><span class="p">&gt;</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pyodide</span> <span class="kn">import</span> <span class="n">create_proxy</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Faker</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">fake</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">add_a_name</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">new_name</span> <span class="o">=</span> <span class="n">fake</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Adding </span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2"> to names&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Element</span><span class="p">(</span><span class="s2">&#34;add-name&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="n">create_proxy</span><span class="p">(</span><span class="n">add_a_name</span><span class="p">))</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">py-script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"> </span></span></code></pre></div>
 <div class="overflow-x-auto">
 
 
 
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">    <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;use-python-objects&#34;</span>).addEventListener(<span style="color:#c30">&#34;click&#34;</span>, () =&gt; {
-        console.log(<span style="color:#c30">&#34;Displaying contents of Python list &#39;names&#39;, calling Python function &#39;multiplier&#39;&#34;</span>)
-        el <span style="color:#555">=</span> <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;output&#34;</span>)
-        el.innerHTML <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span> <span style="color:#09f;font-style:italic">//Clear contents of output
-</span><span style="color:#09f;font-style:italic"></span>        <span style="color:#069;font-weight:bold">for</span> (<span style="color:#069;font-weight:bold">const</span> name <span style="color:#069;font-weight:bold">of</span> names_js){
-            el.innerHTML <span style="color:#555">+=</span> <span style="color:#c30">&#34;Name: &#34;</span> <span style="color:#555">+</span> name <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;br\&gt;&#34;</span>;
-        };
-        number <span style="color:#555">=</span> <span style="color:#366">Math</span>.floor(<span style="color:#366">Math</span>.random() <span style="color:#555">*</span> <span style="color:#f60">10</span>) <span style="color:#555">+</span> <span style="color:#f60">1</span> <span style="color:#09f;font-style:italic">//random between 1 and 10
-</span><span style="color:#09f;font-style:italic"></span>        el.innerHTML <span style="color:#555">+=</span> number <span style="color:#555">+</span> <span style="color:#c30">&#34; times two is &#34;</span> <span style="color:#555">+</span> multiplier_js(number) <span style="color:#555">+</span> <span style="color:#c30">&#34;&lt;br\&gt;&#34;</span>;
-    });</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;use-python-objects&#34;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Displaying contents of Python list &#39;names&#39;, calling Python function &#39;multiplier&#39;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;output&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">el</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1">//Clear contents of output
+</span></span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">name</span> <span class="k">of</span> <span class="nx">names_js</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">el</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="s2">&#34;Name: &#34;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s2">&#34;&lt;br\&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">number</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1">//random between 1 and 10
+</span></span></span><span class="line"><span class="cl">        <span class="nx">el</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="nx">number</span> <span class="o">+</span> <span class="s2">&#34; times two is &#34;</span> <span class="o">+</span> <span class="nx">multiplier_js</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&#34;&lt;br\&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 </div>
 <h3 class="mt-6 text-lg font-semibold">Python (PyScript) Individual Objects to JavaScript Demo</h3>
 <p class="post-p">The code in the preceding section is running live on this page. Click "Add Name to List" to append a new name (provided by the Faker library) to the list <code class="code">names</code>; click "Use Python Objects" to reference that list (and the <code class="code">multiplier</code> function) and display the results in the green box. Open your browser's development console to see additional output.</p>
@@ -613,71 +435,29 @@ Element(<span style="color:#c30">&#34;add-name&#34;</span>)<span style="color:#5
 
 
 
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;printGlobals&#34;</span>).addEventListener(<span style="color:#c30">&#34;click&#34;</span>, () =&gt; {
-    console.warn(<span style="color:#c30">&#34;Clicked print globals&#34;</span>)
-    <span style="color:#366">document</span>.getElementById(<span style="color:#c30">&#34;globals&#34;</span>).innerHTML <span style="color:#555">=</span> pyodideGlobals;
-});</code></pre></td></tr></table>
-</div>
-</div>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#309;font-weight:bold">script</span>&gt;</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;printGlobals&#34;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s2">&#34;Clicked print globals&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;globals&#34;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">pyodideGlobals</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
 </div>
 <div class="my-3"><div>
     <p class="code-title">makeNewObjects.py</p>
     
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">random</span> <span style="color:#069;font-weight:bold">import</span> choice, randint
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">string</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> document
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide</span> <span style="color:#069;font-weight:bold">import</span> create_proxy, to_js
-
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">makePythonObject</span>(<span style="color:#555">*</span>args, <span style="color:#555">**</span>kwargs):
-    name <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span><span style="color:#555">.</span>join([choice(string<span style="color:#555">.</span>ascii_lowercase) <span style="color:#069;font-weight:bold">for</span> _ <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(<span style="color:#f60">5</span>)])
-    value <span style="color:#555">=</span> randint(<span style="color:#f60">0</span>, <span style="color:#f60">100</span>)
-    exec_string <span style="color:#555">=</span> <span style="color:#c30">f</span><span style="color:#c30">&#34;global </span><span style="color:#a00">{</span>name<span style="color:#a00">}</span><span style="color:#c30;font-weight:bold">\n</span><span style="color:#a00">{</span>name<span style="color:#a00">}</span><span style="color:#c30"> = </span><span style="color:#a00">{</span>value<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>
-    exec(exec_string)
-
-document<span style="color:#555">.</span>getElementById(<span style="color:#c30">&#34;makeObject&#34;</span>)<span style="color:#555">.</span>addEventListener(<span style="color:#c30">&#34;click&#34;</span>, create_proxy(makePythonObject))</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">js</span> <span class="kn">import</span> <span class="n">document</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pyodide</span> <span class="kn">import</span> <span class="n">create_proxy</span><span class="p">,</span> <span class="n">to_js</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">makePythonObject</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">value</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exec_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;global </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exec</span><span class="p">(</span><span class="n">exec_string</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s2">&#34;makeObject&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s2">&#34;click&#34;</span><span class="p">,</span> <span class="n">create_proxy</span><span class="p">(</span><span class="n">makePythonObject</span><span class="p">))</span></span></span></code></pre></div>
     
 </div></div>
 <p class="post-p">Click the Print Globals button to see the Python global objects visible from JavaScript; click the Make Python Variable to make a new Python variable with a 5-letter name (then click Print Globals again to see it). Since this shares a global namespace with the rest of the PyScript code on this page, you may also see variables like '<code>x</code>', '<code>y</code>', and '<code>z</code>' from the example above.</p>
@@ -691,19 +471,68 @@ document<span style="color:#555">.</span>getElementById(<span style="color:#c30"
 </div>
 <py-script src="makeNewObjects.py"></py-script>
 <script src="showGlobalsButton.js"></script>
-				</div>
-				
-			</article>
-			<footer>
-    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
-        <p class="">All contents © Jeff Glass 2026. All rights reserved.</p>
-        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
-    </div>
+      </div></div>
+
+  
+    
+<div class="pagination">
+  <div class="pagination__title">
+    <span class="pagination__title-h">Read other posts</span>
+    <hr />
+  </div>
+  <div class="pagination__buttons">
+    
+      <a href="http://localhost:1313/post/cloud-resume-challenge-shortcodes/" class="button inline prev">
+        &lt; [<span class="button__text">Hugo Shortcodes for Coding Blogs</span>]
+      </a>
+    
+    
+      ::
+    
+    
+      <a href="http://localhost:1313/post/pyscript-js-functions-original/" class="button inline next">
+         [<span class="button__text">Pyscript/Pyodide and JS Object Passing (Original)</span>] &gt;
+      </a>
+    
+  </div>
+</div>
+
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2026 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
 </footer>
-		</div>
-	</main>
 
 
-	
+
+
+
+
+<script type="text/javascript" src="../../bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
 </body>
 </html>

@@ -2,18 +2,235 @@
 
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>post on Jeff Glass</title>
-    <link>https://jeff.glass/tags/post/</link>
-    <description>Recent content in post on Jeff Glass</description>
+    <title>Post on Jeff Glass</title>
+    <link>http://localhost:1313/tags/post/</link>
+    <description>Recent content in Post on Jeff Glass</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 21 Apr 2023 12:13:15 -0600</lastBuildDate><atom:link href="https://jeff.glass/tags/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Mar 2025 10:37:00 -0500</lastBuildDate><atom:link href="http://localhost:1313/tags/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>__Frank__</title>
+      <link>http://localhost:1313/post/__frank__/</link>
+      <pubDate>Tue, 11 Mar 2025 10:37:00 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/__frank__/</guid>
+      <description>
+&lt;h2 class=&#34;post-h2&#34;&gt;Adding &lt;code&gt;__frank__&lt;/code&gt; to the REPL&lt;/h2&gt;
+
+&lt;code&gt;
+    &gt;&gt;&gt; dir()
+    [&#39;__builtins__&#39;, &#39;__cached__&#39;, &#39;__doc__&#39;, &#39;__file__&#39;, &#39;__loader__&#39;, &#39;__name__&#39;, &#39;__package__&#39;, &#39;__spec__&#39;]
+
+    __package__: &#34;_pyrepl&#34;
+&lt;/code&gt;
+
+Look up pyrepl pacakge (Lib/_pyrepl)
+In &lt;code&gt;__main__&lt;/code&gt;: 
+
+&lt;code&gt;
+    # Important: don&#39;t add things to this module, as they will end up in the REPL&#39;s
+    # default globals.  Use _pyrepl.main instead.
+&lt;/code&gt;
+
+Well:
+
+&lt;code&gt;
+    __frank__ = &#34;&#34;&#34;Letter 1
+To Mrs. Saville, England.
+
+St. Petersburgh, Dec. 11th, 17—.
+
+You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking.&#34;&#34;&#34;
+
+if __name__ == &#34;__main__&#34;:
+    from .main import interactive_console as __pyrepl_interactive_console
+    __pyrepl_interactive_console()
+&lt;/code&gt;
+
+And then:
+&lt;code&gt;
+    &gt;&gt;&gt; __frank__
+&#39;Letter 1\nTo Mrs. Saville, England.\n\nSt. Petersburgh, Dec. 11th, 17—.\n\nYou will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking.&#39;
+&gt;&gt;&gt; 
+&lt;/code&gt;
+
+Well, that gets &lt;code&gt;__frank__&lt;/code&gt; into the REPL (or at least, a short version of it). But it feels like just a bit of a hack - the fact that the new REPL is written in Python makes it trivially easy to slap things into the global variables... But how about if we want it in the interpreter normally:
+
+&lt;h2 class=&#34;post-h2&#34;&gt;&lt;code&gt;__frank__&lt;/code&gt; into Builtins&lt;/h2&gt;
+
+We can programmatically alter the builtins module:
+
+&lt;code&gt;
+    import builtins
+
+builtins.__frank__ = &#34;&#34;&#34;Letter 1
+To Mrs. Saville, England.
+
+St. Petersburgh, Dec. 11th, 17—.
+
+You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings. I arrived here yesterday, and my first task is to assure my dear sister of my welfare and increasing confidence in the success of my undertaking.&#34;&#34;&#34;
+
+print(__frank__)
+&lt;/code&gt;
+
+Went down a bit of a rabbit-hole to find where the Ellipsis is defined (PyTypeObject PyEllipsis_Type in sliceobject.c)... but we don&#39;t really want a singleton, we want a string set at ____ time, more like __doc__.
+
+Oooo pycore_global_strings.h is a great name.
+It reference generate_global_objects.py:
+    Regexes for _Py_ID and _Py_DECLARE_STR
+    For printing out, say, &#34;&amp;lt;module&amp;gt;&#34; or other similar name
+    generate_global_objects.py:
+        Scans through the folders (&#39;Modules&#39;, &#39;Objects&#39;, &#39;Parser&#39;, &#39;PC&#39;, &#39;Programs&#39;, &#39;Python&#39;)
+        For any files ending in .c or .h, 
+        Walk the file for instances of _Py_ID or _Py_DECLARE_STR
+        Make these a globally available string name...
+        Still not quite what we want
+
+&lt;code&gt;
+    _Py_DECLARE_STR(__frank__, &#34;Letter 1 \
+To Mrs. Saville, England. \
+\
+St. Petersburgh, Dec. 11th, 17—. \&#34;);
+&lt;/code&gt;
+
+Let&#39;s go back to builtins
+
+dir(__builtins__)
+
+&lt;code&gt;
+    [&#39;ArithmeticError&#39;, &#39;AssertionError&#39;, &#39;AttributeError&#39;, &#39;BaseException&#39;, &#39;BaseExceptionGroup&#39;, &#39;BlockingIOError&#39;, &#39;BrokenPipeError&#39;, &#39;BufferError&#39;, &#39;BytesWarning&#39;, &#39;ChildProcessError&#39;, &#39;ConnectionAbortedError&#39;, &#39;ConnectionError&#39;, &#39;ConnectionRefusedError&#39;, &#39;ConnectionResetError&#39;, &#39;DeprecationWarning&#39;, &#39;EOFError&#39;, &#39;Ellipsis&#39;, &#39;EncodingWarning&#39;, &#39;EnvironmentError&#39;, &#39;Exception&#39;, &#39;ExceptionGroup&#39;, &#39;False&#39;, &#39;FileExistsError&#39;, &#39;FileNotFoundError&#39;, &#39;FloatingPointError&#39;, &#39;FutureWarning&#39;, &#39;GeneratorExit&#39;, &#39;IOError&#39;, &#39;ImportError&#39;, &#39;ImportWarning&#39;, &#39;IndentationError&#39;, &#39;IndexError&#39;, &#39;InterruptedError&#39;, &#39;IsADirectoryError&#39;, &#39;KeyError&#39;, &#39;KeyboardInterrupt&#39;, &#39;LookupError&#39;, &#39;MemoryError&#39;, &#39;ModuleNotFoundError&#39;, &#39;NameError&#39;, &#39;None&#39;, &#39;NotADirectoryError&#39;, &#39;NotImplemented&#39;, &#39;NotImplementedError&#39;, &#39;OSError&#39;, &#39;OverflowError&#39;, &#39;PendingDeprecationWarning&#39;, &#39;PermissionError&#39;, &#39;ProcessLookupError&#39;, &#39;PythonFinalizationError&#39;, &#39;RecursionError&#39;, &#39;ReferenceError&#39;, &#39;ResourceWarning&#39;, &#39;RuntimeError&#39;, &#39;RuntimeWarning&#39;, &#39;StopAsyncIteration&#39;, &#39;StopIteration&#39;, &#39;SyntaxError&#39;, &#39;SyntaxWarning&#39;, &#39;SystemError&#39;, &#39;SystemExit&#39;, &#39;TabError&#39;, &#39;TimeoutError&#39;, &#39;True&#39;, &#39;TypeError&#39;, &#39;UnboundLocalError&#39;, &#39;UnicodeDecodeError&#39;, &#39;UnicodeEncodeError&#39;, &#39;UnicodeError&#39;, &#39;UnicodeTranslateError&#39;, &#39;UnicodeWarning&#39;, &#39;UserWarning&#39;, &#39;ValueError&#39;, &#39;Warning&#39;, &#39;ZeroDivisionError&#39;, &#39;_&#39;, &#39;_IncompleteInputError&#39;, &#39;__build_class__&#39;, &#39;__debug__&#39;, &#39;__doc__&#39;, &#39;__import__&#39;, &#39;__loader__&#39;, &#39;__name__&#39;, &#39;__package__&#39;, &#39;__spec__&#39;, &#39;abs&#39;, &#39;aiter&#39;, &#39;all&#39;, &#39;anext&#39;, &#39;any&#39;, &#39;ascii&#39;, &#39;bin&#39;, &#39;bool&#39;, &#39;breakpoint&#39;, &#39;bytearray&#39;, &#39;bytes&#39;, &#39;callable&#39;, &#39;chr&#39;, &#39;classmethod&#39;, &#39;compile&#39;, &#39;complex&#39;, &#39;copyright&#39;, &#39;credits&#39;, &#39;delattr&#39;, &#39;dict&#39;, &#39;dir&#39;, &#39;divmod&#39;, &#39;enumerate&#39;, &#39;eval&#39;, &#39;exec&#39;, &#39;exit&#39;, &#39;filter&#39;, &#39;float&#39;, &#39;format&#39;, &#39;frozenset&#39;, &#39;getattr&#39;, &#39;globals&#39;, &#39;hasattr&#39;, &#39;hash&#39;, &#39;help&#39;, &#39;hex&#39;, &#39;id&#39;, &#39;input&#39;, &#39;int&#39;, &#39;isinstance&#39;, &#39;issubclass&#39;, &#39;iter&#39;, &#39;len&#39;, &#39;license&#39;, &#39;list&#39;, &#39;locals&#39;, &#39;map&#39;, &#39;max&#39;, &#39;memoryview&#39;, &#39;min&#39;, &#39;next&#39;, &#39;object&#39;, &#39;oct&#39;, &#39;open&#39;, &#39;ord&#39;, &#39;pow&#39;, &#39;print&#39;, &#39;property&#39;, &#39;quit&#39;, &#39;range&#39;, &#39;repr&#39;, &#39;reversed&#39;, &#39;round&#39;, &#39;set&#39;, &#39;setattr&#39;, &#39;slice&#39;, &#39;sorted&#39;, &#39;staticmethod&#39;, &#39;str&#39;, &#39;sum&#39;, &#39;super&#39;, &#39;tuple&#39;, &#39;type&#39;, &#39;vars&#39;, &#39;zip&#39;]
+&lt;/code&gt;
+
+Looking for a not-too-common example of something... warnings are not quite the thing... divmod leads to &lt;code&gt;bltinomdule.c&lt;/code&gt;
+
+Uses argument clinic, which I&#39;ve never really understood.
+
+There&#39;s a howto from 3.10 that&#39;s not in 3.11 or later... https://docs.python.org/3.10/howto/clinic.html
+
+Looking in Object.c: 
+    none_repr: PyUnicode_FromString(&#34;None&#34;)
+    PyObject_Dir (dir implementation) returns 
+
+credits (!!!!) Just some text!
+
+Ooooooh site.py. How cursed.
+
+Adding </description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Profiling Cpython</title>
+      <link>http://localhost:1313/post/profiling-cpython/</link>
+      <pubDate>Thu, 11 Jul 2024 10:25:54 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/profiling-cpython/</guid>
+      <description>
+https://vstinner.github.io/journey-to-stable-benchmark-system.html
+
+https://www.kernel.org/doc/Documentation/IRQ-affinity.txt
+
+https://lwn.net/Articles/549580/
+
+https://ubuntu.com/blog/real-time-kernel-tuning
+
+https://www.acontis.com/en/ubuntu-linux-realtime-howto.html</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Web Assembly, Python, and the Input Challenge</title>
+      <link>http://localhost:1313/post/wasm-python-input-issues/</link>
+      <pubDate>Tue, 10 Oct 2023 10:06:07 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/wasm-python-input-issues/</guid>
+      <description>&lt;p class=&#34;post-p&#34;&gt;One of the challenges in translating Python to the web is this very simple piece of example code, pulled &lt;a href=&#34;https://docs.python.org/3/tutorial/controlflow.html#if-statements&#34;&gt;straight from the Python docs:&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;7
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#366&#34;&gt;int&lt;/span&gt;(&lt;span style=&#34;color:#366&#34;&gt;input&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#34;Please enter an integer: &amp;#34;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;if&lt;/span&gt; x &lt;span style=&#34;color:#555&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    x &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;Negative changed to zero&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;elif&lt;/span&gt; x &lt;span style=&#34;color:#555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f60&#34;&gt;0&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#366&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#c30&#34;&gt;&amp;#39;Zero&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#555&#34;&gt;...&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p class=&#34;post-p&#34;&gt;The problem is with the &lt;code class=&#34;code&#34;&gt;input&lt;/code&gt; statement, which essentially tells the Python interpreter&#39;s thread to block (i.e. lock up, freeze, do nothing) until it receives data from an external source (the terminal) that it can respond it.&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;Unfortunately, this doesn&#39;t translate well to the web. The idea of &#39;block the interpreter thread until something else wakes it up&#39; is that, in the Browser, there is only one thread*! Hence, there&#39;s no &#39;something else&#39; to come along and wake the interpreter&#39;s thread back up. Nor is there any equivalent of &#34;ctrl+c&#34;, no way to &#34;kill&#34; that thread from within the browser - something would have to be listening for that singal and reach out and kill the thread with the interpreter... and again, there&#39;s only one thread.&lt;/p&gt;
+
+
+&lt;style&gt;
+    code:not(.nocode):not(.language-python):not(.language-python3):not(.language-html):not(.language-js){
+        --tw-text-opacity: 1;
+        color: rgba(5, 120, 85, var(--tw-text-opacity));
+    }
+    .py-terminal{
+        font-family: &#39;Courier New&#39;, Courier, monospace;
+        min-height: 4em;
+        background-color: black;
+        color: white;
+    }
+    .invisible{
+        visibility: hidden;
+    }
+    .control-button{
+        padding: 0.5rem; 
+        background-color: #E5E7EB; 
+        border-radius: 0.375rem; 
+        border-width: 2px; 
+        border-color: #D1D5DB; 
+    }
+    .post-h2{
+        border-bottom-width: 2px; 
+        border-color: #F9FAFB; 
+        border-style: solid;
+    }
+&lt;/style&gt;</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Pyscript Gets Worker Threads</title>
+      <link>http://localhost:1313/post/pyscript-gets-worker-threads/</link>
+      <pubDate>Fri, 21 Apr 2023 12:47:17 -0600</pubDate>
+      
+      <guid>http://localhost:1313/post/pyscript-gets-worker-threads/</guid>
+      <description>&lt;h2&gt;What&#39;s Different?&lt;/h2&gt;</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Pyscript Gets Micropython</title>
+      <link>http://localhost:1313/post/pyscript-gets-micropython/</link>
+      <pubDate>Fri, 21 Apr 2023 12:45:16 -0600</pubDate>
+      
+      <guid>http://localhost:1313/post/pyscript-gets-micropython/</guid>
+      <description>&lt;h2 class=&#34;post-h2&#34;&gt;What Can&#39;t Micropython Do&lt;/h2&gt;
+&lt;h4 class=&#34;post-p&#34;&gt;The &#34;standard libraries&#34; are different - eg&lt;/h4&gt;
+&lt;h4 class=&#34;post-h4&#34;&gt;No concept of package import&lt;/h4&gt;
+    </description>
+      &lt;
+    </item>
+    
     <item>
       <title>Pycon2023</title>
-      <link>https://jeff.glass/post/pycon2023/</link>
+      <link>http://localhost:1313/post/pycon2023/</link>
       <pubDate>Fri, 21 Apr 2023 12:13:15 -0600</pubDate>
       
-      <guid>https://jeff.glass/post/pycon2023/</guid>
+      <guid>http://localhost:1313/post/pycon2023/</guid>
       <description>
 &lt;h2 class=&#34;post-h2&#34;&gt;PyScript Tutorial:&lt;/h2&gt;
 &lt;h2 class=&#34;post-h2&#34;&gt;Build Yourself a PyScript&lt;/h2&gt;
@@ -40,6 +257,181 @@ Open source
 not just 99%
 
 </description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Pyodide 0.23</title>
+      <link>http://localhost:1313/post/pyodide-0-23/</link>
+      <pubDate>Fri, 31 Mar 2023 19:33:34 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/pyodide-0-23/</guid>
+      <description>
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;code&gt;runPython&lt;/code&gt; and &lt;code&gt;runPythonAsync&lt;/code&gt; now take a &lt;code&gt;locals&lt;/code&gt; argument&lt;/h4&gt;
+&lt;p class=&#34;post-p&#34;&gt;(&lt;a href=&#34;https://github.com/pyodide/pyodide/pull/3618&#34;&gt;#3618&lt;/a&gt;)&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;An unrelated bug but a related subject, &lt;code&gt;eval_code&lt;/code&gt; and &lt;code&gt;eval_code_aysync&lt;/code&gt; now handle their locals argument correct (&lt;a href=&#34;https://github.com/pyodide/pyodide/pull/3580&#34;&gt;#3580&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h4 class=&#34;post-h4&#34;&gt;&lt;/h4&gt;
+
+
+
+
+
+cpython 3.11.2
+JS Api and FFI
+Build System 
+SDL2</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Runpython</title>
+      <link>http://localhost:1313/post/runpython/</link>
+      <pubDate>Fri, 21 Oct 2022 11:42:59 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/runpython/</guid>
+      <description>&lt;h2 id=&#34;runPythonAsync&#34;class=&#34;post-h2&#34;&gt;Epilog: &lt;code&gt;runPython()&lt;/code&gt; and &lt;code&gt;runPythonAsync()&lt;/code&gt;&lt;/h2&gt;
+&lt;p class=&#34;post-p&#34;&gt;The following information in pretty deep-in-the-weeds for an end user of PyScript/Pyodide, but I thought I would take this chance to clear up some misunderstandings about the functionality of pyodide&#39;s &lt;code&gt;runPython()&lt;/code&gt; and &lt;code&gt;runPythonAsync()&lt;/code&gt;&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;To start with - both functions are API wrappers &lt;a href=&#34;https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/js/api.ts#L63-L70&#34;&gt;[1]&lt;/a&gt; &lt;a href=&#34;https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/js/api.ts#L187-L194&#34;&gt;[2]&lt;/a&gt; around the lower-level functions &lt;a href=&#34;https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/py/_pyodide/_base.py#L364-L460&#34;&gt;eval_code()&lt;/a&gt; and &lt;a href=&#34;https://github.com/pyodide/pyodide/blob/97cd5bdc1cf62f4e5e44a305a7682d92b556a1e0/src/py/_pyodide/_base.py#L464-L540&#34;&gt;eval_code_async()&lt;/a&gt;. These functions in turn are both short and simple:&lt;/p&gt;
+&lt;div class=&#34;grid grid-cols-1 md:grid-cols-2 md:space-x-4&#34;&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;eval_code&lt;/span&gt;( &lt;span style=&#34;color:#555&#34;&gt;...&lt;/span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;) &lt;span style=&#34;color:#555&#34;&gt;-&amp;gt;&lt;/span&gt; Any:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;CodeRunner(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    source,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    flags&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;flags,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#555&#34;&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;run()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python3&#34; data-lang=&#34;python3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;async&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#c0f&#34;&gt;eval_code_async&lt;/span&gt;(source, flags, &lt;span style=&#34;color:#555&#34;&gt;...&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    flags &lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt; flags &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;or&lt;/span&gt; ast&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;PyCF_ALLOW_TOP_LEVEL_AWAIT
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;return&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;await&lt;/span&gt; CodeRunner(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    source,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    flags&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;flags,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#555&#34;&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;compile()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#555&#34;&gt;.&lt;/span&gt;run_async()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Pyscript Rich Live Test</title>
+      <link>http://localhost:1313/post/pyscript-rich-test/</link>
+      <pubDate>Tue, 16 Aug 2022 08:17:25 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/pyscript-rich-test/</guid>
+      <description>&lt;py-env&gt;
+    - rich
+    - Faker
+    - paths:
+        - ./livepatch.py
+        - ./liverunner.py
+&lt;/py-env&gt;
+&lt;script src=&#34;https://pyscript.net/releases/2022.06.1/pyscript.js&#34; defer&gt;&lt;/script&gt;
+&lt;py-script src=&#34;../pyscript-rich/_richsetup.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;./livepatch.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;./livedemo.py&#34;&gt;&lt;/py-script&gt;
+&lt;py-script src=&#34;table_movie.py&#34;&gt;&lt;/py-script&gt;
+&lt;div class=&#34;grid grid-cols-2&#34;&gt;
+    &lt;div&gt;
+        &lt;py-script src=&#34;./liverunner.py&#34;&gt;&lt;/py-script&gt;
+        &lt;div id=&#34;live-div&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id=&#34;movie-div&#34;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;h-96&#34;&gt;&lt;/div&gt;
+&lt;div class=&#34;h-96&#34;&gt;&lt;/div&gt;
+&lt;p class=&#34;post-p&#34;&gt;To adapt table_movie:
+    &lt;ul class=&#34;post-ul&#34;&gt;
+        &lt;li&gt;Don&#39;t import rich Live; run livepatch first instead to define new Live class&lt;/li&gt;
+        &lt;li&gt;Instead of Console() import and run get_console()&lt;/li&gt;
+        &lt;li&gt;Rename console variable to c&lt;/li&gt;
+        &lt;li&gt;Change @contextmanger to @asynccontextmanager, with try/finally (necessary?)&lt;/li&gt;
+        &lt;li&gt;Change signature of with Live(...) to include div_id&lt;/li&gt;
+        &lt;li&gt;with beat becomes async with beat&lt;/li&gt;
+        &lt;li&gt;Literally? That&#39;s it!&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;
+
+</description>
+      &lt;
+    </item>
+    
+    <item>
+      <title>Pyscript Interactive Module Dev</title>
+      <link>http://localhost:1313/post/pyscript-interactive-module-dev/</link>
+      <pubDate>Mon, 15 Aug 2022 11:48:01 -0500</pubDate>
+      
+      <guid>http://localhost:1313/post/pyscript-interactive-module-dev/</guid>
+      <description>&lt;ul class=&#34;post-ul&#34;&gt;
+    &lt;li&gt;Fork the Rich repository&lt;/li&gt;
+    &lt;li&gt;Download locally&lt;/li&gt;
+    &lt;li&gt;Run tests using &lt;code class=&#34;code&#34;&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Use &lt;a href=&#34;https://code.visualstudio.com/updates/v1_23#_run-code-actions-on-save&#34;&gt;VS Code Run on Save to build
+            wheel on Save&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;Use VS code live server to serve wheel locally&lt;/li&gt;
+    &lt;li&gt;import into pyscript via py-env:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;pre&gt;&lt;code class=&#34;code&#34;&gt;&amp;lt;py-env&amp;gt;
+- http://127.0.0.1:5500/dist/rich-12.5.1-py3-none-any.whl
+&amp;lt;/py-env&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/p&gt;
+&lt;p class=&#34;post-p&#34;&gt;
+&lt;pre&gt;Traceback (most recent call last):
+    • File &#34;&#34;, line 5, in
+    • File &#34;/lib/python3.10/site-packages/rich/jupyter.py&#34;, line 101, in print return console.print(*args, **kwargs)
+    • File &#34;/lib/python3.10/site-packages/rich/console.py&#34;, line 1646, in print with self:
+    • File &#34;/lib/python3.10/site-packages/rich/console.py&#34;, line 848, in __exit__ self._exit_buffer()
+    • File &#34;/lib/python3.10/site-packages/rich/console.py&#34;, line 806, in _exit_buffer self._check_buffer()
+    • File &#34;/lib/python3.10/site-packages/rich/console.py&#34;, line 2021, in _check_buffer self.file.flush()
+    • AttributeError: &#39;OutputCtxManager&#39; object has no attribute &#39;flush&#39;&lt;/pre&gt;
+&lt;/p&gt;</description>
       &lt;
     </item>
     

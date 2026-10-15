@@ -1,161 +1,211 @@
 <!DOCTYPE html>
-<html lang="en-us">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Monkeypatching Rich for Beautiful Terminals in Pyscript</title>
-	<meta name="description" content="Electronics, Making, Software Development, and Amateur Radio from a Midwest Nerd">
-	
-	
-	
-	
-	<link rel ="stylesheet" type="text/css" href="../../css/style.css">
-	
-	<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://jeff.glass/post/pyscript-rich/rich-features.png"/>
-<meta name="twitter:title" content="Monkeypatching Rich for Beautiful Terminals in Pyscript"/>
-<meta name="twitter:description" content="Patching the Rich formattier to output to Pyscript"/>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Monkeypatching Rich for Beautiful Terminals in Pyscript :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Patching the Rich formattier to output to Pyscript" />
+<meta name="keywords" content="" />
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />	
-	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+  <meta name="robots" content="noodp" />
 
-	
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-BZTF8S6M1E', { 'anonymize_ip': false });
-}
-</script>
+<link rel="canonical" href="http://localhost:1313/post/pyscript-rich/" />
 
 
-	<link rel="icon" href="../../favicon.ico?v=2"> 
-	
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-BZTF8S6M1E"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-BZTF8S6M1E');
+        }
+      </script>
+
+
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/style.min.0e0c818b114bb71e1764792fa49e7afb438cb82cd6a9027a945736279ec3823e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/code.min.c4581949edab7810737609fc5568852bcd908945f14561e366dcd2300a370545.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/main.min.36833afd348409fc6c3d09d0897c5833d9d5bf1ff31f5e60ea3ee42ce2b1268c.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/syntax.min.a2cc694a9b481f15d41722bffc2cc54eea4c4f74fd9072b0b33253604c22606e.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+
+
+
+
+
+<link rel="shortcut icon" href="http://localhost:1313/favicon.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Monkeypatching Rich for Beautiful Terminals in Pyscript">
+<meta property="og:description" content="Patching the Rich formattier to output to Pyscript" />
+<meta property="og:url" content="http://localhost:1313/post/pyscript-rich/" />
+<meta property="og:site_name" content="Terminal" />
+
+
+  
+
+<meta property="og:image" content="http://localhost:1313/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-09-27 10:34:50 -0500 CDT" />
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
-	
-	<main>
-		<header>
 
-<div class="fixed z-20 flex flex-row items-end w-full p-2 bg-green-800 t-0">
-    
-    <div class="flex-none hidden lg:flex">
-        <div class="flex-none px-2">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-        <div class="flex-none menu-item-green ">
-            <a href="../../#Introduction" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Home
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../project" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            Projects
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../post" class="z-30 clickable-link-box no-style-link"><span></span></a> Blog  
-        </div>
-        <div class="flex-none menu-item-green">
-            <a href="../../oneoff" class="z-30 clickable-link-box no-style-link"><span></span></a>
-            One-Offs
-        </div>
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="../../">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
     </div>
     
-    <div class="flex justify-start flex-1 w-auto lg:hidden align-left large-menu">
-        <div class="flex-none menu-item-green mobile-menu-button">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </div>
-        <div class="flex-none">
-            <span class="px-4 text-3xl font-bold text-green-200 transition duration-500 transform hover:text-green-50">
-                <a href='../../' class= "no-style-link">jeff.glass</a>
-            </span>
-        </div>
-    </div>
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="../../about">About</a></li>
+        
+      
+        
+          <li><a href="../../showcase">Showcase</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
     
     
-    <div class="hidden text-green-200 transition mobile-menu">
-            <div class="w-auto m-auto"><a href="../../"         class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Home</a></div>
-            <div class="w-auto m-auto"><a href="../../project"  class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Projects</a></div>
-            <div class="w-auto m-auto"><a href="../../post"     class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">Blog</a></div>
-            <div class="w-auto m-auto"><a href="../../oneoff"   class="block w-auto px-2 py-2 m-auto text-2xl transition duration-300 no-style-link hover:bg-green-500">One-Offs</a></div>
-    </div>
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
     
-    <div class="justify-end flex-1 hidden w-auto h-auto align-top md:flex social-buttons">
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.youtube.com/channel/UCjgmTMVx2B5_DOB3bCZBq7A" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg class = "z-0" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z" fill="currentColor"/>
-            </svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.twitter.com/jeffersglass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" class="ionicon" viewBox="0 0 512 512"><path d="M496 109.5a201.8 201.8 0 01-56.55 15.3 97.51 97.51 0 0043.33-53.6 197.74 197.74 0 01-62.56 23.5A99.14 99.14 0 00348.31 64c-54.42 0-98.46 43.4-98.46 96.9a93.21 93.21 0 002.54 22.1 280.7 280.7 0 01-203-101.3A95.69 95.69 0 0036 130.4c0 33.6 17.53 63.3 44 80.7A97.5 97.5 0 0135.22 199v1.2c0 47 34 86.1 79 95a100.76 100.76 0 01-25.94 3.4 94.38 94.38 0 01-18.51-1.8c12.51 38.5 48.92 66.5 92.05 67.3A199.59 199.59 0 0139.5 405.6a203 203 0 01-23.5-1.4A278.68 278.68 0 00166.74 448c181.36 0 280.44-147.7 280.44-275.8 0-4.2-.11-8.4-.31-12.5A198.48 198.48 0 00496 109.5z" fill="currentColor"/></svg>
-        </div>
-        <div class="flex-none menu-item-green social-buttons">
-            <a href="https://www.linkedin.com/in/jeffrey-r-glass" class="z-30 clickable-link-box no-style-link" target="_blank"><span></span></a>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512"><path d="M444.17,32H70.28C49.85,32,32,46.7,32,66.89V441.61C32,461.91,49.85,480,70.28,480H444.06C464.6,480,480,461.79,480,441.61V66.89C480.12,46.7,464.6,32,444.17,32ZM170.87,405.43H106.69V205.88h64.18ZM141,175.54h-.46c-20.54,0-33.84-15.29-33.84-34.43,0-19.49,13.65-34.42,34.65-34.42s33.85,14.82,34.31,34.42C175.65,160.25,162.35,175.54,141,175.54ZM405.43,405.43H341.25V296.32c0-26.14-9.34-44-32.56-44-17.74,0-28.24,12-32.91,23.69-1.75,4.2-2.22,9.92-2.22,15.76V405.43H209.38V205.88h64.18v27.77c9.34-13.3,23.93-32.44,57.88-32.44,42.13,0,74,27.77,74,87.64Z" fill="currentColor"/></svg>
-        </div>
-    </div>
-</div>
+      
+        
+          <li><a href="../../about" >About</a></li>
+        
+      
+        
+          <li><a href="../../showcase" >Showcase</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
 </header>
-<script>
-    const btn = document.querySelector("div.mobile-menu-button")
-    const mobileMenu = document.querySelector(".mobile-menu")
-    const largeMenu = document.querySelector(".large-menu")
-    const socialButtons = document.querySelector(".social-buttons")
 
-    btn.addEventListener("click", () =>{
-        openMenu();
-    })
 
-    function openMenu() {
-        mobileMenu.classList.toggle("hidden");
-        largeMenu.classList.toggle("hidden");
-        socialButtons.classList.add("hidden");
-    }
-
+  <div class="content">
     
-    const smSize = 640;
-    const mdSize = 768;
-    const largeSize = 1024;
-    window.addEventListener('resize', function(event) {
-        if (event.target.screen.width > smSize ){
-            mobileMenu.classList.add("hidden");
-            largeMenu.classList.remove("hidden");
-        }
-    }, true);
-</script>
+<article class="post">
+  <h1 class="post-title">
+    <a href="http://localhost:1313/post/pyscript-rich/">Monkeypatching Rich for Beautiful Terminals in Pyscript</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2022-09-27</time></div>
 
-		<div class="w-full bg-green-800 bg-opacity-10">
-			<div class="pt-16"></div>
-			<article class="w-full px-16 pt-4 pb-4 m-auto lg:w-11/12 bg-gray-50">
-				<h1 class="pb-2 text-4xl">Monkeypatching Rich for Beautiful Terminals in Pyscript</h1>
-				<p>Published September 27, 2022</p>
-				
-				
-				<div>
-					<span>Tags:</span>
-					
-					<a href="../../tags/pyscript">pyscript</a>
-					
-					<a href="../../tags/python">python</a>
-					
-					<a href="../../tags/rich">rich</a>
-					
-				</div>
-				
-				
-				<hr>
-				<div>
-					<py-env>
+  
+    <span class="post-tags">
+      
+      #<a href="http://localhost:1313/tags/pyscript/">pyscript</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/python/">python</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/rich/">rich</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <py-env>
     - rich
     - Faker
     - paths:
@@ -172,20 +222,10 @@ if (!doNotTrack) {
     <p class="code-title">intro.py</p>
     
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#366">print</span>(<span style="color:#c30">&#34;[bold]This text[/bold] is being [b]formatted[/b] by the [link https://github.com/Textualize/rich]Rich Console Formatting Library[/]&#34;</span>)
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;and output with [yellow1 on grey15]&lt;PyScript&gt;[/]. There&#39;s a [b link ../../project/richdemo]whole page of examples :link:[/]&#34;</span>)
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;The REPL below is automatically formatted with RICH;&#34;</span>)
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;Press [italic]shift+enter[/] or click :play_button: to execute the REPL:&#34;</span>)</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;[bold]This text[/bold] is being [b]formatted[/b] by the [link https://github.com/Textualize/rich]Rich Console Formatting Library[/]&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;and output with [yellow1 on grey15]&lt;PyScript&gt;[/]. There&#39;s a [b link ../../project/richdemo]whole page of examples :link:[/]&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;The REPL below is automatically formatted with RICH;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Press [italic]shift+enter[/] or click :play_button: to execute the REPL:&#34;</span><span class="p">)</span></span></span></code></pre></div>
     
 </div></div>
     </div>
@@ -200,174 +240,87 @@ if (!doNotTrack) {
     
     <div class="overflow-y-scroll h-52">
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> Iterable
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">sys</span> <span style="color:#069;font-weight:bold">import</span> stdout, modules
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">contextlib</span> <span style="color:#069;font-weight:bold">import</span> contextmanager
-
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich</span> <span style="color:#069;font-weight:bold">import</span> get_console
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.console</span> <span style="color:#069;font-weight:bold">import</span> _is_jupyter
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.segment</span> <span style="color:#069;font-weight:bold">import</span> Segment
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">rich.jupyter</span>
-
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pyodide</span> <span style="color:#069;font-weight:bold">import</span> JsException
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">js</span> <span style="color:#069;font-weight:bold">import</span> console
-
-<span style="color:#09f;font-style:italic"># Per pyodide docs, determine if we&#39;re running inside pyodide at Runtime</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">is_pyodide</span>() <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
-    <span style="color:#069;font-weight:bold">return</span> <span style="color:#c30">&#34;pyodide&#34;</span> <span style="color:#000;font-weight:bold">in</span> modules
- 
-<span style="color:#09f;font-style:italic"># Patch jupyter detection of the global _console object to detect pyodide</span>
-c <span style="color:#555">=</span> get_console()
-c<span style="color:#555">.</span>is_jupyter <span style="color:#555">=</span> is_pyodide <span style="color:#09f;font-style:italic">#monkeypatch jupyter detection @propety</span>
-
-<span style="color:#09f;font-style:italic"># patch function so if user creates any additional Consoles they behave correctly</span>
-<span style="color:#09f;font-style:italic"># While the global _console us</span>
-_is_jupyter <span style="color:#555">=</span> is_pyodide
-
-<span style="color:#09f;font-style:italic"># Jupyter display method renders html and writes to stdout</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display_pyscript</span>(segments: Iterable[Segment], text: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#c30">&#34;&#34;&#34;Allow output of raw HTML within pyscript/pyodide&#34;&#34;&#34;</span>
-    html <span style="color:#555">=</span> rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>_render_segments(segments)
-    stdout<span style="color:#555">.</span>write(html)
-
-<span style="color:#09f;font-style:italic">#patch jupyter display method to write processed HTML to stdout</span>
-rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>display <span style="color:#555">=</span> display_pyscript 
-
-<span style="color:#366">print</span> <span style="color:#555">=</span> get_console()<span style="color:#555">.</span>print
-
-<span style="color:#09f;font-style:italic"># PyScripts OutputCTXManager is used for stdout but does not implement</span>
-<span style="color:#09f;font-style:italic"># full fill interface; this prevents a warning each time console tries</span>
-<span style="color:#09f;font-style:italic"># to print</span>
-stdout<span style="color:#555">.</span>flush <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span>: <span style="color:#069;font-weight:bold">None</span>
-
-<span style="color:#09f;font-style:italic">##---- Redefine Pyscript.write()---</span>
-<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">output_buffer</span>():
-    <span style="color:#c30">&#34;&#34;&#34; A (inefficient) buffer to capture stdout to a string &#34;&#34;&#34;</span>
-    <span style="color:#069;font-weight:bold">def</span> __init__(self):
-        self<span style="color:#555">.</span>_internal_buffer <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">write</span>(self, value: <span style="color:#366">any</span>):
-        <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">len</span>(self<span style="color:#555">.</span>_internal_buffer):
-            self<span style="color:#555">.</span>internal_buffer <span style="color:#555">+=</span> <span style="color:#c30">&#39;&lt;br&gt;&#39;</span>
-        self<span style="color:#555">.</span>_internal_buffer <span style="color:#555">+=</span> value
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">read</span>(self):
-        <span style="color:#069;font-weight:bold">return</span> self<span style="color:#555">.</span>_internal_buffer
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">flush</span>(self):
-        <span style="color:#069;font-weight:bold">pass</span>
-
-<span style="color:#99f">@contextmanager</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">stdout_to_buffer</span>(el:Element, append: <span style="color:#366">bool</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#c30">&#34;&#34;&#34; A context manager to manage an output_buffer, writes to an Element on closure&#34;&#34;&#34;</span>
-    <span style="color:#069;font-weight:bold">global</span> stdout <span style="color:#09f;font-style:italic">#Usually Pyscript OutputCTXManager at this pont</span>
-    _old_stdout <span style="color:#555">=</span> stdout
-    stdout <span style="color:#555">=</span> output_buffer()
-    <span style="color:#069;font-weight:bold">try</span>:
-        <span style="color:#069;font-weight:bold">yield</span>
-    <span style="color:#069;font-weight:bold">finally</span>:
-        el<span style="color:#555">.</span>_write(stdout<span style="color:#555">.</span>read(), append)
-        stdout <span style="color:#555">=</span> _old_stdout 
-
-Element<span style="color:#555">.</span>_write <span style="color:#555">=</span> Element<span style="color:#555">.</span>write
-
-<span style="color:#09f;font-style:italic">#Allow Element.write() to take an object from rich</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">newWrite</span>(self, value, append: <span style="color:#366">bool</span> <span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#c30">&#34;&#34;&#34; A Monkeypatched version of Pyscript&#39;s Element.write(), auto-transforming Rich objects and rendering standard objects. &#34;&#34;&#34;</span>
-    <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">isinstance</span>(value, (<span style="color:#366">str</span>, <span style="color:#c00;font-weight:bold">Exception</span>, JsException)):
-        self<span style="color:#555">.</span>_write(value, append)
-    <span style="color:#069;font-weight:bold">else</span>:
-        <span style="color:#069;font-weight:bold">with</span> stdout_to_buffer(self, append):
-            get_console()<span style="color:#555">.</span>print(value)
-
-Element<span style="color:#555">.</span>write <span style="color:#555">=</span> newWrite</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">modules</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">_is_jupyter</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.segment</span> <span class="kn">import</span> <span class="n">Segment</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">rich.jupyter</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pyodide</span> <span class="kn">import</span> <span class="n">JsException</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">js</span> <span class="kn">import</span> <span class="n">console</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Per pyodide docs, determine if we&#39;re running inside pyodide at Runtime</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_pyodide</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;pyodide&#34;</span> <span class="ow">in</span> <span class="n">modules</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1"># Patch jupyter detection of the global _console object to detect pyodide</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">.</span><span class="n">is_jupyter</span> <span class="o">=</span> <span class="n">is_pyodide</span> <span class="c1">#monkeypatch jupyter detection @propety</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># patch function so if user creates any additional Consoles they behave correctly</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># While the global _console us</span>
+</span></span><span class="line"><span class="cl"><span class="n">_is_jupyter</span> <span class="o">=</span> <span class="n">is_pyodide</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Jupyter display method renders html and writes to stdout</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">display_pyscript</span><span class="p">(</span><span class="n">segments</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Segment</span><span class="p">],</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Allow output of raw HTML within pyscript/pyodide&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">html</span> <span class="o">=</span> <span class="n">rich</span><span class="o">.</span><span class="n">jupyter</span><span class="o">.</span><span class="n">_render_segments</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#patch jupyter display method to write processed HTML to stdout</span>
+</span></span><span class="line"><span class="cl"><span class="n">rich</span><span class="o">.</span><span class="n">jupyter</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display_pyscript</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span><span class="o">.</span><span class="n">print</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># PyScripts OutputCTXManager is used for stdout but does not implement</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># full fill interface; this prevents a warning each time console tries</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># to print</span>
+</span></span><span class="line"><span class="cl"><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##---- Redefine Pyscript.write()---</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">output_buffer</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; A (inefficient) buffer to capture stdout to a string &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">internal_buffer</span> <span class="o">+=</span> <span class="s1">&#39;&lt;br&gt;&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span> <span class="o">+=</span> <span class="n">value</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@contextmanager</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">stdout_to_buffer</span><span class="p">(</span><span class="n">el</span><span class="p">:</span><span class="n">Element</span><span class="p">,</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; A context manager to manage an output_buffer, writes to an Element on closure&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">stdout</span> <span class="c1">#Usually Pyscript OutputCTXManager at this pont</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_old_stdout</span> <span class="o">=</span> <span class="n">stdout</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stdout</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">el</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">append</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">stdout</span> <span class="o">=</span> <span class="n">_old_stdout</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Element</span><span class="o">.</span><span class="n">_write</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">write</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#Allow Element.write() to take an object from rich</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">newWrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; A Monkeypatched version of Pyscript&#39;s Element.write(), auto-transforming Rich objects and rendering standard objects. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">JsException</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">append</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">stdout_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">append</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">get_console</span><span class="p">()</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Element</span><span class="o">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">newWrite</span></span></span></code></pre></div>
     
     </div>
     <p class="post-img-caption">Scroll to see complete code</p>
@@ -406,64 +359,31 @@ Element<span style="color:#555">.</span>write <span style="color:#555">=</span> 
 <h4 class="post-h4">Making Rich Think We're in a Jupyter Notebook</h3>
 <p class="post-p">Since we're intending to run this in a browser anyway, we could just set <code class="code">console.is_jupyter = True</code> to force Rich to render HTML. But we'll be slightly nicer and redirect that property to a new function <code class="code">is_pyodide</code>. This just looks to see if 'pyodide' is in our available modules, <a href="https://pyodide.org/en/stable/usage/faq.html#how-to-detect-that-code-is-run-with-pyodide">as suggested by the pyodide FAQ</a>. This means that whenever our code is running in Pyodide, the Rich library will render as if it's going to be output to a Jupyter notebook.</p>
 <div class="mb-6 lg:mx-4">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Per pyodide docs, determine if we&#39;re running inside pyodide at Runtime</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">is_pyodide</span>() <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
-    <span style="color:#069;font-weight:bold">return</span> <span style="color:#c30">&#34;pyodide&#34;</span> <span style="color:#000;font-weight:bold">in</span> modules
- 
-<span style="color:#09f;font-style:italic"># Patch jupyter detection of the global _console object to detect pyodide</span>
-c <span style="color:#555">=</span> get_console()
-c<span style="color:#555">.</span>is_jupyter <span style="color:#555">=</span> is_pyodide <span style="color:#09f;font-style:italic">#monkeypatch jupyter detection @propety</span>
-
-<span style="color:#09f;font-style:italic"># patch function so if user creates any additional Consoles they behave correctly</span>
-<span style="color:#09f;font-style:italic"># While the global _console us</span>
-_is_jupyter <span style="color:#555">=</span> is_pyodide</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Per pyodide docs, determine if we&#39;re running inside pyodide at Runtime</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_pyodide</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;pyodide&#34;</span> <span class="ow">in</span> <span class="n">modules</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1"># Patch jupyter detection of the global _console object to detect pyodide</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">.</span><span class="n">is_jupyter</span> <span class="o">=</span> <span class="n">is_pyodide</span> <span class="c1">#monkeypatch jupyter detection @propety</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># patch function so if user creates any additional Consoles they behave correctly</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># While the global _console us</span>
+</span></span><span class="line"><span class="cl"><span class="n">_is_jupyter</span> <span class="o">=</span> <span class="n">is_pyodide</span></span></span></code></pre></div>
 </div>
 <h4 class="post-h4">Replacing Rich's Display Function with our Own</h4>
 <p class="post-p">Similarly, we'll point <code class="code">rich.jupyter.display</code> at a new function we'll write that gets the output that the Jupyter notebook would have received and send it to stdout. And, as noted above, we'll redirect the usual <code class="code">print</code> function to the rich print function, to get nicely formatted outputs whenever we use the standard print() syntax.</p>
 <div class="mb-6 lg:mx-4">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Jupyter display method renders html and writes to stdout</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">display_pyscript</span>(segments: Iterable[Segment], text: <span style="color:#366">str</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#c30">&#34;&#34;&#34;Allow output of raw HTML within pyscript/pyodide&#34;&#34;&#34;</span>
-    html <span style="color:#555">=</span> rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>_render_segments(segments)
-    stdout<span style="color:#555">.</span>write(html)
-
-<span style="color:#09f;font-style:italic">#patch jupyter display method to write processed HTML to stdout</span>
-rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>display <span style="color:#555">=</span> display_pyscript 
-
-<span style="color:#366">print</span> <span style="color:#555">=</span> get_console()<span style="color:#555">.</span>print</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Jupyter display method renders html and writes to stdout</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">display_pyscript</span><span class="p">(</span><span class="n">segments</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Segment</span><span class="p">],</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Allow output of raw HTML within pyscript/pyodide&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">html</span> <span class="o">=</span> <span class="n">rich</span><span class="o">.</span><span class="n">jupyter</span><span class="o">.</span><span class="n">_render_segments</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#patch jupyter display method to write processed HTML to stdout</span>
+</span></span><span class="line"><span class="cl"><span class="n">rich</span><span class="o">.</span><span class="n">jupyter</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display_pyscript</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span><span class="o">.</span><span class="n">print</span></span></span></code></pre></div>
 </div>
 <h4 class="post-h4">Fixing <span class="italic">Element.write()</span></h4>
 <p class="post-p">Finally, we need to match some adjustments to PyScript's <code class="code">Element.write()</code> function, which is a utility method that allows PyScript users to send output to a specific DOM element directly. Since this bypasses the usual writing to stdout (and directly modifies the <span class="italic">innerHTML</span> attribute of the DOM element), we need to do a little legwork to get the formatting to work.</p>
@@ -476,104 +396,52 @@ rich<span style="color:#555">.</span>jupyter<span style="color:#555">.</span>dis
 </p>
 <p class="post-p"> I've implemented a rudementary <a href="https://docs.python.org/3/glossary.html#term-file-object">File-like object</a> called <code class="code">output_buffer</code> that simply saves anything written to it as a concatenated string. If this isn't the first thing in the buffer, we insert a <code class="code">&lt;br&gt;</code> tag to make it start on a new line. This is admittedly a hack, but it largely gives the right appearance.</p>
 <div class="mb-6 overflow-y-scroll h-76 lg:mx-4">
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># PyScripts OutputCTXManager is used for stdout but does not implement</span>
-<span style="color:#09f;font-style:italic"># full fill interface; this prevents a warning each time console tries</span>
-<span style="color:#09f;font-style:italic"># to print</span>
-stdout<span style="color:#555">.</span>flush <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span>: <span style="color:#069;font-weight:bold">None</span>
-
-<span style="color:#09f;font-style:italic">##---- Redefine Pyscript.write()---</span>
-<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">output_buffer</span>():
-    <span style="color:#c30">&#34;&#34;&#34; A (inefficient) buffer to capture stdout to a string &#34;&#34;&#34;</span>
-    <span style="color:#069;font-weight:bold">def</span> __init__(self):
-        self<span style="color:#555">.</span>_internal_buffer <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">write</span>(self, value: <span style="color:#366">any</span>):
-        <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">len</span>(self<span style="color:#555">.</span>_internal_buffer):
-            self<span style="color:#555">.</span>internal_buffer <span style="color:#555">+=</span> <span style="color:#c30">&#39;&lt;br&gt;&#39;</span>
-        self<span style="color:#555">.</span>_internal_buffer <span style="color:#555">+=</span> value
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">read</span>(self):
-        <span style="color:#069;font-weight:bold">return</span> self<span style="color:#555">.</span>_internal_buffer
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">flush</span>(self):
-        <span style="color:#069;font-weight:bold">pass</span>
-
-<span style="color:#99f">@contextmanager</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">stdout_to_buffer</span>(el:Element, append: <span style="color:#366">bool</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#c30">&#34;&#34;&#34; A context manager to manage an output_buffer, writes to an Element on closure&#34;&#34;&#34;</span>
-    <span style="color:#069;font-weight:bold">global</span> stdout <span style="color:#09f;font-style:italic">#Usually Pyscript OutputCTXManager at this pont</span>
-    _old_stdout <span style="color:#555">=</span> stdout
-    stdout <span style="color:#555">=</span> output_buffer()
-    <span style="color:#069;font-weight:bold">try</span>:
-        <span style="color:#069;font-weight:bold">yield</span>
-    <span style="color:#069;font-weight:bold">finally</span>:
-        el<span style="color:#555">.</span>_write(stdout<span style="color:#555">.</span>read(), append)
-        stdout <span style="color:#555">=</span> _old_stdout 
-
-Element<span style="color:#555">.</span>_write <span style="color:#555">=</span> Element<span style="color:#555">.</span>write
-
-<span style="color:#09f;font-style:italic">#Allow Element.write() to take an object from rich</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">newWrite</span>(self, value, append: <span style="color:#366">bool</span> <span style="color:#555">=</span><span style="color:#069;font-weight:bold">False</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-    <span style="color:#c30">&#34;&#34;&#34; A Monkeypatched version of Pyscript&#39;s Element.write(), auto-transforming Rich objects and rendering standard objects. &#34;&#34;&#34;</span>
-    <span style="color:#069;font-weight:bold">if</span> <span style="color:#366">isinstance</span>(value, (<span style="color:#366">str</span>, <span style="color:#c00;font-weight:bold">Exception</span>, JsException)):
-        self<span style="color:#555">.</span>_write(value, append)
-    <span style="color:#069;font-weight:bold">else</span>:
-        <span style="color:#069;font-weight:bold">with</span> stdout_to_buffer(self, append):
-            get_console()<span style="color:#555">.</span>print(value)
-
-Element<span style="color:#555">.</span>write <span style="color:#555">=</span> newWrite</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># PyScripts OutputCTXManager is used for stdout but does not implement</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># full fill interface; this prevents a warning each time console tries</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># to print</span>
+</span></span><span class="line"><span class="cl"><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##---- Redefine Pyscript.write()---</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">output_buffer</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; A (inefficient) buffer to capture stdout to a string &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">internal_buffer</span> <span class="o">+=</span> <span class="s1">&#39;&lt;br&gt;&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span> <span class="o">+=</span> <span class="n">value</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_buffer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@contextmanager</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">stdout_to_buffer</span><span class="p">(</span><span class="n">el</span><span class="p">:</span><span class="n">Element</span><span class="p">,</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; A context manager to manage an output_buffer, writes to an Element on closure&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">stdout</span> <span class="c1">#Usually Pyscript OutputCTXManager at this pont</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_old_stdout</span> <span class="o">=</span> <span class="n">stdout</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stdout</span> <span class="o">=</span> <span class="n">output_buffer</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">el</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">append</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">stdout</span> <span class="o">=</span> <span class="n">_old_stdout</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Element</span><span class="o">.</span><span class="n">_write</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">write</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#Allow Element.write() to take an object from rich</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">newWrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; A Monkeypatched version of Pyscript&#39;s Element.write(), auto-transforming Rich objects and rendering standard objects. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">JsException</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">append</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">stdout_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">append</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">get_console</span><span class="p">()</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Element</span><span class="o">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">newWrite</span></span></span></code></pre></div>
 </div>
 <p class="post-img-caption">Scroll to see complete code</p>
 <h2 class="post-h2">What About ...</h2>
@@ -601,355 +469,178 @@ Element<span style="color:#555">.</span>write <span style="color:#555">=</span> 
     
     <div class="overflow-y-scroll h-52">
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">153
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">154
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">155
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">156
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">157
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">158
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">159
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">160
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">161
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">162
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">163
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">164
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">165
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">166
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">167
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">168
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">169
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">170
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">171
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich</span> <span style="color:#069;font-weight:bold">import</span> get_console
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.console</span> <span style="color:#069;font-weight:bold">import</span> Console, RenderableType, ConsoleRenderable
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">typing</span> <span style="color:#069;font-weight:bold">import</span> Type, Optional, Callable, IO, List
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">types</span> <span style="color:#069;font-weight:bold">import</span> TracebackType
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.live_render</span> <span style="color:#069;font-weight:bold">import</span> VerticalOverflowMethod
-
-<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">PyscriptRefresher</span>():
-    <span style="color:#069;font-weight:bold">def</span> __init__(
-        self,
-        renderable: RenderableType,
-        element: <span style="color:#c30">&#39;Element&#39;</span>,
-        live: <span style="color:#c30">&#39;Live&#39;</span>,
-        refresh_per_second: <span style="color:#366">float</span> <span style="color:#555">=</span> <span style="color:#f60">4</span>,
-    ) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        self<span style="color:#555">.</span>_renderable <span style="color:#555">=</span> renderable
-        self<span style="color:#555">.</span>live <span style="color:#555">=</span> live
-        self<span style="color:#555">.</span>element <span style="color:#555">=</span> element
-        self<span style="color:#555">.</span>refresh_per_second <span style="color:#555">=</span> refresh_per_second
-        self<span style="color:#555">.</span>done <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>
-        self<span style="color:#555">.</span>_refresh_task <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>
-
-
-    <span style="color:#069;font-weight:bold">async</span> <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">update_live</span>(self) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;Starting update live function&#34;</span>)
-        <span style="color:#069;font-weight:bold">while</span> <span style="color:#069;font-weight:bold">True</span>:
-            console<span style="color:#555">.</span>log(<span style="color:#c30">f</span><span style="color:#c30">&#34;About to write </span><span style="color:#a00">{</span>self<span style="color:#555">.</span>_renderable<span style="color:#a00">}</span><span style="color:#c30">&#34;</span>)
-            self<span style="color:#555">.</span>element<span style="color:#555">.</span>write(self<span style="color:#555">.</span>_renderable)
-            <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">1</span><span style="color:#555">/</span>self<span style="color:#555">.</span>refresh_per_second)
-
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">run</span>(self) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Starts the refresh coroutine if it is not already running
-</span><span style="color:#c30">
-</span><span style="color:#c30">        Returns:
-</span><span style="color:#c30">            True if the coroutine was successfully created and started
-</span><span style="color:#c30">            False if the coroutine was already running, or not successfully created
-</span><span style="color:#c30">        &#34;&#34;&#34;</span>
-        <span style="color:#069;font-weight:bold">if</span> self<span style="color:#555">.</span>_refresh_task <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>:
-            <span style="color:#069;font-weight:bold">return</span> <span style="color:#069;font-weight:bold">False</span>
-        loop <span style="color:#555">=</span> pyscript<span style="color:#555">.</span>loop
-        console<span style="color:#555">.</span>log(<span style="color:#c30">&#34;About to start running refresh task&#34;</span>)
-        self<span style="color:#555">.</span>_refresh_task <span style="color:#555">=</span> loop<span style="color:#555">.</span>create_task(self<span style="color:#555">.</span>update_live())
-        <span style="color:#09f;font-style:italic">#loop.run_until_complete(self._refresh_task)</span>
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">stop</span>(self) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Stops the refresh coroutine if it is running&#34;&#34;&#34;</span>
-        <span style="color:#069;font-weight:bold">if</span> self<span style="color:#555">.</span>_refresh_task <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>:
-            self<span style="color:#555">.</span>_refresh_task<span style="color:#555">.</span>cancel()
-            self<span style="color:#555">.</span>_refresh_task <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>
-
-
-<span style="color:#069;font-weight:bold">class</span> <span style="color:#0a8;font-weight:bold">Live</span>():
-    <span style="color:#c30">&#34;&#34;&#34;Renders an auto-updating live display of any given renderable.
-</span><span style="color:#c30">    Mirrors the API of rich.live.LIVE
-</span><span style="color:#c30">
-</span><span style="color:#c30">    Args:
-</span><span style="color:#c30">        renderable (RenderableType, optional): The renderable to live display. Defaults to displaying nothing.
-</span><span style="color:#c30">        console (Console, optional): Optional Console instance. Default will an internal Console instance writing to stdout. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        auto_refresh (bool, optional): Enable auto refresh. If disabled, you will need to call `refresh()` or `update()` with refresh flag. Defaults to True &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        refresh_per_second (float, optional): Number of times per second to refresh the live display. Defaults to 4. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        transient (bool, optional): Clear the renderable on exit (has no effect when screen=True). Defaults to False. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        redirect_stdout (bool, optional): Enable redirection of stdout, so ``print`` may be used. Defaults to True. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        redirect_stderr (bool, optional): Enable redirection of stderr. Defaults to True. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        vertical_overflow (VerticalOverflowMethod, optional): How to handle renderable when it is too tall for the console. Defaults to &#34;ellipsis&#34;. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        get_renderable (Callable[[], RenderableType], optional): Optional callable to get renderable. Defaults to None. &gt;&gt;&gt; NOT IMPLEMENTED
-</span><span style="color:#c30">        element_id (str): The id of a DOM element (often a div) that the live element will be written to
-</span><span style="color:#c30">        
-</span><span style="color:#c30">        The screen parameters of rich.live.Live is not used
-</span><span style="color:#c30">    &#34;&#34;&#34;</span>
-
-    <span style="color:#069;font-weight:bold">def</span> __init__(
-        self,
-        renderable: Optional[RenderableType] <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>,
-        element_id: <span style="color:#366">str</span> <span style="color:#555">=</span> <span style="color:#c30">&#39;&#39;</span>,
-        <span style="color:#555">*</span>,
-        rich_console: Optional[Console] <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>,
-        <span style="color:#09f;font-style:italic">#screen: bool attribute not used</span>
-        auto_refresh: <span style="color:#366">bool</span> <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>,
-        refresh_per_second: <span style="color:#366">float</span> <span style="color:#555">=</span> <span style="color:#f60">4</span>,
-        transient: <span style="color:#366">bool</span> <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>,
-        redirect_stdout: <span style="color:#366">bool</span> <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>,
-        redirect_stderr: <span style="color:#366">bool</span> <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">True</span>,
-        vertical_overflow: VerticalOverflowMethod <span style="color:#555">=</span> <span style="color:#c30">&#34;ellipsis&#34;</span>,
-        get_renderable: Optional[Callable[[], RenderableType]] <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>,
-        <span style="color:#555">**</span>kwargs
-    ) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        <span style="color:#069;font-weight:bold">assert</span> refresh_per_second <span style="color:#555">&gt;</span> <span style="color:#f60">0</span>, <span style="color:#c30">&#34;refresh_per_second must be &gt; 0&#34;</span>
-        self<span style="color:#555">.</span>_renderable <span style="color:#555">=</span> renderable
-        self<span style="color:#555">.</span>console <span style="color:#555">=</span> rich_console <span style="color:#069;font-weight:bold">if</span> rich_console <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span> <span style="color:#069;font-weight:bold">else</span> get_console()
-        <span style="color:#09f;font-style:italic">#self._screen = screen</span>
-        self<span style="color:#555">.</span>_alt_screen <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>
-
-        self<span style="color:#555">.</span>_redirect_stdout <span style="color:#555">=</span> redirect_stdout
-        self<span style="color:#555">.</span>_redirect_stderr <span style="color:#555">=</span> redirect_stderr
-        self<span style="color:#555">.</span>_restore_stdout: Optional[IO[<span style="color:#366">str</span>]] <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>
-        self<span style="color:#555">.</span>_restore_stderr: Optional[IO[<span style="color:#366">str</span>]] <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">None</span>
-
-        <span style="color:#09f;font-style:italic">#self._lock = RLock()</span>
-        self<span style="color:#555">.</span>auto_refresh <span style="color:#555">=</span> auto_refresh
-        self<span style="color:#555">.</span>transient <span style="color:#555">=</span> transient
-
-        self<span style="color:#555">.</span>vertical_overflow <span style="color:#555">=</span> vertical_overflow
-        self<span style="color:#555">.</span>_get_renderable <span style="color:#555">=</span> get_renderable
-
-        <span style="color:#069;font-weight:bold">assert</span> element_id <span style="color:#555">!=</span> <span style="color:#c30">&#39;&#39;</span>
-        self<span style="color:#555">.</span>element <span style="color:#555">=</span> Element(element_id)
-
-        self<span style="color:#555">.</span>refresh_per_second <span style="color:#555">=</span> refresh_per_second
-        self<span style="color:#555">.</span>_refresh_thread <span style="color:#555">=</span> PyscriptRefresher(renderable <span style="color:#555">=</span> self<span style="color:#555">.</span>_renderable, element <span style="color:#555">=</span> self<span style="color:#555">.</span>element, live<span style="color:#555">=</span>self, refresh_per_second <span style="color:#555">=</span> self<span style="color:#555">.</span>refresh_per_second)
-        
-
-    <span style="color:#99f">@property</span>
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">is_started</span>(self) <span style="color:#555">-&gt;</span> <span style="color:#366">bool</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Check if live display has been started.&#34;&#34;&#34;</span>
-        <span style="color:#069;font-weight:bold">return</span> self<span style="color:#555">.</span>_refresh_thread<span style="color:#555">.</span>_refresh_task <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">get_renderable</span>(self) <span style="color:#555">-&gt;</span> RenderableType:
-        renderable <span style="color:#555">=</span> (
-            self<span style="color:#555">.</span>_get_renderable()
-            <span style="color:#069;font-weight:bold">if</span> self<span style="color:#555">.</span>_get_renderable <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>
-            <span style="color:#069;font-weight:bold">else</span> self<span style="color:#555">.</span>_renderable
-        )
-        <span style="color:#069;font-weight:bold">return</span> renderable <span style="color:#000;font-weight:bold">or</span> <span style="color:#c30">&#34;&#34;</span>
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">start</span>(self, refresh: <span style="color:#366">bool</span> <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Start live rendering display.
-</span><span style="color:#c30">
-</span><span style="color:#c30">        Args:
-</span><span style="color:#c30">            refresh (bool, optional): Also refresh. Defaults to False.
-</span><span style="color:#c30">        &#34;&#34;&#34;</span>
-        
-        <span style="color:#069;font-weight:bold">if</span> refresh: self<span style="color:#555">.</span>element<span style="color:#555">.</span>write(self<span style="color:#555">.</span>_renderable)
-        self<span style="color:#555">.</span>_refresh_thread<span style="color:#555">.</span>run()
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">stop</span>(self) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Stop live rendering display.&#34;&#34;&#34;</span>
-        self<span style="color:#555">.</span>_refresh_thread<span style="color:#555">.</span>stop()
-
-    <span style="color:#069;font-weight:bold">def</span> __enter__(self) <span style="color:#555">-&gt;</span> <span style="color:#c30">&#39;Live&#39;</span>:
-        self<span style="color:#555">.</span>start(refresh<span style="color:#555">=</span>self<span style="color:#555">.</span>_renderable <span style="color:#000;font-weight:bold">is</span> <span style="color:#000;font-weight:bold">not</span> <span style="color:#069;font-weight:bold">None</span>)
-        <span style="color:#069;font-weight:bold">return</span> self
-
-    <span style="color:#069;font-weight:bold">def</span> __exit__(
-        self,
-        exc_type: Optional[Type[<span style="color:#c00;font-weight:bold">BaseException</span>]],
-        exc_val: Optional[<span style="color:#c00;font-weight:bold">BaseException</span>],
-        exc_tb: Optional[TracebackType],
-    ) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        self<span style="color:#555">.</span>stop()
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">renderable</span>(self):
-        <span style="color:#069;font-weight:bold">return</span> self<span style="color:#555">.</span>_renderable
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">update</span>(self, renderable: RenderableType, <span style="color:#555">*</span>, refresh: <span style="color:#366">bool</span> <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">False</span>) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Update the renderable that is being displayed
-</span><span style="color:#c30">
-</span><span style="color:#c30">        Args:
-</span><span style="color:#c30">            renderable (RenderableType): New renderable to use.
-</span><span style="color:#c30">            refresh (bool, optional): Refresh the display. Defaults to False.
-</span><span style="color:#c30">        &#34;&#34;&#34;</span>
-        <span style="color:#069;font-weight:bold">pass</span> <span style="color:#09f;font-style:italic">#Not implemented</span>
-    
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">refresh</span>(self) <span style="color:#555">-&gt;</span> <span style="color:#069;font-weight:bold">None</span>:
-        <span style="color:#c30">&#34;&#34;&#34;Update the display of the Live Render.&#34;&#34;&#34;</span>
-        <span style="color:#069;font-weight:bold">pass</span> <span style="color:#09f;font-style:italic">#not implemented</span>
-
-    <span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">process_renderables</span>(
-        self, renderables: List[ConsoleRenderable]
-    ) <span style="color:#555">-&gt;</span> List[ConsoleRenderable]:
-        <span style="color:#069;font-weight:bold">pass</span> <span style="color:#09f;font-style:italic">#not implemented</span>
-</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">get_console</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span><span class="p">,</span> <span class="n">RenderableType</span><span class="p">,</span> <span class="n">ConsoleRenderable</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">IO</span><span class="p">,</span> <span class="n">List</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">TracebackType</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.live_render</span> <span class="kn">import</span> <span class="n">VerticalOverflowMethod</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">PyscriptRefresher</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">renderable</span><span class="p">:</span> <span class="n">RenderableType</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">element</span><span class="p">:</span> <span class="s1">&#39;Element&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">live</span><span class="p">:</span> <span class="s1">&#39;Live&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">refresh_per_second</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span> <span class="o">=</span> <span class="n">renderable</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">live</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">element</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_per_second</span> <span class="o">=</span> <span class="n">refresh_per_second</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_task</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_live</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&#34;Starting update live function&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;About to write </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">refresh_per_second</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Starts the refresh coroutine if it is not already running
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Returns:
+</span></span></span><span class="line"><span class="cl"><span class="s2">            True if the coroutine was successfully created and started
+</span></span></span><span class="line"><span class="cl"><span class="s2">            False if the coroutine was already running, or not successfully created
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loop</span> <span class="o">=</span> <span class="n">pyscript</span><span class="o">.</span><span class="n">loop</span>
+</span></span><span class="line"><span class="cl">        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&#34;About to start running refresh task&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_task</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_live</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#loop.run_until_complete(self._refresh_task)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Stops the refresh coroutine if it is running&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_task</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Live</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Renders an auto-updating live display of any given renderable.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    Mirrors the API of rich.live.LIVE
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    Args:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        renderable (RenderableType, optional): The renderable to live display. Defaults to displaying nothing.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        console (Console, optional): Optional Console instance. Default will an internal Console instance writing to stdout. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        auto_refresh (bool, optional): Enable auto refresh. If disabled, you will need to call `refresh()` or `update()` with refresh flag. Defaults to True &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        refresh_per_second (float, optional): Number of times per second to refresh the live display. Defaults to 4. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        transient (bool, optional): Clear the renderable on exit (has no effect when screen=True). Defaults to False. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        redirect_stdout (bool, optional): Enable redirection of stdout, so ``print`` may be used. Defaults to True. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        redirect_stderr (bool, optional): Enable redirection of stderr. Defaults to True. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        vertical_overflow (VerticalOverflowMethod, optional): How to handle renderable when it is too tall for the console. Defaults to &#34;ellipsis&#34;. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        get_renderable (Callable[[], RenderableType], optional): Optional callable to get renderable. Defaults to None. &gt;&gt;&gt; NOT IMPLEMENTED
+</span></span></span><span class="line"><span class="cl"><span class="s2">        element_id (str): The id of a DOM element (often a div) that the live element will be written to
+</span></span></span><span class="line"><span class="cl"><span class="s2">        
+</span></span></span><span class="line"><span class="cl"><span class="s2">        The screen parameters of rich.live.Live is not used
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">renderable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RenderableType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">element_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="o">*</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rich_console</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Console</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#screen: bool attribute not used</span>
+</span></span><span class="line"><span class="cl">        <span class="n">auto_refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">refresh_per_second</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">transient</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">redirect_stdout</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">redirect_stderr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vertical_overflow</span><span class="p">:</span> <span class="n">VerticalOverflowMethod</span> <span class="o">=</span> <span class="s2">&#34;ellipsis&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">get_renderable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="n">RenderableType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="o">**</span><span class="n">kwargs</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">refresh_per_second</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&#34;refresh_per_second must be &gt; 0&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span> <span class="o">=</span> <span class="n">renderable</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">console</span> <span class="o">=</span> <span class="n">rich_console</span> <span class="k">if</span> <span class="n">rich_console</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">get_console</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#self._screen = screen</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_alt_screen</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span> <span class="o">=</span> <span class="n">redirect_stdout</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span> <span class="o">=</span> <span class="n">redirect_stderr</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_restore_stdout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_restore_stderr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">#self._lock = RLock()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">auto_refresh</span> <span class="o">=</span> <span class="n">auto_refresh</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">transient</span> <span class="o">=</span> <span class="n">transient</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">vertical_overflow</span> <span class="o">=</span> <span class="n">vertical_overflow</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_get_renderable</span> <span class="o">=</span> <span class="n">get_renderable</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">element_id</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_per_second</span> <span class="o">=</span> <span class="n">refresh_per_second</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_thread</span> <span class="o">=</span> <span class="n">PyscriptRefresher</span><span class="p">(</span><span class="n">renderable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span><span class="p">,</span> <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">,</span> <span class="n">live</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">refresh_per_second</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_per_second</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@property</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">is_started</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Check if live display has been started.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_thread</span><span class="o">.</span><span class="n">_refresh_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get_renderable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RenderableType</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">renderable</span> <span class="o">=</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_get_renderable</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_renderable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">renderable</span> <span class="ow">or</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Start live rendering display.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Args:
+</span></span></span><span class="line"><span class="cl"><span class="s2">            refresh (bool, optional): Also refresh. Defaults to False.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">refresh</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_thread</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Stop live rendering display.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_thread</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Live&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">refresh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">exc_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">exc_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TracebackType</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">renderable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_renderable</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">renderable</span><span class="p">:</span> <span class="n">RenderableType</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Update the renderable that is being displayed
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Args:
+</span></span></span><span class="line"><span class="cl"><span class="s2">            renderable (RenderableType): New renderable to use.
+</span></span></span><span class="line"><span class="cl"><span class="s2">            refresh (bool, optional): Refresh the display. Defaults to False.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span> <span class="c1">#Not implemented</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34;Update the display of the Live Render.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span> <span class="c1">#not implemented</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">process_renderables</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="p">,</span> <span class="n">renderables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ConsoleRenderable</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ConsoleRenderable</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span> <span class="c1">#not implemented</span>
+</span></span></code></pre></div>
     
     </div>
     <p class="post-img-caption">Scroll to see complete code</p>
@@ -968,74 +659,37 @@ Element<span style="color:#555">.</span>write <span style="color:#555">=</span> 
     
     <div class="overflow-y-scroll h-52">
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">asyncio</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">collections</span> <span style="color:#069;font-weight:bold">import</span> deque
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">random</span> <span style="color:#069;font-weight:bold">import</span> random, choice, randint
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.table</span> <span style="color:#069;font-weight:bold">import</span> Table
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">rich.emoji</span> <span style="color:#069;font-weight:bold">import</span> Emoji
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">datetime</span> <span style="color:#069;font-weight:bold">import</span> datetime
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">faker</span> <span style="color:#069;font-weight:bold">import</span> Faker
-<span style="color:#09f;font-style:italic">#from livepatch import Live</span>
-
-fake <span style="color:#555">=</span> Faker()
-
-<span style="color:#069;font-weight:bold">while</span> (<span style="color:#069;font-weight:bold">True</span>):
-    table <span style="color:#555">=</span> Table(width <span style="color:#555">=</span> <span style="color:#f60">80</span>)
-    table<span style="color:#555">.</span>add_column(<span style="color:#c30">&#34;Time&#34;</span>, width<span style="color:#555">=</span><span style="color:#f60">5</span>)
-    table<span style="color:#555">.</span>add_column(<span style="color:#c30">&#34;Source&#34;</span>, width<span style="color:#555">=</span><span style="color:#f60">15</span>)
-    table<span style="color:#555">.</span>add_column(<span style="color:#c30">&#34;Destination&#34;</span>, width<span style="color:#555">=</span><span style="color:#f60">15</span>)
-
-    max_rows <span style="color:#555">=</span> randint(<span style="color:#f60">6</span>,<span style="color:#f60">10</span>)
-    num_rows <span style="color:#555">=</span> <span style="color:#f60">0</span>
-
-    <span style="color:#069;font-weight:bold">while</span> num_rows <span style="color:#555">&lt;=</span> max_rows:
-        <span style="color:#069;font-weight:bold">with</span> Live(table, <span style="color:#c30">&#34;live-table-output&#34;</span>):
-            <span style="color:#069;font-weight:bold">await</span> asyncio<span style="color:#555">.</span>sleep(<span style="color:#f60">.3</span> <span style="color:#555">+</span> random() <span style="color:#555">*</span> <span style="color:#f60">.6</span>)
-            num_rows <span style="color:#555">+=</span> <span style="color:#f60">1</span>
-
-            time <span style="color:#555">=</span> datetime<span style="color:#555">.</span>now()<span style="color:#555">.</span>strftime(<span style="color:#c30">&#39;%S.</span><span style="color:#a00">%f</span><span style="color:#c30">&#39;</span>)
-            time <span style="color:#555">=</span> time[:<span style="color:#366">min</span>(<span style="color:#366">len</span>(time), <span style="color:#f60">5</span>)]
-            source, dest <span style="color:#555">=</span> fake<span style="color:#555">.</span>ipv4(), fake<span style="color:#555">.</span>ipv4()
-
-            <span style="color:#09f;font-style:italic">#data added here is automatically visible in the Table</span>
-            table<span style="color:#555">.</span>add_row(time, source, dest)         </code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">asyncio</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.emoji</span> <span class="kn">import</span> <span class="n">Emoji</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Faker</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#from livepatch import Live</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">fake</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">80</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&#34;Time&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&#34;Source&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&#34;Destination&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">max_rows</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">num_rows</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">num_rows</span> <span class="o">&lt;=</span> <span class="n">max_rows</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Live</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s2">&#34;live-table-output&#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.3</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">.6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">num_rows</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%S.</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="mi">5</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">source</span><span class="p">,</span> <span class="n">dest</span> <span class="o">=</span> <span class="n">fake</span><span class="o">.</span><span class="n">ipv4</span><span class="p">(),</span> <span class="n">fake</span><span class="o">.</span><span class="n">ipv4</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">#data added here is automatically visible in the Table</span>
+</span></span><span class="line"><span class="cl">            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>         </span></span></code></pre></div>
     
     </div>
     <p class="post-img-caption">Scroll to see complete code</p>
@@ -1059,14 +713,7 @@ fake <span style="color:#555">=</span> Faker()
     <p class="code-title">richnonformatted.py</p>
     
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#366">print</span>(<span style="color:#c30">&#34;[blink]Blinking Text[/blink]&#34;</span>)</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;[blink]Blinking Text[/blink]&#34;</span><span class="p">)</span></span></span></code></pre></div>
     
 </div></div>
     </div>
@@ -1079,16 +726,8 @@ fake <span style="color:#555">=</span> Faker()
     <p class="code-title">richemoji.py</p>
     
     
-    <div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python3" data-lang="python3"><span style="color:#366">print</span>(<span style="color:#c30">&#34;:red_heart-emoji:&#34;</span>)
-<span style="color:#366">print</span>(<span style="color:#c30">&#34;:red_heart-text:&#34;</span>)</code></pre></td></tr></table>
-</div>
-</div>
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;:red_heart-emoji:&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;:red_heart-text:&#34;</span><span class="p">)</span></span></span></code></pre></div>
     
 </div></div>
     </div>
@@ -1116,19 +755,68 @@ fake <span style="color:#555">=</span> Faker()
 
     
 </div>
-				</div>
-				
-			</article>
-			<footer>
-    <div class = "pt-4 pb-6 text-center text-gray-500" id="Footer">
-        <p class="">All contents © Jeff Glass 2026. All rights reserved.</p>
-        <p>See <a href="../../cloud-resume-challenge" class="underline">how this site was built</a>.</p>
-    </div>
+      </div></div>
+
+  
+    
+<div class="pagination">
+  <div class="pagination__title">
+    <span class="pagination__title-h">Read other posts</span>
+    <hr />
+  </div>
+  <div class="pagination__buttons">
+    
+      <a href="http://localhost:1313/post/whats-new-pyscript-2022-09-1/" class="button inline prev">
+        &lt; [<span class="button__text">Whats New in Pyscript 2022.09.1</span>]
+      </a>
+    
+    
+      ::
+    
+    
+      <a href="http://localhost:1313/post/cloud-resume-challenge-shortcodes/" class="button inline next">
+         [<span class="button__text">Hugo Shortcodes for Coding Blogs</span>] &gt;
+      </a>
+    
+  </div>
+</div>
+
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2026 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
 </footer>
-		</div>
-	</main>
 
 
-	
+
+
+
+
+<script type="text/javascript" src="../../bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
 </body>
 </html>
