@@ -1,6 +1,6 @@
 ---
 title: "Ahab's Harpoon"
-date: 2016-12-012T20:56:48-05:00
+date: 2016-12-12T20:56:48-05:00
 draft: false
 oneofftags:
 - lighting
